@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
+import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.AtomicLongMap;
@@ -45,6 +46,8 @@ import com.google.common.util.concurrent.AtomicLongMap;
  * @author Benoit Lacelle
  *
  */
+// TODO The dictionary should be maintain in a dedicated data-structure
+@Beta
 public class PepperReferenceHelper {
 
 	private static final long HUNDRED = 100L;
@@ -248,6 +251,11 @@ public class PepperReferenceHelper {
 		}
 	}
 
+	/**
+	 * 
+	 * @param item
+	 * @return the input item after having internalized its fields
+	 */
 	public static <T> T internalize(T item) {
 		if (item == null) {
 			return null;

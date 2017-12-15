@@ -22,11 +22,20 @@
  */
 package cormoran.pepper.memory;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cormoran.pepper.logging.PepperLogHelper;
 
 public class TestPepperReferenceHelper {
+	protected static final Logger LOGGER = LoggerFactory.getLogger(TestPepperReferenceHelper.class);
 
 	@Before
 	public void clear() {
@@ -154,5 +163,22 @@ public class TestPepperReferenceHelper {
 			super(oneString);
 		}
 
+	}
+
+	@Test
+	public void testShareReference_List() {
+		List<String> beforeIntern =
+				IntStream.range(0, 1000).map(i -> i % 3).mapToObj(i -> "String_" + i).collect(Collectors.toList());
+
+		long sizeBefore = PepperMemoryHelper.deepSize(beforeIntern);
+
+		new PepperReferenceInternalizer().internalize(beforeIntern);
+
+		long sizeAfter = PepperMemoryHelper.deepSize(beforeIntern);
+
+		LOGGER.info("Size Before: {}, Size after: {}",
+				PepperLogHelper.getNiceMemory(sizeBefore),
+				PepperLogHelper.getNiceMemory(sizeAfter));
+		Assert.assertTrue(sizeBefore > sizeAfter * 2.5D);
 	}
 }
