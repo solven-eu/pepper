@@ -31,7 +31,7 @@ import java.util.NavigableMap;
  * @author Benoit Lacelle
  *
  */
-public interface IPepperActiveTasksMonitor {
+public interface IActiveTasksMonitor {
 
 	int getLongRunningCheckSeconds();
 

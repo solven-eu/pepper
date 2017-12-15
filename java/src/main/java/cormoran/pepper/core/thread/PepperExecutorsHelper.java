@@ -119,6 +119,7 @@ public class PepperExecutorsHelper {
 		// hidden
 	}
 
+	// TODO: We would like this single-thread to autoclose if not used. If would help preventing thread-leakage
 	public static ListeningExecutorService newSingleThreadExecutor(String threadNamePrefix) {
 		// Default as defined in Executors.newSingleThreadExecutor
 		// java.util.concurrent.ThreadPoolExecutor.defaultHandler

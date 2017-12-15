@@ -35,11 +35,13 @@ import java.util.function.LongSupplier;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
 
 import cormoran.pepper.core.thread.CurrentThreadStack;
 
 /**
- * A {@link StartMetricEvent} can be used to stats the duration of some events
+ * A {@link StartMetricEvent} can be used to stats the duration of some events. Typically posted into an
+ * {@link EventBus}
  * 
  * @author Benoit Lacelle
  * 

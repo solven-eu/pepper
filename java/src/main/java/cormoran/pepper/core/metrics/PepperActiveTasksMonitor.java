@@ -70,7 +70,7 @@ import cormoran.pepper.core.util.PepperTimeHelper;
  * 
  */
 @ManagedResource
-public class PepperActiveTasksMonitor implements IPepperActiveTasksMonitor, InitializingBean {
+public class PepperActiveTasksMonitor implements IActiveTasksMonitor, InitializingBean {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperActiveTasksMonitor.class);
 
 	/**
