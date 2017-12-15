@@ -4,11 +4,11 @@
 
 	<parent>
 		<groupId>com.github.cormoran-io.pepper</groupId>
-		<artifactId>pepper-core</artifactId>
+		<artifactId>pepper-parent</artifactId>
 		<version>1.12-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pepper-java</artifactId>
+	<artifactId>pepper</artifactId>
 	<packaging>jar</packaging>
 
 	<properties>

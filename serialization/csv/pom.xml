@@ -18,7 +18,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.github.cormoran-io.pepper</groupId>
-			<artifactId>pepper-java</artifactId>
+			<artifactId>pepper</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
