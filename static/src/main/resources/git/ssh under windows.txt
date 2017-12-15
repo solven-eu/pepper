@@ -1,0 +1,52 @@
+# Store credentials
+git config --global credential.helper wincred
+
+# Configure Git on Windows to properly handle line endings
+git config --global core.autocrlf true
+
+# Help merging after having modified .gitattributes
+# http://stackoverflow.com/questions/861995/is-it-possible-for-git-merge-to-ignore-line-ending-differences
+git config merge.renormalize true
+
+# Ensure "git push" pushes only currently checked-out branch
+git config –-global push.default simple
+
+
+---Fix Line Endings in repo-------------------------------------
+# http://stackoverflow.com/questions/1510798/trying-to-fix-line-endings-with-git-filter-branch-but-having-no-luck/4683783#4683783
+
+echo "* text=auto" >>.gitattributes
+rm .git/index     # Remove the index to force git to
+git reset         # re-scan the working directory
+git status        # Show files that will be normalized
+git add -u        # Add modified files, but not new files
+git add .gitattributes	# Add new file
+git commit -m "Introduce end-of-line normalization"
+--------------------------------------------------------------------
+
+http://guides.beanstalkapp.com/version-control/git-on-windows.html#choosing-distribution
+
+ssh-keygen -t rsa
+
+Copy content of /c/Users/XXX/.ssh/id_rsa.pub to Github
+
+// Prevent entering passphrase each time
+https://www.visualstudio.com/docs/git/use-ssh-keys-to-authenticate
+eval `ssh-agent`
+
+
+SSH over proxy:
+https://help.github.com/articles/using-ssh-over-the-https-port/
+http://stackoverflow.com/questions/5103083/ssh-in-git-behind-proxy-on-windows-7
+
+http://stackoverflow.com/questions/1040089/how-do-i-use-github-through-harsh-proxies
+http://bent.latency.net/bent/darcs/goto-san-connect-1.85/src/connect.html
+
+Test Proxy:
+ssh -T account@account.visualstudio.com
+ssh -T -p 443 git@ssh.github.com
+
+# http://stackoverflow.com/questions/6178401/how-can-i-debug-git-git-shell-related-problems
+ GIT_TRACE=2 git pull originVSTS
+ set -x; GIT_TRACE=2 GIT_CURL_VERBOSE=2 GIT_TRACE_PERFORMANCE=2 GIT_TRACE_PACK_ACCESS=2 GIT_TRACE_PACKET=2 GIT_TRACE_PACKFILE=2 GIT_TRACE_SETUP=2 GIT_TRACE_SHALLOW=2 git pull originVSTS master > gitPullOriginVSTSmaster 2>&1
+ set -x; GIT_TRACE=2 GIT_CURL_VERBOSE=2 GIT_TRACE_PERFORMANCE=2 GIT_TRACE_PACK_ACCESS=2 GIT_TRACE_PACKET=2 GIT_TRACE_PACKFILE=2 GIT_TRACE_SETUP=2 GIT_TRACE_SHALLOW=2 git pull origin master > gitPullOriginTFSmaster 2>&1

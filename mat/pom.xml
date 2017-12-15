@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.cormoran-io.pepper</groupId>
+		<artifactId>pepper-core</artifactId>
+		<version>1.12-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>pepper-mat</artifactId>
+	<packaging>jar</packaging>
+
+	<properties>
+		<!-- Keep original license as Eclipse EPL to SAP -->
+		<license.skipExistingHeaders>true</license.skipExistingHeaders>
+
+		<!-- Analyze and improve -->
+		<jacoco.instruction.ratio>0.50</jacoco.instruction.ratio>
+		<jacoco.branch.ratio>0.40</jacoco.branch.ratio>
+
+		<!-- more checks to do -->
+		<pmd.skip>true</pmd.skip>
+		<cpd.skip>true</cpd.skip>
+
+		<!-- MAT needs more memory to handle heapdumps -->
+		<xmx>1024M</xmx>
+	</properties>
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/com.ibm.icu/icu4j -->
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>59.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.cormoran-io.pepper</groupId>
+			<artifactId>pepper-java</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.cormoran-io.pepper</groupId>
+			<artifactId>pepper-primitives</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.xerial.snappy/snappy-java -->
+		<dependency>
+			<groupId>org.xerial.snappy</groupId>
+			<artifactId>snappy-java</artifactId>
+			<version>1.1.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>me.lemire.integercompression</groupId>
+			<artifactId>JavaFastPFOR</artifactId>
+			<version>0.1.11</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+
+	</dependencies>
+</project>

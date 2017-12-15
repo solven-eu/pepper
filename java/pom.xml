@@ -1,0 +1,83 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.cormoran-io.pepper</groupId>
+		<artifactId>pepper-core</artifactId>
+		<version>1.12-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>pepper-java</artifactId>
+	<packaging>jar</packaging>
+
+	<properties>
+		<jacoco.instruction.ratio>0.65</jacoco.instruction.ratio>
+		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
+	</properties>
+
+	<dependencies>
+		<!-- <dependency> -->
+		<!-- Used in PepperFileHelper -->
+		<!-- <groupId>org.springframework</groupId> -->
+		<!-- <artifactId>spring-core</artifactId> -->
+		<!-- </dependency> -->
+
+		<dependency>
+			<!-- Provides an EventBus to diffuse Events to MetricsTowerControl -->
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.cormoran-io.pepper</groupId>
+			<artifactId>pepper-agent</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<!-- Prevent javadoc complaining. Kept as optional, just like Guava -->
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>3.0.2</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.7</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- –Djacoco.skip=true -->
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<!-- LoggingMethodCallAnnotationMBeanExporter is a bunch of exception catching. Add * to hold anonymous classes -->
+						<exclude>cormoran/pepper/server/monitoring/spring/LoggingMethodCallAnnotationMBeanExporter*</exclude>
+
+						<!-- pepperCSVReader is just an incubator project -->
+						<exclude>cormoran/pepper/shared/csv/reader/*</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

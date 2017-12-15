@@ -1,0 +1,36 @@
+#https://visualvm.java.net/oqlhelp.html
+# http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.mat.ui.help%2Freference%2Foqlsyntax.html
+#https://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.mat.ui.help%2Ftasks%2Fqueryingheapobjects.html
+select s from com.sgcib.sds.space.proxy.handler.util.iterator.SdsResultIterator
+select s from java.lang.String s where s.count >= 100
+
+select f.referent from java.lang.ref.SoftReference f 
+    where f.referent != null
+    
+
+SELECT f FROM com.qfs.chunk.direct.impl.DirectChunkLong
+select heap.livepaths(s) from com.qfs.chunk.direct.impl.DirectChunkLong s
+
+SELECT f FROM com.qfs.dic.impl.DictionaryBank
+
+SELECT f FROM com.qfs.store.impl.DatastoreVersion
+
+
+select f.referent from java.lang.ref.SoftReference f where f.referent != null
+
+select f FROM com.sgcib.crs.dms.sdd.common.model.SDAEntityPojo
+select f.entityMnemonic from com.sgcib.crs.dms.sdd.common.model.SDAEntityPojo f WHERE f.entityMnemonic != null
+
+// Select all GS entries
+select f FROM com.gigaspaces.internal.server.storage.EntryHolder
+
+// Select GS entries of given POJO type
+select f FROM com.gigaspaces.internal.server.storage.EntryHolder WHERE f._typeDesc._typeName = com.sgcib.crs.dms.sdd.common.model.SDABDREntityPojo
+
+// Select the md5 (known as being at index 3)
+select f._entryData._fieldValue[3] FROM com.gigaspaces.internal.server.storage.EntryHolder WHERE f._typeDesc._typeName = com.sgcib.crs.dms.sdd.common.model.SDABDREntityPojo
+
+
+SELECT f.value FROM org.jsoup.nodes.Attribute f WHERE toString(f.key).equals("class")
+ select p from java.util.String p
+    where classof(inbounds(p).get(2)) = "org.jsoup.nodes.Attribute"

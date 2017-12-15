@@ -1,0 +1,81 @@
+# http://naleid.com/blog/2012/01/17/finding-and-purging-big-files-from-git-history
+
+# What object SHA is associated with each file in the Repo?
+git rev-list --objects --all | sort -k 2 > allfileshas.txt
+
+# Get the last object SHA for all committed files and sort them in biggest to smallest order:
+git gc && git verify-pack -v .git/objects/pack/pack-*.idx | egrep "^\w+ blob\W+[0-9]+ [0-9]+ [0-9]+$" | sort -k 3 -n -r > bigobjects.txt
+
+# In case we are in a bare repo (with --mirror)
+git gc && git verify-pack -v objects/pack/pack-*.idx | egrep "^\w+ blob\W+[0-9]+ [0-9]+ [0-9]+$" | sort -k 3 -n -r > bigobjects.txt
+
+for SHA in `cut -f 1 -d\  < bigobjects.txt`; do
+	echo $(grep $SHA bigobjects.txt) $(grep $SHA allfileshas.txt) | awk '{print $1,$3,$7}' >> bigtosmall.txt
+done;
+
+less bigtosmall.txt
+
+
+---------------------------------------
+http://dalibornasevic.com/posts/2-permanently-remove-files-and-folders-from-git-repo
+http://stackoverflow.com/questions/28720151/git-gc-aggressive-vs-git-repack
+// http://stackoverflow.com/questions/1904860/how-to-remove-unreferenced-blobs-from-my-git-repo
+git remote rm origin
+rm -rf .git/refs/original/ .git/refs/remotes/ .git/*_HEAD .git/logs/
+
+# Remove safety references as they refers to removed objects
+git for-each-ref --format="%(refname)" refs/original/ | xargs -n1 --no-run-if-empty git update-ref -d
+
+git reflog expire --expire=now --all && git gc --prune=now --aggressive
+git -c gc.reflogExpire=0 -c gc.reflogExpireUnreachable=0 -c gc.rerereresolved=0 -c gc.rerereunresolved=0 -c gc.pruneExpire=now gc "$@"
+
+git push origin --force --all
+git push origin --force --tags
+---------------------------------------------------
+
+
+# Purging a file or directory from history
+git filter-branch --prune-empty --index-filter "
+git rm -rf --cached --ignore-unmatch top/sub
+git rm -rf --cached --ignore-unmatch 'prefix[0-9]*'
+" --tag-name-filter cat -- --all
+
+
+
+# Then clone the repo and make sure to not leave any hard links with:
+# git clone --no-hardlinks file:///Users/yourUser/your/full/repo/path repo-clone-name
+git clone --no-hardlinks ./try2/ try3
+
+# Checkfile consumption with
+git count-objects -vH
+
+------------------------------------
+With BFG
+(referred by https://git-scm.com/docs/git-filter-branch)
+https://rtyley.github.io/bfg-repo-cleaner/
+
+# First clone a fresh copy of your repo, using the --mirror flag
+git clone --mirror git://example.com/some-big-repo.git
+
+# Delete all files named 'id_rsa' or 'id_dsa'
+java -jar bfg.jar --delete-files id_{dsa,rsa}  my-repo.git
+
+# Remove all folders or files named 'target'
+java -jar bfg-1.12.13.jar --delete-folders target --no-blob-protection  my-repo.git
+
+-------------------------------------
+
+Full script:
+
+
+git clone --mirror git://example.com/some-big-repo.git
+
+java -jar bfg-1.12.13.jar --delete-files id_{dsa,rsa} --no-blob-protection my-repo.git
+java -jar bfg-1.12.13.jar --delete-folders target --no-blob-protection my-repo.git
+
+git reflog expire --expire=now --all && git gc --prune=now --aggressive
+
+git filter-branch -f --prune-empty --index-filter '
+git rm -rf --cached --ignore-unmatch folder/subFolder && 
+git rm -rf --cached --ignore-unmatch anotherFolder
+' --tag-name-filter cat -- --all

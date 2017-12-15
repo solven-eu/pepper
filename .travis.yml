@@ -1,0 +1,48 @@
+language: java
+jdk: 
+  - oraclejdk8
+  - oraclejdk9
+# https://docs.travis-ci.com/user/multi-os/
+os:
+  - linux
+#  - osx
+
+matrix:
+  allow_failures:
+    -jdk: oraclejdk9
+
+#https://docs.travis-ci.com/user/languages/java/
+#https://github.com/travis-ci/travis-ci/issues/8172
+sudo: required
+
+#https://docs.travis-ci.com/user/hosts
+addons:
+  hosts:
+    - travis
+  apt:
+    packages:
+      - oracle-java8-installer
+  sonarcloud:
+    organization: "blasd-github"
+    token:
+      secure: "jtTGPJGTVbyrOIfF7Y2WCZ7DXKxETVpuQbF9W2kUw3njm7zYWBfdbCTiVaZjMdEYbOgMBHAT3M8OPbZixp3yb+L6eJ2IP14yia5ZsI/yX+MtuMTb16lUot2RbJk3NlRitd0hSvEu0l0IkxR2RuuvJhygAvVE2kzINzxi5oomxcrISz7eVjJyetfptVxhz0pS0yVbEV/cKQ77T6MLWxf7Ks44ug0qDhmThqtjymS7sMnr45Vvqe9NkgRyXsJMoFXjsJoyf8LST+m4hSyxa3QNPedToPOxh9tqhAaaS+veMnr7unjltOhZnQYrBqIeHwE6tJ9mAhfFznC/359Is+WSa3xz6cB5JkYaPILmiaX8nTXUMP1IkHys/t0KrcVsjWvcwZWQp0I7nOeTqEZGE0MgDknXkvL+aU7y4SRDscE2KcJ85tNJzr60AA8ka13WLAm7K6L6qzRjBoSvdDE8+vnQYO6MMgbdF5iYDvoqYmo7LE7B8yE4TkMCrcVV+N6Y4ecMAHW2X9TTDdx/SeWxhCUVQqQByUsSXNtZ94IPlMSrFvJER9o4AXyQLyKFhVxNe3pOPWWmgy/YSTUK7YUJjPiaCgv5fz8SisXsmNOPcrmXj3a5UYux5Yv7t3K3b9uNXk5wg7Nly44p8ZJE3IpnMzinZ9PnF1MZ/z5nrR/woh7U63w="
+  
+#https://docs.travis-ci.com/user/customizing-the-build/#Customizing-the-Build-Step
+# quite not to consumes more than the 4MB of authorized logs
+# https://github.com/travis-ci/travis-ci/issues/1382
+install: "mvn clean install -DskipTests -PskipStyle --fail-at-end"
+#script: "mvn deploy -DskipTests --settings travis-maven-settings.xml"
+script:
+  - "mvn install coveralls:report --fail-at-end -Dmat.assert=true"
+  - "mvn org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar"
+#deploy: "mvn deploy --settings travis-maven-settings.xml"
+
+notifications:
+  webhooks: https://coveralls.io/webhook?repo_token=jDBhichjx0dczfgRHEuKVHD3ULFv6absA
+
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.sonar/cache'
+

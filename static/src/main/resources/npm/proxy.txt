@@ -1,0 +1,15 @@
+To exclude a host from the proxy, is seems necessary to rely on env variables, after having removed the proxy in npm config:
+
+	https://stackoverflow.com/questions/41574184/can-you-configure-no-proxy-in-npm
+	export HTTP_PROXY=http://EUR%5Cusername:password@proxy.company.com:8080
+	export HTTPS_PROXY=http://EUR%5Cusername:password@proxy.company.com:8080
+	export NO_PROXY=internal.domain.company,localhost
+	
+
+The following configuration is OK if no domain have to be excluded from the proxy
+
+	https://stackoverflow.com/questions/25660936/using-npm-behind-corporate-proxy-pac
+
+    npm config set proxy http://EUR%5Cusername:password@proxy.company.com:8080
+    npm config set https-proxy http://EUR%5Cusername:password@proxy.company.com:8080
+    npm config get proxy

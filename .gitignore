@@ -1,0 +1,65 @@
+# Binaries
+######################
+*.class
+ 
+# Eclipse
+######################
+.project
+.settings
+.classpath
+
+#IntelliJ
+*.iml
+ 
+# Maven
+######################
+target
+bin
+#### Release Plugin
+*.releaseBackup
+*.versionsBackup
+release.properties
+pom.xml.tag
+pom.xml.next
+
+# Evosuite
+.evosuite
+
+# GWT
+######################
+war
+gwt-unitCache
+.gwt
+ 
+# Temporary files
+######################
+*.swp
+*.log
+log
+bin
+*.bin
+pom.xml.versionsBackup
+
+# Sentinel
+*.h2.db
+*.lock.db
+
+# Mac temp file
+.DS_Store
+
+#Eclipse Spring plugin
+.springBeans
+
+#OutOfMemory HeapDumps
+java_pid*
+*.stackdump
+
+#svn
+.svn
+
+#pmd
+.pmd*
+
+#WinMerge
+*.bak
+*.orig

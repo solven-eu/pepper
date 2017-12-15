@@ -1,0 +1,29 @@
+<configuration scan="true" debug="true"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="logback.xsd">
+	<!-- scan=true will reload this configuration file regularly -->
+
+	<!-- http://logback.qos.ch/manual/jmxConfig.html -->
+	<!-- TODO: stop in a ServletContextListener . See logback doc -->
+	<contextName>PepperCoreAgentTests</contextName>
+	<jmxConfigurator />
+
+	<!-- http://logback.qos.ch/manual/configuration.html -->
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+		<!-- reset all previous level configurations of all j.u.l. loggers -->
+		<resetJUL>true</resetJUL>
+	</contextListener>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<!-- http://stackoverflow.com/questions/2005929/howto-prevent-eclipse-from-line-wrapping-in-xml-and-html-files -->
+			<pattern><![CDATA[%date [%thread] %-5level %logger{36}.%method\(%line\) - %msg%n]]></pattern>
+		</encoder>
+	</appender>
+
+	<root level="TRACE">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

@@ -1,0 +1,36 @@
+<settings>
+	<localRepository>C:\#USERNAME#\repository</localRepository>
+	<proxies>
+		<proxy>
+			<id>#CUSTOMER#</id>
+			<active>true</active>
+			<protocol>http</protocol>
+			<host>proxy.#CUSTOMER#.EXT</host>
+			<port>8080</port>
+			<nonProxyHosts>*.#CUSTOMER#.EXT|*..#CUSTOMER#.BIS</nonProxyHosts>
+		</proxy>
+	</proxies>
+
+	<servers>
+		<server>
+			<id>#CUSTOMER#-thirdparty</id>
+			<username>#USERNAME#</username>
+			<password>???</password>
+		</server>
+	</servers>
+
+	<profiles>
+		<profile>
+			<id>profileId</id>
+			<repositories>
+				<repository>
+					<id>repoId</id>
+					<url>repoUrl</url>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
+	<activeProfiles>
+		<activeProfile>profileId</activeProfile>
+	</activeProfiles>
+</settings>

@@ -1,0 +1,547 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.cormoran-io.pepper</groupId>
+		<artifactId>pepper-core-metadata</artifactId>
+		<version>1.12-SNAPSHOT</version>
+		<relativePath>metadata</relativePath>
+	</parent>
+
+	<artifactId>pepper-core</artifactId>
+
+	<packaging>pom</packaging>
+	<inceptionYear>2014</inceptionYear>
+
+	<!-- Format source code -->
+	<!-- mvn net.revelc.code.formatter:formatter-maven-plugin:2.7.0:format -->
+
+	<!-- Add missing licenses -->
+	<!-- mvn com.mycila:license-maven-plugin:format -->
+
+	<!-- Make a release -->
+	<!-- Do not -DskipTests, else it will skip javadoc which is mandatory for sonatype -->
+	<!-- mvn release:clean release:prepare -Darguments="-Dmaven.test.skip" -->
+	<!-- mvn release:perform -Darguments="-Dmaven.test.skip" -->
+	<!-- mvn release:rollback -->
+
+	<!-- Deployement -->
+	<!-- mvn deploy -PSonatype -DskipTests -->
+	<!-- Release in https://oss.sonatype.org -->
+	<!-- Jira ticket: https://issues.sonatype.org/browse/OSSRH-10350 -->
+	<!-- Needs 2 hours to appear in http://search.maven.org/ -->
+
+	<properties>
+		<guava.version>23.5-jre</guava.version>
+		<javolution.version>6.0.0</javolution.version>
+
+		<awaitility.version>3.0.0</awaitility.version>
+		<findbugs.version>3.0.4</findbugs.version>
+		<equals.verifier.version>2.3.1</equals.verifier.version>
+		<checker.quals.version>2.1.10</checker.quals.version>
+
+		<jacoco.instruction.ratio>0.70</jacoco.instruction.ratio>
+		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
+
+		<!-- Used to define the Xmx of JVM popped by surefire -->
+		<xmx>128M</xmx>
+		<!-- http://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html -->
+		<!-- We choose to fork to prevent AP License to complain -->
+		<forkCount>1C</forkCount>
+
+		<!-- TODO Exclude a few Sonar rules -->
+		<!-- https://docs.sonarqube.org/display/SONAR/Analysis+Parameters#AnalysisParameters-Exclusions/Inclusions -->
+	</properties>
+
+	<profiles>
+		<profile>
+			<!-- Checks for compilation and tests, but not code quality -->
+			<id>skipStyle</id>
+			<activation>
+				<property>
+					<name>skipStyle</name>
+				</property>
+			</activation>
+			<properties>
+				<!-- Skip static-analysis -->
+				<jacoco.skip>true</jacoco.skip>
+				<checkstyle.skip>true</checkstyle.skip>
+				<pmd.skip>true</pmd.skip>
+				<cpd.skip>true</cpd.skip>
+				<maven.javadoc.skip>true</maven.javadoc.skip>
+
+				<!-- Skip formatting by revelc -->
+				<formatter.skip>true</formatter.skip>
+			</properties>
+		</profile>
+		<profile>
+			<!-- Checks for compilation and tests, but not code quality -->
+			<id>styleOnly</id>
+			<activation>
+				<property>
+					<name>styleOnly</name>
+				</property>
+			</activation>
+			<properties>
+				<!-- Skip tests -->
+				<maven.test.skip>true</maven.test.skip>
+				<!-- Skip jacoco as no tests -->
+				<jacoco.skip>true</jacoco.skip>
+			</properties>
+		</profile>
+		<profile>
+			<!-- Used with -DskipTests: skip tests and skip style checking -->
+			<id>dirty</id>
+			<activation>
+				<property>
+					<name>skipTests</name>
+				</property>
+			</activation>
+			<properties>
+				<!-- Skip tests -->
+				<maven.test.skip>true</maven.test.skip>
+
+				<!-- Skip code checkings -->
+				<jacoco.skip>true</jacoco.skip>
+				<checkstyle.skip>true</checkstyle.skip>
+				<pmd.skip>true</pmd.skip>
+				<cpd.skip>true</cpd.skip>
+				<maven.javadoc.skip>true</maven.javadoc.skip>
+			</properties>
+		</profile>
+	</profiles>
+
+	<modules>
+		<!-- static resources like the Checkstyle sheet -->
+		<module>static</module>
+
+		<!-- The java-core code -->
+		<module>java</module>
+
+		<!-- Holds the java-agent enabling Instrumentation -->
+		<module>agent</module>
+
+		<!-- This project metadata, holding for instance deployment resources -->
+		<module>metadata</module>
+
+		<!-- Port Eclipse MAT in an autonomous module -->
+		<!-- Not official module as it does not comply with quality standards yet -->
+		<module>mat</module>
+
+		<!-- Some JMH benchmarks, especially for Double parsing -->
+		<module>jmh</module>
+
+		<module>serialization</module>
+		<module>compression</module>
+
+		<!-- a JConsole plugin to facilitate tracking of off-heap -->
+		<!-- Excluded as it is an experimental project -->
+		<!-- <module>buffermonitor</module> -->
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<!-- Not in spring-boot as of spring-boot:1.5.2 -->
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>nl.jqno.equalsverifier</groupId>
+				<artifactId>equalsverifier</artifactId>
+				<version>${equals.verifier.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- annotations from the Checker Framework: nullness, interning, locking, ... -->
+			<dependency>
+				<groupId>org.checkerframework</groupId>
+				<artifactId>checker-qual</artifactId>
+				<version>${checker.quals.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<!-- dependencies AFTER dependencyManagement -->
+	<dependencies>
+		<!-- Always added, to facilitate tests -->
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<version>${awaitility.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>nl.jqno.equalsverifier</groupId>
+			<artifactId>equalsverifier</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.checkerframework</groupId>
+			<artifactId>checker-qual</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Always added, to facilitate logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.5.1</version>
+					<configuration>
+						<!-- errorprone supports >=6 -->
+						<source>${compiler.targetVersion}</source>
+						<target>${compiler.targetVersion}</target>
+
+						<forceJavacCompilerUse>true</forceJavacCompilerUse>
+
+						<!-- Fork to prevent PermGenOOM on a large build -->
+						<fork>true</fork>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-compiler-javac-errorprone</artifactId>
+							<version>2.5</version>
+						</dependency>
+						<!-- override plexus-compiler-javac-errorprone's dependency on Error Prone with the latest version -->
+						<dependency>
+							<groupId>com.google.errorprone</groupId>
+							<artifactId>error_prone_core</artifactId>
+							<version>2.0.9</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+
+				<!-- -Dtest=TestClassToFileMapped selects a single test class -->
+				<!-- -Dmaven.surefire.debug enables debug on Surefire plugin on port 5005 -->
+				<!-- mvn -Dtest=TestClassToFileMapped -Dmaven.surefire.debug test -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.20</version>
+					<configuration>
+						<!-- Add ${argLine} to maintain the argument from Jacoco -->
+						<!-- https://groups.google.com/forum/#!topic/jacoco/LzmCezW8VKA -->
+
+						<!-- -XX:+StartAttachListener is for http://comments.gmane.org/gmane.comp.java.openjdk.macosx-port.devel/6094 -->
+						<!-- -XX:-HeapDumpOnOutOfMemoryError because TestGCInspector will force an OOM -->
+						<!-- -Djava.util.logging.config.file so that tests fallback on logback -->
+						<argLine><![CDATA[-ea -Xmx${xmx} -XX:+StartAttachListener -XX:-HeapDumpOnOutOfMemoryError -Djava.util.logging.config.file=logging.properties ${argLine}]]></argLine>
+
+						<!-- Alternative safer configuration for 1JVM per test -->
+						<!-- <forkCount>1</forkCount> -->
+						<!-- <reuseForks>false</reuseForks> -->
+
+						<!-- default is filesystem -->
+						<runOrder>alphabetical</runOrder>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.4.3</version>
+					<configuration>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<overwrite>true</overwrite>
+					</configuration>
+				</plugin>
+
+				<!-- Add XXX-sources.jar in the repository -->
+				<plugin>
+					<!-- mvn source:jar -->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.0.1</version>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>jar-no-fork</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- -Djacoco.skip=true -->
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.7.9</version>
+					<executions>
+						<execution>
+							<id>default-prepare-agent</id>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>default-report</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>report</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>default-check</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
+							<configuration>
+								<rules>
+									<rule implementation="org.jacoco.maven.RuleConfiguration">
+										<!-- BUNDLE, PACKAGE, CLASS, SOURCEFILE or METHOD -->
+										<element>BUNDLE</element>
+										<limits>
+											<limit implementation="org.jacoco.report.check.Limit">
+												<!-- INSTRUCTION, LINE, BRANCH, COMPLEXITY, METHOD, CLASS -->
+												<counter>BRANCH</counter>
+												<!-- TOTALCOUNT, COVEREDCOUNT, MISSEDCOUNT, COVEREDRATIO, MISSEDRATIO -->
+												<value>COVEREDRATIO</value>
+												<minimum>${jacoco.branch.ratio}</minimum>
+											</limit>
+										</limits>
+									</rule>
+									<rule implementation="org.jacoco.maven.RuleConfiguration">
+										<!-- BUNDLE, PACKAGE, CLASS, SOURCEFILE or METHOD -->
+										<element>BUNDLE</element>
+										<limits>
+											<limit implementation="org.jacoco.report.check.Limit">
+												<!-- INSTRUCTION, LINE, BRANCH, COMPLEXITY, METHOD, CLASS -->
+												<counter>INSTRUCTION</counter>
+												<!-- TOTALCOUNT, COVEREDCOUNT, MISSEDCOUNT, COVEREDRATIO, MISSEDRATIO -->
+												<value>COVEREDRATIO</value>
+												<minimum>${jacoco.instruction.ratio}</minimum>
+											</limit>
+										</limits>
+									</rule>
+								</rules>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>findbugs-maven-plugin</artifactId>
+					<version>${findbugs.version}</version>
+				</plugin>
+
+				<plugin>
+					<!-- Usage: mvn com.mycila:license-maven-plugin:format -->
+					<groupId>com.mycila</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>2.6</version>
+					<configuration>
+						<header>com/mycila/maven/plugin/license/templates/MIT.txt</header>
+						<properties>
+							<owner>Benoit Lacelle</owner>
+							<year>2017</year>
+							<email>benoit.lacelle@gmail.com</email>
+						</properties>
+						<excludes>
+							<exclude>**/*.xml</exclude>
+							<exclude>**/*.log</exclude>
+							<exclude>**/*.hprof</exclude>
+							<exclude>**/*.versionsBackup</exclude>
+							<exclude>**/*.csv</exclude>
+							<exclude>**/*.html</exclude>
+							<exclude>**/README</exclude>
+							<exclude>src/test/resources/**</exclude>
+							<exclude>src/main/resources/**</exclude>
+							<exclude>target/**</exclude>
+							<exclude>war/**</exclude>
+							<exclude>gwt-unitCache/**</exclude>
+						</excludes>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.3</version>
+
+					<configuration>
+						<!-- Prevent git to clone the whole repo which is quite slow -->
+						<!-- https://issues.apache.org/jira/browse/MRELEASE-777 -->
+						<localCheckout>true</localCheckout>
+						<pushChanges>false</pushChanges>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<!-- –Djacoco.skip=true -->
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<!-- -Dfindbugs.skip=true -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>net.revelc.code.formatter</groupId>
+				<artifactId>formatter-maven-plugin</artifactId>
+				<version>2.7.0</version>
+				<configuration>
+					<configFile>style/eclipse_java_code_formatter.xml</configFile>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.github.cormoran-io.pepper</groupId>
+						<artifactId>pepper-static</artifactId>
+						<version>${project.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>format_eclipse</id>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- http://code.revelc.net/impsort-maven-plugin/ -->
+				<groupId>net.revelc.code</groupId>
+				<artifactId>impsort-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<configuration>
+					<!-- Eclipse default -->
+					<groups>java.,javax.,org.,com.</groups>
+					<staticGroups>java,*</staticGroups>
+					<excludes>
+						<exclude>**/thrift/*.java</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>sort-imports</id>
+						<goals>
+							<goal>sort</goal><!-- runs at process-sources phase by default -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<!-- http://maven.apache.org/maven-release/maven-release-plugin/usage.html -->
+				<!-- mvn clean install -Pfull -->
+				<!-- mvn release:clean release:prepare -Darguments="-DskipTests" -->
+				<!-- mvn release:perform -Darguments="-DskipTests" -->
+				<!-- git reset \-\-hard SOMESHA1 -->
+				<!-- git push force -->
+				<!-- git tag -d 12345 -->
+				<!-- git push origin :refs/tags/12345 -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<tagNameFormat>pepper-core@{project.version}</tagNameFormat>
+
+					<!-- http://central.sonatype.org/pages/apache-maven.html -->
+					<!-- Sonatype profile is defined in pepper-metadata -->
+					<releaseProfiles>Sonatype</releaseProfiles>
+
+					<!-- On each release, push the jars to Maven Central -->
+					<goals>deploy</goals>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<!-- Skip a row by adding '//NOPMD' at the end -->
+				<!-- http://pmd.sourceforge.net/pmd-4.3.0/suppressing.html -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.8</version>
+				<configuration>
+					<!-- <includeTests>true</includeTests> -->
+					<indentSize>4</indentSize>
+					<printFailingErrors>true</printFailingErrors>
+
+					<!-- Code duplication: Lower is better. Default is 100 -->
+					<minimumTokens>60</minimumTokens>
+
+					<!-- Prevent [WARNING] Unable to locate Source XRef to link to - DISABLED -->
+					<linkXRef>false</linkXRef>
+
+					<rulesets>
+						<ruleset>style/pepper.pmd.rulesets.xml</ruleset>
+					</rulesets>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.github.cormoran-io.pepper</groupId>
+						<artifactId>pepper-static</artifactId>
+						<version>${project.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
+						<phase>compile</phase>
+						<goals>
+							<goal>check</goal>
+							<goal>cpd-check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<scm>
+		<!-- Only developerConnection was not set in parent po;m as its own parent was not a SNAPSHOT -->
+		<developerConnection>${scm.developerConnection}</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+</project>

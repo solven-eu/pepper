@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.cormoran-io.pepper</groupId>
+		<artifactId>pepper-core</artifactId>
+		<version>1.12-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>pepper-agent</artifactId>
+
+	<packaging>jar</packaging>
+
+	<properties>
+		<!-- There is barely no code, leading most branches to be rare edge cases, which are tough to be unit-tested -->
+		<jacoco.instruction.ratio>0.40</jacoco.instruction.ratio>
+		<jacoco.branch.ratio>0.25</jacoco.branch.ratio>
+
+		<!-- Enable wider compatibility -->
+		<compiler.targetVersion>1.6</compiler.targetVersion>
+
+		<sizeof.version>0.3.0</sizeof.version>
+		<byte-buddy.version>1.7.9</byte-buddy.version>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>jdk9</id>
+			<activation>
+				<jdk>9</jdk>
+			</activation>
+			<properties>
+				<!-- We have many tests deactivated in JDK9 -->
+				<jacoco.instruction.ratio>0.30</jacoco.instruction.ratio>
+			</properties>
+		</profile>
+	</profiles>
+
+	<dependencies>
+
+		<dependency>
+			<!-- Enables Optional and keeping JDK6 -->
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<!-- https://github.com/google/guava/wiki/Compatibility -->
+			<!-- Guava for JDK6 srops at 20.0 -->
+			<version>20.0</version><!--$NO-MVN-MAN-VER$ -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-loader-tools</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/net.sf.ehcache/ehcache -->
+		<dependency>
+			<groupId>org.ehcache</groupId>
+			<artifactId>sizeof</artifactId>
+			<version>${sizeof.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.bytebuddy</groupId>
+			<artifactId>byte-buddy-agent</artifactId>
+			<version>${byte-buddy.version}</version>
+		</dependency>
+
+	</dependencies>
+</project>
