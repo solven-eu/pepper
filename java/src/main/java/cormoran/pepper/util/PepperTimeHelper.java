@@ -104,7 +104,7 @@ public class PepperTimeHelper {
 	 * @param localDateTime
 	 * @return the number of milliseconds since 1970
 	 */
-	public static long java8ToMillis(java.time.LocalDateTime localDateTime) {
+	public static long java8ToMillis(LocalDateTime localDateTime) {
 		return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 	}
 

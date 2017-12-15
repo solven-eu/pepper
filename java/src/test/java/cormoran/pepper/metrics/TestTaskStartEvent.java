@@ -31,7 +31,7 @@ import org.mockito.Mockito;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
 
-public class TestStartMetricEvent {
+public class TestTaskStartEvent {
 
 	@After
 	public void resetDoRememberStack() {
@@ -44,8 +44,8 @@ public class TestStartMetricEvent {
 
 		TaskStartEvent startEvent = new TaskStartEvent("detailName", "source", "names");
 
-		Assert.assertTrue(startEvent.toString().contains("StartMetricEvent.<init>("));
-		Assert.assertFalse(startEvent.toStringNoStack().contains("StartMetricEvent.<init>("));
+		Assert.assertTrue(startEvent.toString().contains("TaskStartEvent.<init>("));
+		Assert.assertFalse(startEvent.toStringNoStack().contains("TaskStartEvent.<init>("));
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class TestStartMetricEvent {
 
 		TaskStartEvent startEvent = new TaskStartEvent("detailName", "source", "names");
 
-		Assert.assertFalse(startEvent.toString().contains("StartMetricEvent.<init>("));
+		Assert.assertFalse(startEvent.toString().contains("TaskStartEvent.<init>("));
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class TestStartMetricEvent {
 		Assertions.assertThat(startEvent.toString()).contains("Benoit");
 
 		Assert.assertEquals(
-				"Started in 'main': StartMetricEvent{names=[Test], source=sourceObject} startDetails={UserName=Benoit}",
+				"Started in 'main': TaskStartEvent{names=[Test], source=sourceObject} startDetails={UserName=Benoit}",
 				startEvent.toString());
 	}
 
@@ -82,7 +82,7 @@ public class TestStartMetricEvent {
 		startEvent.setEndDetails(ImmutableMap.of("endKey", "endValue"));
 
 		Assert.assertEquals(
-				"Started in 'main': StartMetricEvent{names=[Test], source=sourceObject} endDetails={endKey=endValue}",
+				"Started in 'main': TaskStartEvent{names=[Test], source=sourceObject} endDetails={endKey=endValue}",
 				startEvent.toString());
 	}
 

@@ -37,13 +37,13 @@ public class TestPepperThreadDumper {
 	@Test
 	public void testGetThreadDumpWithMonitor() {
 		Assert.assertTrue(td.getThreadDumpAsString(true)
-				.contains(this.getClass().getName() + ".testGetThreadDumpWithMonitor(TestApexThreadDump.java:"));
+				.contains(this.getClass().getName() + ".testGetThreadDumpWithMonitor(TestPepperThreadDumper.java:"));
 	}
 
 	@Test
 	public void testGetThreadDumpWithoutMonitor() {
 		Assert.assertTrue(td.getThreadDumpAsString(false)
-				.contains(this.getClass().getName() + ".testGetThreadDumpWithoutMonitor(TestApexThreadDump.java:"));
+				.contains(this.getClass().getName() + ".testGetThreadDumpWithoutMonitor(TestPepperThreadDumper.java:"));
 	}
 
 	@Test

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,6 +38,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.ReflectionUtils;
+
+import com.google.common.annotations.Beta;
+
+import cormoran.pepper.io.PepperSerializationHelper;
 
 /**
  * This MBean enables the modification of primitive static variables, like DEBUG modes
@@ -73,7 +78,7 @@ public class SetStaticMBean {
 		} else if (fieldType == String.class) {
 			field.set(null, newValueAsString);
 		} else {
-			Object asObject = safeTrySingleArgConstructor(fieldType, newValueAsString);
+			Object asObject = PepperSerializationHelper.safeToObject(fieldType, newValueAsString);
 
 			if (asObject != null) {
 				// Instantiation succeeded
@@ -118,6 +123,7 @@ public class SetStaticMBean {
 		return field;
 	}
 
+	@Beta
 	public static Object safeTrySingleArgConstructor(Class<?> fieldType, Object argument) {
 		if (argument == null) {
 			// TODO: try to find any Constructor accepting any Object
@@ -155,24 +161,87 @@ public class SetStaticMBean {
 		}
 	}
 
+	@Beta
+	public static Object safeTryParseArgument(Class<?> fieldType, Object argument) {
+		if (argument == null) {
+			// TODO: try to find any Constructor accepting any Object
+			return null;
+		} else {
+			// iterate through classes and interfaces
+			{
+				Class<?> classToTry = argument.getClass();
+
+				while (classToTry != null) {
+					Object asObject = safeTryParseArgument(fieldType, "parse", classToTry, argument);
+
+					if (asObject != null) {
+						// Instantiation succeeded
+						return asObject;
+					} else {
+						classToTry = classToTry.getSuperclass();
+					}
+				}
+			}
+
+			for (Class<?> classToTry : argument.getClass().getInterfaces()) {
+				Object asObject = safeTryParseArgument(fieldType, "parse", classToTry, argument);
+
+				if (asObject != null) {
+					// Instantiation succeeded
+					return asObject;
+				} else {
+					classToTry = classToTry.getSuperclass();
+				}
+			}
+
+			// Found nothing
+			return null;
+		}
+	}
+
 	/**
 	 * We expect this method not to throw because of an invalid class, invalid type, etc
 	 * 
 	 * @param fieldType
-	 * @param constructorClass
+	 * @param constructorArgClass
 	 * @param argument
 	 * @return an instance of the default contructor
 	 */
-	public static Object safeTrySingleArgConstructor(Class<?> fieldType, Class<?> constructorClass, Object argument) {
+	@Beta
+	public static Object safeTrySingleArgConstructor(Class<?> fieldType,
+			Class<?> constructorArgClass,
+			Object argument) {
 		// Unknown field: we will try to call the constructor taking a single String
 		// It will work for joda LocalDate for instance
 		try {
-			Constructor<?> stringConstructor = fieldType.getConstructor(constructorClass);
+			Constructor<?> stringConstructor = fieldType.getConstructor(constructorArgClass);
 
 			return stringConstructor.newInstance(argument);
 		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException
 				| RuntimeException e) {
-			LOGGER.trace("No constructor for {} with {} argumennt", fieldType, constructorClass);
+			LOGGER.trace("No constructor for {} with {} argumennt", fieldType, constructorArgClass);
+			return null;
+		}
+	}
+
+	@Beta
+	public static Object safeTryParseArgument(Class<?> fieldType,
+			String methodName,
+			Class<?> methodArgClass,
+			Object argument) {
+		// Unknown field: we will try to call the constructor taking a single String
+		// It will work for joda LocalDate for instance
+		try {
+			Method stringMethod = fieldType.getMethod(methodName, methodArgClass);
+
+			// https://stackoverflow.com/questions/287645/how-can-i-check-if-a-method-is-static-using-reflection
+			if (Modifier.isStatic(stringMethod.getModifiers())) {
+				return stringMethod.invoke(null, argument);
+			} else {
+				return null;
+			}
+		} catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | RuntimeException e) {
+			LOGGER.trace("No constructor for {} with {} argumennt", fieldType, methodArgClass);
 			return null;
 		}
 	}

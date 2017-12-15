@@ -25,6 +25,7 @@ package cormoran.pepper.jmx;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
@@ -34,7 +35,22 @@ import org.junit.Test;
 public class TestSetStatic {
 	public static String STRING_STATIC = "-";
 	public static LocalDate LOCALDATE_STATIC = LocalDate.now();
-	private static final double DOUBLE_STATIC = 0D;
+	private static final double DOUBLE_STATIC_FINAL = 0D;
+	private static TimeUnit ENUM_STATIC_FINAL = TimeUnit.MINUTES;
+	private static ClassWithCharSequenceContructor CTOR_STATIC_FINAL = new ClassWithCharSequenceContructor("0");
+
+	public static class ClassWithCharSequenceContructor {
+		protected final String string;
+
+		public ClassWithCharSequenceContructor(String string) {
+			this.string = string;
+		}
+
+		@Override
+		public String toString() {
+			return string;
+		}
+	}
 
 	@Test
 	public void testSetStatic() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
@@ -50,7 +66,8 @@ public class TestSetStatic {
 	}
 
 	@Test
-	public void testSetStaticLocalDate() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+	public void testSetStatic_ParseMethod()
+			throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
 		SetStaticMBean setSTatic = new SetStaticMBean();
 
 		LocalDate initialDate = LOCALDATE_STATIC;
@@ -75,13 +92,48 @@ public class TestSetStatic {
 		Assert.assertEquals(initialDate.toString(), setSTatic.getStaticAsString(className, "LOCALDATE_STATIC"));
 	}
 
+	@Test
+	public void testSetStatic_ConstructorOverString()
+			throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+		SetStaticMBean setSTatic = new SetStaticMBean();
+
+		ClassWithCharSequenceContructor initial = CTOR_STATIC_FINAL;
+
+		// Do the modification
+		setSTatic.setStatic(TestSetStatic.class.getName(), "CTOR_STATIC_FINAL", "123");
+
+		// Check the test is not trivial
+		Assert.assertNotSame(initial, CTOR_STATIC_FINAL);
+		Assert.assertNotEquals(initial.toString(), CTOR_STATIC_FINAL.toString());
+
+		// Check the field have been modified
+		Assert.assertEquals("123", CTOR_STATIC_FINAL.toString());
+	}
+
+	// TODO
+	@Ignore("TODO")
+	@Test
+	public void testSetStaticEnum() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+		SetStaticMBean setSTatic = new SetStaticMBean();
+
+		TimeUnit initial = ENUM_STATIC_FINAL;
+
+		// Do the modification
+		setSTatic.setStatic(TestSetStatic.class.getName(), "ENUM_STATIC_FINAL", TimeUnit.MINUTES.toString());
+
+		// Check the test is not trivial
+		Assert.assertNotSame(initial, ENUM_STATIC_FINAL);
+		// Check the field have been modified
+		Assert.assertEquals(TimeUnit.MINUTES, ENUM_STATIC_FINAL);
+	}
+
 	@Ignore
 	@Test
 	public void testSetStaticPrivateFinalDouble()
 			throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
 		SetStaticMBean setSTatic = new SetStaticMBean();
 
-		double initialDouble = DOUBLE_STATIC;
+		double initialDouble = DOUBLE_STATIC_FINAL;
 
 		// Modify from current value
 		String newValue = initialDouble + 1D + "";
@@ -89,7 +141,7 @@ public class TestSetStatic {
 		// Do the modification
 		setSTatic.setStatic(TestSetStatic.class.getName(), "DOUBLE_STATIC", newValue);
 
-		Assert.assertEquals(initialDouble + 1D, DOUBLE_STATIC, 0.0001D);
+		Assert.assertEquals(initialDouble + 1D, DOUBLE_STATIC_FINAL, 0.0001D);
 	}
 
 	@Test

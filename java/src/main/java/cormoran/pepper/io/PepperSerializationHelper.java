@@ -47,6 +47,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -261,6 +262,11 @@ public class PepperSerializationHelper {
 		}
 	}
 
+	/**
+	 * 
+	 * @param charSequence
+	 * @return an Object is transcoding succeeded, else the original String
+	 */
 	public static Object convertStringToObject(CharSequence charSequence) {
 		if (charSequence == null || charSequence.length() == 0) {
 			return "";
@@ -273,15 +279,10 @@ public class PepperSerializationHelper {
 					Class<?> clazz = Class.forName(className);
 					String subString = string.substring(indexofForceSep + 1);
 
-					Object asObject = SetStaticMBean.safeTrySingleArgConstructor(clazz, subString);
+					Object asObject = safeToObject(clazz, subString);
 
-					if (asObject != null) {
-						// Success
-						return asObject;
-					} else {
-						// Fallback on String
-						return string;
-					}
+					// Fallback on String
+					return Optional.ofNullable(asObject).orElse(string);
 				} catch (ClassNotFoundException e) {
 					LOGGER.trace("No class for {}", className);
 
@@ -292,6 +293,23 @@ public class PepperSerializationHelper {
 				return string;
 			}
 		}
+	}
+
+	@Beta
+	public static Object safeToObject(Class<?> clazz, String asString) {
+		Object asObject = SetStaticMBean.safeTrySingleArgConstructor(clazz, asString);
+		if (asObject != null) {
+			// Success
+			return asObject;
+		}
+
+		asObject = SetStaticMBean.safeTryParseArgument(clazz, asString);
+		if (asObject != null) {
+			// Success
+			return asObject;
+		}
+
+		return null;
 	}
 
 	@Beta
