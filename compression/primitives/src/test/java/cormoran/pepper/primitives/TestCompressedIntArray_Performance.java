@@ -30,8 +30,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cormoran.pepper.core.logging.PepperLogHelper;
-import cormoran.pepper.primitives.CompressedIntArrays;
+import cormoran.pepper.logging.PepperLogHelper;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TestCompressedIntArray_Performance {

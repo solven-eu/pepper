@@ -25,8 +25,6 @@ package cormoran.pepper.agent;
 import org.junit.Assert;
 import org.junit.Test;
 
-import cormoran.pepper.agent.PepperAgentHelper;
-
 public class TestPepperAgentHelper {
 
 	@Test

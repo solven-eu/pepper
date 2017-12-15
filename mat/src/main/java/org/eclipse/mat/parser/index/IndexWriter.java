@@ -55,8 +55,8 @@ import org.slf4j.LoggerFactory;
 
 import cormoran.pepper.buffer.CloseableIntBuffer;
 import cormoran.pepper.buffer.PepperBufferHelper;
-import cormoran.pepper.core.logging.PepperLogHelper;
-import cormoran.pepper.core.memory.IPepperMemoryConstants;
+import cormoran.pepper.logging.PepperLogHelper;
+import cormoran.pepper.memory.IPepperMemoryConstants;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 

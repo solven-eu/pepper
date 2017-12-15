@@ -35,10 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.primitives.Ints;
 
-import cormoran.pepper.csv.IZeroCopyIntConsumer;
-import cormoran.pepper.csv.IZeroCopyLongConsumer;
-import cormoran.pepper.csv.ZeroCopyCSVParser;
-
 public class TestZeroCopyCSVParser {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestZeroCopyCSVParser.class);
 

@@ -35,7 +35,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 
 import cormoran.pepper.agent.InstrumentationAgent;
-import cormoran.pepper.core.memory.PepperMemoryHelper;
+import cormoran.pepper.memory.PepperMemoryHelper;
 
 public class TestPepperMemoryMeter {
 

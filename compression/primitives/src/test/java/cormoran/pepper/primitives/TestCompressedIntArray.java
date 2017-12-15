@@ -29,9 +29,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cormoran.pepper.core.logging.PepperLogHelper;
-import cormoran.pepper.core.memory.PepperMemoryHelper;
-import cormoran.pepper.primitives.CompressedIntArrays;
+import cormoran.pepper.logging.PepperLogHelper;
+import cormoran.pepper.memory.PepperMemoryHelper;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TestCompressedIntArray {

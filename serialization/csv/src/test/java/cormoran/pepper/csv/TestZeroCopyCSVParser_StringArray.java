@@ -30,8 +30,6 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 
-import cormoran.pepper.csv.ZeroCopyCSVParser;
-
 public class TestZeroCopyCSVParser_StringArray {
 	ZeroCopyCSVParser parser = new ZeroCopyCSVParser();
 

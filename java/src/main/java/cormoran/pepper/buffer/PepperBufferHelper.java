@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
 
-import cormoran.pepper.core.logging.PepperLogHelper;
-import cormoran.pepper.core.memory.IPepperMemoryConstants;
+import cormoran.pepper.logging.PepperLogHelper;
+import cormoran.pepper.memory.IPepperMemoryConstants;
 
 /**
  * Helpers related to Buffers. TYpically enable quick and easy allocating of a ByteBuffer over a blank memory mapped

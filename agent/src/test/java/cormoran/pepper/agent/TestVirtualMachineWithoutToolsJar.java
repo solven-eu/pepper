@@ -33,8 +33,6 @@ import org.junit.Test;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 
-import cormoran.pepper.agent.VirtualMachineWithoutToolsJar;
-
 public class TestVirtualMachineWithoutToolsJar {
 	@Test
 	public void testFindVirtualMachineClass() throws ClassNotFoundException, MalformedURLException {

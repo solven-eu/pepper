@@ -32,8 +32,6 @@ import java.util.zip.GZIPInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cormoran.pepper.csv.ZeroCopyCSVParser;
-
 public class ITOnlineCSV {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ITOnlineCSV.class);

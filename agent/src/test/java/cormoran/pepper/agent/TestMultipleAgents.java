@@ -25,9 +25,6 @@ package cormoran.pepper.agent;
 import org.junit.Assume;
 import org.junit.Test;
 
-import cormoran.pepper.agent.InstrumentationAgent;
-import cormoran.pepper.agent.VirtualMachineWithoutToolsJar;
-
 // We used to have issues related to class-loading leading to issues with Library loading
 public class TestMultipleAgents {
 	@Test

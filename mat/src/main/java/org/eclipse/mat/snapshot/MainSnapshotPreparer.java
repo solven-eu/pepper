@@ -30,7 +30,7 @@ import javax.management.MalformedObjectNameException;
 import org.eclipse.mat.SnapshotException;
 import org.eclipse.mat.util.ConsoleProgressListener;
 
-import cormoran.pepper.core.jvm.GCInspector;
+import cormoran.pepper.jvm.GCInspector;
 
 /**
  * Typically used to parse a heap-dump. While trying to diminish the heap of mat: -XX:+HeapDumpOnOutOfMemoryError

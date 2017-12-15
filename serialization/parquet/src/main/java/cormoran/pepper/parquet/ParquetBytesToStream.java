@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 import org.apache.avro.generic.GenericRecord;
 
 import cormoran.pepper.avro.IBinaryToAvroStream;
-import cormoran.pepper.core.io.PepperFileHelper;
+import cormoran.pepper.io.PepperFileHelper;
 
 /**
  * Automatic transformation of a Parquet InputStream to a Stream of objects. It requires to write the file first on the

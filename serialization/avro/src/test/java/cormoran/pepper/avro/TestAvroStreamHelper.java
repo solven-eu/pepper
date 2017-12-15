@@ -46,9 +46,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 
-import cormoran.pepper.avro.AvroSchemaHelper;
-import cormoran.pepper.avro.AvroStreamHelper;
-import cormoran.pepper.core.thread.PepperExecutorsHelper;
+import cormoran.pepper.thread.PepperExecutorsHelper;
 
 public class TestAvroStreamHelper {
 	@Test

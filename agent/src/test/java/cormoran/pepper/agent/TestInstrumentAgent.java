@@ -31,8 +31,6 @@ import org.junit.Test;
 
 import com.google.common.base.Optional;
 
-import cormoran.pepper.agent.InstrumentationAgent;
-
 public class TestInstrumentAgent {
 	protected static final Logger LOGGER = Logger.getLogger(TestInstrumentAgent.class.getName());
 

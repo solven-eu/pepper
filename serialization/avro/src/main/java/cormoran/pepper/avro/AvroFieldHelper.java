@@ -38,7 +38,7 @@ import org.apache.avro.util.Utf8;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
 
-import cormoran.pepper.core.io.PepperSerializationHelper;
+import cormoran.pepper.io.PepperSerializationHelper;
 
 /**
  * Helps converting avro records to standard Java objects

@@ -55,9 +55,9 @@ import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
 
 import cormoran.pepper.avro.AvroSchemaHelper;
-import cormoran.pepper.core.io.PepperFileHelper;
-import cormoran.pepper.core.logging.PepperLogHelper;
-import cormoran.pepper.core.memory.IPepperMemoryConstants;
+import cormoran.pepper.io.PepperFileHelper;
+import cormoran.pepper.logging.PepperLogHelper;
+import cormoran.pepper.memory.IPepperMemoryConstants;
 import cormoran.pepper.spark.TestReadWrite;
 
 /**

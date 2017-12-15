@@ -39,8 +39,8 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
-import cormoran.pepper.core.io.PepperFileHelper;
-import cormoran.pepper.core.io.PepperSerializationHelper;
+import cormoran.pepper.io.PepperFileHelper;
+import cormoran.pepper.io.PepperSerializationHelper;
 
 public class TestPepperSerializationHelper {
 	@Test

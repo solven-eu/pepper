@@ -27,7 +27,6 @@ import java.util.stream.IntStream;
 import org.junit.Assert;
 import org.junit.Test;
 
-import cormoran.pepper.primitives.CompressedIntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TestCompressedIntArray_Memory {

@@ -38,7 +38,7 @@ import com.google.common.collect.ImmutableMap;
 import cormoran.pepper.avro.AvroSchemaHelper;
 import cormoran.pepper.avro.AvroStreamHelper;
 import cormoran.pepper.avro.IAvroStreamFactory;
-import cormoran.pepper.core.io.PepperFileHelper;
+import cormoran.pepper.io.PepperFileHelper;
 import cormoran.pepper.parquet.ParquetStreamFactory;
 
 public class TestParquetBytesToStream {

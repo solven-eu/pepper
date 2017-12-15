@@ -39,8 +39,8 @@ import org.apache.avro.Schema.Type;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 
-import cormoran.pepper.core.io.PepperSerializationHelper;
-import cormoran.pepper.core.logging.PepperLogHelper;
+import cormoran.pepper.io.PepperSerializationHelper;
+import cormoran.pepper.logging.PepperLogHelper;
 
 /**
  * Various utilities frelated to Avro schema

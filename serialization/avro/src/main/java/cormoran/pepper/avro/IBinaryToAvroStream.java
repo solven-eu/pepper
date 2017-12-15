@@ -24,7 +24,7 @@ package cormoran.pepper.avro;
 
 import org.apache.avro.generic.GenericRecord;
 
-import cormoran.pepper.core.io.IBinaryToStream;
+import cormoran.pepper.io.IBinaryToStream;
 
 /**
  * Specialization of {@link IBinaryToStream} for Avro {@link GenericRecord}

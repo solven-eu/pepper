@@ -30,9 +30,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import cormoran.pepper.buffer.CloseableIntBuffer;
-import cormoran.pepper.buffer.PepperBufferHelper;
-
 public class TestPepperBufferHelper {
 	@Before
 	public void resetConstants() {

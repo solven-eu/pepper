@@ -39,13 +39,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cormoran.pepper.core.jvm.PepperForOracleJVM;
-import cormoran.pepper.core.logging.PepperLogHelper;
-import cormoran.pepper.core.memory.IPepperMemoryConstants;
-import cormoran.pepper.core.memory.PepperMemoryHelper;
-import cormoran.pepper.core.primitive.PepperParserHelper;
-import cormoran.pepper.csv.ZeroCopyCSVParser;
-import cormoran.pepper.csv.ZeroCopyConsumers;
+import cormoran.pepper.jvm.PepperForOracleJVM;
+import cormoran.pepper.logging.PepperLogHelper;
+import cormoran.pepper.memory.IPepperMemoryConstants;
+import cormoran.pepper.memory.PepperMemoryHelper;
+import cormoran.pepper.primitive.PepperParserHelper;
 
 @Ignore("Broken: TODO")
 public class TestZeroCopyCSVParserMemory {

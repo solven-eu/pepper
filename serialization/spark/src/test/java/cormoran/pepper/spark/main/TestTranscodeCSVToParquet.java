@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
 
-import cormoran.pepper.core.io.PepperFileHelper;
 import cormoran.pepper.hadoop.PepperHadoopHelper;
+import cormoran.pepper.io.PepperFileHelper;
 import cormoran.pepper.spark.run.RunCsvToParquet;
 
 /**

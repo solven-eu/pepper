@@ -32,7 +32,7 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-import cormoran.pepper.core.logging.PepperLogHelper;
+import cormoran.pepper.logging.PepperLogHelper;
 
 public class TestPepperLogHelper {
 	@Test

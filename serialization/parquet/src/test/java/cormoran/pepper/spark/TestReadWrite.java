@@ -44,8 +44,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import cormoran.pepper.avro.AvroStreamHelper;
-import cormoran.pepper.core.io.PepperFileHelper;
 import cormoran.pepper.hadoop.PepperHadoopHelper;
+import cormoran.pepper.io.PepperFileHelper;
 import cormoran.pepper.parquet.ParquetBytesToStream;
 
 // https://github.com/Parquet/parquet-mr/blob/master/parquet-avro/src/test/java/parquet/avro/TestAvroSchemaConverter.java
