@@ -176,14 +176,14 @@ public class TaskStartEvent implements ITaskActivityEvent {
 		return CurrentThreadStack.snapshotStackTrace();
 	}
 
-	public static AutoCloseableStartMetricEvent post(Consumer<? super ITaskActivityEvent> eventBus,
+	public static AutoCloseableTaskStartEvent post(Consumer<? super ITaskActivityEvent> eventBus,
 			Object source,
 			String firstName,
 			String... otherNames) {
 		return post(eventBus, source, Collections.emptyMap(), NO_PROGRESS, firstName, otherNames);
 	}
 
-	public static AutoCloseableStartMetricEvent post(Consumer<? super ITaskActivityEvent> eventBus,
+	public static AutoCloseableTaskStartEvent post(Consumer<? super ITaskActivityEvent> eventBus,
 			Object source,
 			Map<String, ?> details,
 			LongSupplier progress,
@@ -194,7 +194,7 @@ public class TaskStartEvent implements ITaskActivityEvent {
 		post(eventBus, startEvent);
 
 		// This is used in try-with-resources: do not return null
-		return new AutoCloseableStartMetricEvent(startEvent, eventBus);
+		return new AutoCloseableTaskStartEvent(startEvent, eventBus);
 	}
 
 	@Override
@@ -281,7 +281,7 @@ public class TaskStartEvent implements ITaskActivityEvent {
 	}
 
 	@Override
-	public List<?> getNames() {
+	public List<? extends String> getNames() {
 		return names;
 	}
 }

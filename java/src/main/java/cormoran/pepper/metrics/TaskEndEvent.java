@@ -91,7 +91,7 @@ public class TaskEndEvent implements ITaskActivityEvent {
 	}
 
 	@Override
-	public List<?> getNames() {
+	public List<? extends String> getNames() {
 		return startEvent.getNames();
 	}
 }

@@ -20,26 +20,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package cormoran.pepper.core.metrics;
+package cormoran.pepper.metrics;
 
-import java.util.Date;
-import java.util.NavigableMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
- * Interface for technical metrics
+ * Help usage of StartMetricEvent with try-finally blocks
  * 
  * @author Benoit Lacelle
  *
  */
-public interface IActiveTasksMonitor {
+public class AutoCloseableTaskStartEvent implements AutoCloseable, ITaskActivityEvent {
+	protected final TaskStartEvent decorated;
+	protected final Consumer<? super ITaskActivityEvent> eventBus;
 
-	int getLongRunningCheckSeconds();
+	public AutoCloseableTaskStartEvent(TaskStartEvent startEvent, Consumer<? super ITaskActivityEvent> eventBus) {
+		Objects.requireNonNull(startEvent);
+		this.decorated = startEvent;
+		this.eventBus = eventBus;
+	}
 
-	void setLongRunningCheckSeconds(int longRunningCheckSeconds);
+	@Override
+	public void close() {
+		// Will be handled by ApexMetricsTowerControl.onEndEvent(EndMetricEvent)
+		TaskEndEvent.postEndEvent(eventBus, decorated);
+	}
 
-	long getActiveTasksSize();
+	public TaskStartEvent getStartEvent() {
+		return decorated;
+	}
 
-	long getRootActiveTasksSize();
+	@Override
+	public Object getSource() {
+		return decorated.getSource();
+	}
 
-	NavigableMap<Date, String> getActiveTasks();
+	@Override
+	public List<?> getNames() {
+		return decorated.getNames();
+	}
+
 }

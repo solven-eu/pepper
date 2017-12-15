@@ -169,7 +169,7 @@ public class TestPepperMetricsTowerControl {
 
 		for (int i = 0; i < 1000000; i++) {
 			es.execute(() -> {
-				try (AutoCloseableStartMetricEvent startEvent = TaskStartEvent.post(eventBus::post, mtc, "Test")) {
+				try (AutoCloseableTaskStartEvent startEvent = TaskStartEvent.post(eventBus::post, mtc, "Test")) {
 					// Nothing to do, but to close the startEvent
 				}
 			});
