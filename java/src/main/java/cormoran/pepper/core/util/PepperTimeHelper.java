@@ -26,15 +26,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-
-import cormoran.pepper.core.logging.PepperLogHelper;
 
 /**
  * Some utility methods relative to time, typically for pretty-printing of performance
