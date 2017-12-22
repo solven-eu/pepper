@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.ehcache.sizeof.ObjectGraphWalker.Visitor;
 import org.ehcache.sizeof.filters.SizeOfFilter;
 import org.ehcache.sizeof.util.WeakIdentityConcurrentMap;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ import com.google.common.util.concurrent.AtomicLongMap;
 // FlyweightType is package-friendly
 public final class PepperObjectGraphWalker {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PepperObjectGraphWalker.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PepperObjectGraphWalker.class);
 	private static final String VERBOSE_DEBUG_LOGGING = "org.ehcache.sizeof.verboseDebugLogging";
 
 	private static final boolean USE_VERBOSE_DEBUG_LOGGING;
@@ -106,7 +107,7 @@ public final class PepperObjectGraphWalker {
 	 */
 	public void walk(Object... root) {
 		final StringBuilder traversalDebugMessage;
-		if (USE_VERBOSE_DEBUG_LOGGING && LOG.isDebugEnabled()) {
+		if (USE_VERBOSE_DEBUG_LOGGING && LOGGER.isDebugEnabled()) {
 			traversalDebugMessage = new StringBuilder();
 		} else {
 			traversalDebugMessage = null;
@@ -154,6 +155,7 @@ public final class PepperObjectGraphWalker {
 
 							if (internalized == Collections.EMPTY_MAP) {
 								// Field rejected for internalization
+								LOGGER.trace("Rejected");
 							} else {
 								Object validInternalized = internalized.putIfAbsent(referred, referred);
 								if (validInternalized != null) {
@@ -164,6 +166,7 @@ public final class PepperObjectGraphWalker {
 									long miss = ARRAY_COMPONENT_TO_CACHE_MISS.incrementAndGet(component);
 									if (miss > 1000) {
 										// TODO: Check if we should stop considering this field
+										LOGGER.trace("Consider me");
 									}
 								}
 							}
@@ -179,6 +182,7 @@ public final class PepperObjectGraphWalker {
 
 								if (internalized == Collections.EMPTY_MAP) {
 									// Field rejected for internalization
+									LOGGER.trace("Rejected");
 								} else {
 									Object validInternalized = internalized.putIfAbsent(referred, referred);
 									if (validInternalized != null) {
@@ -189,6 +193,7 @@ public final class PepperObjectGraphWalker {
 										long miss = FIELD_TO_CACHE_MISS.incrementAndGet(field);
 										if (miss > 1000) {
 											// TODO: Check if we should stop considering this field
+											LOGGER.trace("Consider me");
 										}
 									}
 								}
@@ -216,7 +221,7 @@ public final class PepperObjectGraphWalker {
 		}
 
 		if (traversalDebugMessage != null) {
-			LOG.debug(traversalDebugMessage.toString());
+			LOGGER.debug(traversalDebugMessage.toString());
 		}
 	}
 
@@ -235,10 +240,10 @@ public final class PepperObjectGraphWalker {
 		} else {
 			Collection<Field> result;
 			result = sizeOfFilter.filterFields(refClass, getAllFields(refClass));
-			if (USE_VERBOSE_DEBUG_LOGGING && LOG.isDebugEnabled()) {
+			if (USE_VERBOSE_DEBUG_LOGGING && LOGGER.isDebugEnabled()) {
 				for (Field field : result) {
 					if (Modifier.isTransient(field.getModifiers())) {
-						LOG.debug("SizeOf engine walking transient field '{}' of class {}",
+						LOGGER.debug("SizeOf engine walking transient field '{}' of class {}",
 								field.getName(),
 								refClass.getName());
 					}
@@ -285,7 +290,7 @@ public final class PepperObjectGraphWalker {
 					try {
 						field.setAccessible(true);
 					} catch (SecurityException e) {
-						LOG.error("Security settings prevent Ehcache from accessing the subgraph beneath '{}'"
+						LOGGER.error("Security settings prevent Ehcache from accessing the subgraph beneath '{}'"
 								+ " - cache sizes may be underestimated as a result", field, e);
 						continue;
 					}
