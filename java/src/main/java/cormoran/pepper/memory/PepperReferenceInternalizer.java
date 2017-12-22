@@ -31,15 +31,14 @@ public class PepperReferenceInternalizer implements IReferenceInternalizer {
 
 	public PepperReferenceInternalizer() {
 		// We byPass flyWeights as they are references automatically shared
-		this(new PassThroughFilter(), true, true);
+		this(new PassThroughFilter(), true);
 	}
 
-	public PepperReferenceInternalizer(SizeOfFilter fieldFilter, boolean caching, boolean bypassFlyweight) {
-		this(fieldFilter, caching, bypassFlyweight, KNOWN_FINAL_IMMUTABLE_WITH_HASHCODE_EQUALS);
+	public PepperReferenceInternalizer(SizeOfFilter fieldFilter, boolean bypassFlyweight) {
+		this(fieldFilter, bypassFlyweight, KNOWN_FINAL_IMMUTABLE_WITH_HASHCODE_EQUALS);
 	}
 
 	public PepperReferenceInternalizer(SizeOfFilter fieldFilter,
-			boolean caching,
 			boolean bypassFlyweight,
 			Set<Class<?>> classesToInternalize) {
 		TypeFilter filter = new TypeFilter();
