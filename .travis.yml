@@ -23,7 +23,7 @@ addons:
     packages:
       - oracle-java8-installer
   sonarcloud:
-    organization: "blasd-github"
+    organization: "cormoran-io"
     token:
       secure: "jtTGPJGTVbyrOIfF7Y2WCZ7DXKxETVpuQbF9W2kUw3njm7zYWBfdbCTiVaZjMdEYbOgMBHAT3M8OPbZixp3yb+L6eJ2IP14yia5ZsI/yX+MtuMTb16lUot2RbJk3NlRitd0hSvEu0l0IkxR2RuuvJhygAvVE2kzINzxi5oomxcrISz7eVjJyetfptVxhz0pS0yVbEV/cKQ77T6MLWxf7Ks44ug0qDhmThqtjymS7sMnr45Vvqe9NkgRyXsJMoFXjsJoyf8LST+m4hSyxa3QNPedToPOxh9tqhAaaS+veMnr7unjltOhZnQYrBqIeHwE6tJ9mAhfFznC/359Is+WSa3xz6cB5JkYaPILmiaX8nTXUMP1IkHys/t0KrcVsjWvcwZWQp0I7nOeTqEZGE0MgDknXkvL+aU7y4SRDscE2KcJ85tNJzr60AA8ka13WLAm7K6L6qzRjBoSvdDE8+vnQYO6MMgbdF5iYDvoqYmo7LE7B8yE4TkMCrcVV+N6Y4ecMAHW2X9TTDdx/SeWxhCUVQqQByUsSXNtZ94IPlMSrFvJER9o4AXyQLyKFhVxNe3pOPWWmgy/YSTUK7YUJjPiaCgv5fz8SisXsmNOPcrmXj3a5UYux5Yv7t3K3b9uNXk5wg7Nly44p8ZJE3IpnMzinZ9PnF1MZ/z5nrR/woh7U63w="
   
