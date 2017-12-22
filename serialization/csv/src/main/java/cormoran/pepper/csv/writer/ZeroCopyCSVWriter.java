@@ -6,9 +6,9 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.google.common.base.Joiner;
 
@@ -92,7 +92,7 @@ public class ZeroCopyCSVWriter implements IZeroCopyCSVWriter {
 					asCharSequence = part.toString();
 				}
 
-				if (StringUtils.contains(asCharSequence, separator) || StringUtils.contains(asCharSequence, newLine)) {
+				if (contains(asCharSequence, separator) || contains(asCharSequence, newLine)) {
 					// Escape only when necessary
 					return "\"" + asCharSequence + "\"";
 				} else {
@@ -112,6 +112,15 @@ public class ZeroCopyCSVWriter implements IZeroCopyCSVWriter {
 		}
 
 		return true;
+	}
+
+	private boolean contains(CharSequence containined, CharSequence contained) {
+		if (containined == null || contained == null) {
+			// TODO: Shoulw we really prevent
+			return false;
+		}
+		// TODO : zero-copy
+		return containined.toString().contains(contained.toString());
 	}
 
 	@Override
