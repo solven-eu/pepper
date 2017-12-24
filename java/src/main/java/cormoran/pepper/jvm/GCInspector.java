@@ -370,10 +370,10 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		long afterCommited = after.getCommitted();
 
 		if (after.getUsed() == before.getUsed()) {
-			sb.append(key).append(" ==");
+			sb.append(key).append(" == ");
 			appendPercentage(sb, afterUsed, afterCommited);
 			sb.append(" (");
-			appendSize(sb, afterCommited);
+			appendSize(sb, afterUsed);
 			sb.append(")");
 		} else {
 			sb.append(key).append(" ");
