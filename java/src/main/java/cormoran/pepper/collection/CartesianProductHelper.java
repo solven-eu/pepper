@@ -33,6 +33,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -41,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.Beta;
-import com.google.common.base.Optional;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -571,7 +571,7 @@ public class CartesianProductHelper {
 				Object intersection = intersectCoordinates(baseCoordinate, additionalCoordinate);
 
 				if (intersection == GROUP_NOT_EXPRESSED) {
-					return Optional.absent();
+					return Optional.empty();
 				} else {
 					mergedTemplate.put(key, intersection);
 				}

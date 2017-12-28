@@ -26,8 +26,10 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.FileUtils;
+import org.awaitility.Awaitility;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -60,8 +62,9 @@ public class TestTranscodeCSVToParquet {
 		Path csvPath = PepperFileHelper.createTempPath("TestTranscodeCSVToParquet", ".csv", true);
 
 		Path tmpParquetPath = PepperFileHelper.createTempPath("TestTranscodeCSVToParquet", ".parquet", true);
+
 		// Ensure the file does not exist, else Spark fails writing into it
-		tmpParquetPath.toFile().delete();
+		Assert.assertFalse(tmpParquetPath.toFile().exists());
 
 		try (BufferedWriter writer = Files.newWriter(csvPath.toFile(), StandardCharsets.UTF_8)) {
 			writer.write("A|2");
@@ -74,11 +77,22 @@ public class TestTranscodeCSVToParquet {
 		RunCsvToParquet.csvToParquet(csvPath, tmpParquetPath);
 
 		// TODO: it is unclear if delete on exit will delete the folder recursively
-		csvPath.toFile().delete();
+		Assert.assertTrue("Delete " + csvPath.toFile(), csvPath.toFile().delete());
 
 		if (tmpParquetPath.toFile().isDirectory()) {
-			LOGGER.info("Parquet files are in {}");
-			FileUtils.deleteDirectory(tmpParquetPath.toFile());
+			LOGGER.info("Parquet files are in {}", tmpParquetPath);
+			AtomicLong tryIndex = new AtomicLong();
+
+			try {
+				Awaitility.await().ignoreExceptionsInstanceOf(IOException.class).untilAsserted(() -> {
+					// In mvn, this test tends to fails on first occurences
+					LOGGER.info("Try {} to delete {}", tryIndex.getAndIncrement(), tmpParquetPath);
+					FileUtils.deleteDirectory(tmpParquetPath.toFile());
+				});
+			} catch (Throwable t) {
+				// And 'mvn -Dmaven.surefire.debug test' fails with a stack
+				LOGGER.error("TODO: for an unknown reason, the directory is not deleted when runned in 'mvn test'", t);
+			}
 		} else {
 			Assert.fail("The parquet folder is empty");
 		}

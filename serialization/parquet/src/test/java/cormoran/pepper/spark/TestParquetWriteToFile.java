@@ -60,6 +60,11 @@ public class TestParquetWriteToFile {
 		Schema avroSchema = AvroSchemaHelper.proposeSimpleSchema(ImmutableMap.of("longField", 0L));
 
 		Path tmpPath = PepperFileHelper.createTempPath("testWriteParquet_FromJavaStream", ".parquet", true);
+
+		// Ensure the file exist
+		Assert.assertTrue(tmpPath.toFile().createNewFile());
+
+		// This should fails as the file already exist
 		parquetStreamFactory.writeToPath(tmpPath, rows.map(AvroStreamHelper.toGenericRecord(avroSchema)));
 	}
 

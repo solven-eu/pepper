@@ -23,6 +23,8 @@
 package cormoran.pepper.spark;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -50,17 +52,22 @@ public class TestParquetBytesToStream {
 		String doubleField = "doubleField";
 		String doubleArrayField = "doubleArrayField";
 
-		Schema schema = AvroSchemaHelper.proposeSimpleSchema(
-				ImmutableMap.of(stringField, "anyString", doubleField, 0D, doubleArrayField, new double[2]));
+		Map<String, Serializable> exampleMap =
+				ImmutableMap.of(stringField, "anyString", doubleField, 0D, doubleArrayField, new double[2]);
+		Schema schema = AvroSchemaHelper.proposeSimpleSchema(exampleMap);
 
 		List<Map<String, Object>> list = Arrays.asList(ImmutableMap
 				.of(stringField, "stringValue", doubleField, 123D, doubleArrayField, new double[] { 234D, 345D }));
 
-		java.nio.file.Path pathOnDisk = PepperFileHelper.createTempPath(getClass().getSimpleName(), ".tmp", true);
+		Path pathOnDisk = PepperFileHelper.createTempPath(getClass().getSimpleName(), ".tmp", true);
 		IAvroStreamFactory factory = new ParquetStreamFactory();
+
+		// Write to disk
 		factory.writeToPath(pathOnDisk, list.stream().map(AvroStreamHelper.toGenericRecord(schema)));
 
-		Stream<? extends Map<String, ?>> asMapStream = factory.toStream(pathOnDisk).map(AvroStreamHelper.toJavaMap());
+		// Read to Java maps
+		Stream<? extends Map<String, ?>> asMapStream =
+				factory.toStream(pathOnDisk).map(AvroStreamHelper.toJavaMap(exampleMap));
 
 		List<Map<String, ?>> asMapList = asMapStream.collect(Collectors.toList());
 

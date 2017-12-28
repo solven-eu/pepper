@@ -11,7 +11,8 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<jacoco.instruction.ratio>0.60</jacoco.instruction.ratio>
+		<!-- TODO -->
+		<jacoco.instruction.ratio>0.50</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
 	</properties>
 
