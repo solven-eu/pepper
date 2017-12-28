@@ -24,6 +24,7 @@
 		<module>avro</module>
 		<module>parquet</module>
 		<module>spark</module>
+        <module>arrow</module>
 
 		<!-- Beta: zero-copy CSV reader -->
 		<module>csv</module>

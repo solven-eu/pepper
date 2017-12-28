@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.cormoran-io.pepper</groupId>
+        <artifactId>pepper-serialization</artifactId>
+        <version>1.13-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>pepper-arrow</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <!-- TODO -->
+        <jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
+        <jacoco.branch.ratio>0.0</jacoco.branch.ratio>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.cormoran-io.pepper</groupId>
+            <artifactId>pepper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.cormoran-io.pepper</groupId>
+            <artifactId>pepper-avro</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-memory -->
+        <dependency>
+            <groupId>org.apache.arrow</groupId>
+            <artifactId>arrow-memory</artifactId>
+            <version>0.8.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
+        <dependency>
+            <groupId>org.apache.arrow</groupId>
+            <artifactId>arrow-vector</artifactId>
+            <version>0.8.0</version>
+        </dependency>
+    </dependencies>
+</project>
