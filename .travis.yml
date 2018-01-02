@@ -24,7 +24,7 @@ addons:
       - oracle-java8-installer
   sonarcloud:
     organization: "cormoran-io"
-    token: ${SONAR_TOKEN}
+    token: $SONAR_TOKEN
   
 #https://docs.travis-ci.com/user/customizing-the-build/#Customizing-the-Build-Step
 # quite not to consumes more than the 4MB of authorized logs
