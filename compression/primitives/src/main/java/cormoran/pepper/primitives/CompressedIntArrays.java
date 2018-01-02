@@ -51,13 +51,16 @@ public class CompressedIntArrays {
 		AtomicBoolean firstDone = new AtomicBoolean();
 
 		AtomicInteger nbDifferentConstant = new AtomicInteger();
+		// Indicating how many bits are constant in given block
 		int[] nbConstant = new int[Integer.SIZE];
+		// flag indicating if given bit is constant is given block
 		int[] constantBits = new int[Integer.SIZE];
+		// Mask of constant bit value for given block
 		int[] constantMasks = new int[Integer.SIZE];
 
 		RoaringBitmap bits = new RoaringBitmap();
 
-		// THis will be used when it appears there is not a single constant bit
+		// This will be used when it appears there is not a single constant bit
 		AtomicReference<IntList> uncompressedTrail = new AtomicReference<>();
 
 		AtomicInteger index = new AtomicInteger();
@@ -80,7 +83,7 @@ public class CompressedIntArrays {
 
 				int differences = (i & currentConstantBits) ^ currentMask;
 				if (differences != 0) {
-					// The new value is not fitting the mask
+					// The new value is not fitting the mask: we shring the set of constant bits
 
 					int differentBitCount = Integer.bitCount(differences);
 					nbDifferentConstant.addAndGet(differentBitCount);

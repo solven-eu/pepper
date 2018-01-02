@@ -20,10 +20,6 @@ import org.eclipse.mat.parser.IObjectReader;
 import org.eclipse.mat.snapshot.SnapshotFormat;
 
 public class ParserRegistry {
-	private static final String ID = "id";
-	private static final String FILE_EXTENSION = "fileExtension";
-	private static final String NAME = "name";
-	private static final String DYNAMIC = "dynamic";
 	public static final String INDEX_BUILDER = "indexBuilder";
 	public static final String OBJECT_READER = "objectReader";
 

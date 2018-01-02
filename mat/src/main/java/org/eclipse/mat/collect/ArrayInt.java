@@ -40,30 +40,6 @@ public final class ArrayInt {
 	}
 
 	/**
-	 * Create a list based on a supplied array
-	 * 
-	 * @param initialValues
-	 *            a copy is taken of this array
-	 */
-	public ArrayInt(int[] initialValues) {
-		this(initialValues.length);
-		System.arraycopy(initialValues, 0, elements, 0, initialValues.length);
-		size = initialValues.length;
-	}
-
-	/**
-	 * Create a list based on an existing ArrayInt, of size of the template
-	 * 
-	 * @param template
-	 *            a copy is taken of these values
-	 */
-	public ArrayInt(ArrayInt template) {
-		this(template.size);
-		System.arraycopy(template.elements, 0, elements, 0, template.size);
-		size = template.size;
-	}
-
-	/**
 	 * append one more entry
 	 * 
 	 * @param element

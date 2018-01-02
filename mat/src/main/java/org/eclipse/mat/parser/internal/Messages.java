@@ -12,8 +12,6 @@
 package org.eclipse.mat.parser.internal;
 
 public class Messages {
-	private static final String BUNDLE_NAME = "org.eclipse.mat.parser.internal.messages";
-
 	public static final String AbstractObjectImpl_Error_FieldContainsIllegalReference =
 			"Field ''{0}'' of ''{1}'' contains an illegal object reference: 0x{2}";
 	public static final String AbstractObjectImpl_Error_FieldIsNotReference =

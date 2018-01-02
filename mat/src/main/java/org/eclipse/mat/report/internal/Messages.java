@@ -11,8 +11,6 @@
 package org.eclipse.mat.report.internal;
 
 public final class Messages {
-	private static final String BUNDLE_NAME = "org.eclipse.mat.report.internal.messages";
-
 	public static final String ArgumentSet_Error_IllegalArgument =
 			"Illegal argument: {0} of type {1} cannot be set to field {2} of type {3}";
 	public static final String ArgumentSet_Error_Inaccessible = "Unable to access field {0} of type {1}";

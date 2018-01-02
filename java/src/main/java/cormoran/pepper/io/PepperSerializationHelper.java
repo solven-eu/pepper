@@ -439,12 +439,14 @@ public class PepperSerializationHelper {
 		return fromBytes(data);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T extends Serializable> T fromBytes(byte[] data) throws IOException, ClassNotFoundException {
 		try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data))) {
 			return (T) ois.readObject();
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T extends Serializable> T fromBytes(ByteBuffer data) throws IOException, ClassNotFoundException {
 		try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data.array()))) {
 			return (T) ois.readObject();

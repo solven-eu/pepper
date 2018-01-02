@@ -118,6 +118,7 @@ public class PepperJMXHelper {
 
 		// Cast to Map to workaround eclipse 3.7 compiler issue
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=519539
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		Iterable<? extends Map<String, String>> asString = Iterables.transform(iterator,
 				input -> new TreeMap<>(Maps.transformValues((Map) input, String::valueOf)));
 
@@ -212,6 +213,7 @@ public class PepperJMXHelper {
 		return convertToJMXValueOrderedMap(map, Optional.of(comparator));
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static <S, T> Map<S, T> convertToJMXValueOrderedMap(Map<S, T> map,
 			Optional<? extends Comparator<? super Entry<S, T>>> comparator) {
 

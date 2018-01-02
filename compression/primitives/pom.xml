@@ -1,51 +1,53 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.cormoran-io.pepper</groupId>
-		<artifactId>pepper-compression</artifactId>
-		<version>1.13-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>com.github.cormoran-io.pepper</groupId>
+        <artifactId>pepper-compression</artifactId>
+        <version>1.13-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>pepper-primitives</artifactId>
-	<packaging>jar</packaging>
+    <artifactId>pepper-primitives</artifactId>
+    <packaging>jar</packaging>
 
-	<properties>
-		<roaringbitmap.version>0.6.65</roaringbitmap.version>
-		<fastpfor.version>0.1.11</fastpfor.version>
-		<fastutil.version>8.1.0</fastutil.version>
+    <properties>
+        <roaringbitmap.version>0.6.65</roaringbitmap.version>
+        <fastpfor.version>0.1.11</fastpfor.version>
+        <fastutil.version>8.1.0</fastutil.version>
 
-		<!-- TODO -->
-		<jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
-		<jacoco.branch.ratio>0.0</jacoco.branch.ratio>
-	</properties>
+        <!-- TODO -->
+        <jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
+        <jacoco.branch.ratio>0.0</jacoco.branch.ratio>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.github.cormoran-io.pepper</groupId>
-			<artifactId>pepper</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>com.github.cormoran-io.pepper</groupId>
+            <artifactId>pepper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.roaringbitmap</groupId>
-			<artifactId>RoaringBitmap</artifactId>
-			<version>${roaringbitmap.version}</version>
-		</dependency>
-
-
-		<dependency>
-			<groupId>me.lemire.integercompression</groupId>
-			<artifactId>JavaFastPFOR</artifactId>
-			<version>${fastpfor.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.roaringbitmap</groupId>
+            <artifactId>RoaringBitmap</artifactId>
+            <version>${roaringbitmap.version}</version>
+        </dependency>
 
 
-		<!-- https://mvnrepository.com/artifact/it.unimi.dsi/fastutil -->
-		<dependency>
-			<groupId>it.unimi.dsi</groupId>
-			<artifactId>fastutil</artifactId>
-			<version>${fastutil.version}</version>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <!-- Used for benchmarks -->
+            <groupId>me.lemire.integercompression</groupId>
+            <artifactId>JavaFastPFOR</artifactId>
+            <version>${fastpfor.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/it.unimi.dsi/fastutil -->
+        <dependency>
+            <groupId>it.unimi.dsi</groupId>
+            <artifactId>fastutil</artifactId>
+            <version>${fastutil.version}</version>
+        </dependency>
+    </dependencies>
 </project>

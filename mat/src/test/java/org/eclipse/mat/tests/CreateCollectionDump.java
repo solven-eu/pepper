@@ -62,7 +62,7 @@ public class CreateCollectionDump {
 		private static final int SAMEHASH = 256;
 		public static final int COUNT = SAMEHASH * 4 / 3;
 		String values[];
-		Collection collections[];
+		Collection<?> collections[];
 
 		public boolean useEmpty() {
 			return false;
@@ -95,7 +95,7 @@ public class CreateCollectionDump {
 
 		@SuppressWarnings("unchecked")
 		public CollectionTestData() {
-			List<Collection> cols = new ArrayList<Collection>();
+			List<Collection<?>> cols = new ArrayList<>();
 			String ls[] = new String[] { "java.util.AbstractCollection",
 					"java.util.AbstractList",
 					"java.util.AbstractQueue",
@@ -142,14 +142,13 @@ public class CreateCollectionDump {
 				if (!accept(c))
 					continue;
 				try {
-					Collection cl = c.newInstance();
+					Collection<Object> cl = c.newInstance();
 					if (!useEmpty()) {
 						try {
 							fillValues(cn);
 							for (int i = 1; i <= COUNT; ++i) {
 								cl.add(values[i]);
 							}
-							int from = 0;
 							int to = COUNT * 2 / 3;
 							for (int i = to; i <= COUNT; i += 1) {
 								cl.remove(values[i]);
@@ -238,7 +237,7 @@ public class CreateCollectionDump {
 	public static class MapTestData {
 		private static final int SAMEHASH = 256;
 		public static final int COUNT = SAMEHASH * 4 / 3;
-		Map maps[];
+		Map<?, ?> maps[];
 		String keys[];
 		String values[];
 
@@ -276,7 +275,7 @@ public class CreateCollectionDump {
 
 		@SuppressWarnings("unchecked")
 		public MapTestData() {
-			List<Map> ms = new ArrayList<Map>();
+			List<Map<?, ?>> ms = new ArrayList<>();
 			String ls[] = new String[] { "java.util.AbstractMap",
 					"java.util.jar.Attributes",
 					"java.security.AuthProvider",
@@ -309,7 +308,7 @@ public class CreateCollectionDump {
 					continue;
 				}
 				try {
-					Map cl = c.newInstance();
+					Map<Object, Object> cl = c.newInstance();
 					if (!useEmpty()) {
 						try {
 							fillValues(cn);
