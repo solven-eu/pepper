@@ -1,0 +1,12 @@
+Logs on remote machine:
+ssh username@hostname "cat ~/folder/file.log" | less
+
+
+Adding a local SSH key to a remote server:
+https://www.howtogeek.com/168147/add-public-ssh-key-to-remote-server-in-a-single-command/
+
+# Generate (public and private) keys in local
+ssh-keygen -t rsa
+
+# Push local public key to server: this will require a password
+cat ~/.ssh/id_rsa.pub | ssh username@hostname 'cat >> .ssh/authorized_keys'
