@@ -83,7 +83,7 @@ public class AvroStreamHelper {
 
 			// We need to convert keys from Utf8 to String
 			Object exampleValue = exampleTypes.get(fieldName);
-			Object cleanValue = AvroFieldHelper.cleanValue(indexedRecord.get(i), () -> exampleValue);
+			Object cleanValue = AvroTranscodingHelper.toJdk(indexedRecord.get(i), () -> exampleValue);
 			asMap.put(fieldName, cleanValue);
 		}
 
@@ -117,7 +117,7 @@ public class AvroStreamHelper {
 				if (field == null) {
 					LOGGER.trace("We received a Map with a key which does not exist in the schema: " + key);
 				} else {
-					record.set(key, AvroSchemaHelper.converToAvroValue(field, value));
+					record.set(key, AvroTranscodingHelper.toAvro(field, value));
 				}
 			});
 
@@ -204,10 +204,13 @@ public class AvroStreamHelper {
 						writer.get().append(m);
 					} catch (RuntimeException | IOException e) {
 						// Register the issue so that it is re-thrown when the returned InputStream is closed
-						throwable.set(e);
+						throwable.compareAndSet(null, e);
 						LOGGER.warn("Issue while appending {}", m);
 					}
 				});
+			} catch (RuntimeException e) {
+				// Register the issue so that it is re-thrown when the returned InputStream is closed
+				throwable.compareAndSet(null, e);
 			} finally {
 				rowsToWrite.close();
 			}

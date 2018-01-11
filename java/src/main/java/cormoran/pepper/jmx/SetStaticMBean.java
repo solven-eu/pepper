@@ -32,6 +32,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,11 +79,11 @@ public class SetStaticMBean {
 		} else if (fieldType == String.class) {
 			field.set(null, newValueAsString);
 		} else {
-			Object asObject = PepperSerializationHelper.safeToObject(fieldType, newValueAsString);
+			Optional<?> asObject = PepperSerializationHelper.safeToObject(fieldType, newValueAsString);
 
-			if (asObject != null) {
+			if (asObject.isPresent()) {
 				// Instantiation succeeded
-				field.set(null, asObject);
+				field.set(null, asObject.get());
 				return;
 			}
 
@@ -124,7 +125,7 @@ public class SetStaticMBean {
 	}
 
 	@Beta
-	public static Object safeTrySingleArgConstructor(Class<?> fieldType, Object argument) {
+	public static <T> T safeTrySingleArgConstructor(Class<? extends T> fieldType, Object argument) {
 		if (argument == null) {
 			// TODO: try to find any Constructor accepting any Object
 			return null;
@@ -134,7 +135,7 @@ public class SetStaticMBean {
 				Class<?> classToTry = argument.getClass();
 
 				while (classToTry != null) {
-					Object asObject = safeTrySingleArgConstructor(fieldType, classToTry, argument);
+					T asObject = safeTrySingleArgConstructor(fieldType, classToTry, argument);
 
 					if (asObject != null) {
 						// Instantiation succeeded
@@ -146,7 +147,7 @@ public class SetStaticMBean {
 			}
 
 			for (Class<?> classToTry : argument.getClass().getInterfaces()) {
-				Object asObject = safeTrySingleArgConstructor(fieldType, classToTry, argument);
+				T asObject = safeTrySingleArgConstructor(fieldType, classToTry, argument);
 
 				if (asObject != null) {
 					// Instantiation succeeded
@@ -162,41 +163,55 @@ public class SetStaticMBean {
 	}
 
 	@Beta
-	public static Object safeTryParseArgument(Class<?> fieldType, Object argument) {
+	public static <T> T safeTryParseArgument(Class<? extends T> fieldType, Object argument) {
 		if (argument == null) {
 			// TODO: try to find any Constructor accepting any Object
 			return null;
 		} else {
-			// iterate through classes and interfaces
-			{
-				Class<?> classToTry = argument.getClass();
+			T output = null;
 
-				while (classToTry != null) {
-					Object asObject = safeTryParseArgument(fieldType, "parse", classToTry, argument);
+			output = parseWithMethod(fieldType, argument, "parse", output);
 
-					if (asObject != null) {
-						// Instantiation succeeded
-						return asObject;
-					} else {
-						classToTry = classToTry.getSuperclass();
-					}
-				}
-			}
+			// Typically for Float.valueOf(String)
+			output = parseWithMethod(fieldType, argument, "valueOf", output);
 
-			for (Class<?> classToTry : argument.getClass().getInterfaces()) {
-				Object asObject = safeTryParseArgument(fieldType, "parse", classToTry, argument);
+			return output;
+		}
+	}
+
+	private static <T> T parseWithMethod(Class<? extends T> fieldType, Object argument, String methodName, T output) {
+		// iterate through classes and interfaces
+		if (output == null) {
+			Class<?> classToTry = argument.getClass();
+
+			while (classToTry != null) {
+				T asObject = safeTryParseArgument(fieldType, methodName, classToTry, argument);
 
 				if (asObject != null) {
 					// Instantiation succeeded
-					return asObject;
+					output = asObject;
+					break;
 				} else {
 					classToTry = classToTry.getSuperclass();
 				}
 			}
-
-			// Found nothing
-			return null;
 		}
+
+		if (output == null) {
+			// Try over defender method/interface default methods
+			for (Class<?> classToTry : argument.getClass().getInterfaces()) {
+				T asObject = safeTryParseArgument(fieldType, methodName, classToTry, argument);
+
+				if (asObject != null) {
+					// Instantiation succeeded
+					output = asObject;
+					break;
+				} else {
+					classToTry = classToTry.getSuperclass();
+				}
+			}
+		}
+		return output;
 	}
 
 	/**
@@ -208,13 +223,13 @@ public class SetStaticMBean {
 	 * @return an instance of the default contructor
 	 */
 	@Beta
-	public static Object safeTrySingleArgConstructor(Class<?> fieldType,
+	public static <T> T safeTrySingleArgConstructor(Class<? extends T> fieldType,
 			Class<?> constructorArgClass,
 			Object argument) {
 		// Unknown field: we will try to call the constructor taking a single String
 		// It will work for joda LocalDate for instance
 		try {
-			Constructor<?> stringConstructor = fieldType.getConstructor(constructorArgClass);
+			Constructor<? extends T> stringConstructor = fieldType.getConstructor(constructorArgClass);
 
 			return stringConstructor.newInstance(argument);
 		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException
@@ -225,7 +240,7 @@ public class SetStaticMBean {
 	}
 
 	@Beta
-	public static Object safeTryParseArgument(Class<?> fieldType,
+	public static <T> T safeTryParseArgument(Class<? extends T> fieldType,
 			String methodName,
 			Class<?> methodArgClass,
 			Object argument) {
@@ -236,7 +251,7 @@ public class SetStaticMBean {
 
 			// https://stackoverflow.com/questions/287645/how-can-i-check-if-a-method-is-static-using-reflection
 			if (Modifier.isStatic(stringMethod.getModifiers())) {
-				return stringMethod.invoke(null, argument);
+				return (T) stringMethod.invoke(null, argument);
 			} else {
 				return null;
 			}

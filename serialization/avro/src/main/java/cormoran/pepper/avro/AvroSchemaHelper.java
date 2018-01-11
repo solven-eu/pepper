@@ -24,7 +24,8 @@ package cormoran.pepper.avro;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
+import java.io.UncheckedIOException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.apache.avro.Schema.Type;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableMap;
 
 import cormoran.pepper.io.PepperSerializationHelper;
 import cormoran.pepper.logging.PepperLogHelper;
@@ -53,41 +55,9 @@ public class AvroSchemaHelper {
 		// hidden
 	}
 
-	/**
-	 * 
-	 * @param schema
-	 *            the schema of the whole record, not only given value
-	 * @param value
-	 * @return
-	 */
+	@Deprecated
 	public static Object converToAvroValue(Field schema, Object value) {
-		if (value instanceof Number || value instanceof String) {
-			return value;
-			// } else if (value instanceof double[]) {
-			// // TODO use a buffer byte[] or ByteBuffer
-			// double[] doubles = (double[]) value;
-			// byte[] bytes = new byte[Ints.checkedCast(doubles.length * IApexMemoryConstants.DOUBLE)];
-			// ByteBuffer byteArray = ByteBuffer.wrap(bytes);
-			// byteArray.asDoubleBuffer().put(doubles);
-			// return new Fixed(schema.schema(), bytes);
-			// } else if (value instanceof float[]) {
-			// // TODO use a buffer byte[] or ByteBuffer
-			// float[] floats = (float[]) value;
-			// // byte[] bytes = new byte[Ints.checkedCast(doubles.length * IApexMemoryConstants.FLOAT)];
-			// // ByteBuffer byteArray = ByteBuffer.wrap(bytes);
-			// // byteArray.asFloatBuffer().put(doubles);
-			// return Floats.asList(floats);
-		} else if (value instanceof Serializable) {
-			try {
-				// Avro does not handle byte[], but it is OK with ByteBuffer
-				// see org.apache.avro.generic.GenericData.getSchemaName(Object)
-				return ByteBuffer.wrap(PepperSerializationHelper.toBytes((Serializable) value));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		} else {
-			return value;
-		}
+		return AvroTranscodingHelper.toAvro(schema, value);
 	}
 
 	// TODO How is this related to ParquetSchemaConverter?
@@ -158,6 +128,47 @@ public class AvroSchemaHelper {
 			return Optional.empty();
 		} else {
 			throw new UnsupportedOperationException("Can not handle " + PepperLogHelper.getObjectAndClass(value));
+		}
+	}
+
+	public static Optional<?> proposeDefaultValueForType(Type type) {
+		// If default value is set to null, we would get org.apache.avro.AvroRuntimeException: Field portfoliocode
+		// type:STRING pos:1 not set and has no default value
+		if (type == Type.ARRAY) {
+			return Optional.empty();
+		} else if (type == Type.BOOLEAN) {
+			return Optional.of(true);
+		} else if (type == Type.BYTES) {
+			try {
+				return Optional.of(PepperSerializationHelper.toBytes(LocalDate.now()));
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		} else if (type == Type.DOUBLE) {
+			return Optional.of(123.456D);
+		} else if (type == Type.ENUM) {
+			return Optional.empty();
+		} else if (type == Type.FIXED) {
+			return Optional.empty();
+		} else if (type == Type.FLOAT) {
+			return Optional.of(1.2F);
+		} else if (type == Type.INT) {
+			return Optional.of(123);
+		} else if (type == Type.LONG) {
+			return Optional.of(12345L);
+		} else if (type == Type.MAP) {
+			return Optional.of(ImmutableMap.of("key", "value"));
+		} else if (type == Type.NULL) {
+			return Optional.empty();
+		} else if (type == Type.RECORD) {
+			return Optional.empty();
+		} else if (type == Type.STRING) {
+			return Optional.of("someString");
+		} else if (type == Type.UNION) {
+			// TODO: recursive call
+			return Optional.empty();
+		} else {
+			throw new UnsupportedOperationException("Can not handle " + PepperLogHelper.getObjectAndClass(type));
 		}
 	}
 

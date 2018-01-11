@@ -139,4 +139,17 @@ public class TestPepperSerializationHelper {
 		String output = PepperSerializationHelper.toMD5("Youpi");
 		Assert.assertTrue(output.length() > 0);
 	}
+
+	@Test
+	public void testSafeToObject_LocalDate() {
+		Object object = LocalDate.now();
+		Assert.assertEquals(object, PepperSerializationHelper.safeToObject(LocalDate.class, object.toString()).get());
+	}
+
+	@Test
+	public void testSafeToObject_Float() {
+		Object object = 3F;
+		Assert.assertEquals(object, PepperSerializationHelper.safeToObject(Float.class, object.toString()).get());
+	}
+
 }

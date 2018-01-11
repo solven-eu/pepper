@@ -36,12 +36,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.avro.AvroRuntimeException;
 import org.apache.avro.Schema;
+import org.apache.avro.Schema.Field;
+import org.apache.avro.Schema.Type;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.IndexedRecord;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
@@ -49,6 +54,10 @@ import com.google.common.io.ByteStreams;
 import cormoran.pepper.thread.PepperExecutorsHelper;
 
 public class TestAvroStreamHelper {
+
+	protected static final Logger LOGGER = LoggerFactory.getLogger(TestAvroStreamHelper.class);
+	final LocalDate now = LocalDate.now();
+
 	@Test
 	public void testToMap() {
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(ImmutableMap.of("k1", "v1", "k2", "v2", "k3", "v3"));
@@ -154,7 +163,7 @@ public class TestAvroStreamHelper {
 
 	@Test
 	public void testAvroToByteArray_LocalDate_NoInfoBackToJava() throws IOException {
-		Map<String, ?> singleMap = ImmutableMap.of("k1", LocalDate.now());
+		Map<String, ?> singleMap = ImmutableMap.of("k1", now);
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(singleMap);
 
 		byte[] bytes;
@@ -174,7 +183,7 @@ public class TestAvroStreamHelper {
 
 	@Test
 	public void testAvroToByteArray_LocalDate_WithInfoBackToJava() throws IOException {
-		Map<String, ?> singleMap = ImmutableMap.of("k1", LocalDate.now());
+		Map<String, ?> singleMap = ImmutableMap.of("k1", now);
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(singleMap);
 
 		byte[] bytes;
@@ -192,8 +201,133 @@ public class TestAvroStreamHelper {
 		Assert.assertEquals(singleMap, backToList.get(0));
 	}
 
-	public static final class NotSerializable {
+	// We write as Serializable Object, we read as String
+	@Test
+	public void testAvroToByteArray_LocalDate_WithInfoAsString() throws IOException {
+		Map<String, ?> singleMap = ImmutableMap.of("k1", now);
+		Schema schemaWrite = AvroSchemaHelper.proposeSimpleSchema(singleMap);
 
+		byte[] bytes;
+		try (InputStream is =
+				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroStreamHelper.toGenericRecord(schemaWrite)),
+						() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
+			bytes = ByteStreams.toByteArray(is);
+		}
+
+		// We read as String
+		List<Map<String, ?>> backToList = AvroStreamHelper.toGenericRecord(new ByteArrayInputStream(bytes))
+				.map(AvroStreamHelper.toJavaMap(ImmutableMap.of("k1", "someString")))
+				.collect(Collectors.toList());
+
+		Assert.assertEquals(1, backToList.size());
+		Map<String, ?> singleOutput = backToList.get(0);
+		Assert.assertEquals(singleMap.get("k1").toString(), singleOutput.get("k1"));
 	}
 
+	// We write as String, we read as Object
+	@Test
+	public void testAvroToByteArray_String_WithInfoBackToJava() throws IOException {
+		Map<String, ?> singleMap = ImmutableMap.of("k1", now.toString());
+		Schema schemaWrite = AvroSchemaHelper.proposeSimpleSchema(singleMap);
+
+		byte[] bytes;
+		try (InputStream is =
+				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroStreamHelper.toGenericRecord(schemaWrite)),
+						() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
+			bytes = ByteStreams.toByteArray(is);
+		}
+
+		// We read as Object
+		List<Map<String, ?>> backToList = AvroStreamHelper.toGenericRecord(new ByteArrayInputStream(bytes))
+				.map(AvroStreamHelper.toJavaMap(ImmutableMap.of("k1", now)))
+				.collect(Collectors.toList());
+
+		Assert.assertEquals(1, backToList.size());
+		Map<String, ?> singleOutput = backToList.get(0);
+		Assert.assertEquals(now, singleOutput.get("k1"));
+	}
+
+	@Test
+	public void testAllTypes() throws IOException {
+		for (Type type : Type.values()) {
+			Schema schema;
+			try {
+				schema = Schema.create(type);
+			} catch (AvroRuntimeException e) {
+				LOGGER.trace("Invalid type for schema: " + type, e);
+				continue;
+			}
+
+			Object someValue = AvroSchemaHelper.proposeDefaultValueForType(type).orElse(null);
+			Field field = new Field("fieldName", schema, null, someValue);
+
+			Schema record = Schema.createRecord("myrecord", null, "space", false, Arrays.asList(field));
+
+			byte[] bytes;
+
+			// Collections.singletonMap enable a null value (especially for NULL type)
+			try (InputStream is = AvroStreamHelper.toInputStream(
+					Stream.of(Collections.singletonMap("fieldName", someValue))
+							.map(AvroStreamHelper.toGenericRecord(record)),
+					() -> PepperExecutorsHelper.newSingleThreadExecutor("testAllTypes"))) {
+				bytes = ByteStreams.toByteArray(is);
+			}
+
+			List<GenericRecord> backToMap =
+					AvroStreamHelper.toGenericRecord(new ByteArrayInputStream(bytes)).collect(Collectors.toList());
+
+			Assert.assertEquals(1, backToMap.size());
+			GenericRecord single = backToMap.get(0);
+
+			Object toJdk = AvroTranscodingHelper.toJdk(single.get(0), () -> null);
+			if (type == Type.NULL) {
+				Assert.assertNull(toJdk);
+			} else {
+				Assert.assertNotNull(String.valueOf(someValue), toJdk);
+			}
+			// Assert.assertEquals(someValue, AvroTranscodingHelper.toJdk(single.get(0), () -> null));
+		}
+	}
+
+	@Test
+	public void testAllTypes_UnionNull() throws IOException {
+		for (Type type : Type.values()) {
+			if (type == Type.NULL) {
+				// Meaningless to do Union (NULL,NULL)
+				continue;
+			}
+
+			Schema schema;
+			try {
+				schema = Schema.create(type);
+			} catch (AvroRuntimeException e) {
+				LOGGER.trace("Invalid type for schema: " + type, e);
+				continue;
+			}
+
+			Object someValue = AvroSchemaHelper.proposeDefaultValueForType(type).orElse(null);
+			Field field = new Field("fieldName",
+					Schema.createUnion(Schema.create(Type.NULL), schema),
+					null,
+					Schema.NULL_VALUE);
+
+			Schema record = Schema.createRecord("myrecord", null, "space", false, Arrays.asList(field));
+
+			byte[] bytes;
+			try (InputStream is = AvroStreamHelper.toInputStream(
+					Stream.of(ImmutableMap.of("fieldName", someValue)).map(AvroStreamHelper.toGenericRecord(record)),
+					() -> PepperExecutorsHelper.newSingleThreadExecutor("testAllTypes_UnionNull"))) {
+				bytes = ByteStreams.toByteArray(is);
+			}
+
+			List<GenericRecord> backToMap =
+					AvroStreamHelper.toGenericRecord(new ByteArrayInputStream(bytes)).collect(Collectors.toList());
+
+			Assert.assertEquals(1, backToMap.size());
+			GenericRecord single = backToMap.get(0);
+
+			Assert.assertNotNull(AvroTranscodingHelper.toJdk(single.get(0), () -> null));
+			// Assert.assertEquals(someValue, AvroTranscodingHelper.toJdk(single.get(0), () -> null));
+		}
+	}
 }

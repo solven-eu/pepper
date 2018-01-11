@@ -279,10 +279,10 @@ public class PepperSerializationHelper {
 					Class<?> clazz = Class.forName(className);
 					String subString = string.substring(indexofForceSep + 1);
 
-					Object asObject = safeToObject(clazz, subString);
+					Optional<?> asObject = safeToObject(clazz, subString);
 
 					// Fallback on String
-					return Optional.ofNullable(asObject).orElse(string);
+					return asObject.map(o -> (Object) o).orElse(string);
 				} catch (ClassNotFoundException e) {
 					LOGGER.trace("No class for {}", className);
 
@@ -295,21 +295,29 @@ public class PepperSerializationHelper {
 		}
 	}
 
+	/**
+	 * 
+	 * @param clazz
+	 *            this the {@link Class} of the object instantiated by this method
+	 * @param asString
+	 *            some string describing the object to instantiate
+	 * @return an object of given class build over the input String
+	 */
 	@Beta
-	public static Object safeToObject(Class<?> clazz, String asString) {
-		Object asObject = SetStaticMBean.safeTrySingleArgConstructor(clazz, asString);
+	public static <T> Optional<T> safeToObject(Class<? extends T> clazz, String asString) {
+		T asObject = SetStaticMBean.safeTrySingleArgConstructor(clazz, asString);
 		if (asObject != null) {
 			// Success
-			return asObject;
+			return Optional.of(asObject);
 		}
 
 		asObject = SetStaticMBean.safeTryParseArgument(clazz, asString);
 		if (asObject != null) {
 			// Success
-			return asObject;
+			return Optional.of(asObject);
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	@Beta
