@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.cormoran-io.pepper</groupId>
-		<artifactId>pepper-core-metadata</artifactId>
+		<artifactId>pepper-metadata</artifactId>
 		<version>1.13-SNAPSHOT</version>
 		<relativePath>../metadata</relativePath>
 	</parent>
