@@ -100,7 +100,7 @@ public class PepperLogHelper {
 		});
 	}
 
-	public static Object getNiceMemory(long size) {
+	public static Object humanBytes(long size) {
 		return lazyToString(() -> {
 			long absSize = Math.abs(size);
 			if (absSize < BARRIER_FOR_SIZE_IN_LOG * IPepperMemoryConstants.KB) {
@@ -117,6 +117,14 @@ public class PepperLogHelper {
 				return (size / IPepperMemoryConstants.PB) + "PB";
 			}
 		});
+	}
+
+	/**
+	 * @deprecated Prefer using {@link #humanBytes(long)}
+	 */
+	@Deprecated
+	public static Object getNiceMemory(long size) {
+		return humanBytes(size);
 	}
 
 	public static Object getObjectAndClass(Object o) {
@@ -239,11 +247,11 @@ public class PepperLogHelper {
 
 	public static Object getNiceRate(long nbEntries, long time, TimeUnit timeUnit) {
 		return lazyToString(() -> {
-			return arg(nbEntries, time, timeUnit);
+			return rawHumanRate(nbEntries, time, timeUnit);
 		});
 	}
 
-	private static String arg(long nbEntries, long time, TimeUnit timeUnit) {
+	private static String rawHumanRate(long nbEntries, long time, TimeUnit timeUnit) {
 		if (time <= 0) {
 			// Edge case
 			return nbEntries + "#/0" + timeUnit;

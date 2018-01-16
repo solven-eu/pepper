@@ -115,6 +115,8 @@ package cormoran.pepper.jvm;
  * Ensure stack-traces are present: -XX:-OmitStackTraceInFastThrow
  * http://stackoverflow.com/questions/2411487/nullpointerexception-in-java-with-no-stacktrace
  * 
+ * OS Environment variable: JAVA_TOOL_OPTIONS
+ * 
  * @author Benoit Lacelle
  *
  */
@@ -124,11 +126,16 @@ public interface IPepperJVMConstants {
 	 * Enable Java Mission Control http://docs.oracle.com/cd/E15289_01/doc.40/e15070/usingjfr.htm
 	 * -XX:+UnlockCommercialFeatures -XX:+FlightRecorder
 	 * 
+	 * One may want additional Stack-traces out of safe points: -XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints
+	 * 
 	 * https://docs.oracle.com/cd/E15289_01/doc.40/e15070/config_rec_data.htm
 	 * 
 	 * Start from startup. Default conf is in <java_home>\jre\lib\jfr
 	 * 
 	 * -XX:FlightRecorderOptions=defaultrecording=true -XX:FlightRecorderOptions=defaultrecording=true,settings=default
+	 * 
+	 * Record for a single unit-test:
+	 * -XX:FlightRecorderOptions=defaultrecording=true,disk=true,repository=/tmp,maxage=6h,settings=default
 	 * 
 	 * @author Benoit Lacelle
 	 *

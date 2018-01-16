@@ -213,7 +213,7 @@ public class PepperJMXHelper {
 		return convertToJMXValueOrderedMap(map, Optional.of(comparator));
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <S, T> Map<S, T> convertToJMXValueOrderedMap(Map<S, T> map,
 			Optional<? extends Comparator<? super Entry<S, T>>> comparator) {
 

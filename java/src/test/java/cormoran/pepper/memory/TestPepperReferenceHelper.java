@@ -22,20 +22,26 @@
  */
 package cormoran.pepper.memory;
 
+import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cormoran.pepper.io.PepperURLHelper;
 import cormoran.pepper.logging.PepperLogHelper;
 
 public class TestPepperReferenceHelper {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestPepperReferenceHelper.class);
+
+	PepperReferenceInternalizer pepperReferenceInternalizer = new PepperReferenceInternalizer();
 
 	@Before
 	public void clear() {
@@ -172,13 +178,33 @@ public class TestPepperReferenceHelper {
 
 		long sizeBefore = PepperMemoryHelper.deepSize(beforeIntern);
 
-		new PepperReferenceInternalizer().internalize(beforeIntern);
+		pepperReferenceInternalizer.internalize(beforeIntern);
 
 		long sizeAfter = PepperMemoryHelper.deepSize(beforeIntern);
 
 		LOGGER.info("Size Before: {}, Size after: {}",
-				PepperLogHelper.getNiceMemory(sizeBefore),
-				PepperLogHelper.getNiceMemory(sizeAfter));
+				PepperLogHelper.humanBytes(sizeBefore),
+				PepperLogHelper.humanBytes(sizeAfter));
 		Assert.assertTrue(sizeBefore > sizeAfter * 2.5D);
+	}
+
+	@Test
+	public void testShareReference_URL() {
+		URL firstUrl = PepperURLHelper.toHttpURL("https://youpi.com/go?arg#ici");
+		URL secondUrl = PepperURLHelper.toHttpURL("https://youpi.com/go?arg#ici");
+
+		List<URL> asList = Arrays.asList(firstUrl, secondUrl);
+		long sizeBefore = PepperMemoryHelper.deepSize(asList);
+
+		pepperReferenceInternalizer.internalize(asList);
+
+		long sizeAfter = PepperMemoryHelper.deepSize(asList);
+
+		LOGGER.info("Size Before: {}, Size after: {}",
+				PepperLogHelper.humanBytes(sizeBefore),
+				PepperLogHelper.humanBytes(sizeAfter));
+
+		// Nearly divided by 2
+		Assertions.assertThat(sizeAfter).isLessThanOrEqualTo((long) (sizeBefore / 1.8D));
 	}
 }

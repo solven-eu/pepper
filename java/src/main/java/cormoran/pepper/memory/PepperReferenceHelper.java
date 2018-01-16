@@ -57,7 +57,11 @@ public class PepperReferenceHelper {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperReferenceHelper.class);
 
 	// Add class guaranteed to be immutable and expected to have a high-level of redundancy
-	private static final Set<Class<?>> CLASS_TO_DICTIONARIZE = ImmutableSet.of(String.class, java.time.LocalDate.class);
+	private static final Set<Class<?>> CLASS_TO_DICTIONARIZE = ImmutableSet.of(String.class,
+			java.time.LocalDate.class,
+			java.time.LocalDateTime.class,
+			java.time.OffsetDateTime.class,
+			java.time.LocalTime.class);
 
 	// Map each class requested for interning, and its eligible Fields
 	private static final ConcurrentMap<Class<?>, List<Field>> CLASS_TO_ELECTED_FIELDS = new ConcurrentHashMap<>();
