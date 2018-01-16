@@ -12,7 +12,7 @@
 
     <groupId>com.github.cormoran-io.pepper</groupId>
     <artifactId>pepper-metadata</artifactId>
-    <version>1.13-SNAPSHOT</version>
+    <version>1.13</version>
 
     <packaging>pom</packaging>
 
@@ -334,6 +334,6 @@
         <!-- Do not add developperConnection as parent is not a SNAPSHOT -->
         <connection>${scm.connection}</connection>
         <url>${scm.url}</url>
-        <tag>HEAD</tag>
+        <tag>pepper-core1.13</tag>
     </scm>
 </project>
