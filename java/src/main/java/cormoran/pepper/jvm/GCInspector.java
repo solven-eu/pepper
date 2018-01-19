@@ -599,12 +599,12 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	}
 
 	public static void appendSize(StringBuilder sb, long size) {
-		sb.append(PepperLogHelper.getNiceMemory(size));
+		sb.append(PepperLogHelper.humanBytes(size));
 	}
 
 	@Deprecated
 	public static String getNiceBytes(long size) {
-		return PepperLogHelper.getNiceMemory(size).toString();
+		return PepperLogHelper.humanBytes(size).toString();
 	}
 
 	protected void doLog(IPepperGarbageCollectionNotificationInfo info) {

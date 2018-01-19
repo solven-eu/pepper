@@ -117,8 +117,8 @@ public class PepperBufferHelper {
 		long freeSpace = getFreeSpace(tmpFile);
 		if (freeSpace < targetNbBytes) {
 			LOGGER.debug("There is only {} disk left while requesting for {}",
-					PepperLogHelper.getNiceMemory(freeSpace),
-					PepperLogHelper.getNiceMemory(targetNbBytes));
+					PepperLogHelper.humanBytes(freeSpace),
+					PepperLogHelper.humanBytes(targetNbBytes));
 			return Optional.empty();
 		}
 

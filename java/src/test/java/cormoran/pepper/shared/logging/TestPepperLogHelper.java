@@ -257,12 +257,12 @@ public class TestPepperLogHelper {
 	}
 
 	@Test
-	public void testGetNiceMemory() {
-		Assert.assertEquals("789B", PepperLogHelper.getNiceMemory(789L).toString());
-		Assert.assertEquals("607KB", PepperLogHelper.getNiceMemory(789L * 789).toString());
-		Assert.assertEquals("468MB", PepperLogHelper.getNiceMemory(789L * 789 * 789).toString());
-		Assert.assertEquals("360GB", PepperLogHelper.getNiceMemory(789L * 789 * 789 * 789).toString());
-		Assert.assertEquals("278TB", PepperLogHelper.getNiceMemory(789L * 789 * 789 * 789 * 789).toString());
-		Assert.assertEquals("214PB", PepperLogHelper.getNiceMemory(789L * 789 * 789 * 789 * 789 * 789).toString());
+	public void testhumanBytes() {
+		Assert.assertEquals("789B", PepperLogHelper.humanBytes(789L).toString());
+		Assert.assertEquals("607KB", PepperLogHelper.humanBytes(789L * 789).toString());
+		Assert.assertEquals("468MB", PepperLogHelper.humanBytes(789L * 789 * 789).toString());
+		Assert.assertEquals("360GB", PepperLogHelper.humanBytes(789L * 789 * 789 * 789).toString());
+		Assert.assertEquals("278TB", PepperLogHelper.humanBytes(789L * 789 * 789 * 789 * 789).toString());
+		Assert.assertEquals("214PB", PepperLogHelper.humanBytes(789L * 789 * 789 * 789 * 789 * 789).toString());
 	}
 }

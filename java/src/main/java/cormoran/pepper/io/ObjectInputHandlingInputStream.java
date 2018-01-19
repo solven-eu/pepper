@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.io.UncheckedIOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -121,19 +122,33 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 				throw new IllegalStateException("Pipe was already open");
 			}
 
+			LOGGER.debug("We received a {}. Initiating an aynchronous pumping", next.getClass());
 			inputStreamFiller.get().execute(() -> {
 				// PipedInputStream.read will throw if not connected: PipedOutputStream should be connected before
 				// leaving main thread
 				try (PipedOutputStream pos = new PipedOutputStream(pis)) {
-					pumpBytes(next, connectedCdl, pos);
+					// Indicate the pipe is connected
+					connectedCdl.countDown();
+
+					LOGGER.debug("We start the aynchronous pumping");
+					long nbBytes = pumpBytes(next, pos);
+					LOGGER.debug("We succesfully pumped {} bytes", nbBytes);
 
 					// pipedOutputStreamIsOpen has to be set to false BEFORE PipedOutputStream is closed. Else, the
 					// PipedInputStream could be closed BEFORE pipedOutputStreamIsOpen is false, and next call to
 					// .readObject could arrive BEFORE pipedOutputStreamIsOpen is false
 					pipedOutputStreamIsOpen.set(false);
 				} catch (IOException | ClassNotFoundException | RuntimeException e) {
+					// TODO: document clearly the behavior on EOFException, which is the normal way of closing an
+					// ObjectInput
 					if (ouch.compareAndSet(null, e)) {
-						LOGGER.trace("Keep aside the exception", e);
+						if (LOGGER.isTraceEnabled()) {
+							LOGGER.warn("Keep aside the exception", e);
+						} else {
+							// Something went wrong: add a small log early (i.e. without the full-stack as the full
+							// stack we be reported later)
+							LOGGER.warn("The bytes pumping failed: {}: {}", e.getClass(), e.getMessage());
+						}
 					} else {
 						throw new RuntimeException(
 								"We encountered a new exception while previous one has not been reported",
@@ -158,6 +173,9 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 			// Beware no call to ObjectInput.read should be done before the PipedOutputStream is done
 			return pis;
 		} else {
+			// Log in trace as this class is not doing anything special for these classes
+			LOGGER.trace("We received a {}", next.getClass());
+
 			// There is nothing to do over this object
 			return next;
 		}
@@ -168,27 +186,31 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 		return new PipedInputStream();
 	}
 
-	private void pumpBytes(Object next, CountDownLatch connectedCdl, PipedOutputStream pos)
-			throws IOException, ClassNotFoundException {
-		// Indicate the pipe is connected
-		connectedCdl.countDown();
+	protected long pumpBytes(Object next, PipedOutputStream pos) throws IOException, ClassNotFoundException {
+		long nbPumped = 0;
 
 		ByteArrayMarker nextByteMarker = (ByteArrayMarker) next;
 		while (true) {
+			// TODO: why do we re-allocate the buffer on each iteration?
 			byte[] bytes = new byte[Ints.checkedCast(nextByteMarker.getNbBytes())];
 
 			// Read the expected number of bytes
 			try {
 				decorated.readFully(bytes);
 			} catch (IOException e) {
-				throw new RuntimeException(
-						"Failure while retrieveing a chunk with nbBytes=" + nextByteMarker.getNbBytes(),
+				throw new UncheckedIOException(
+						"Failure while retrieveing a chunk with nbBytes=" + nextByteMarker.getNbBytes()
+								+ " nbBytesPrevioulsyPumped:"
+								+ nbPumped,
 						e);
 			}
 			// Transfer these bytes in the pipe
 			pos.write(bytes);
+			nbPumped += bytes.length;
 
 			if (nextByteMarker.getIsFinished()) {
+				// The pusher indicates the InputStream is completed: we leave current pump as the InputStream is fully
+				// pumped
 				break;
 			}
 
@@ -198,15 +220,19 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 				// We received another chunk of bytes: push it in current InputStream
 				nextByteMarker = (ByteArrayMarker) localNext;
 			} else {
+				// We protocol require the sender to end its sequence of ByteArrayMarker with a ByteArrayMarker marked
+				// with isFinished=true
 				throw new IllegalStateException(
 						"We received ByteArrayMarker with isFinished=false while next object was a " + localNext);
 			}
 		}
+
+		return nbPumped;
 	}
 
 	protected void rethrowException() throws EOFException, IOException {
 		Exception pendingException = ouch.getAndSet(null);
-		// The caller requests for nextObject, but it
+		// The caller requests for nextObject, but we have a pending exception
 		if (pendingException != null) {
 			if (pendingException instanceof EOFException) {
 				// The calling code may rely on Exception type for such case
@@ -217,6 +243,20 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 			} else {
 				throw new RuntimeException(pendingException);
 			}
+		}
+	}
+
+	/**
+	 * We throw the pending exception, but swallow in case it is an EOFException, which typically marks a normal end of
+	 * ObjectInputStream
+	 * 
+	 * @throws IOException
+	 */
+	protected void rethrowExceptionExceptEOF() throws IOException {
+		try {
+			rethrowException();
+		} catch (EOFException eof) {
+			LOGGER.trace("EOF");
 		}
 	}
 
@@ -343,6 +383,9 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 				}
 			}
 		}
+
+		// Ensure we publish the pending exception
+		rethrowExceptionExceptEOF();
 	}
 
 }
