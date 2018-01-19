@@ -23,8 +23,7 @@
 package cormoran.pepper.memory.histogram;
 
 import java.nio.charset.Charset;
-
-import com.google.common.base.Charsets;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Provides heap histogram, including the number of instance per class and the memory associated to each instance
@@ -34,7 +33,7 @@ import com.google.common.base.Charsets;
  */
 public interface IHeapHistogram {
 	// TODO: Provide a source confirming this is a guarantee
-	Charset JMAP_CHARSET = Charsets.UTF_8;
+	Charset JMAP_CHARSET = StandardCharsets.UTF_8;
 
 	long getTotalHeapBytes();
 

@@ -41,7 +41,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.primitives.Ints;
-import com.google.common.util.concurrent.MoreExecutors;
 
 import cormoran.pepper.thread.PepperExecutorsHelper;
 
@@ -330,7 +329,18 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 			if (esToClose != null) {
 				// Prevent having too many-threads alive at the same time
 				// TODO: await only if more than N threads are alive
-				MoreExecutors.shutdownAndAwaitTermination(esToClose, 1, TimeUnit.SECONDS);
+
+				// Do not rely on @Beta methods
+				// MoreExecutors.shutdownAndAwaitTermination(esToClose, 1, TimeUnit.SECONDS);
+				esToClose.shutdown();
+				try {
+					if (!esToClose.awaitTermination(1, TimeUnit.SECONDS)) {
+						LOGGER.debug("The ExecutorService will need more time to terminate");
+					}
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					throw new IllegalStateException("Interrupted", e);
+				}
 			}
 		}
 	}

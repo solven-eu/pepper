@@ -24,6 +24,7 @@ package cormoran.pepper.parquet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -44,7 +45,7 @@ import cormoran.pepper.io.PepperFileHelper;
  */
 public class ParquetBytesToStream implements IBinaryToAvroStream {
 
-	protected final AtomicReference<Path> persisted = new AtomicReference<>();
+	protected final AtomicReference<URI> persisted = new AtomicReference<>();
 
 	protected void persist(InputStream inputStream) throws IOException {
 		if (persisted.get() != null) {
@@ -61,7 +62,7 @@ public class ParquetBytesToStream implements IBinaryToAvroStream {
 		// Copy InputStream to tmp file
 		Files.copy(inputStream, tmp, StandardCopyOption.REPLACE_EXISTING);
 
-		persisted.set(tmp);
+		persisted.set(tmp.toUri());
 	}
 
 	@Override
@@ -69,9 +70,5 @@ public class ParquetBytesToStream implements IBinaryToAvroStream {
 		persist(inputStream);
 
 		return new ParquetStreamFactory().toStream(persisted.get());
-	}
-
-	public Stream<GenericRecord> stream(Path path) throws IOException {
-		return new ParquetStreamFactory().toStream(path);
 	}
 }

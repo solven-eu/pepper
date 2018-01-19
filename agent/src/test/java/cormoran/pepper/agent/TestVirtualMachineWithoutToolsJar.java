@@ -22,16 +22,17 @@
  */
 package cormoran.pepper.agent;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 
 public class TestVirtualMachineWithoutToolsJar {
 	@Test
@@ -50,7 +51,10 @@ public class TestVirtualMachineWithoutToolsJar {
 		Assume.assumeFalse("TODO JDK9", TestInstrumentAgent.IS_JDK_9);
 
 		InputStream is = VirtualMachineWithoutToolsJar.heapHisto().get();
-		String asString = CharStreams.toString(new InputStreamReader(is, Charsets.UTF_8));
+
+		// We do not use Guava CharSteam as it is marked @Beta
+		String asString = new BufferedReader(new InputStreamReader(is, Charsets.UTF_8)).lines().parallel().collect(
+				Collectors.joining("\n"));
 		Assert.assertNotNull(asString);
 	}
 

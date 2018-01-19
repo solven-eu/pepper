@@ -25,7 +25,9 @@ package cormoran.pepper.parquet;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -85,8 +87,8 @@ public class ParquetStreamFactory implements IAvroStreamFactory {
 	}
 
 	@Override
-	public Stream<GenericRecord> toStream(Path javaPath) throws IOException {
-		org.apache.hadoop.fs.Path hadoopPath = toHadoopPath(javaPath);
+	public Stream<GenericRecord> toStream(URI uri) throws IOException {
+		org.apache.hadoop.fs.Path hadoopPath = toHadoopPath(uri);
 
 		return toStream(hadoopPath);
 	}
@@ -141,46 +143,58 @@ public class ParquetStreamFactory implements IAvroStreamFactory {
 	}
 
 	@Override
-	public long writeToPath(Path javaPathOnDisk, Stream<? extends GenericRecord> rowsToWrite) throws IOException {
-		if (javaPathOnDisk.toFile().exists()) {
-			throw new IllegalArgumentException("Can not write to an existing file:" + javaPathOnDisk);
-		}
+	public long writeToPath(URI uri, Stream<? extends GenericRecord> rowsToWrite) throws IOException {
+		// if (javaPathOnDisk.toFile().exists()) {
+		// throw new IllegalArgumentException("Can not write to an existing file:" + javaPathOnDisk);
+		// }
 
 		// We will use the first record to prepare a writer on the correct schema
 		AtomicReference<ParquetWriter<GenericRecord>> writer = new AtomicReference<>();
+		AtomicReference<OutputStream> rawStream = new AtomicReference<>();
 
 		AtomicLong nbRows = new AtomicLong();
-		rowsToWrite.forEach(m -> {
 
-			if (nbRows.get() == 0) {
-				try {
-					writer.set(AvroParquetWriter.<GenericRecord>builder(toHadoopPath(javaPathOnDisk))
-							.withSchema(m.getSchema())
-							.build());
-				} catch (NullPointerException e) {
-					throw new IllegalStateException("Are you missing Hadoop binaries?", e);
-				} catch (IOException e) {
-					throw new UncheckedIOException(e);
+		try {
+
+			rowsToWrite.forEach(m -> {
+
+				if (nbRows.get() == 0) {
+					try {
+						OutputStream outputStream = uri.toURL().openConnection().getOutputStream();
+						rawStream.set(outputStream);
+
+						writer.set(AvroParquetWriter.<GenericRecord>builder(toHadoopPath(uri))
+								.withSchema(m.getSchema())
+								.build());
+					} catch (NullPointerException e) {
+						throw new IllegalStateException("Are you missing Hadoop binaries?", e);
+					} catch (IOException e) {
+						throw new UncheckedIOException(e);
+					}
 				}
+
+				try {
+					writer.get().write(m);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+
+				nbRows.incrementAndGet();
+			});
+
+		} finally {
+			if (writer.get() != null) {
+				writer.get().close();
 			}
-
-			try {
-				writer.get().write(m);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
+			if (rawStream.get() != null) {
+				rawStream.get().close();
 			}
-
-			nbRows.incrementAndGet();
-		});
-
-		if (writer.get() != null) {
-			writer.get().close();
 		}
 
 		return nbRows.get();
 	}
 
-	protected org.apache.hadoop.fs.Path toHadoopPath(Path javaPathOnDisk) {
-		return new org.apache.hadoop.fs.Path(javaPathOnDisk.toUri());
+	protected org.apache.hadoop.fs.Path toHadoopPath(URI uri) {
+		return new org.apache.hadoop.fs.Path(uri);
 	}
 }

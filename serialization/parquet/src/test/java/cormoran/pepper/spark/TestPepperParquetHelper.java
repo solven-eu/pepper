@@ -46,6 +46,7 @@ import com.google.common.collect.ImmutableMap;
 
 import cormoran.pepper.avro.AvroSchemaHelper;
 import cormoran.pepper.avro.AvroStreamHelper;
+import cormoran.pepper.avro.AvroTranscodingHelper;
 import cormoran.pepper.hadoop.PepperHadoopHelper;
 import cormoran.pepper.io.PepperFileHelper;
 import cormoran.pepper.parquet.ParquetStreamFactory;
@@ -90,10 +91,11 @@ public class TestPepperParquetHelper {
 
 		{
 			Path path = PepperFileHelper.createTempPath("apex", "parquet", true);
-			factory.writeToPath(path,
+			factory.writeToPath(path.toUri(),
 					Stream.of(ImmutableMap.of("k", doubles)).map(AvroStreamHelper.toGenericRecord(schema)));
 
-			Map<String, ?> asMapAgain = factory.toStream(path).map(AvroStreamHelper.toJavaMap(asMap)).iterator().next();
+			Map<String, ?> asMapAgain =
+					factory.toStream(path.toUri()).map(AvroStreamHelper.toJavaMap(asMap)).findAny().get();
 			Assert.assertArrayEquals(doubles, (double[]) asMapAgain.get("k"), 0.0001D);
 		}
 	}
@@ -110,17 +112,17 @@ public class TestPepperParquetHelper {
 
 		{
 			Path path = PepperFileHelper.createTempPath("apex", "parquet", true);
-			factory.writeToPath(path,
+			factory.writeToPath(path.toUri(),
 					Stream.of(ImmutableMap.of("k", doubles)).map(AvroStreamHelper.toGenericRecord(schema)));
 
-			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path, asMap).iterator().next();
+			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path, asMap).findAny().get();
 			Assert.assertArrayEquals(doubles, (float[]) asMapAgain.get("k"), 0.0001F);
 		}
 	}
 
 	@Test
 	public void testWriteFloatArray() {
-		Object floatArray = AvroSchemaHelper.converToAvroValue(null, new float[] { 1F });
+		Object floatArray = AvroTranscodingHelper.toAvro(null, new float[] { 1F });
 
 		Assertions.assertThat(floatArray).isInstanceOf(ByteBuffer.class);
 	}
@@ -152,10 +154,10 @@ public class TestPepperParquetHelper {
 
 			Path path = PepperFileHelper.createTempPath("apex", "parquet", true);
 
-			factory.writeToPath(path,
+			factory.writeToPath(path.toUri(),
 					Stream.of(ImmutableMap.of("DateField", date)).map(AvroStreamHelper.toGenericRecord(schema)));
 
-			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path, asMap).iterator().next();
+			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path, asMap).findAny().get();
 			Assert.assertEquals(date, asMapAgain.get("DateField"));
 		}
 	}

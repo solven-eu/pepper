@@ -23,6 +23,8 @@
 package cormoran.pepper.avro;
 
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -38,7 +40,25 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface IAvroStreamFactory {
 
-	Stream<GenericRecord> toStream(Path javaPath) throws IOException;
+	/**
+	 * @deprecated We prefer not to rely on java.nio.Path as it requires a {@link FileSystem} compatible with the Path
+	 *             scheme. it would typically not work for swebhdfs scheme
+	 */
+	@Deprecated
+	default Stream<GenericRecord> toStream(Path javaPath) throws IOException {
+		return toStream(javaPath.toUri());
+	}
 
-	long writeToPath(Path javaPath, Stream<? extends GenericRecord> rowsToWrite) throws IOException;
+	Stream<GenericRecord> toStream(URI uri) throws IOException;
+
+	/**
+	 * @deprecated We prefer not to rely on java.nio.Path as it requires a {@link FileSystem} compatible with the Path
+	 *             scheme. it would typically not work for swebhdfs scheme
+	 */
+	@Deprecated
+	default long writeToPath(Path javaPath, Stream<? extends GenericRecord> rowsToWrite) throws IOException {
+		return writeToPath(javaPath.toUri(), rowsToWrite);
+	}
+
+	long writeToPath(URI uri, Stream<? extends GenericRecord> rowsToWrite) throws IOException;
 }

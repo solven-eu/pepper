@@ -25,7 +25,6 @@ package cormoran.pepper.memory.histogram;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
@@ -40,10 +39,8 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.ByteStreams;
-import com.google.common.io.CharStreams;
-
 import cormoran.pepper.agent.VirtualMachineWithoutToolsJar;
+import cormoran.pepper.io.PepperSerializationHelper;
 
 /**
  * Histogramme mémoire.
@@ -194,8 +191,8 @@ public class HeapHistogram implements IHeapHistogram, Serializable {
 
 	public static String createHeapHistogramAsString() throws IOException {
 		return VirtualMachineWithoutToolsJar.heapHisto().transform(is -> {
-			try {
-				return new String(ByteStreams.toByteArray(is), JMAP_CHARSET);
+			try (InputStream input = is) {
+				return PepperSerializationHelper.toString(input, JMAP_CHARSET);
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
@@ -212,7 +209,7 @@ public class HeapHistogram implements IHeapHistogram, Serializable {
 	public static String saveHeapDump(File file) throws IOException {
 		final String output = VirtualMachineWithoutToolsJar.heapDump(file, true).transform(is -> {
 			try (InputStream input = is) {
-				return CharStreams.toString(new InputStreamReader(input));
+				return PepperSerializationHelper.toString(input, JMAP_CHARSET);
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}

@@ -47,7 +47,7 @@ public class RunParquetVisualizer {
 		}
 
 		AtomicLong rowIndex = new AtomicLong();
-		new ParquetBytesToStream().stream(path).forEach(row -> {
+		new ParquetBytesToStream().stream(path.toUri().toURL().openStream()).forEach(row -> {
 			LOGGER.info("row #{}: {}", rowIndex.getAndIncrement(), row);
 		});
 	}

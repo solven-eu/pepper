@@ -65,7 +65,7 @@ public class TestParquetWriteToFile {
 		Assert.assertTrue(tmpPath.toFile().createNewFile());
 
 		// This should fails as the file already exist
-		parquetStreamFactory.writeToPath(tmpPath, rows.map(AvroStreamHelper.toGenericRecord(avroSchema)));
+		parquetStreamFactory.writeToPath(tmpPath.toUri(), rows.map(AvroStreamHelper.toGenericRecord(avroSchema)));
 	}
 
 	@Test
@@ -78,8 +78,8 @@ public class TestParquetWriteToFile {
 		Schema avroSchema = AvroSchemaHelper.proposeSimpleSchema(ImmutableMap.of("longField", 0L));
 
 		Path tmpPath = PepperFileHelper.createTempPath("testWriteParquet_FromJavaStream", ".parquet", true);
-		long nbWritten =
-				parquetStreamFactory.writeToPath(tmpPath, rows.map(AvroStreamHelper.toGenericRecord(avroSchema)));
+		long nbWritten = parquetStreamFactory.writeToPath(tmpPath.toUri(),
+				rows.map(AvroStreamHelper.toGenericRecord(avroSchema)));
 
 		Assert.assertEquals(10, nbWritten);
 	}

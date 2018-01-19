@@ -462,6 +462,26 @@ public class PepperSerializationHelper {
 	}
 
 	/**
+	 * 
+	 * @param inputStream
+	 *            the inputStream which which bytes have to be read. It will NOT be closed
+	 * @param charset
+	 * @return the String associated to given bytes
+	 * @throws IOException
+	 */
+	public static String toString(InputStream inputStream, Charset charset) throws IOException {
+		// We picked the faster implementation proposed in
+		// https://stackoverflow.com/questions/309424/read-convert-an-inputstream-to-a-string
+		ByteArrayOutputStream result = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int length;
+		while ((length = inputStream.read(buffer)) != -1) {
+			result.write(buffer, 0, length);
+		}
+		return result.toString(charset.name());
+	}
+
+	/**
 	 * Write the object to a Base64 string.
 	 */
 	// http://stackoverflow.com/questions/134492/how-to-serialize-an-object-into-a-string

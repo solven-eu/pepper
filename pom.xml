@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -33,6 +34,13 @@
 
 	<properties>
 		<guava.version>23.5-jre</guava.version>
+		<!-- https://github.com/google/guava-beta-checker -->
+		<betachecker.version>1.0</betachecker.version>
+		<errorprone.version>2.0.21</errorprone.version>
+		<!-- <errorprone.version>2.1.3</errorprone.version> -->
+		<!-- 2.2.0 is for Javac9? -->
+		<!-- <errorprone.version>2.2.0</errorprone.version> -->
+
 		<javolution.version>6.0.0</javolution.version>
 
 		<awaitility.version>3.0.0</awaitility.version>
@@ -222,14 +230,33 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.5.1</version>
 					<configuration>
+
 						<!-- errorprone supports >=6 -->
 						<source>${compiler.targetVersion}</source>
 						<target>${compiler.targetVersion}</target>
 
-						<forceJavacCompilerUse>true</forceJavacCompilerUse>
-
 						<!-- Fork to prevent PermGenOOM on a large build -->
 						<fork>true</fork>
+
+						<!-- https://github.com/google/guava-beta-checker -->
+						<!-- We may prefer using http://overstock.github.io/library-detectors/usage.html -->
+
+						<!-- We keep using @Beta for now... -->
+						<!-- <compilerId>javac-with-errorprone</compilerId> -->
+						<annotationProcessorPaths>
+							<path>
+								<groupId>com.google.guava</groupId>
+								<artifactId>guava-beta-checker</artifactId>
+								<version>${betachecker.version}</version>
+							</path>
+						</annotationProcessorPaths>
+
+						<!-- Remove these compilerArgs to keep all checks enabled -->
+						<compilerArgs>
+							<!-- We keep using @Beta for now... -->
+							<!-- <arg>-XepDisableAllChecks</arg> -->
+							<!-- <arg>-Xep:BetaApi:ERROR</arg> -->
+						</compilerArgs>
 					</configuration>
 					<dependencies>
 						<dependency>
@@ -241,7 +268,7 @@
 						<dependency>
 							<groupId>com.google.errorprone</groupId>
 							<artifactId>error_prone_core</artifactId>
-							<version>2.0.9</version>
+							<version>${errorprone.version}</version>
 						</dependency>
 					</dependencies>
 				</plugin>
