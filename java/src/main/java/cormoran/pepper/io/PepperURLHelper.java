@@ -22,12 +22,18 @@
  */
 package cormoran.pepper.io;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 
+import com.google.common.annotations.Beta;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 
@@ -166,5 +172,15 @@ public class PepperURLHelper {
 			base = new URL(base.getProtocol(), base.getHost(), base.getPort(), "/" + base.getFile());
 		}
 		return new URL(base, relUrl);
+	}
+
+	@Beta
+	public static OutputStream outputStream(URI uri) throws IOException, MalformedURLException {
+		if (uri.getScheme().equals("file")) {
+			// For an unknown reason, the default connection to a file is not writable: we prepare the file manually
+			return new FileOutputStream(Paths.get(uri).toFile());
+		} else {
+			return uri.toURL().openConnection().getOutputStream();
+		}
 	}
 }

@@ -22,14 +22,16 @@
  */
 package cormoran.pepper.avro;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import org.apache.avro.Schema;
@@ -39,6 +41,8 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DatumWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.annotations.Beta;
 
 /**
  * A {@link IAvroStreamFactory} producing Avro binary data
@@ -50,7 +54,7 @@ public class AvroStreamFactory implements IAvroStreamFactory {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AvroStreamFactory.class);
 
 	@Override
-	public Stream<GenericRecord> toStream(URI uri) throws IOException {
+	public Stream<GenericRecord> stream(URI uri) throws IOException {
 		InputStream openStream = uri.toURL().openStream();
 		return new AvroBytesToStream().stream(openStream).onClose(() -> {
 			try {
@@ -65,50 +69,77 @@ public class AvroStreamFactory implements IAvroStreamFactory {
 	public long writeToPath(URI uri, Stream<? extends GenericRecord> rowsToWrite) throws IOException {
 		// https://avro.apache.org/docs/1.8.1/gettingstartedjava.html
 		// We will use the first record to prepare a writer on the correct schema
-		AtomicReference<DataFileWriter<GenericRecord>> writer = new AtomicReference<>();
-		AtomicReference<OutputStream> rawStream = new AtomicReference<>();
-
 		AtomicLong nbRows = new AtomicLong();
 
-		try {
-			rowsToWrite.forEach(m -> {
-				if (nbRows.get() == 0) {
-					try {
-						Schema schema = m.getSchema();
-						DatumWriter<GenericRecord> datumWriter = new GenericDatumWriter<GenericRecord>(schema);
-						OutputStream outputStream = uri.toURL().openConnection().getOutputStream();
-						rawStream.set(outputStream);
+		// Avro writing is mono-threaded: we switch to a Iterator to prevent any unordered-parallel stream to write
+		// concurrently
+		Iterator<? extends GenericRecord> it = rowsToWrite.iterator();
+		if (it.hasNext()) {
+			GenericRecord first = it.next();
 
-						DataFileWriter<GenericRecord> dataFileWriter =
-								new DataFileWriter<GenericRecord>(datumWriter).create(schema, outputStream);
-						writer.set(dataFileWriter);
-					} catch (NullPointerException e) {
-						throw new IllegalStateException("Are you missing Hadoop binaries?", e);
-					} catch (IOException e) {
-						throw new UncheckedIOException(e);
-					}
-				}
+			// We use the first GenericRecord to fetch the schema and initialize the output-stream
+			Schema schema = first.getSchema();
 
-				try {
-					writer.get().append(m);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-
+			try (IGenericRecordConsumer dataFileWriter = prepareRecordConsumer(schema, uri);) {
+				// Write the first row, used to prepare the schema
+				dataFileWriter.accept(first);
 				nbRows.incrementAndGet();
-			});
-		} finally {
-			if (writer.get() != null) {
-				writer.get().close();
-			}
 
-			if (rawStream.get() != null) {
-				rawStream.get().close();
+				while (it.hasNext()) {
+					dataFileWriter.accept(it.next());
+					nbRows.incrementAndGet();
+				}
+			} catch (NullPointerException e) {
+				throw new IllegalStateException("Are you missing Hadoop binaries?", e);
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
 			}
 
 		}
 
 		return nbRows.get();
+	}
+
+	protected IGenericRecordConsumer prepareRecordConsumer(Schema schema, URI uri) throws IOException {
+		OutputStream outputStream = outputStream(uri);
+		return prepareRecordConsumer(schema, outputStream);
+	}
+
+	protected IGenericRecordConsumer prepareRecordConsumer(Schema schema, OutputStream outputStream)
+			throws IOException {
+		DatumWriter<GenericRecord> datumWriter = new GenericDatumWriter<GenericRecord>(schema);
+
+		DataFileWriter<GenericRecord> rawWriter = new DataFileWriter<GenericRecord>(datumWriter);
+		DataFileWriter<GenericRecord> dataFileWriter = rawWriter.create(schema, outputStream);
+
+		return new IGenericRecordConsumer() {
+
+			@Override
+			public void accept(GenericRecord datum) {
+				try {
+					dataFileWriter.append(datum);
+				} catch (IOException e) {
+					throw new UncheckedIOException(e);
+				}
+			}
+
+			@Override
+			public void close() throws IOException {
+				dataFileWriter.close();
+				rawWriter.close();
+				outputStream.close();
+			}
+		};
+
+	}
+
+	protected OutputStream outputStream(URI uri) throws IOException, MalformedURLException {
+		if (uri.getScheme().equals("file")) {
+			// For an unknown reason, the default connection to a file is not writable: we prepare the file manually
+			return new FileOutputStream(Paths.get(uri).toFile());
+		} else {
+			return uri.toURL().openConnection().getOutputStream();
+		}
 	}
 
 }

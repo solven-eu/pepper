@@ -25,16 +25,15 @@ package cormoran.pepper.parquet;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.parquet.avro.AvroParquetReader;
@@ -49,8 +48,9 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Streams;
 
+import cormoran.pepper.avro.AvroStreamFactory;
 import cormoran.pepper.avro.AvroStreamHelper;
-import cormoran.pepper.avro.IAvroStreamFactory;
+import cormoran.pepper.avro.IGenericRecordConsumer;
 
 /**
  * Enable converting a Parquet file to a Stream of Map
@@ -58,7 +58,7 @@ import cormoran.pepper.avro.IAvroStreamFactory;
  * @author Benoit Lacelle
  *
  */
-public class ParquetStreamFactory implements IAvroStreamFactory {
+public class ParquetStreamFactory extends AvroStreamFactory {
 	// We encounter performance issues comparable to the one in Configuration
 	// For each read Parquet file, we search the FS for Hadoop configuration, which may take some time
 	// Then, we use this mechanism to load the default configuration only once
@@ -87,10 +87,28 @@ public class ParquetStreamFactory implements IAvroStreamFactory {
 	}
 
 	@Override
-	public Stream<GenericRecord> toStream(URI uri) throws IOException {
+	public Stream<GenericRecord> stream(URI uri) throws IOException {
 		org.apache.hadoop.fs.Path hadoopPath = toHadoopPath(uri);
 
 		return toStream(hadoopPath);
+	}
+
+	/**
+	 * 
+	 * @param rawInputStream
+	 *            a stream of bytes associated to a Parquet file. It is sub-optimal as Parquet require a
+	 *            SeekableInputStream (i.e. an InputStream with RandomAccess). We will then copy the file in local FS
+	 * @return
+	 * @throws IOException
+	 */
+	public Stream<GenericRecord> stream(InputStream rawInputStream) throws IOException {
+		return new ParquetBytesToStream().stream(rawInputStream).onClose(() -> {
+			try {
+				rawInputStream.close();
+			} catch (IOException e) {
+				LOGGER.trace("Ouch on closing", e);
+			}
+		});
 	}
 
 	public Stream<GenericRecord> toStream(org.apache.hadoop.fs.Path hadoopPath) throws IOException {
@@ -143,55 +161,28 @@ public class ParquetStreamFactory implements IAvroStreamFactory {
 	}
 
 	@Override
-	public long writeToPath(URI uri, Stream<? extends GenericRecord> rowsToWrite) throws IOException {
-		// if (javaPathOnDisk.toFile().exists()) {
-		// throw new IllegalArgumentException("Can not write to an existing file:" + javaPathOnDisk);
-		// }
+	protected IGenericRecordConsumer prepareRecordConsumer(Schema schema, URI uri) throws IOException {
+		ParquetWriter<GenericRecord> writer = AvroParquetWriter.<GenericRecord>builder(toHadoopPath(uri))
+				.withSchema(schema)
+				.withConf(getConfiguration())
+				.build();
 
-		// We will use the first record to prepare a writer on the correct schema
-		AtomicReference<ParquetWriter<GenericRecord>> writer = new AtomicReference<>();
-		AtomicReference<OutputStream> rawStream = new AtomicReference<>();
+		return new IGenericRecordConsumer() {
 
-		AtomicLong nbRows = new AtomicLong();
-
-		try {
-
-			rowsToWrite.forEach(m -> {
-
-				if (nbRows.get() == 0) {
-					try {
-						OutputStream outputStream = uri.toURL().openConnection().getOutputStream();
-						rawStream.set(outputStream);
-
-						writer.set(AvroParquetWriter.<GenericRecord>builder(toHadoopPath(uri))
-								.withSchema(m.getSchema())
-								.build());
-					} catch (NullPointerException e) {
-						throw new IllegalStateException("Are you missing Hadoop binaries?", e);
-					} catch (IOException e) {
-						throw new UncheckedIOException(e);
-					}
-				}
-
+			@Override
+			public void accept(GenericRecord t) {
 				try {
-					writer.get().write(m);
+					writer.write(t);
 				} catch (IOException e) {
-					throw new RuntimeException(e);
+					throw new UncheckedIOException(e);
 				}
-
-				nbRows.incrementAndGet();
-			});
-
-		} finally {
-			if (writer.get() != null) {
-				writer.get().close();
 			}
-			if (rawStream.get() != null) {
-				rawStream.get().close();
-			}
-		}
 
-		return nbRows.get();
+			@Override
+			public void close() throws IOException {
+				writer.close();
+			}
+		};
 	}
 
 	protected org.apache.hadoop.fs.Path toHadoopPath(URI uri) {

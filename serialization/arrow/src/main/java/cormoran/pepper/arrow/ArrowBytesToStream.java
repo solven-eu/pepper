@@ -66,6 +66,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 		ArrowFileReader arrowFileReader =
 				new ArrowFileReader(new ByteArrayReadableSeekableByteChannel(ByteStreams.toByteArray(inputStream)),
 						new RootAllocator(Integer.MAX_VALUE));
+
 		VectorSchemaRoot root = arrowFileReader.getVectorSchemaRoot();
 
 		List<ArrowBlock> arrowBlocks = arrowFileReader.getRecordBlocks();

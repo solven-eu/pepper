@@ -23,6 +23,7 @@
 package cormoran.pepper.avro;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
@@ -33,6 +34,8 @@ import org.apache.avro.generic.GenericRecord;
 import com.google.common.annotations.Beta;
 
 /**
+ * This interface enables write and reading of GenericRecord from/to bytes. We work with {@link URI} and not
+ * {@link InputStream} as some implementation may not produce/require an actual stream of b ytes like parquet.
  * 
  * @author Benoit Lacelle
  *
@@ -49,7 +52,12 @@ public interface IAvroStreamFactory {
 		return toStream(javaPath.toUri());
 	}
 
-	Stream<GenericRecord> toStream(URI uri) throws IOException;
+	@Deprecated
+	default Stream<GenericRecord> toStream(URI uri) throws IOException {
+		return stream(uri);
+	}
+
+	Stream<GenericRecord> stream(URI uri) throws IOException;
 
 	/**
 	 * @deprecated We prefer not to rely on java.nio.Path as it requires a {@link FileSystem} compatible with the Path

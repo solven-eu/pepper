@@ -42,6 +42,10 @@ public interface IBinaryToStream<T> {
 	 */
 	Stream<T> stream(InputStream inputStream) throws IOException;
 
+	/**
+	 * @deprecated prefer the naming {@link #stream(InputStream)}
+	 */
+	@Deprecated
 	default Stream<T> toStream(InputStream inputStream) throws IOException {
 		return stream(inputStream);
 	}

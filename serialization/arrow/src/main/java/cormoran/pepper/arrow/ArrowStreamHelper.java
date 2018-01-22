@@ -27,10 +27,12 @@ import static org.apache.arrow.vector.types.FloatingPointPrecision.SINGLE;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Path;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import org.apache.arrow.memory.BufferAllocator;
@@ -50,10 +52,11 @@ import org.apache.arrow.vector.types.pojo.Schema;
 
 import com.google.common.collect.ImmutableList;
 
-import cormoran.pepper.io.PepperFileHelper;
 import cormoran.pepper.stream.PepperStreamHelper;
 
 public class ArrowStreamHelper {
+	private static final int PARTITION_TARGET_SIZE = 1024;
+
 	protected ArrowStreamHelper() {
 		// hidden
 	}
@@ -67,7 +70,7 @@ public class ArrowStreamHelper {
 		return new Schema(childrenBuilder.build(), null);
 	}
 
-	public static void writeArrowToIS(Stream<Map<String, ?>> streamOfMap) throws IOException {
+	public static long writeArrowToIS(URI uri, Stream<Map<String, ?>> streamOfMap) throws IOException {
 		// File arrowFile = validateFile(filename, false);
 		// this.fileOutputStream = new FileOutputStream(arrowFile);
 		Schema schema = makeSchema();
@@ -76,8 +79,13 @@ public class ArrowStreamHelper {
 		VectorSchemaRoot root = VectorSchemaRoot.create(schema, ra);
 		DictionaryProvider.MapDictionaryProvider provider = new DictionaryProvider.MapDictionaryProvider();
 
-		Path tmp = PepperFileHelper.createTempPath("ArrowStreamHelper", ".arrow", true);
-		try (FileOutputStream fileOutputStream = new FileOutputStream(tmp.toFile());
+		AtomicLong nbRows = new AtomicLong();
+
+		// Path tmp = PepperFileHelper.createTempPath("ArrowStreamHelper", ".arrow", true);
+		try (
+				// OutputStream os = PepperURLHelper.outputStream(uri);
+				FileOutputStream fileOutputStream = new FileOutputStream(Paths.get(uri).toFile());
+				// ArrowStreamWriter arrowFileWriter = new ArrowStreamWriter(root, provider, os)) {
 				ArrowFileWriter arrowFileWriter = new ArrowFileWriter(root, provider, fileOutputStream.getChannel())) {
 			try {
 				arrowFileWriter.start();
@@ -86,7 +94,9 @@ public class ArrowStreamHelper {
 			}
 
 			PepperStreamHelper.consumeByPartition(streamOfMap, c -> {
-				root.setRowCount(c.size());
+				int partritionRowCount = c.size();
+				root.setRowCount(partritionRowCount);
+				nbRows.addAndGet(partritionRowCount);
 
 				for (Field field : root.getSchema().getFields()) {
 					FieldVector vector = root.getVector(field.getName());
@@ -112,13 +122,15 @@ public class ArrowStreamHelper {
 				} catch (IOException e) {
 					throw new UncheckedIOException(e);
 				}
-			}, 1024);
+			}, PARTITION_TARGET_SIZE);
 			try {
 				arrowFileWriter.end();
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
 		}
+
+		return nbRows.get();
 	}
 
 	private static void writeFieldInt(FieldVector fieldVector, Collection<Map<String, ?>> c) {

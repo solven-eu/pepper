@@ -67,8 +67,10 @@ public class ParquetBytesToStream implements IBinaryToAvroStream {
 
 	@Override
 	public Stream<GenericRecord> stream(InputStream inputStream) throws IOException {
+		// We write the bytes in FS
 		persist(inputStream);
 
-		return new ParquetStreamFactory().toStream(persisted.get());
+		// Parquet require random-access to bytes
+		return new ParquetStreamFactory().stream(persisted.get());
 	}
 }
