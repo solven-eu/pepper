@@ -22,13 +22,14 @@
  */
 package cormoran.pepper.parquet;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -36,6 +37,7 @@ import java.util.stream.Stream;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.parquet.avro.AvroParquetReader;
 import org.apache.parquet.avro.AvroParquetWriter;
 import org.apache.parquet.filter.PagedRecordFilter;
@@ -88,7 +90,7 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 
 	@Override
 	public Stream<GenericRecord> stream(URI uri) throws IOException {
-		org.apache.hadoop.fs.Path hadoopPath = toHadoopPath(uri);
+		Path hadoopPath = toHadoopPath(uri);
 
 		return toStream(hadoopPath);
 	}
@@ -122,10 +124,6 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 		return toStream(reader);
 	}
 
-	public Stream<? extends Map<String, ?>> toStream(Path path, Map<String, ?> exampleTypes) throws IOException {
-		return toStream(path).map(AvroStreamHelper.toJavaMap(exampleTypes));
-	}
-
 	protected Filter makeFilter() {
 		// According to javadoc, numbering starts at 1. However, it seems to be 0 not to skip any row
 		// This default should apply no filter, but demonstrate how to filter a page
@@ -154,9 +152,10 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 		});
 	}
 
-	public static Stream<Map<String, ?>> readParquetAsStream(Path pathOnDisk, Map<String, ?> exampleTypes)
+	public static Stream<Map<String, ?>> readParquetAsStream(URI pathOnDisk, Map<String, ?> exampleTypes)
 			throws FileNotFoundException, IOException {
-		return new ParquetBytesToStream().stream(new FileInputStream(pathOnDisk.toFile()))
+		File file = Paths.get(pathOnDisk).toFile();
+		return new ParquetBytesToStream().stream(new FileInputStream(file))
 				.map(AvroStreamHelper.toJavaMap(exampleTypes));
 	}
 
@@ -185,7 +184,7 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 		};
 	}
 
-	protected org.apache.hadoop.fs.Path toHadoopPath(URI uri) {
-		return new org.apache.hadoop.fs.Path(uri);
+	protected Path toHadoopPath(URI uri) {
+		return new Path(uri);
 	}
 }

@@ -34,6 +34,12 @@ import com.google.common.collect.ImmutableList;
 
 import cormoran.pepper.logging.PepperLogHelper;
 
+/**
+ * Helps generating a schema for Avro format given a Map with example types as values
+ * 
+ * @author Benoit Lacelle
+ *
+ */
 public class ArrowStreamHelper {
 
 	protected ArrowStreamHelper() {

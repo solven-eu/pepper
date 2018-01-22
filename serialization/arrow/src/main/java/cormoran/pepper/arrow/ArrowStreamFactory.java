@@ -46,7 +46,7 @@ public class ArrowStreamFactory implements IArrowStreamFactory {
 	}
 
 	@Override
-	public long transcode(WritableByteChannel byteChannel,
+	public long serialize(WritableByteChannel byteChannel,
 			boolean outputIsFile,
 			Schema schema,
 			Stream<? extends Map<String, ?>> rowsToWrite) throws IOException {

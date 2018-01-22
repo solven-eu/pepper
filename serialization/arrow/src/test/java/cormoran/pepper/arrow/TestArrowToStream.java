@@ -22,7 +22,7 @@ public class TestArrowToStream {
 	public void testToFile() throws IOException {
 		Path tmpPath = PepperFileHelper.createTempPath("TestWriteArrow", ".arrow", true);
 
-		long nbRows = new ArrowStreamFactory().transcode(tmpPath.toUri(),
+		long nbRows = new ArrowStreamFactory().serialize(tmpPath.toUri(),
 				ArrowStreamHelper.guessSchema(ImmutableMap.of("key", 0)),
 				IntStream.range(0, 10).mapToObj(i -> ImmutableMap.of("key", i)));
 
@@ -38,7 +38,7 @@ public class TestArrowToStream {
 	private void testTranscodedValue(Object value) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		long nbRows = new ArrowStreamFactory().transcode(Channels.newChannel(baos),
+		long nbRows = new ArrowStreamFactory().serialize(Channels.newChannel(baos),
 				false,
 				ArrowStreamHelper.guessSchema(ImmutableMap.of("key", value)),
 				IntStream.range(0, 10).mapToObj(i -> ImmutableMap.of("key", value)));

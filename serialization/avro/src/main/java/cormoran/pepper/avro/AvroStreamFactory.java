@@ -32,6 +32,7 @@ import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.apache.avro.Schema;
@@ -64,7 +65,29 @@ public class AvroStreamFactory implements IAvroStreamFactory {
 	}
 
 	@Override
-	public long writeToPath(URI uri, Stream<? extends GenericRecord> rowsToWrite) throws IOException {
+	public long serialize(URI uri, Stream<? extends GenericRecord> rowsToWrite) throws IOException {
+		return transcode(schema -> {
+			try {
+				return prepareRecordConsumer(schema, uri);
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}, rowsToWrite);
+	}
+
+	@Override
+	public long serialize(OutputStream outputStream, Stream<? extends GenericRecord> rowsToWrite) throws IOException {
+		return transcode(schema -> {
+			try {
+				return prepareRecordConsumer(schema, outputStream);
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}, rowsToWrite);
+	}
+
+	protected long transcode(Function<Schema, IGenericRecordConsumer> consumerSupplier,
+			Stream<? extends GenericRecord> rowsToWrite) {
 		// https://avro.apache.org/docs/1.8.1/gettingstartedjava.html
 		// We will use the first record to prepare a writer on the correct schema
 		AtomicLong nbRows = new AtomicLong();
@@ -78,7 +101,7 @@ public class AvroStreamFactory implements IAvroStreamFactory {
 			// We use the first GenericRecord to fetch the schema and initialize the output-stream
 			Schema schema = first.getSchema();
 
-			try (IGenericRecordConsumer dataFileWriter = prepareRecordConsumer(schema, uri);) {
+			try (IGenericRecordConsumer dataFileWriter = consumerSupplier.apply(schema)) {
 				// Write the first row, used to prepare the schema
 				dataFileWriter.accept(first);
 				nbRows.incrementAndGet();

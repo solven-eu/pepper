@@ -91,11 +91,11 @@ public class TestPepperParquetHelper {
 
 		{
 			Path path = PepperFileHelper.createTempPath("apex", "parquet", true);
-			factory.writeToPath(path.toUri(),
+			factory.serialize(path.toUri(),
 					Stream.of(ImmutableMap.of("k", doubles)).map(AvroStreamHelper.toGenericRecord(schema)));
 
 			Map<String, ?> asMapAgain =
-					factory.toStream(path.toUri()).map(AvroStreamHelper.toJavaMap(asMap)).findAny().get();
+					factory.stream(path.toUri()).map(AvroStreamHelper.toJavaMap(asMap)).findAny().get();
 			Assert.assertArrayEquals(doubles, (double[]) asMapAgain.get("k"), 0.0001D);
 		}
 	}
@@ -112,10 +112,10 @@ public class TestPepperParquetHelper {
 
 		{
 			Path path = PepperFileHelper.createTempPath("apex", "parquet", true);
-			factory.writeToPath(path.toUri(),
+			factory.serialize(path.toUri(),
 					Stream.of(ImmutableMap.of("k", doubles)).map(AvroStreamHelper.toGenericRecord(schema)));
 
-			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path, asMap).findAny().get();
+			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path.toUri(), asMap).findAny().get();
 			Assert.assertArrayEquals(doubles, (float[]) asMapAgain.get("k"), 0.0001F);
 		}
 	}
@@ -154,10 +154,10 @@ public class TestPepperParquetHelper {
 
 			Path path = PepperFileHelper.createTempPath("apex", "parquet", true);
 
-			factory.writeToPath(path.toUri(),
+			factory.serialize(path.toUri(),
 					Stream.of(ImmutableMap.of("DateField", date)).map(AvroStreamHelper.toGenericRecord(schema)));
 
-			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path, asMap).findAny().get();
+			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path.toUri(), asMap).findAny().get();
 			Assert.assertEquals(date, asMapAgain.get("DateField"));
 		}
 	}

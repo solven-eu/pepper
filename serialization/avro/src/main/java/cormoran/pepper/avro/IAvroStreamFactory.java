@@ -24,6 +24,7 @@ package cormoran.pepper.avro;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
@@ -68,5 +69,12 @@ public interface IAvroStreamFactory {
 		return writeToPath(javaPath.toUri(), rowsToWrite);
 	}
 
-	long writeToPath(URI uri, Stream<? extends GenericRecord> rowsToWrite) throws IOException;
+	@Deprecated
+	default long writeToPath(URI uri, Stream<? extends GenericRecord> rowsToWrite) throws IOException {
+		return serialize(uri, rowsToWrite);
+	}
+
+	long serialize(URI uri, Stream<? extends GenericRecord> rowsToWrite) throws IOException;
+
+	long serialize(OutputStream outputStream, Stream<? extends GenericRecord> rowsToWrite) throws IOException;
 }

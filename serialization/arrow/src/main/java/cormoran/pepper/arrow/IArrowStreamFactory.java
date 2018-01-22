@@ -28,17 +28,18 @@ public interface IArrowStreamFactory {
 
 	Stream<Map<String, ?>> stream(URI uri) throws IOException;
 
-	default long transcode(URI uri, Schema schema, Stream<? extends Map<String, ?>> rowsToWrite) throws IOException {
+	default long serialize(URI uri, Schema schema, Stream<? extends Map<String, ?>> rowsToWrite) throws IOException {
 		if (uri.getScheme().equals("file")) {
+			// Arrow add magic-headers when writing to files
 			try (FileOutputStream fos = new FileOutputStream(Paths.get(uri).toFile())) {
-				return transcode(fos.getChannel(), true, schema, rowsToWrite);
+				return serialize(fos.getChannel(), true, schema, rowsToWrite);
 			}
 		} else {
-			return transcode(Channels.newChannel(PepperURLHelper.outputStream(uri)), false, schema, rowsToWrite);
+			return serialize(Channels.newChannel(PepperURLHelper.outputStream(uri)), false, schema, rowsToWrite);
 		}
 	}
 
-	long transcode(WritableByteChannel byteChannel,
+	long serialize(WritableByteChannel byteChannel,
 			boolean outputIsFile,
 			Schema schema,
 			Stream<? extends Map<String, ?>> rowsToWrite) throws IOException;

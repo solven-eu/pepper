@@ -126,6 +126,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 						return asMap;
 					});
 
+					// Accept the whole Stream sa next block. We will later rely on .flatMap
 					action.accept(result);
 
 					return true;
