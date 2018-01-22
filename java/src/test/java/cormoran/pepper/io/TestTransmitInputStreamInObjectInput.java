@@ -31,7 +31,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
+import java.util.stream.IntStream;
 
 import org.awaitility.Awaitility;
 import org.junit.Assert;
@@ -189,7 +191,7 @@ public class TestTransmitInputStreamInObjectInput {
 		Assert.assertTrue(bytesUs.length < PepperObjectInputHelper.DEFAULT_CHUNK_SIZE);
 
 		try (ObjectOutputStream oos = new ObjectOutputStream(pos)) {
-			// Write consecuritvelly @ inputStreams
+			// Write consecutively 2 inputStreams
 			PepperObjectInputHelper.writeInputStream(oos, new ByteArrayInputStream(bytesFrance));
 			PepperObjectInputHelper.writeInputStream(oos, new ByteArrayInputStream(bytesUs));
 		}
@@ -321,31 +323,5 @@ public class TestTransmitInputStreamInObjectInput {
 		// Closing the OOS has NOT shutdown the ES
 		objectInput.close();
 		Assert.assertFalse(objectInput.inputStreamFiller.get().isShutdown());
-	}
-
-	// Ensure we do not leak the ExecutorService used to transfer bytes
-	@Test
-	public void testNoLeak() throws IOException, ClassNotFoundException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		ImmutableMap<String, String> serializable = ImmutableMap.of("k", "v");
-
-		// The leak is triggered by transmitting InputStream
-		try (ObjectOutputStream o = new ObjectOutputStream(baos)) {
-			PepperObjectInputHelper.writeInputStream(o,
-					new ByteArrayInputStream(PepperSerializationHelper.toBytes(serializable)));
-		}
-
-		// Get the bytes once for all
-		byte[] byteArray = baos.toByteArray();
-
-		for (int i = 0; i < 100 * 1000; i++) {
-			try (ObjectInput ois = PepperObjectInputHelper
-					.wrapToHandleInputStream(new ObjectInputStream(new ByteArrayInputStream(byteArray)))) {
-				InputStream is = (InputStream) ois.readObject();
-
-				Assert.assertEquals(serializable, PepperSerializationHelper.fromBytes(ByteStreams.toByteArray(is)));
-			}
-		}
 	}
 }
