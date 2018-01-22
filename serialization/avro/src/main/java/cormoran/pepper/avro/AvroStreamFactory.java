@@ -42,8 +42,6 @@ import org.apache.avro.io.DatumWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.Beta;
-
 /**
  * A {@link IAvroStreamFactory} producing Avro binary data
  * 

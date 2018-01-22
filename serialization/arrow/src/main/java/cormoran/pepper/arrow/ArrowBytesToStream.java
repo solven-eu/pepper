@@ -22,14 +22,22 @@
  */
 package cormoran.pepper.arrow;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Spliterators.AbstractSpliterator;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.BigIntVector;
@@ -38,9 +46,11 @@ import org.apache.arrow.vector.Float4Vector;
 import org.apache.arrow.vector.Float8Vector;
 import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.VarBinaryVector;
+import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.ipc.ArrowFileReader;
-import org.apache.arrow.vector.ipc.message.ArrowBlock;
+import org.apache.arrow.vector.ipc.ArrowReader;
+import org.apache.arrow.vector.ipc.ArrowStreamReader;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.util.ByteArrayReadableSeekableByteChannel;
 import org.apache.avro.generic.GenericRecord;
@@ -61,60 +71,86 @@ import cormoran.pepper.io.IBinaryToStream;
 public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ArrowBytesToStream.class);
 
+	public Stream<Map<String, ?>> stream(boolean isFile, SeekableByteChannel channel) throws IOException {
+		ArrowReader arrowReader;
+
+		if (isFile) {
+			arrowReader = new ArrowFileReader(channel, new RootAllocator(Integer.MAX_VALUE));
+		} else {
+			arrowReader = new ArrowStreamReader(channel, new RootAllocator(Integer.MAX_VALUE));
+		}
+
+		VectorSchemaRoot root = arrowReader.getVectorSchemaRoot();
+
+		return StreamSupport.stream(new AbstractSpliterator<Stream<Map<String, ?>>>(Long.MAX_VALUE, 0) {
+
+			@Override
+			public boolean tryAdvance(Consumer<? super Stream<Map<String, ?>>> action) {
+				try {
+					if (!arrowReader.loadNextBatch()) {
+						return false;
+					}
+
+					int blockRowCounrt = root.getRowCount();
+
+					Stream<Map<String, ?>> result = IntStream.range(0, blockRowCounrt).mapToObj(rowIndex -> {
+						List<FieldVector> fieldVector = root.getFieldVectors();
+
+						Map<String, Object> asMap = new HashMap<>();
+						for (int j = 0; j < fieldVector.size(); j++) {
+							Types.MinorType mt = fieldVector.get(j).getMinorType();
+							switch (mt) {
+							case INT:
+								showIntAccessor(fieldVector.get(j), rowIndex, asMap);
+								break;
+							case BIGINT:
+								showBigIntAccessor(fieldVector.get(j), rowIndex, asMap);
+								break;
+							case VARBINARY:
+								showVarBinaryAccessor(fieldVector.get(j), rowIndex, asMap);
+								break;
+							case FLOAT4:
+								showFloat4Accessor(fieldVector.get(j), rowIndex, asMap);
+								break;
+							case FLOAT8:
+								showFloat8Accessor(fieldVector.get(j), rowIndex, asMap);
+								break;
+							case VARCHAR:
+								showVarcharAccessor(fieldVector.get(j), rowIndex, asMap);
+								break;
+							default:
+								throw new RuntimeException(" MinorType " + mt);
+							}
+						}
+
+						return asMap;
+					});
+
+					action.accept(result);
+
+					return true;
+
+				} catch (IOException e) {
+					throw new UncheckedIOException(e);
+				}
+			}
+
+		}, false).onClose(() -> {
+			try {
+				arrowReader.close();
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}).flatMap(s -> s);
+	}
+
 	@Override
 	public Stream<Map<String, ?>> stream(InputStream inputStream) throws IOException {
-		ArrowFileReader arrowFileReader =
-				new ArrowFileReader(new ByteArrayReadableSeekableByteChannel(ByteStreams.toByteArray(inputStream)),
-						new RootAllocator(Integer.MAX_VALUE));
+		// TODO: Do we really need to load all bytes in memory?
+		ByteArrayReadableSeekableByteChannel in =
+				new ByteArrayReadableSeekableByteChannel(ByteStreams.toByteArray(inputStream));
 
-		VectorSchemaRoot root = arrowFileReader.getVectorSchemaRoot();
-
-		List<ArrowBlock> arrowBlocks = arrowFileReader.getRecordBlocks();
-		return arrowBlocks.stream().onClose(() -> {
-			try {
-				arrowFileReader.close();
-			} catch (IOException e) {
-				throw new UncheckedIOException(e);
-			}
-		}).flatMap(rbBlock -> {
-			try {
-				if (!arrowFileReader.loadRecordBatch(rbBlock)) {
-					throw new IOException("Expected to read record batch");
-				}
-			} catch (IOException e) {
-				throw new UncheckedIOException(e);
-			}
-
-			return IntStream.range(0, root.getRowCount()).mapToObj(rowIndex -> {
-				List<FieldVector> fieldVector = root.getFieldVectors();
-
-				Map<String, Object> asMap = new HashMap<>();
-				for (int j = 0; j < fieldVector.size(); j++) {
-					Types.MinorType mt = fieldVector.get(j).getMinorType();
-					switch (mt) {
-					case INT:
-						showIntAccessor(fieldVector.get(j), rowIndex, asMap);
-						break;
-					case BIGINT:
-						showBigIntAccessor(fieldVector.get(j), rowIndex, asMap);
-						break;
-					case VARBINARY:
-						showVarBinaryAccessor(fieldVector.get(j), rowIndex, asMap);
-						break;
-					case FLOAT4:
-						showFloat4Accessor(fieldVector.get(j), rowIndex, asMap);
-						break;
-					case FLOAT8:
-						showFloat8Accessor(fieldVector.get(j), rowIndex, asMap);
-						break;
-					default:
-						throw new RuntimeException(" MinorType " + mt);
-					}
-				}
-
-				return asMap;
-			});
-		});
+		return stream(false, in);
 	}
 
 	private void showIntAccessor(FieldVector fx, int rowIndex, Map<String, Object> asMap) {
@@ -153,6 +189,15 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 		}
 	}
 
+	private void showVarcharAccessor(FieldVector fx, int rowIndex, Map<String, Object> asMap) {
+		VarCharVector intVector = ((VarCharVector) fx);
+		if (!intVector.isNull(rowIndex)) {
+			String value = new String(intVector.get(rowIndex), StandardCharsets.UTF_8);
+
+			asMap.put(fx.getField().getName(), value);
+		}
+	}
+
 	private void showVarBinaryAccessor(FieldVector fx, int rowIndex, Map<String, Object> asMap) {
 		VarBinaryVector intVector = ((VarBinaryVector) fx);
 		if (!intVector.isNull(rowIndex)) {
@@ -160,6 +205,17 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 
 			asMap.put(fx.getField().getName(), value);
 		}
+	}
+
+	public Stream<Map<String, ?>> stream(File file) throws FileNotFoundException, IOException {
+		FileInputStream fis = new FileInputStream(file);
+		return stream(true, fis.getChannel()).onClose(() -> {
+			try {
+				fis.close();
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		});
 	}
 
 }
