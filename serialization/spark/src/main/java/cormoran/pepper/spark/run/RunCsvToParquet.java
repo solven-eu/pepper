@@ -89,9 +89,8 @@ public class RunCsvToParquet {
 					LOGGER.info("Parquet file: {}", file);
 
 					try {
-						ParquetStreamFactory.readParquetAsStream(file.toPath(), Collections.emptyMap()).forEach(row -> {
-							LOGGER.info("Row: {}", row);
-						});
+						ParquetStreamFactory.readParquetAsStream(file.toURI(), Collections.emptyMap())
+								.forEach(row -> LOGGER.info("Row: {}", row));
 					} catch (IOException e) {
 						throw new UncheckedIOException(e);
 					}

@@ -13,6 +13,10 @@ package org.eclipse.mat.util;
 /**
  * File utilities for things like copying icon files.
  */
+
+/**
+ * File utilities for things like copying icon files.
+ */
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

@@ -14,6 +14,9 @@
         <!-- TODO -->
         <jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
         <jacoco.branch.ratio>0.0</jacoco.branch.ratio>
+
+        <!-- TODO -->
+        <cpd.skip>true</cpd.skip>
     </properties>
 
     <dependencies>
