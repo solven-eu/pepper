@@ -22,16 +22,18 @@
  */
 package cormoran.pepper.parquet;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import org.apache.avro.generic.GenericRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cormoran.pepper.avro.IBinaryToAvroStream;
 import cormoran.pepper.io.PepperFileHelper;
@@ -44,33 +46,48 @@ import cormoran.pepper.io.PepperFileHelper;
  *
  */
 public class ParquetBytesToStream implements IBinaryToAvroStream {
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ParquetBytesToStream.class);
 
-	protected final AtomicReference<URI> persisted = new AtomicReference<>();
+	protected final boolean deleteOnExit;
 
-	protected void persist(InputStream inputStream) throws IOException {
-		if (persisted.get() != null) {
-			throw new RuntimeException("Already persisted on " + persisted.get());
-		}
+	/**
+	 * By default, the InputStream is flushed to a temporary file which will be deleted with the JVM
+	 * 
+	 * @see File.deleteOnExit
+	 */
+	public ParquetBytesToStream() {
+		this(true);
+	}
 
-		// TODO: We may not want to delete on exit in order to keep a local cache. But one way rather move to file to a
-		// proper place
-		boolean deleteOnExit = true;
+	protected ParquetBytesToStream(boolean deleteOnExit) {
+		this.deleteOnExit = deleteOnExit;
+	}
+
+	protected URI persist(InputStream inputStream) throws IOException {
 		// Write the InputStream to FileSystem as Parquet expect a SeekableInputStream as metadata are at the end
 		// https://github.com/apache/parquet-mr/blob/master/parquet-common/src/main/java/org/apache/parquet/io/SeekableInputStream.java
-		Path tmp = PepperFileHelper.createTempPath(getClass().getSimpleName(), ".tmp", deleteOnExit);
+		Path tmp = pathWhereToDumpBytes();
+
+		LOGGER.debug("We persist a parquet InputStream into {}", tmp);
 
 		// Copy InputStream to tmp file
 		Files.copy(inputStream, tmp, StandardCopyOption.REPLACE_EXISTING);
 
-		persisted.set(tmp.toUri());
+		return tmp.toUri();
+	}
+
+	protected Path pathWhereToDumpBytes() throws IOException {
+		// One may not want to delete on exit in order to keep a local cache. But one way rather move to file to a
+		// persisted cache on FS
+		return PepperFileHelper.createTempPath(getClass().getSimpleName(), ".parquet", true);
 	}
 
 	@Override
 	public Stream<GenericRecord> stream(InputStream inputStream) throws IOException {
 		// We write the bytes in FS
-		persist(inputStream);
+		URI uri = persist(inputStream);
 
 		// Parquet require random-access to bytes
-		return new ParquetStreamFactory().stream(persisted.get());
+		return new ParquetStreamFactory().stream(uri);
 	}
 }

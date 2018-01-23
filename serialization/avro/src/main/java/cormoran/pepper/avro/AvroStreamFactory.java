@@ -115,7 +115,6 @@ public class AvroStreamFactory implements IAvroStreamFactory {
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
-
 		}
 
 		return nbRows.get();
@@ -146,9 +145,10 @@ public class AvroStreamFactory implements IAvroStreamFactory {
 
 			@Override
 			public void close() throws IOException {
+				// Flush the last bytes from the writer
+				// But do not close the OutputStream as somebody may want to push more bytes
 				dataFileWriter.close();
 				rawWriter.close();
-				outputStream.close();
 			}
 		};
 

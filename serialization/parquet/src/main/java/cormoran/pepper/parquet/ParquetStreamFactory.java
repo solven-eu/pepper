@@ -113,7 +113,7 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 		});
 	}
 
-	public Stream<GenericRecord> toStream(org.apache.hadoop.fs.Path hadoopPath) throws IOException {
+	public Stream<GenericRecord> toStream(Path hadoopPath) throws IOException {
 		Filter filter = makeFilter();
 
 		ParquetReader<GenericRecord> reader = AvroParquetReader.<GenericRecord>builder(hadoopPath)
@@ -152,9 +152,9 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 		});
 	}
 
-	public static Stream<Map<String, ?>> readParquetAsStream(URI pathOnDisk, Map<String, ?> exampleTypes)
+	public static Stream<Map<String, ?>> readParquetAsStream(URI uriToParquet, Map<String, ?> exampleTypes)
 			throws FileNotFoundException, IOException {
-		File file = Paths.get(pathOnDisk).toFile();
+		File file = Paths.get(uriToParquet).toFile();
 		return new ParquetBytesToStream().stream(new FileInputStream(file))
 				.map(AvroStreamHelper.toJavaMap(exampleTypes));
 	}

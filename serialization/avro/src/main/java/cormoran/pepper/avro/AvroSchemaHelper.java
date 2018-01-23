@@ -45,7 +45,7 @@ import cormoran.pepper.io.PepperSerializationHelper;
 import cormoran.pepper.logging.PepperLogHelper;
 
 /**
- * Various utilities frelated to Avro schema
+ * Various utilities related to Avro schema
  * 
  * @author Benoit Lacelle
  *
