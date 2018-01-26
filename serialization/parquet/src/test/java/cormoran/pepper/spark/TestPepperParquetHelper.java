@@ -45,7 +45,6 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 
 import cormoran.pepper.avro.AvroSchemaHelper;
-import cormoran.pepper.avro.AvroStreamHelper;
 import cormoran.pepper.avro.AvroTranscodingHelper;
 import cormoran.pepper.hadoop.PepperHadoopHelper;
 import cormoran.pepper.io.PepperFileHelper;
@@ -92,10 +91,10 @@ public class TestPepperParquetHelper {
 		{
 			Path path = PepperFileHelper.createTempPath("apex", "parquet", true);
 			factory.serialize(path.toUri(),
-					Stream.of(ImmutableMap.of("k", doubles)).map(AvroStreamHelper.toGenericRecord(schema)));
+					Stream.of(ImmutableMap.of("k", doubles)).map(AvroTranscodingHelper.toGenericRecord(schema)));
 
 			Map<String, ?> asMapAgain =
-					factory.stream(path.toUri()).map(AvroStreamHelper.toJavaMap(asMap)).findAny().get();
+					factory.stream(path.toUri()).map(AvroTranscodingHelper.toJavaMap(asMap)).findAny().get();
 			Assert.assertArrayEquals(doubles, (double[]) asMapAgain.get("k"), 0.0001D);
 		}
 	}
@@ -113,7 +112,7 @@ public class TestPepperParquetHelper {
 		{
 			Path path = PepperFileHelper.createTempPath("apex", "parquet", true);
 			factory.serialize(path.toUri(),
-					Stream.of(ImmutableMap.of("k", doubles)).map(AvroStreamHelper.toGenericRecord(schema)));
+					Stream.of(ImmutableMap.of("k", doubles)).map(AvroTranscodingHelper.toGenericRecord(schema)));
 
 			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path.toUri(), asMap).findAny().get();
 			Assert.assertArrayEquals(doubles, (float[]) asMapAgain.get("k"), 0.0001F);
@@ -155,7 +154,7 @@ public class TestPepperParquetHelper {
 			Path path = PepperFileHelper.createTempPath("apex", "parquet", true);
 
 			factory.serialize(path.toUri(),
-					Stream.of(ImmutableMap.of("DateField", date)).map(AvroStreamHelper.toGenericRecord(schema)));
+					Stream.of(ImmutableMap.of("DateField", date)).map(AvroTranscodingHelper.toGenericRecord(schema)));
 
 			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path.toUri(), asMap).findAny().get();
 			Assert.assertEquals(date, asMapAgain.get("DateField"));
@@ -196,14 +195,16 @@ public class TestPepperParquetHelper {
 
 		// Read as float[]
 		{
-			Map<String, ?> asMap = AvroStreamHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", new float[0]));
+			Map<String, ?> asMap =
+					AvroTranscodingHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", new float[0]));
 
 			Assert.assertTrue(asMap.get("arrayField") instanceof float[]);
 		}
 
 		// Read as double[]
 		{
-			Map<String, ?> asMap = AvroStreamHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", new double[0]));
+			Map<String, ?> asMap =
+					AvroTranscodingHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", new double[0]));
 
 			Assert.assertTrue(asMap.get("arrayField") instanceof double[]);
 		}
@@ -211,7 +212,7 @@ public class TestPepperParquetHelper {
 		// Read as List<Float>
 		{
 			Map<String, ?> asMap =
-					AvroStreamHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", Arrays.asList(1F)));
+					AvroTranscodingHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", Arrays.asList(1F)));
 
 			Assert.assertTrue(asMap.get("arrayField") instanceof List);
 		}
@@ -219,7 +220,7 @@ public class TestPepperParquetHelper {
 		// Read as List<Double>
 		{
 			Map<String, ?> asMap =
-					AvroStreamHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", Arrays.asList(1D)));
+					AvroTranscodingHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", Arrays.asList(1D)));
 
 			Assert.assertTrue(asMap.get("arrayField") instanceof List);
 		}

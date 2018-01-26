@@ -27,12 +27,13 @@ import java.io.Serializable;
 import java.io.UncheckedIOException;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.Schema.Type;
@@ -66,7 +67,9 @@ public class AvroSchemaHelper {
 	}
 
 	public static Schema proposeSchemaForValue(Object value) {
-		if (value instanceof CharSequence) {
+		if (value == null) {
+			return Schema.create(Type.NULL);
+		} else if (value instanceof CharSequence) {
 			return Schema.create(Type.STRING);
 		} else if (value instanceof Double) {
 			return Schema.create(Type.DOUBLE);
@@ -76,35 +79,18 @@ public class AvroSchemaHelper {
 			return Schema.create(Type.LONG);
 		} else if (value instanceof Integer) {
 			return Schema.create(Type.INT);
-			// } else if (value instanceof double[]) {
-			// double[] array = (double[]) value;
-			//
-			// return Schema.createFixed("double_array_" + array.length,
-			// "doc",
-			// "space",
-			// Ints.checkedCast(array.length * IApexMemoryConstants.DOUBLE));
-			// } else if (value instanceof float[]) {
-			// // float[] array = (float[]) value;
-			//
-			// return Schema.createArray(Schema.create(Schema.Type.FLOAT));
-			// } else if (value instanceof List<?>) {
-			// List<?> asList = (List<?>) value;
-			//
-			// if (asList.isEmpty()) {
-			// throw new IllegalArgumentException("Can not specific schema from empty list");
-			// }
-			//
-			// Object firstValue = asList.get(0);
-			//
-			// return Schema.createArray(guessSchemaFromValue(firstValue));
-
 		} else if (value instanceof Serializable) {
+			// This will catch float[], double[], java.time.LocalDate
 			return Schema.create(Type.BYTES);
 		} else {
 			throw new UnsupportedOperationException("Can not handle " + PepperLogHelper.getObjectAndClass(value));
 		}
 	}
 
+	/**
+	 * @deprecated This method seems meaningless
+	 */
+	@Deprecated
 	public static Optional<?> proposeDefaultValueForValue(Object value) {
 		// If default value is set to null, we would get org.apache.avro.AvroRuntimeException: Field portfoliocode
 		// type:STRING pos:1 not set and has no default value
@@ -131,6 +117,10 @@ public class AvroSchemaHelper {
 		}
 	}
 
+	/**
+	 * @deprecated This method seems meaningless
+	 */
+	@Deprecated
 	public static Optional<?> proposeDefaultValueForType(Type type) {
 		// If default value is set to null, we would get org.apache.avro.AvroRuntimeException: Field portfoliocode
 		// type:STRING pos:1 not set and has no default value
@@ -202,30 +192,74 @@ public class AvroSchemaHelper {
 		return Schema.createRecord("myrecord", null, "space", false, fields);
 	}
 
+	@Deprecated
 	public static Map<String, Object> convertSparkSchemaToExampleMap(Schema schema) {
-		Map<String, Object> schemaAsMap = new HashMap<>();
-		schema.getFields().forEach(f -> {
-			if (f.schema().getTypes().contains(Schema.create(Type.STRING))) {
-				schemaAsMap.put(f.name(), "someString");
-			} else if (f.schema().getTypes().contains(Schema.create(Type.INT))) {
-				schemaAsMap.put(f.name(), 1);
-			} else if (f.schema().getTypes().contains(Schema.create(Type.DOUBLE))) {
-				schemaAsMap.put(f.name(), 1D);
-			} else if (f.schema().getTypes().stream().filter(t -> t.getType() == Type.ARRAY).findAny().isPresent()) {
-				Schema arrayType =
-						f.schema().getTypes().stream().filter(t -> t.getType() == Type.ARRAY).findAny().get();
-				Schema elementType = arrayType.getElementType();
+		return exampleMap(schema);
+	}
 
-				if (elementType.getFields().size() == 1
-						&& elementType.getFields().get(0).schema().getTypes().contains(Schema.create(Type.DOUBLE))) {
-					schemaAsMap.put(f.name(), Collections.singletonList(1D));
+	public static Map<String, Object> exampleMap(Schema schema) {
+		return schema.getFields().stream().collect(Collectors.toMap(f -> f.name(), f -> exampleValue(f.schema())));
+	}
+
+	public static Object exampleValue(Schema schema) {
+		Schema nonNullSchema = getNonNull(schema);
+
+		if (nonNullSchema.getType() == Type.STRING) {
+			return IPepperSchemaConstants.SOME_STRING;
+		} else if (nonNullSchema.getType() == Type.INT) {
+			return IPepperSchemaConstants.SOME_INT;
+		} else if (nonNullSchema.getType() == Type.LONG) {
+			return IPepperSchemaConstants.SOME_LONG;
+		} else if (nonNullSchema.getType() == Type.FLOAT) {
+			return IPepperSchemaConstants.SOME_FLOAT;
+		} else if (nonNullSchema.getType() == Type.DOUBLE) {
+			return IPepperSchemaConstants.SOME_DOUBLE;
+		} else if (nonNullSchema.getType() == Type.NULL) {
+			return null;
+		} else if (nonNullSchema.getType() == Type.ARRAY) {
+			Schema arrayType = nonNullSchema.getTypes().stream().filter(t -> t.getType() == Type.ARRAY).findAny().get();
+			Schema elementType = arrayType.getElementType();
+
+			if (elementType.getFields().size() == 1) {
+				return Collections.singletonList(exampleValue(elementType));
+			} else {
+				throw new RuntimeException("Not handled: " + schema);
+			}
+		} else if (nonNullSchema.getType() == Type.MAP) {
+			return schema.getFields().stream().collect(Collectors.toMap(f -> f, f -> exampleValue(f.schema())));
+		} else if (nonNullSchema.getType() == Type.BYTES) {
+			// Is it legit?
+			return IPepperSchemaConstants.SOME_LOCALDATE;
+		} else {
+			throw new IllegalArgumentException("Not handled: " + schema);
+		}
+	}
+
+	/**
+	 * Given a schema, check to see if it is a union of a null type and a regular schema, and then return the non-null
+	 * sub-schema. Otherwise, return the given schema.
+	 *
+	 * @param schema
+	 *            The schema to check
+	 * @return The non-null portion of a union schema, or the given schema
+	 */
+	// Duplicated from org.apache.parquet.avro.AvroSchemaConverter
+	public static Schema getNonNull(Schema schema) {
+		if (schema.getType().equals(Schema.Type.UNION)) {
+			List<Schema> schemas = schema.getTypes();
+			if (schemas.size() == 2) {
+				if (schemas.get(0).getType().equals(Schema.Type.NULL)) {
+					return schemas.get(1);
+				} else if (schemas.get(1).getType().equals(Schema.Type.NULL)) {
+					return schemas.get(0);
 				} else {
-					throw new RuntimeException("Not handled: " + f);
+					return schema;
 				}
 			} else {
-				throw new RuntimeException("Not handled: " + f);
+				return schema;
 			}
-		});
-		return schemaAsMap;
+		} else {
+			return schema;
+		}
 	}
 }

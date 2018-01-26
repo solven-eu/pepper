@@ -31,7 +31,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
 
-import cormoran.pepper.avro.AvroFieldHelper;
+import cormoran.pepper.avro.AvroTranscodingHelper;
 import cormoran.pepper.parquet.ParquetStreamFactory;
 
 public class TestPepperParquetToStream {
@@ -51,14 +51,14 @@ public class TestPepperParquetToStream {
 
 	@Test
 	public void testEmptyListNoTarget() {
-		Assert.assertFalse(AvroFieldHelper.toPrimitiveArray(null, Arrays.asList()).isPresent());
+		Assert.assertFalse(AvroTranscodingHelper.toPrimitiveArray(null, Arrays.asList()).isPresent());
 	}
 
 	@Test
 	public void testListDoubleToFloat() {
 		float listElement = 1F;
 		Assert.assertArrayEquals(new double[] { 1D },
-				(double[]) AvroFieldHelper.toPrimitiveArray(new double[0], Arrays.asList(listElement)).get(),
+				(double[]) AvroTranscodingHelper.toPrimitiveArray(new double[0], Arrays.asList(listElement)).get(),
 				0.001D);
 	}
 
@@ -66,7 +66,7 @@ public class TestPepperParquetToStream {
 	public void testListFloatToDouble() {
 		Double listElement = 1D;
 		Assert.assertArrayEquals(new float[] { 1F },
-				(float[]) AvroFieldHelper.toPrimitiveArray(new float[0], Arrays.asList(listElement)).get(),
+				(float[]) AvroTranscodingHelper.toPrimitiveArray(new float[0], Arrays.asList(listElement)).get(),
 				0.001F);
 	}
 }

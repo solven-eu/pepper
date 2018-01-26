@@ -38,7 +38,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 
 import cormoran.pepper.avro.AvroSchemaHelper;
-import cormoran.pepper.avro.AvroStreamHelper;
+import cormoran.pepper.avro.AvroTranscodingHelper;
 import cormoran.pepper.avro.IAvroStreamFactory;
 import cormoran.pepper.io.PepperFileHelper;
 import cormoran.pepper.parquet.ParquetStreamFactory;
@@ -63,11 +63,11 @@ public class TestParquetBytesToStream {
 		IAvroStreamFactory factory = new ParquetStreamFactory();
 
 		// Write to disk
-		factory.writeToPath(pathOnDisk, list.stream().map(AvroStreamHelper.toGenericRecord(schema)));
+		factory.writeToPath(pathOnDisk, list.stream().map(AvroTranscodingHelper.toGenericRecord(schema)));
 
 		// Read to Java maps
 		Stream<? extends Map<String, ?>> asMapStream =
-				factory.toStream(pathOnDisk).map(AvroStreamHelper.toJavaMap(exampleMap));
+				factory.stream(pathOnDisk.toUri()).map(AvroTranscodingHelper.toJavaMap(exampleMap));
 
 		List<Map<String, ?>> asMapList = asMapStream.collect(Collectors.toList());
 

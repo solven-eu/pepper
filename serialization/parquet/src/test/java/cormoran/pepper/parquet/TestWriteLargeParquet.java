@@ -35,7 +35,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 
 import cormoran.pepper.avro.AvroSchemaHelper;
-import cormoran.pepper.avro.AvroStreamHelper;
+import cormoran.pepper.avro.AvroTranscodingHelper;
 import cormoran.pepper.io.PepperFileHelper;
 
 public class TestWriteLargeParquet {
@@ -49,12 +49,12 @@ public class TestWriteLargeParquet {
 
 		int nbRows1 = 1000 * 1000;
 		Stream<GenericRecord> stream = IntStream.range(0, nbRows1).mapToObj(i -> ImmutableMap.of("key", i)).map(
-				AvroStreamHelper.toGenericRecord(schema));
+				AvroTranscodingHelper.toGenericRecord(schema));
 
 		// Parallel and unordered: suggest data can be processed concurrently: we want to check we do not try to write
 		// concurrently in the outputstream
 		stream = stream.parallel().unordered();
-		long nbRows = factory.writeToPath(tmpPath.toUri(), stream);
+		long nbRows = factory.serialize(tmpPath.toUri(), stream);
 
 		Assert.assertEquals(nbRows1, nbRows);
 

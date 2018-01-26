@@ -52,6 +52,7 @@ import com.google.common.collect.Streams;
 
 import cormoran.pepper.avro.AvroStreamFactory;
 import cormoran.pepper.avro.AvroStreamHelper;
+import cormoran.pepper.avro.AvroTranscodingHelper;
 import cormoran.pepper.avro.IGenericRecordConsumer;
 
 /**
@@ -156,7 +157,7 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 			throws FileNotFoundException, IOException {
 		File file = Paths.get(uriToParquet).toFile();
 		return new ParquetBytesToStream().stream(new FileInputStream(file))
-				.map(AvroStreamHelper.toJavaMap(exampleTypes));
+				.map(AvroTranscodingHelper.toJavaMap(exampleTypes));
 	}
 
 	@Override

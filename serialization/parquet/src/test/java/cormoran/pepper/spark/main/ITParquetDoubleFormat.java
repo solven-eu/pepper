@@ -234,8 +234,6 @@ public class ITParquetDoubleFormat {
 			throw new RuntimeException(e);
 		}
 
-		LOGGER.info("{}! Output field is {}",
-				testName.get(),
-				PepperLogHelper.getNiceMemory(outputPath.toFile().length()));
+		LOGGER.info("{}! Output field is {}", testName.get(), PepperLogHelper.humanBytes(outputPath.toFile().length()));
 	}
 }

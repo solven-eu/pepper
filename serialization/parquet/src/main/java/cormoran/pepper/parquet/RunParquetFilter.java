@@ -23,12 +23,20 @@
 package cormoran.pepper.parquet;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 
+import org.apache.avro.generic.GenericRecord;
+import org.apache.parquet.avro.AvroParquetReader;
+import org.apache.parquet.avro.AvroParquetWriter;
+import org.apache.parquet.hadoop.ParquetReader;
+import org.apache.parquet.hadoop.ParquetWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cormoran.pepper.io.PepperFileHelper;
 
 /**
  * This will log a parquet file into the console
@@ -36,9 +44,9 @@ import org.slf4j.LoggerFactory;
  * @author Benoit Lacelle
  *
  */
-public class RunParquetVisualizer {
+public class RunParquetFilter {
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(RunParquetVisualizer.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(RunParquetFilter.class);
 
 	public static void main(String[] args) throws IOException {
 		if (args == null || args.length < 1) {
@@ -52,9 +60,28 @@ public class RunParquetVisualizer {
 			throw new IllegalArgumentException(path + " is not a file");
 		}
 
-		AtomicLong rowIndex = new AtomicLong();
-		new ParquetBytesToStream().stream(path.toUri().toURL().openStream()).forEach(row -> {
-			LOGGER.info("row #{}: {}", rowIndex.getAndIncrement(), row);
-		});
+		URI output;
+		if (args.length >= 2) {
+			output = Paths.get(args[1]).toUri();
+		} else {
+			output = PepperFileHelper.createTempPath("RunParquetFilter", ".parquet", false).toUri();
+		}
+
+		// Configure with '-Dpepper.limit=123'
+		int limit = Integer.getInteger("pepper.limit", 10);
+
+		// ParquetBytesToStream parquetBytesToStream = new ParquetBytesToStream();
+		//
+		// LOGGER.info("About to read rows from {}", path);
+		// Stream<GenericRecord> streamToWrite =
+		// parquetBytesToStream.stream(path.toUri().toURL().openStream()).limit(limit);
+		//
+		// LOGGER.info("About to write rows to {}", output);
+		// new ParquetStreamFactory().serialize(output, streamToWrite);
+
+		ParquetReader<GenericRecord> reader =
+				AvroParquetReader.<GenericRecord>builder(new org.apache.hadoop.fs.Path(path.toUri())).build();
+
+		System.out.println(reader.read().getSchema());
 	}
 }

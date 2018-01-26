@@ -67,7 +67,7 @@ public class TestAvroStreamHelper {
 		record.put(1, "v1");
 		record.put(2, "v2");
 
-		Map<String, ?> map = AvroStreamHelper.toJavaMap(record);
+		Map<String, ?> map = AvroTranscodingHelper.toJavaMap(record);
 
 		Assert.assertEquals(ImmutableMap.of("k1", "v0", "k2", "v1", "k3", "v2"), map);
 
@@ -80,7 +80,7 @@ public class TestAvroStreamHelper {
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(ImmutableMap.of("k1", "v1", "k2", "v2", "k3", "v3"));
 
 		GenericRecord transcoded =
-				AvroStreamHelper.toGenericRecord(schema).apply(ImmutableMap.of("k1", "v1", "k2", "v2"));
+				AvroTranscodingHelper.toGenericRecord(schema).apply(ImmutableMap.of("k1", "v1", "k2", "v2"));
 
 		IndexedRecord record = new GenericData.Record(schema);
 		record.put(0, "v1");
@@ -92,8 +92,8 @@ public class TestAvroStreamHelper {
 	public void testToMap_AdditionalColumnInMap() {
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(ImmutableMap.of("k1", "v1", "k2", "v2"));
 
-		GenericRecord transcoded =
-				AvroStreamHelper.toGenericRecord(schema).apply(ImmutableMap.of("k1", "v1", "k2", "v2", "k3", "v3"));
+		GenericRecord transcoded = AvroTranscodingHelper.toGenericRecord(schema)
+				.apply(ImmutableMap.of("k1", "v1", "k2", "v2", "k3", "v3"));
 
 		IndexedRecord record = new GenericData.Record(schema);
 		record.put(0, "v1");
@@ -105,7 +105,7 @@ public class TestAvroStreamHelper {
 	public void testToGenericRecord_SecondMapHasMissingKey() {
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(ImmutableMap.of("k1", "v1", "k2", "v2"));
 
-		Function<Map<String, ?>, GenericRecord> mapper = AvroStreamHelper.toGenericRecord(schema);
+		Function<Map<String, ?>, GenericRecord> mapper = AvroTranscodingHelper.toGenericRecord(schema);
 
 		GenericRecord firstRecord = mapper.apply(ImmutableMap.of("k1", "v1", "k2", "v2"));
 		GenericRecord secondRecord = mapper.apply(ImmutableMap.of("k2", "v2'"));
@@ -121,24 +121,24 @@ public class TestAvroStreamHelper {
 	public void testToGenericRecord_FloatArray() {
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(ImmutableMap.of("k1", new float[] { 2F }));
 
-		Function<Map<String, ?>, GenericRecord> mapper = AvroStreamHelper.toGenericRecord(schema);
+		Function<Map<String, ?>, GenericRecord> mapper = AvroTranscodingHelper.toGenericRecord(schema);
 
 		GenericRecord firstRecord = mapper.apply(ImmutableMap.of("k1", new float[] { 2F }));
 
 		Assert.assertTrue(firstRecord.get("k1") instanceof ByteBuffer);
 
 		// No type information: keep the raw byte[]
-		Map<String, ?> backToMapNoType = AvroStreamHelper.toJavaMap(firstRecord);
+		Map<String, ?> backToMapNoType = AvroTranscodingHelper.toJavaMap(firstRecord);
 		Assert.assertTrue(backToMapNoType.get("k1") instanceof ByteBuffer);
 
 		// Exact byte[] info (float[])
 		Map<String, ?> backToMapWithMap =
-				AvroStreamHelper.toJavaMap(firstRecord, Collections.singletonMap("k1", new float[0]));
+				AvroTranscodingHelper.toJavaMap(firstRecord, Collections.singletonMap("k1", new float[0]));
 		Assert.assertArrayEquals(new float[] { 2F }, (float[]) backToMapWithMap.get("k1"), 0.01F);
 
 		// Inexact byte[] info (double[]): we deserialize to float[], but should we transcode to double[]?
 		Map<String, ?> backToMapWithDoubleMap =
-				AvroStreamHelper.toJavaMap(firstRecord, Collections.singletonMap("k1", new double[0]));
+				AvroTranscodingHelper.toJavaMap(firstRecord, Collections.singletonMap("k1", new double[0]));
 		Assert.assertArrayEquals(new float[] { 2F }, (float[]) backToMapWithDoubleMap.get("k1"), 0.01F);
 	}
 
@@ -148,13 +148,13 @@ public class TestAvroStreamHelper {
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(singleMap);
 
 		InputStream is =
-				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroStreamHelper.toGenericRecord(schema)),
+				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroTranscodingHelper.toGenericRecord(schema)),
 						() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToFile"));
 
 		byte[] bytes = ByteStreams.toByteArray(is);
 
 		List<Map<String, ?>> backToList = AvroStreamHelper.toGenericRecord(new ByteArrayInputStream(bytes))
-				.map(AvroStreamHelper.toJavaMap())
+				.map(AvroTranscodingHelper.toJavaMap())
 				.collect(Collectors.toList());
 
 		Assert.assertEquals(1, backToList.size());
@@ -168,13 +168,13 @@ public class TestAvroStreamHelper {
 
 		byte[] bytes;
 		try (InputStream is =
-				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroStreamHelper.toGenericRecord(schema)),
+				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroTranscodingHelper.toGenericRecord(schema)),
 						() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
 			bytes = ByteStreams.toByteArray(is);
 		}
 
 		List<Map<String, ?>> backToList = AvroStreamHelper.toGenericRecord(new ByteArrayInputStream(bytes))
-				.map(AvroStreamHelper.toJavaMap())
+				.map(AvroTranscodingHelper.toJavaMap())
 				.collect(Collectors.toList());
 
 		Assert.assertEquals(1, backToList.size());
@@ -188,13 +188,13 @@ public class TestAvroStreamHelper {
 
 		byte[] bytes;
 		try (InputStream is =
-				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroStreamHelper.toGenericRecord(schema)),
+				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroTranscodingHelper.toGenericRecord(schema)),
 						() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
 			bytes = ByteStreams.toByteArray(is);
 		}
 
 		List<Map<String, ?>> backToList = AvroStreamHelper.toGenericRecord(new ByteArrayInputStream(bytes))
-				.map(AvroStreamHelper.toJavaMap(singleMap))
+				.map(AvroTranscodingHelper.toJavaMap(singleMap))
 				.collect(Collectors.toList());
 
 		Assert.assertEquals(1, backToList.size());
@@ -208,15 +208,15 @@ public class TestAvroStreamHelper {
 		Schema schemaWrite = AvroSchemaHelper.proposeSimpleSchema(singleMap);
 
 		byte[] bytes;
-		try (InputStream is =
-				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroStreamHelper.toGenericRecord(schemaWrite)),
-						() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
+		try (InputStream is = AvroStreamHelper.toInputStream(
+				Stream.of(singleMap).map(AvroTranscodingHelper.toGenericRecord(schemaWrite)),
+				() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
 			bytes = ByteStreams.toByteArray(is);
 		}
 
 		// We read as String
 		List<Map<String, ?>> backToList = AvroStreamHelper.toGenericRecord(new ByteArrayInputStream(bytes))
-				.map(AvroStreamHelper.toJavaMap(ImmutableMap.of("k1", "someString")))
+				.map(AvroTranscodingHelper.toJavaMap(ImmutableMap.of("k1", "someString")))
 				.collect(Collectors.toList());
 
 		Assert.assertEquals(1, backToList.size());
@@ -231,15 +231,15 @@ public class TestAvroStreamHelper {
 		Schema schemaWrite = AvroSchemaHelper.proposeSimpleSchema(singleMap);
 
 		byte[] bytes;
-		try (InputStream is =
-				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroStreamHelper.toGenericRecord(schemaWrite)),
-						() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
+		try (InputStream is = AvroStreamHelper.toInputStream(
+				Stream.of(singleMap).map(AvroTranscodingHelper.toGenericRecord(schemaWrite)),
+				() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
 			bytes = ByteStreams.toByteArray(is);
 		}
 
 		// We read as Object
 		List<Map<String, ?>> backToList = AvroStreamHelper.toGenericRecord(new ByteArrayInputStream(bytes))
-				.map(AvroStreamHelper.toJavaMap(ImmutableMap.of("k1", now)))
+				.map(AvroTranscodingHelper.toJavaMap(ImmutableMap.of("k1", now)))
 				.collect(Collectors.toList());
 
 		Assert.assertEquals(1, backToList.size());
@@ -268,7 +268,7 @@ public class TestAvroStreamHelper {
 			// Collections.singletonMap enable a null value (especially for NULL type)
 			try (InputStream is = AvroStreamHelper.toInputStream(
 					Stream.of(Collections.singletonMap("fieldName", someValue))
-							.map(AvroStreamHelper.toGenericRecord(record)),
+							.map(AvroTranscodingHelper.toGenericRecord(record)),
 					() -> PepperExecutorsHelper.newSingleThreadExecutor("testAllTypes"))) {
 				bytes = ByteStreams.toByteArray(is);
 			}
@@ -315,7 +315,8 @@ public class TestAvroStreamHelper {
 
 			byte[] bytes;
 			try (InputStream is = AvroStreamHelper.toInputStream(
-					Stream.of(ImmutableMap.of("fieldName", someValue)).map(AvroStreamHelper.toGenericRecord(record)),
+					Stream.of(ImmutableMap.of("fieldName", someValue))
+							.map(AvroTranscodingHelper.toGenericRecord(record)),
 					() -> PepperExecutorsHelper.newSingleThreadExecutor("testAllTypes_UnionNull"))) {
 				bytes = ByteStreams.toByteArray(is);
 			}

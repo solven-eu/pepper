@@ -43,7 +43,7 @@ import org.apache.parquet.hadoop.ParquetWriter;
 import org.junit.Assert;
 import org.junit.Test;
 
-import cormoran.pepper.avro.AvroStreamHelper;
+import cormoran.pepper.avro.AvroTranscodingHelper;
 import cormoran.pepper.hadoop.PepperHadoopHelper;
 import cormoran.pepper.io.PepperFileHelper;
 import cormoran.pepper.parquet.ParquetBytesToStream;
@@ -104,7 +104,7 @@ public class TestReadWrite {
 
 		Stream<? extends Map<String, ?>> asMapStream =
 				new ParquetBytesToStream().stream(new FileInputStream(new File(file.toString())))
-						.map(AvroStreamHelper.toJavaMap());
+						.map(AvroTranscodingHelper.toJavaMap());
 		Iterator<? extends Map<String, ?>> asMapIterator = asMapStream.iterator();
 
 		Map<String, ?> nextRecord = asMapIterator.next();
