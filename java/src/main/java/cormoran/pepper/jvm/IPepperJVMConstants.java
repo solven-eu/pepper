@@ -30,19 +30,6 @@ package cormoran.pepper.jvm;
  * 
  * -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -Xmx3G -Xms3G -XX:MaxDirectMemorySize=7G -XX:MaxPermSize=512M
  * 
- * Enable HeapDump on OutOfMemoryError
- * 
- * -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/disk2/dumps
- * 
- * 
- * 
- * -DbufferAllocatorClass=com.qfs.buf.impl.HeapBufferAllocator
- * -DchunkAllocatorClass=com.qfs.chunk.buffer.impl.HeapBufferChunkAllocator -DdefaultChunkSize=131072
- * -DchunkAllocatorClass=com.qfs.chunk.direct.impl.DirectChunkAllocator
- * -DchunkAllocatorClass=com.qfs.chunk.direct.impl.MmapDirectChunkAllocator
- * -DchunkAllocatorClass=com.qfs.chunk.direct.allocator.impl.SlabMemoryAllocator
- * 
- * 
  * java -XX:+PrintFlagsFinal -version > flags.log
  * 
  * 
@@ -51,8 +38,7 @@ package cormoran.pepper.jvm;
  * -XX:+PrintSafepointStatistics - prints safe points details
  * 
  * -XX:PrintSafepointStatisticsCount=1 - make JVM report every safe point
- * 
- * <%p> will add the PID in the gcLogFile <%t> will add the startup date in the gcLogFile
+ *
  * 
  * 
  * https://bugs.openjdk.java.net/browse/JDK-6950794
@@ -61,7 +47,7 @@ package cormoran.pepper.jvm;
  * 
  * -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps
  * 
- * For -Xloggc, %p.%t are very important else gc logs will be overriden on each restart
+ * For -Xloggc, %p.%t are very important else gc logs will be overridden on each restart
  *
  * -Xloggc:../log/jvm_gc.%p.%t.log -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCDetails
  * -XX:+PrintClassHistogramBeforeFullGC -XX:+PrintClassHistogramAfterFullGC -XX:+PrintGCApplicationStoppedTime
@@ -74,7 +60,6 @@ package cormoran.pepper.jvm;
  * In Prod -XX:-OmitStackTraceInFastThrow will prevent cutting stacks, even if at least the first stack occurrence has
  * been complete http://stackoverflow.com/questions/2411487/nullpointerexception-in-java-with-no-stacktrace
  * 
- * JGroups does not work with IPv6 -Djava.net.preferIPv4Stack=true
  * 
  * # CheckIP with: hostname -i
  * 
@@ -84,14 +69,6 @@ package cormoran.pepper.jvm;
  * 
  * Typical monitoring commands
  * 
- * jmap <pid>
- * 
- * jmap -histo <pid>
- * 
- * jmap -histo -F <pid> > some.file
- * 
- * jmap -dump:format=b,file=<filename> <pid> -J-Dsun.tools.attach.attachTimeout=<milliseconds>
- * 
  * jstat -gclog <pid>
  * 
  * jstack <pid>
@@ -100,17 +77,6 @@ package cormoran.pepper.jvm;
  * 
  * Add debug in tomcat: "-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
  * 
- * JIT Class Compilation audit
- * 
- * -XX:+UnlockDiagnosticVMOptions -XX:+LogCompilation -XX:+TraceClassLoading
- * 
- * Optionally add -XX:+PrintAssembly
- * 
- * https://github.com/AdoptOpenJDK/jitwatch/
- * 
- * https://github.com/AdoptOpenJDK/jitwatch/wiki/Instructions
- * 
- * Profiling based on ThreadDumps http://techblog.netflix.com/2015/07/java-in-flames.html
  * 
  * OS Environment variable: JAVA_TOOL_OPTIONS
  * 
@@ -120,6 +86,27 @@ package cormoran.pepper.jvm;
  *
  */
 public interface IPepperJVMConstants {
+	/**
+	 * 
+	 * Enable HeapDump on OutOfMemoryError
+	 * 
+	 * -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/disk2/dumps
+	 * 
+	 * jmap <pid>
+	 * 
+	 * jmap -histo <pid>
+	 * 
+	 * jmap -histo -F <pid> > some.file
+	 * 
+	 * jmap -dump:format=b,file=<filename> <pid> -J-Dsun.tools.attach.attachTimeout=<milliseconds>
+	 * 
+	 * @author Benoit Lacelle
+	 *
+	 */
+	interface IPepperHeapAnalysis {
+
+	}
+
 	/**
 	 * 
 	 * Enable Java Mission Control http://docs.oracle.com/cd/E15289_01/doc.40/e15070/usingjfr.htm
@@ -143,4 +130,42 @@ public interface IPepperJVMConstants {
 
 	}
 
+	/**
+	 * 
+	 * JIT Class Compilation audit
+	 * 
+	 * -XX:+UnlockDiagnosticVMOptions -XX:+LogCompilation -XX:+TraceClassLoading
+	 * 
+	 * Optionally add -XX:+PrintAssembly
+	 * 
+	 * https://github.com/AdoptOpenJDK/jitwatch/
+	 * 
+	 * https://github.com/AdoptOpenJDK/jitwatch/wiki/Instructions
+	 * 
+	 * Profiling based on ThreadDumps http://techblog.netflix.com/2015/07/java-in-flames.html
+	 * 
+	 * @author Benoit Lacelle
+	 *
+	 */
+	interface IPepperJITAnalysis {
+
+	}
+
+	/**
+	 * -DdefaultChunkSize=131072
+	 * 
+	 * -DbufferAllocatorClass=com.qfs.buf.impl.HeapBufferAllocator
+	 * -DchunkAllocatorClass=com.qfs.chunk.buffer.impl.HeapBufferChunkAllocator
+	 * -DchunkAllocatorClass=com.qfs.chunk.direct.impl.DirectChunkAllocator
+	 * -DchunkAllocatorClass=com.qfs.chunk.direct.impl.MmapDirectChunkAllocator
+	 * -DchunkAllocatorClass=com.qfs.chunk.direct.allocator.impl.SlabMemoryAllocator
+	 * 
+	 * JGroups does not work with IPv6 -Djava.net.preferIPv4Stack=true
+	 * 
+	 * @author Benoit Lacelle
+	 *
+	 */
+	interface IPepperActivePivot {
+
+	}
 }
