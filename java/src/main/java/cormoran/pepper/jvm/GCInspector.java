@@ -38,6 +38,7 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
+import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.nio.file.Path;
@@ -557,24 +558,22 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	}
 
 	protected long appendDirectMemoryAndThreads(StringBuilder sb) {
-		long additionalMemory = 0L;
+		AtomicLong additionalMemory = new AtomicLong();
 
 		// Add information about DirectMemory
 		{
-			BufferPoolMXBean directMemoryBean = directMemoryStatus();
-
-			if (directMemoryBean != null) {
+			directMemoryStatus().ifPresent(directMemoryBean -> {
 				sb.append("; ");
 				sb.append("DirectMemory").append(": ");
 				long directMemoryUsed = directMemoryBean.getMemoryUsed();
-				additionalMemory += directMemoryUsed;
+				additionalMemory.addAndGet(directMemoryUsed);
 				appendSize(sb, directMemoryUsed);
 				sb.append(" over max=");
 				long maxDirectMemory = PepperForOracleJVM.maxDirectMemory();
 				appendSize(sb, maxDirectMemory);
 				sb.append(" - ").append(PepperLogHelper.getNicePercentage(directMemoryUsed, maxDirectMemory));
 				sb.append(" (allocationCount=").append(directMemoryBean.getCount()).append(')');
-			}
+			});
 		}
 
 		// Add the number of live threads as the OS may refuse to make new
@@ -585,13 +584,13 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 			sb.append(nbLiveThreads);
 
 			long threadMemory = nbLiveThreads * getMemoryPerThread();
-			additionalMemory += threadMemory;
+			additionalMemory.addAndGet(threadMemory);
 			sb.append(" (");
 			appendSize(sb, threadMemory);
 			sb.append(")");
 		}
 
-		return additionalMemory;
+		return additionalMemory.get();
 	}
 
 	protected void appendPercentage(StringBuilder sb, long numerator, long denominator) {
@@ -807,19 +806,38 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		return PepperForOracleJVM.maxDirectMemory();
 	}
 
-	// https://stackoverflow.com/questions/6020619/where-to-find-default-xss-value-for-sun-oracle-jvm
-	protected static long getMemoryPerThread() {
-		// '-XX:ThreadStackSize' or '-Xss'
-		// TODO: for now, we return the default: 1MB
-		return IPepperMemoryConstants.MB;
+	protected long getMemoryPerThread() {
+		// https://stackoverflow.com/questions/1490869/how-to-get-vm-arguments-from-inside-of-java-application
+		RuntimeMXBean runtimeMxBean = getRuntimeMXBean();
+		List<String> arguments = runtimeMxBean.getInputArguments();
+
+		// '-XX:ThreadStackSize=512' or '-Xss64k'
+		Optional<String> xss = arguments.stream().filter(s -> s.startsWith("-Xss")).findAny();
+		Optional<String> tss = arguments.stream().filter(s -> s.startsWith("-XX:ThreadStackSize=")).findAny();
+
+		if (xss.isPresent()) {
+			return PepperMemoryHelper.memoryAsLong(xss.get());
+		} else if (tss.isPresent()) {
+			return PepperMemoryHelper.memoryAsLong(xss.get());
+		} else {
+			// https://stackoverflow.com/questions/6020619/where-to-find-default-xss-value-for-sun-oracle-jvm
+			return IPepperMemoryConstants.MB;
+		}
 	}
 
-	protected BufferPoolMXBean directMemoryStatus() {
+	protected RuntimeMXBean getRuntimeMXBean() {
+		return ManagementFactory.getRuntimeMXBean();
+	}
+
+	protected Optional<BufferPoolMXBean> directMemoryStatus() {
 		return ManagementFactory.getPlatformMXBeans(BufferPoolMXBean.class)
 				.stream()
 				.filter(b -> b.getName().equals("direct"))
-				.findAny()
-				.orElseGet(() -> null);
+				.findAny();
+	}
+
+	public long getDirectMemory() {
+		return directMemoryStatus().map(bp -> bp.getMemoryUsed()).orElse(-1L);
 	}
 
 	@ManagedAttribute

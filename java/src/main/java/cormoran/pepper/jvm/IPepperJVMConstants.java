@@ -71,8 +71,8 @@ package cormoran.pepper.jvm;
  * 
  * -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 XX:GCLogFileSize=10M
  * 
- * In Prod -XX:-OmitStackTraceInFastThrow will prevent cutting stacks, even if at least the first stack occurence has
- * been complete
+ * In Prod -XX:-OmitStackTraceInFastThrow will prevent cutting stacks, even if at least the first stack occurrence has
+ * been complete http://stackoverflow.com/questions/2411487/nullpointerexception-in-java-with-no-stacktrace
  * 
  * JGroups does not work with IPv6 -Djava.net.preferIPv4Stack=true
  * 
@@ -112,10 +112,9 @@ package cormoran.pepper.jvm;
  * 
  * Profiling based on ThreadDumps http://techblog.netflix.com/2015/07/java-in-flames.html
  * 
- * Ensure stack-traces are present: -XX:-OmitStackTraceInFastThrow
- * http://stackoverflow.com/questions/2411487/nullpointerexception-in-java-with-no-stacktrace
- * 
  * OS Environment variable: JAVA_TOOL_OPTIONS
+ * 
+ * http://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html
  * 
  * @author Benoit Lacelle
  *

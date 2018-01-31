@@ -51,7 +51,6 @@ import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Streams;
 
 import cormoran.pepper.avro.AvroStreamFactory;
-import cormoran.pepper.avro.AvroStreamHelper;
 import cormoran.pepper.avro.AvroTranscodingHelper;
 import cormoran.pepper.avro.IGenericRecordConsumer;
 
@@ -117,10 +116,19 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 	public Stream<GenericRecord> toStream(Path hadoopPath) throws IOException {
 		Filter filter = makeFilter();
 
-		ParquetReader<GenericRecord> reader = AvroParquetReader.<GenericRecord>builder(hadoopPath)
-				.withFilter(filter)
-				.withConf(getConfiguration())
-				.build();
+		ParquetReader<GenericRecord> reader;
+		try {
+			reader = AvroParquetReader.<GenericRecord>builder(hadoopPath)
+					.withFilter(filter)
+					.withConf(getConfiguration())
+					.build();
+		} catch (IOException e) {
+			// Default exception may not refer the input path
+			throw new IOException("Issue on path: " + hadoopPath, e);
+		} catch (RuntimeException e) {
+			// Default exception may not refer the input path
+			throw new IOException("Issue on path: " + hadoopPath, e);
+		}
 
 		return toStream(reader);
 	}

@@ -27,13 +27,15 @@ import java.io.Serializable;
 import java.io.UncheckedIOException;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import org.apache.avro.LogicalType;
-import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.Schema.Type;
@@ -41,6 +43,7 @@ import org.apache.avro.Schema.Type;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 import cormoran.pepper.io.PepperSerializationHelper;
 import cormoran.pepper.logging.PepperLogHelper;
@@ -71,6 +74,8 @@ public class AvroSchemaHelper {
 			return Schema.create(Type.NULL);
 		} else if (value instanceof CharSequence) {
 			return Schema.create(Type.STRING);
+		} else if (value instanceof Boolean) {
+			return Schema.create(Type.BOOLEAN);
 		} else if (value instanceof Double) {
 			return Schema.create(Type.DOUBLE);
 		} else if (value instanceof Float) {
@@ -79,6 +84,57 @@ public class AvroSchemaHelper {
 			return Schema.create(Type.LONG);
 		} else if (value instanceof Integer) {
 			return Schema.create(Type.INT);
+		} else if (value instanceof Map<?, ?>) {
+			Map<?, ?> asMap = (Map<?, ?>) value;
+			if (asMap.isEmpty()) {
+				throw new IllegalArgumentException("Can not infer schema from an empty Map");
+			} else {
+				AtomicBoolean keyMayBeNull = new AtomicBoolean(false);
+				Set<Class<?>> keyClasses = new HashSet<>();
+				AtomicBoolean valueMayBeNull = new AtomicBoolean(false);
+				Set<Class<?>> valueClasses = new HashSet<>();
+
+				asMap.forEach((k, v) -> {
+					if (k == null) {
+						keyMayBeNull.set(true);
+					} else {
+						keyClasses.add(k.getClass());
+					}
+					if (v == null) {
+						valueMayBeNull.set(true);
+					} else {
+						valueClasses.add(v.getClass());
+					}
+				});
+
+				if (keyMayBeNull.get()) {
+					throw new IllegalArgumentException("We do not handle Maps null keys: " + value);
+				}
+
+				if (keyClasses.equals(ImmutableSet.of(String.class))) {
+					// Only String keys: the nominal case
+
+					if (valueClasses.size() == 1) {
+						// We have a single type of value
+						return Schema.createMap(proposeSchemaForValue(
+								asMap.values().stream().filter(Objects::nonNull).findAny().get()));
+					} else {
+						if (valueClasses.isEmpty()) {
+							// Only null
+							throw new IllegalArgumentException("We do not handle Maps with only null values: " + value);
+						} else {
+							// Multiple classes
+							throw new UnsupportedOperationException(
+									"TODO: handle Maps with values of different type: " + value);
+						}
+					}
+				} else {
+					// Keys with different types
+					throw new IllegalArgumentException(
+							"We do not handle Maps with key of various types: " + keyClasses);
+				}
+
+			}
 		} else if (value instanceof Serializable) {
 			// This will catch float[], double[], java.time.LocalDate
 			return Schema.create(Type.BYTES);
@@ -208,6 +264,8 @@ public class AvroSchemaHelper {
 			return IPepperSchemaConstants.SOME_STRING;
 		} else if (nonNullSchema.getType() == Type.INT) {
 			return IPepperSchemaConstants.SOME_INT;
+		} else if (nonNullSchema.getType() == Type.BOOLEAN) {
+			return IPepperSchemaConstants.SOME_BOOLEAN;
 		} else if (nonNullSchema.getType() == Type.LONG) {
 			return IPepperSchemaConstants.SOME_LONG;
 		} else if (nonNullSchema.getType() == Type.FLOAT) {
@@ -226,7 +284,13 @@ public class AvroSchemaHelper {
 				throw new RuntimeException("Not handled: " + schema);
 			}
 		} else if (nonNullSchema.getType() == Type.MAP) {
-			return schema.getFields().stream().collect(Collectors.toMap(f -> f, f -> exampleValue(f.schema())));
+			Schema valueType = nonNullSchema.getValueType();
+
+			return ImmutableMap.of("key", exampleValue(valueType));
+		} else if (nonNullSchema.getType() == Type.RECORD) {
+			List<Field> fields = nonNullSchema.getFields();
+
+			return fields.stream().collect(Collectors.toMap(f -> f.name(), f -> exampleValue(f.schema())));
 		} else if (nonNullSchema.getType() == Type.BYTES) {
 			// Is it legit?
 			return IPepperSchemaConstants.SOME_LOCALDATE;
