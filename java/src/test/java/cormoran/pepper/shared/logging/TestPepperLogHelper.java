@@ -73,6 +73,11 @@ public class TestPepperLogHelper {
 	}
 
 	@Test
+	public void getMediumPercentage() {
+		Assert.assertEquals("2.66%", PepperLogHelper.getNicePercentage(6, 225).toString());
+	}
+
+	@Test
 	public void getProgressAboveMax() {
 		Assert.assertEquals("1000%", PepperLogHelper.getNicePercentage(1000, 100).toString());
 	}
@@ -132,7 +137,12 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testPercentage2() {
-		Assert.assertEquals("9.8%", PepperLogHelper.getNicePercentage(98, 1000).toString());
+		Assert.assertEquals("9.80%", PepperLogHelper.getNicePercentage(98, 1000).toString());
+	}
+
+	@Test
+	public void testPercentage3() {
+		Assert.assertEquals("9.81%", PepperLogHelper.getNicePercentage(981, 10000).toString());
 	}
 
 	@Test

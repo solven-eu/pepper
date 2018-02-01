@@ -41,6 +41,14 @@ public class RunParquetVisualizer {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RunParquetVisualizer.class);
 
 	public static void main(String[] args) throws IOException {
+		Path path = getParquetFile(args);
+
+		AtomicLong rowIndex = new AtomicLong();
+		new ParquetBytesToStream().stream(path.toUri().toURL().openStream())
+				.forEach(row -> LOGGER.info("row #{}: {}", rowIndex.getAndIncrement(), row));
+	}
+
+	protected static Path getParquetFile(String[] args) {
 		if (args == null || args.length < 1) {
 			throw new IllegalArgumentException("We expect at least one argument being the path top the parquet file");
 		}
@@ -51,10 +59,6 @@ public class RunParquetVisualizer {
 		if (!path.toFile().isFile()) {
 			throw new IllegalArgumentException(path + " is not a file");
 		}
-
-		AtomicLong rowIndex = new AtomicLong();
-		new ParquetBytesToStream().stream(path.toUri().toURL().openStream()).forEach(row -> {
-			LOGGER.info("row #{}: {}", rowIndex.getAndIncrement(), row);
-		});
+		return path;
 	}
 }

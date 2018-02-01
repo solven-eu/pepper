@@ -10,9 +10,6 @@
  *******************************************************************************/
 package org.eclipse.mat.util;
 
-/**
- * File utilities for things like copying icon files.
- */
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +17,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * File utilities for things like copying icon files.
+ */
 public final class FileUtils {
 	private static DirDeleter deleterThread;
 

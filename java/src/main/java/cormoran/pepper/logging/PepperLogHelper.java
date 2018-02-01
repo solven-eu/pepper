@@ -89,7 +89,8 @@ public class PepperLogHelper {
 						return "0." + Long.toString(smallRatio) + "%";
 					}
 				} else if (ratio < TEN_F) {
-					long smallRatio = (progress - ratio * TEN_F) * THOUSAND / max;
+					// Only one digit before dot: we look for digits after dot
+					long smallRatio = (progress * THOUSAND * TEN_F - ratio * max * HUNDRED) / max;
 
 					// We prefer having at least 2 digits
 					return ratio + "." + Long.toString(smallRatio) + "%";

@@ -29,10 +29,6 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import org.apache.avro.generic.GenericRecord;
-import org.apache.parquet.avro.AvroParquetReader;
-import org.apache.parquet.avro.AvroParquetWriter;
-import org.apache.parquet.hadoop.ParquetReader;
-import org.apache.parquet.hadoop.ParquetWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,16 +45,7 @@ public class RunParquetFilter {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RunParquetFilter.class);
 
 	public static void main(String[] args) throws IOException {
-		if (args == null || args.length < 1) {
-			throw new IllegalArgumentException("We expect at least one argument being the path top the parquet file");
-		}
-
-		String pathAsString = args[0];
-		Path path = Paths.get(pathAsString);
-
-		if (!path.toFile().isFile()) {
-			throw new IllegalArgumentException(path + " is not a file");
-		}
+		Path path = RunParquetVisualizer.getParquetFile(args);
 
 		URI output;
 		if (args.length >= 2) {
@@ -70,18 +57,13 @@ public class RunParquetFilter {
 		// Configure with '-Dpepper.limit=123'
 		int limit = Integer.getInteger("pepper.limit", 10);
 
-		// ParquetBytesToStream parquetBytesToStream = new ParquetBytesToStream();
-		//
-		// LOGGER.info("About to read rows from {}", path);
-		// Stream<GenericRecord> streamToWrite =
-		// parquetBytesToStream.stream(path.toUri().toURL().openStream()).limit(limit);
-		//
-		// LOGGER.info("About to write rows to {}", output);
-		// new ParquetStreamFactory().serialize(output, streamToWrite);
+		ParquetBytesToStream parquetBytesToStream = new ParquetBytesToStream();
 
-		ParquetReader<GenericRecord> reader =
-				AvroParquetReader.<GenericRecord>builder(new org.apache.hadoop.fs.Path(path.toUri())).build();
+		LOGGER.info("About to read rows from {}", path);
+		Stream<GenericRecord> streamToWrite =
+				parquetBytesToStream.stream(path.toUri().toURL().openStream()).limit(limit);
 
-		System.out.println(reader.read().getSchema());
+		LOGGER.info("About to write rows to {}", output);
+		new ParquetStreamFactory().serialize(output, streamToWrite);
 	}
 }
