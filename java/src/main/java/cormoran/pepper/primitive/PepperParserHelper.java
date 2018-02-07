@@ -136,7 +136,7 @@ public class PepperParserHelper {
 
 					if (first == p) {
 						first = p + 1;
-					} else {
+					} else {// TODO: this consumes transient memory
 						s = new ConcatCharSequence(s.subSequence(first, p), s.subSequence(p + 1, last));
 						first = 0;
 					}

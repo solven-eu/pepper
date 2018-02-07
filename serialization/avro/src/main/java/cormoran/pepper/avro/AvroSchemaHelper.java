@@ -275,14 +275,9 @@ public class AvroSchemaHelper {
 		} else if (nonNullSchema.getType() == Type.NULL) {
 			return null;
 		} else if (nonNullSchema.getType() == Type.ARRAY) {
-			Schema arrayType = nonNullSchema.getTypes().stream().filter(t -> t.getType() == Type.ARRAY).findAny().get();
-			Schema elementType = arrayType.getElementType();
+			Schema elementType = nonNullSchema.getElementType();
 
-			if (elementType.getFields().size() == 1) {
-				return Collections.singletonList(exampleValue(elementType));
-			} else {
-				throw new RuntimeException("Not handled: " + schema);
-			}
+			return Collections.singletonList(exampleValue(elementType));
 		} else if (nonNullSchema.getType() == Type.MAP) {
 			Schema valueType = nonNullSchema.getValueType();
 

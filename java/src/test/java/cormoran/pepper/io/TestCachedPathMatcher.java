@@ -49,6 +49,5 @@ public class TestCachedPathMatcher {
 		// Ensure underlying is actually false
 		Assert.assertFalse(decorated.matches(path));
 		Assert.assertTrue(cachedMatcher.matches(path));
-
 	}
 }

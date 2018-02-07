@@ -15,6 +15,17 @@
     <version>1.16-SNAPSHOT</version>
 
     <packaging>pom</packaging>
+    
+	<developers>
+		<developer>
+			<id>blacelle</id>
+			<name>Benoit Lacelle</name>
+			<email>benoit.lacelle at gmail.com</email>
+			<roles>
+				<role>Project lead</role>
+			</roles>
+		</developer>
+	</developers>
 
     <properties>
         <!-- set encoding to something not platform dependent -->

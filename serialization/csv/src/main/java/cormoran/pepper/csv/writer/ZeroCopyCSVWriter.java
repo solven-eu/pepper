@@ -100,10 +100,15 @@ public class ZeroCopyCSVWriter implements IZeroCopyCSVWriter {
 		};
 	}
 
+	/**
+	 * @return the number of written rows
+	 */
 	@Override
-	public boolean apply(Stream<?> input) {
+	public long applyAsLong(Stream<?> input) {
 		Joiner joiner = Joiner.on(separator).useForNull("");
 		try {
+			AtomicLong nbRows = new AtomicLong();
+
 			Stream<CharSequence> escaped = input.filter(Objects::nonNull).map(part -> {
 				CharSequence asCharSequence;
 				if (part instanceof CharSequence) {
@@ -119,7 +124,7 @@ public class ZeroCopyCSVWriter implements IZeroCopyCSVWriter {
 				} else {
 					return asCharSequence;
 				}
-			});
+			}).peek(cs -> nbRows.incrementAndGet());
 
 			// We write to proxy to count characters
 			Appendable output = joiner.appendTo(proxy, escaped.iterator());
@@ -128,16 +133,16 @@ public class ZeroCopyCSVWriter implements IZeroCopyCSVWriter {
 
 			writer.write(newLine);
 			nbLinesWritten.incrementAndGet();
+
+			return nbRows.get();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-
-		return true;
 	}
 
-	private boolean contains(CharSequence containined, CharSequence contained) {
+	protected boolean contains(CharSequence containined, CharSequence contained) {
 		if (containined == null || contained == null) {
-			// TODO: Shoulw we really prevent
+			// TODO: Should we really prevent
 			return false;
 		}
 		// TODO : zero-copy

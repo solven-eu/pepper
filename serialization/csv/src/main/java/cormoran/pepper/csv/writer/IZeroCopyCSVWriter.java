@@ -23,9 +23,8 @@
 package cormoran.pepper.csv.writer;
 
 import java.io.Closeable;
+import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
-
-import com.google.common.base.Predicate;
 
 /**
  * This interface wraps the logic of writing rows to a {@link Closeable} resource
@@ -33,7 +32,7 @@ import com.google.common.base.Predicate;
  * @author Benoit Lacelle
  * 
  */
-public interface IZeroCopyCSVWriter extends AutoCloseable, Predicate<Stream<?>> {
+public interface IZeroCopyCSVWriter extends AutoCloseable, ToLongFunction<Stream<?>> {
 	// We prefer implementations to return RuntimeExceptions
 	@Override
 	void close();

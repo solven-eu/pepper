@@ -225,4 +225,40 @@ public class TestPepperParquetHelper {
 			Assert.assertTrue(asMap.get("arrayField") instanceof List);
 		}
 	}
+
+	@Test
+	public void testToJavaMap_SchemaFloat_ValueFloat() throws IOException {
+		Schema elementSchema = Schema.createRecord("arrayElement",
+				"doc",
+				"namespace",
+				false,
+				Arrays.asList(new Field("name",
+						Schema.createUnion(Schema.create(Schema.Type.NULL), Schema.create(Schema.Type.FLOAT)),
+						"doc",
+						(Object) null)));
+
+		Record element1 = new GenericRecordBuilder(elementSchema).set("name", 123F).build();
+
+		Map<String, ?> asMap = AvroTranscodingHelper.toJavaMap(element1);
+
+		Assert.assertTrue(asMap.get("name") instanceof Float);
+	}
+
+	@Test
+	public void testToJavaMap_SchemaFloat_ValueNull() throws IOException {
+		Schema elementSchema = Schema.createRecord("arrayElement",
+				"doc",
+				"namespace",
+				false,
+				Arrays.asList(new Field("name",
+						Schema.createUnion(Schema.create(Schema.Type.NULL), Schema.create(Schema.Type.FLOAT)),
+						"doc",
+						(Object) null)));
+
+		Record element1 = new GenericRecordBuilder(elementSchema).set("name", null).build();
+
+		Map<String, ?> asMap = AvroTranscodingHelper.toJavaMap(element1);
+
+		Assert.assertTrue(asMap.get("name") instanceof Float);
+	}
 }

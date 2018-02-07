@@ -54,6 +54,13 @@ public class TestAvroProposeSchema implements IPepperSchemaConstants {
 	}
 
 	@Test
+	public void testProposeValue_Array() {
+		Object exampleValue = AvroSchemaHelper.exampleValue(Schema.createArray(Schema.create(Schema.Type.FLOAT)));
+
+		Assert.assertEquals(Arrays.asList(1.2F), exampleValue);
+	}
+
+	@Test
 	public void testProposeSchema_EACH() {
 		SOME_LIST.forEach(object -> {
 			Schema schema = AvroSchemaHelper.proposeSchemaForValue(object);
