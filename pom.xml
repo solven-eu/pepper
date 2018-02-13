@@ -32,7 +32,8 @@
 	<!-- Needs 2 hours to appear in http://search.maven.org/ -->
 
 	<properties>
-		<guava.version>23.6-jre</guava.version>
+		<!-- https://github.com/google/guava/releases -->
+		<guava.version>24.0-jre</guava.version>
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
 		<errorprone.version>2.0.21</errorprone.version>
@@ -297,17 +298,17 @@
 					</configuration>
 				</plugin>
 
-                <!-- http://maven.apache.org/surefire/maven-failsafe-plugin/examples/inclusion-exclusion.html -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.20</version>
+				<!-- http://maven.apache.org/surefire/maven-failsafe-plugin/examples/inclusion-exclusion.html -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>2.20</version>
 
-                    <configuration>
-                        <forkCount>1C</forkCount>
-                        <runOrder>alphabetical</runOrder>
-                    </configuration>
-                </plugin>
+					<configuration>
+						<forkCount>1C</forkCount>
+						<runOrder>alphabetical</runOrder>
+					</configuration>
+				</plugin>
 
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
