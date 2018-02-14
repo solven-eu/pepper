@@ -22,6 +22,7 @@
  */
 package cormoran.pepper.io;
 
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 
@@ -49,5 +50,25 @@ public class TestCachedPathMatcher {
 		// Ensure underlying is actually false
 		Assert.assertFalse(decorated.matches(path));
 		Assert.assertTrue(cachedMatcher.matches(path));
+	}
+
+	@Test
+	public void testHumanToString_Regex() {
+		PathMatcher rawMatcher = FileSystems.getDefault().getPathMatcher("regex:");
+		PathMatcher cachedPathMatcher = CachedPathMatcher.fromRegex("Prefix.*");
+
+		// Demonstrate we provide a useful toString while jdk class misses a useful .toString
+		Assert.assertFalse(rawMatcher.toString().contains("Prefix"));
+		Assert.assertEquals("regex:Prefix.*", cachedPathMatcher.toString());
+	}
+
+	@Test
+	public void testHumanToString_Glob() {
+		PathMatcher rawMatcher = FileSystems.getDefault().getPathMatcher("regex:");
+		PathMatcher cachedPathMatcher = CachedPathMatcher.fromRegex("Prefix.*");
+
+		// Demonstrate we provide a useful toString while jdk class misses a useful .toString
+		Assert.assertFalse(rawMatcher.toString().contains("Prefix"));
+		Assert.assertEquals("regex:Prefix.*", cachedPathMatcher.toString());
 	}
 }

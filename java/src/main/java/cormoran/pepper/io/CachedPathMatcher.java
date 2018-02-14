@@ -22,6 +22,7 @@
  */
 package cormoran.pepper.io;
 
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.Map;
@@ -32,7 +33,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Enable caching of regex resolution against a Path. It is especially useful when a directory with many files is
- * checked very regularly
+ * checked very regularly. It also facilitates logs by requiring an explicit .toString. MOst PathMatcher implementation
+ * (even on regex of glob) have no .toString
  * 
  * @author Benoit Lacelle
  *
@@ -45,11 +47,11 @@ public class CachedPathMatcher implements PathMatcher {
 	protected final Map<String, Boolean> alreadyLogged = new ConcurrentHashMap<>();
 
 	protected final PathMatcher decorated;
-	protected final String pattern;
+	protected final String humanString;
 
-	public CachedPathMatcher(PathMatcher decorated, String pattern) {
+	public CachedPathMatcher(PathMatcher decorated, String humanString) {
 		this.decorated = decorated;
-		this.pattern = pattern;
+		this.humanString = humanString;
 	}
 
 	@Override
@@ -60,19 +62,43 @@ public class CachedPathMatcher implements PathMatcher {
 			boolean matches = decorated.matches(path);
 
 			// Prevent logging too often: we log in debug only if adding in the cache
-			LOGGER.debug("PathMatcher {} on {} returned {}", pattern, path, matches);
+			LOGGER.debug("PathMatcher {} on {} returned {}", humanString, path, matches);
 
 			return matches;
 		});
 
 		// Log in trace anyway (it will log twice on the first encounter)
-		LOGGER.trace("PathMatcher {} on {} returned {}", pattern, path, match);
+		LOGGER.trace("PathMatcher {} on {} returned {}", humanString, path, match);
 
 		return match;
 	}
 
 	@Override
 	public String toString() {
-		return pattern;
+		return humanString;
+	}
+
+	/**
+	 * Regular is more powerful but also more complex than glob syntax
+	 * 
+	 * @param regex
+	 *            For instance: '.*\.java' to match any file ending with '.java'
+	 * @return a {@link CachedPathMatcher} with a nice .toString with given regex matcher
+	 */
+	public static PathMatcher fromRegex(String regex) {
+		String syntaxAndPattern = "regex:" + regex;
+		return new CachedPathMatcher(FileSystems.getDefault().getPathMatcher(syntaxAndPattern), syntaxAndPattern);
+	}
+
+	/**
+	 * Glob is simpler but less powerful than regex.
+	 * 
+	 * @param glob
+	 *            For instance: '*.java' to match any file ending with '.java'
+	 * @return a {@link CachedPathMatcher} with a nice .toString with given regex syntax
+	 */
+	public static PathMatcher fromGlob(String glob) {
+		String syntaxAndPattern = "glob:" + glob;
+		return new CachedPathMatcher(FileSystems.getDefault().getPathMatcher(syntaxAndPattern), syntaxAndPattern);
 	}
 }
