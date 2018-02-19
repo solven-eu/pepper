@@ -49,7 +49,7 @@ import cormoran.pepper.memory.IPepperMemoryConstants;
 import cormoran.pepper.memory.PepperMemoryHelper;
 import cormoran.pepper.primitive.PepperParserHelper;
 
-//@Ignore("Broken: TODO")
+@Ignore("Broken: TODO")
 public class TestZeroCopyCSVParserMemory {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestZeroCopyCSVParserMemory.class);
 

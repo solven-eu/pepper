@@ -23,6 +23,7 @@
 package cormoran.pepper.spark;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -50,7 +51,7 @@ import cormoran.pepper.parquet.ParquetStreamFactory;
 public class TestParquetWriteToFile {
 	ParquetStreamFactory parquetStreamFactory = new ParquetStreamFactory();
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = UncheckedIOException.class)
 	public void testWriteParquet_FileExist() throws IOException {
 		Assume.assumeTrue(PepperHadoopHelper.isHadoopReady());
 
