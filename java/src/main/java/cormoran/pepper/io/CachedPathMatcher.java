@@ -101,4 +101,13 @@ public class CachedPathMatcher implements PathMatcher {
 		String syntaxAndPattern = "glob:" + glob;
 		return new CachedPathMatcher(FileSystems.getDefault().getPathMatcher(syntaxAndPattern), syntaxAndPattern);
 	}
+
+	/**
+	 * 
+	 * @param fileRegex
+	 * @return a PathMatcher which accept a file in order directory, but constraining the filename with input regex
+	 */
+	public static PathMatcher fromRegexOverFilename(String fileRegex) {
+		return fromRegex(".*[\\\\\\/]" + fileRegex);
+	}
 }
