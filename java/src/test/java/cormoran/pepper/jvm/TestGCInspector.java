@@ -23,6 +23,7 @@
 package cormoran.pepper.jvm;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -257,5 +258,11 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		assembler.afterPropertiesSet();
 
 		assembler.getMBeanInfo(new GCInspector(), "beanKey");
+	}
+
+	@Test
+	public void testMemoryPerThread() {
+		long memory = new GCInspector().getMemoryPerThread(Arrays.asList("-Xss512k"));
+		Assert.assertEquals(524288L, memory);
 	}
 }

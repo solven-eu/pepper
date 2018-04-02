@@ -291,7 +291,7 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 			digits = targetMax.substring(0, lastDigit).trim();
 		}
 
-		// Something like "123,456" or ""123 456""
+		// Something like "123,456" or "123 456"
 		if (digits.length() >= 5 && !CharMatcher.digit().matches(digits.charAt(digits.length() - 4))) {
 			// Transform "123,456" to "123" ~ "456"
 			digits = digits.substring(0, digits.length() - 4) + digits.substring(digits.length() - 3);

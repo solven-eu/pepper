@@ -811,9 +811,21 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		RuntimeMXBean runtimeMxBean = getRuntimeMXBean();
 		List<String> arguments = runtimeMxBean.getInputArguments();
 
+		return getMemoryPerThread(arguments);
+	}
+
+	private static final String XSS = "-Xss";
+	private static final String XX_THREADSTACKSIZE = "-XX:ThreadStackSize=";
+
+	protected long getMemoryPerThread(List<String> arguments) {
 		// '-XX:ThreadStackSize=512' or '-Xss64k'
-		Optional<String> xss = arguments.stream().filter(s -> s.startsWith("-Xss")).findAny();
-		Optional<String> tss = arguments.stream().filter(s -> s.startsWith("-XX:ThreadStackSize=")).findAny();
+
+		Optional<String> xss =
+				arguments.stream().filter(s -> s.startsWith(XSS)).map(s -> s.substring(XSS.length())).findAny();
+		Optional<String> tss = arguments.stream()
+				.filter(s -> s.startsWith(XX_THREADSTACKSIZE))
+				.map(s -> s.substring(XX_THREADSTACKSIZE.length()))
+				.findAny();
 
 		if (xss.isPresent()) {
 			return PepperMemoryHelper.memoryAsLong(xss.get());
