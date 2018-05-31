@@ -181,11 +181,38 @@ public class PepperLogHelper {
 	 */
 	public static Object getNiceDouble(double value) {
 		return lazyToString(() -> {
-			final String pattern = ".##";
-			// final String pattern = "###,###,##0.00";
+			if (Double.isNaN(value) || Double.isInfinite(value)) {
+				return Double.toString(value);
+			}
+
+			final DecimalFormat myFormatter = new DecimalFormat();
+
 			// Ensure the decimal is separated by a '.' (as french computer would have ','
 			// as default decimal separator)
-			final DecimalFormat myFormatter = new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.US));
+			myFormatter.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
+
+			// We are not interested in ',' between thousands: '123,456.00'
+			myFormatter.setGroupingSize(0);
+
+			// We prefer to have '0.XXX' if the double is between 0.5 and -0.5
+			myFormatter.setMinimumIntegerDigits(1);
+			myFormatter.setMinimumFractionDigits(1);
+
+			double absValue = Math.abs(value);
+			if (absValue > 0D && Math.abs(value) < 0.5) {
+				// If value is 0.0001, the log would be 3
+				double log = Math.log10(value);
+
+				int nbZeroBeforeFirstDecimalNotZero = -1 * ((int) log);
+
+				// We feel not useful to print a large number of 0 for value right next to 0
+				nbZeroBeforeFirstDecimalNotZero = Math.min(15, nbZeroBeforeFirstDecimalNotZero);
+
+				myFormatter.setMaximumFractionDigits(nbZeroBeforeFirstDecimalNotZero + 2);
+			} else {
+				// The value is positive: we are happy with at most 2 decimals
+				myFormatter.setMaximumFractionDigits(2);
+			}
 
 			return myFormatter.format(value);
 		});

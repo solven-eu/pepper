@@ -283,8 +283,23 @@ public class TestPepperLogHelper {
 	}
 
 	@Test
+	public void testGetNiceDouble_NaN() {
+		Assert.assertEquals("NaN", PepperLogHelper.getNiceDouble(Double.NaN).toString());
+	}
+
+	@Test
+	public void testGetNiceDouble_Infinity() {
+		Assert.assertEquals("Infinity", PepperLogHelper.getNiceDouble(Double.POSITIVE_INFINITY).toString());
+	}
+
+	@Test
 	public void testGetNiceDouble_MediumAndVeryPrecise() {
 		Assert.assertEquals("12.35", PepperLogHelper.getNiceDouble(12.3456789123).toString());
+	}
+
+	@Test
+	public void testGetNiceDouble_MediumAndVeryPrecise_Negative() {
+		Assert.assertEquals("-12.35", PepperLogHelper.getNiceDouble(-12.3456789123).toString());
 	}
 
 	@Test
@@ -300,6 +315,21 @@ public class TestPepperLogHelper {
 	@Test
 	public void testGetNiceDouble_veryNearZero() {
 		Assert.assertEquals("0.00000000012", PepperLogHelper.getNiceDouble(0.000000000123456789D).toString());
+	}
+
+	@Test
+	public void testGetNiceDouble_Zero() {
+		Assert.assertEquals("0.0", PepperLogHelper.getNiceDouble(0D).toString());
+	}
+
+	@Test
+	public void testGetNiceDouble_NextToZero() {
+		Assert.assertEquals("0.0", PepperLogHelper.getNiceDouble(Double.MIN_NORMAL).toString());
+	}
+
+	@Test
+	public void testGetNiceDouble_NextToZero_Negative() {
+		Assert.assertEquals("-0.0", PepperLogHelper.getNiceDouble(-1 * Double.MIN_NORMAL).toString());
 	}
 
 	@Test
