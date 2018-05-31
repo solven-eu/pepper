@@ -24,6 +24,7 @@ package cormoran.pepper.shared.logging;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -267,12 +268,44 @@ public class TestPepperLogHelper {
 	}
 
 	@Test
-	public void testhumanBytes() {
+	public void testHumanBytes() {
 		Assert.assertEquals("789B", PepperLogHelper.humanBytes(789L).toString());
 		Assert.assertEquals("607KB", PepperLogHelper.humanBytes(789L * 789).toString());
 		Assert.assertEquals("468MB", PepperLogHelper.humanBytes(789L * 789 * 789).toString());
 		Assert.assertEquals("360GB", PepperLogHelper.humanBytes(789L * 789 * 789 * 789).toString());
 		Assert.assertEquals("278TB", PepperLogHelper.humanBytes(789L * 789 * 789 * 789 * 789).toString());
 		Assert.assertEquals("214PB", PepperLogHelper.humanBytes(789L * 789 * 789 * 789 * 789 * 789).toString());
+	}
+
+	@Test
+	public void testGetNiceDouble_null() {
+		Assert.assertEquals("null", PepperLogHelper.getNiceDouble(null).toString());
+	}
+
+	@Test
+	public void testGetNiceDouble_MediumAndVeryPrecise() {
+		Assert.assertEquals("12.35", PepperLogHelper.getNiceDouble(12.3456789123).toString());
+	}
+
+	@Test
+	public void testGetNiceDouble_BigAndPrecise() {
+		Assert.assertEquals("123456789.12", PepperLogHelper.getNiceDouble(123456789.123456789D).toString());
+	}
+
+	@Test
+	public void testGetNiceDouble_BigAndNotPrecise() {
+		Assert.assertEquals("1230000000000.0", PepperLogHelper.getNiceDouble(123e10D).toString());
+	}
+
+	@Test
+	public void testGetNiceDouble_veryNearZero() {
+		Assert.assertEquals("0.00000000012", PepperLogHelper.getNiceDouble(0.000000000123456789D).toString());
+	}
+
+	@Test
+	public void testGetNiceDouble_FrenchLocal() {
+		// France by default have a ',' as decimal separator
+		Locale.setDefault(Locale.Category.FORMAT, Locale.FRANCE);
+		Assert.assertEquals("123.46", PepperLogHelper.getNiceDouble(123.456D).toString());
 	}
 }

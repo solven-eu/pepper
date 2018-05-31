@@ -23,6 +23,8 @@
 package cormoran.pepper.logging;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -57,7 +59,8 @@ public class PepperLogHelper {
 	}
 
 	/**
-	 * This methods facilitates using logging framework at trace level, without using .isTraceEnabled, as the .toString
+	 * This methods facilitates using logging framework at trace level, without
+	 * using .isTraceEnabled, as the .toString
 	 * 
 	 * @param toStringMe
 	 *            the object from which a .toString should be computed lazily
@@ -163,10 +166,28 @@ public class PepperLogHelper {
 				if (size <= limitSize) {
 					return iterable.toString();
 				} else {
-					return "[" + Streams.stream(iterable).limit(limitSize).map(Object::toString).collect(
-							Collectors.joining(", ")) + ", (" + (size - limitSize) + " more elements)]";
+					return "[" + Streams.stream(iterable).limit(limitSize).map(Object::toString)
+							.collect(Collectors.joining(", ")) + ", (" + (size - limitSize) + " more elements)]";
 				}
 			}
+		});
+	}
+
+	/**
+	 * 
+	 * @param value
+	 * @return a lazy-string representing for given double, with a limited number of
+	 *         decimals
+	 */
+	public static Object getNiceDouble(double value) {
+		return lazyToString(() -> {
+			final String pattern = ".##";
+			// final String pattern = "###,###,##0.00";
+			// Ensure the decimal is separated by a '.' (as french computer would have ','
+			// as default decimal separator)
+			final DecimalFormat myFormatter = new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.US));
+
+			return myFormatter.format(value);
 		});
 	}
 
@@ -174,13 +195,7 @@ public class PepperLogHelper {
 		if (value == null) {
 			return "null";
 		} else {
-			return lazyToString(() -> {
-				final String pattern = ".##";
-				// final String pattern = "###,###,##0.00";
-				final DecimalFormat myFormatter = new DecimalFormat(pattern);
-
-				return myFormatter.format(value);
-			});
+			return getNiceDouble(value.doubleValue());
 		}
 	}
 
@@ -320,9 +335,7 @@ public class PepperLogHelper {
 			if (asString.length() <= limitChars) {
 				return asString;
 			} else {
-				return "'" + asString.substring(0, limitChars)
-						+ "...("
-						+ (asString.length() - limitChars)
+				return "'" + asString.substring(0, limitChars) + "...(" + (asString.length() - limitChars)
 						+ " more chars)'";
 			}
 		});
@@ -332,7 +345,8 @@ public class PepperLogHelper {
 	 * 
 	 * @param toString
 	 * @param removeEOL
-	 *            if true, we replace end-of-line characters by a space, else we escape them
+	 *            if true, we replace end-of-line characters by a space, else we
+	 *            escape them
 	 * @return a String which is guaranteed to hold on a single row
 	 * @deprecated Prefer .removeNewLines or .escapeNewLines
 	 */
@@ -346,7 +360,8 @@ public class PepperLogHelper {
 	}
 
 	public static Object removeNewLines(Object toString) {
-		// Replace consecutive '\r\n' by a space (Windows), and then each individual by another space (Linux and
+		// Replace consecutive '\r\n' by a space (Windows), and then each individual by
+		// another space (Linux and
 		// Mac)
 		return lazyToString(() -> toString.toString().replaceAll("\r\n", " ").replaceAll("[\r\n]", " "));
 	}
