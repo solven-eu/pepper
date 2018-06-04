@@ -50,15 +50,16 @@ public class TestPepperMemoryHelper {
 
 	@Test
 	public void testBitPacking() {
-		// We use custom bit packing in order to produce positive integers if the input long is positive
+		// We use custom bit packing in order to produce positive integers if the input
+		// long is positive
 		// Consider positive longs, as they typically comes from dates
 		for (long i = 0; i < Integer.MAX_VALUE * 1024L; i += Integer.MAX_VALUE / 10) {
-			// We want to ensure the integers are positive: false as unpack2 will cover the whole integer range:
+			// We want to ensure the integers are positive: false as unpack2 will cover the
+			// whole integer range:
 			// MIN_VALUE -> MAX_VALUE
 			LOGGER.trace("Testing bit-packing for {}", i);
-			Assert.assertEquals(i,
-					PepperMemoryHelper.positivePack(PepperMemoryHelper.positiveUnpack1(i),
-							PepperMemoryHelper.positiveUnpack2(i)));
+			Assert.assertEquals(i, PepperMemoryHelper.positivePack(PepperMemoryHelper.positiveUnpack1(i),
+					PepperMemoryHelper.positiveUnpack2(i)));
 		}
 	}
 
@@ -73,6 +74,12 @@ public class TestPepperMemoryHelper {
 	@Test
 	public void testParseMemory_EndsKB() {
 		Assert.assertEquals(123 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("123kB"));
+	}
+
+	// We observe this in Windows10/FR
+	@Test
+	public void testParseMemory_EndsKo_WeirdEncoding() {
+		Assert.assertEquals(68204 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("68�204 Ko"));
 	}
 
 	@Test

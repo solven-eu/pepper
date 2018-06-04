@@ -59,8 +59,7 @@ public class PepperLogHelper {
 	}
 
 	/**
-	 * This methods facilitates using logging framework at trace level, without
-	 * using .isTraceEnabled, as the .toString
+	 * This methods facilitates using logging framework at trace level, without using .isTraceEnabled, as the .toString
 	 * 
 	 * @param toStringMe
 	 *            the object from which a .toString should be computed lazily
@@ -166,8 +165,8 @@ public class PepperLogHelper {
 				if (size <= limitSize) {
 					return iterable.toString();
 				} else {
-					return "[" + Streams.stream(iterable).limit(limitSize).map(Object::toString)
-							.collect(Collectors.joining(", ")) + ", (" + (size - limitSize) + " more elements)]";
+					return "[" + Streams.stream(iterable).limit(limitSize).map(Object::toString).collect(
+							Collectors.joining(", ")) + ", (" + (size - limitSize) + " more elements)]";
 				}
 			}
 		});
@@ -176,8 +175,7 @@ public class PepperLogHelper {
 	/**
 	 * 
 	 * @param value
-	 * @return a lazy-string representing for given double, with a limited number of
-	 *         decimals
+	 * @return a lazy-string representing for given double, with a limited number of decimals
 	 */
 	public static Object getNiceDouble(double value) {
 		return lazyToString(() -> {
@@ -362,7 +360,9 @@ public class PepperLogHelper {
 			if (asString.length() <= limitChars) {
 				return asString;
 			} else {
-				return "'" + asString.substring(0, limitChars) + "...(" + (asString.length() - limitChars)
+				return "'" + asString.substring(0, limitChars)
+						+ "...("
+						+ (asString.length() - limitChars)
 						+ " more chars)'";
 			}
 		});
@@ -372,8 +372,7 @@ public class PepperLogHelper {
 	 * 
 	 * @param toString
 	 * @param removeEOL
-	 *            if true, we replace end-of-line characters by a space, else we
-	 *            escape them
+	 *            if true, we replace end-of-line characters by a space, else we escape them
 	 * @return a String which is guaranteed to hold on a single row
 	 * @deprecated Prefer .removeNewLines or .escapeNewLines
 	 */

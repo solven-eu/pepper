@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.OptionalLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -188,11 +190,14 @@ public class PepperProcessHelper {
 				//
 				// VIRTUAL RESIDENT DIRTY SWAPPED ALLOCATION BYTES DIRTY+SWAP REGION
 				// MALLOC ZONE SIZE SIZE SIZE SIZE COUNT ALLOCATED FRAG SIZE % FRAG COUNT
-				// =========== ======= ========= ========= ========= ========= ========= ========= ======
+				// =========== ======= ========= ========= ========= ========= =========
+				// ========= ======
 				// ======
-				// DefaultMallocZone_0x10b7b6000 203.0M 148.4M 87.4M 0K 167902 64.5M 22.9M 27% 19
+				// DefaultMallocZone_0x10b7b6000 203.0M 148.4M 87.4M 0K 167902 64.5M 22.9M 27%
+				// 19
 				// GFXMallocZone_0x10b7e7000 0K 0K 0K 0K 0 0K 0K 0% 0
-				// =========== ======= ========= ========= ========= ========= ========= ========= ======
+				// =========== ======= ========= ========= ========= ========= =========
+				// ========= ======
 				// ======
 				// TOTAL 203.0M 148.4M 87.4M 0K 167902 64.5M 22.9M 27% 19
 				lastLine = lastLine.trim();
@@ -219,7 +224,8 @@ public class PepperProcessHelper {
 					return OptionalLong.empty();
 				}
 			} else if (osFlag == OS_MARKER_WINDOWS) {
-				// If no process matching pid: INFO: No tasks are running which match the specified criteria.
+				// If no process matching pid: INFO: No tasks are running which match the
+				// specified criteria.
 				// If matching with "/fo csv": "chrome.exe","6740","Console","1","107,940 K"
 				// If matching with "/fo table": "chrome.exe\t6740\tConsole\t1\t108,760 K"
 				String WINDOWS_MEMORY_PATTERN = "\",\"";
@@ -263,7 +269,8 @@ public class PepperProcessHelper {
 						String unit = lastLine.substring(0, betweenTotalAndKbytes);
 
 						int betweenKBytesAndRSS = lastLine.indexOf(' ', betweenTotalAndKbytes + 1);
-						// String kBytes = lastLine.substring(betweenKBytesAndRSS + 1, betweenKBytesAndRSS);
+						// String kBytes = lastLine.substring(betweenKBytesAndRSS + 1,
+						// betweenKBytesAndRSS);
 
 						int betweenRSSAndDirty = lastLine.indexOf(' ', betweenKBytesAndRSS + 1);
 						String rss = lastLine.substring(betweenKBytesAndRSS + 1, betweenRSSAndDirty);
