@@ -29,7 +29,10 @@ import java.util.stream.Stream;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.hadoop.util.Shell;
 import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -39,6 +42,12 @@ import cormoran.pepper.avro.AvroTranscodingHelper;
 import cormoran.pepper.io.PepperFileHelper;
 
 public class TestWriteLargeParquet {
+
+	@Before
+	public void testHadoopIsAvailable() {
+		Assume.assumeTrue(Shell.hasWinutilsPath());
+	}
+
 	@Test
 	public void testWriteLarge() throws IOException {
 		ParquetStreamFactory factory = new ParquetStreamFactory();

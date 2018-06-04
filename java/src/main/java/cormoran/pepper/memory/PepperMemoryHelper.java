@@ -82,8 +82,7 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 	 * 
 	 * @param object
 	 *            the object to analyze
-	 * @return the number of bytes consumed by given objects, taking in account the
-	 *         references objects
+	 * @return the number of bytes consumed by given objects, taking in account the references objects
 	 */
 	public static long deepSize(Object object) {
 		// http://stackoverflow.com/questions/1063068/how-does-the-jvm-ensure-that-system-identityhashcode-will-never-change
@@ -98,13 +97,11 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 	 * 
 	 * @param object
 	 * @param identityPredicate
-	 *            a predicate returning true if it is the first encounter of given
-	 *            object. It may return false even if an object has not been
-	 *            considered before, woult it be because the identity policy is not
-	 *            guaranteed (e.g. we rely on a BloomFilter) or if we want to
-	 *            exclude some objects
-	 * @return Long.MAX_VALUE if the Instrumentation agent is not available. Else an
-	 *         estimation of the memory consumption.
+	 *            a predicate returning true if it is the first encounter of given object. It may return false even if
+	 *            an object has not been considered before, woult it be because the identity policy is not guaranteed
+	 *            (e.g. we rely on a BloomFilter) or if we want to exclude some objects
+	 * @return Long.MAX_VALUE if the Instrumentation agent is not available. Else an estimation of the memory
+	 *         consumption.
 	 */
 	public static long deepSize(Object object, IntPredicate identityPredicate) {
 		if (object == null) {
@@ -140,7 +137,9 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 	}
 
 	@Deprecated
-	public static void recursiveSize(Instrumentation instrumentation, IntPredicate identities, LongAdder totalSize,
+	public static void recursiveSize(Instrumentation instrumentation,
+			IntPredicate identities,
+			LongAdder totalSize,
 			Object object) {
 		deepSize(instrumentation, identities, totalSize, object);
 	}
@@ -148,8 +147,7 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 	/**
 	 * 
 	 * @param instrumentation
-	 *            an {@link Instrumentation} able to provide the memory weight of
-	 *            given object
+	 *            an {@link Instrumentation} able to provide the memory weight of given object
 	 * @param identities
 	 *            an identityHashSet where to collect already handlded objects
 	 * @param totalSize
@@ -159,7 +157,9 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 	 */
 	// see https://github.com/jbellis/jamm
 	//
-	public static void deepSize(Instrumentation instrumentation, IntPredicate identities, LongAdder totalSize,
+	public static void deepSize(Instrumentation instrumentation,
+			IntPredicate identities,
+			LongAdder totalSize,
 			Object object) {
 		Objects.requireNonNull(instrumentation);
 
@@ -232,8 +232,8 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 	private static final int SHIFT = 32;
 
 	/**
-	 * It might be useful to have an long<->(int,int) packing guaranteeing both
-	 * integers to be positive if the long is positive
+	 * It might be useful to have an long<->(int,int) packing guaranteeing both integers to be positive if the long is
+	 * positive
 	 */
 	public static final long positivePack(int i1, int i2) {
 		long packed1 = (long) i1 << SHIFT;

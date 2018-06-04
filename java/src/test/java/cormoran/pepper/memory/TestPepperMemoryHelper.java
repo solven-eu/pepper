@@ -58,8 +58,9 @@ public class TestPepperMemoryHelper {
 			// whole integer range:
 			// MIN_VALUE -> MAX_VALUE
 			LOGGER.trace("Testing bit-packing for {}", i);
-			Assert.assertEquals(i, PepperMemoryHelper.positivePack(PepperMemoryHelper.positiveUnpack1(i),
-					PepperMemoryHelper.positiveUnpack2(i)));
+			Assert.assertEquals(i,
+					PepperMemoryHelper.positivePack(PepperMemoryHelper.positiveUnpack1(i),
+							PepperMemoryHelper.positiveUnpack2(i)));
 		}
 	}
 
