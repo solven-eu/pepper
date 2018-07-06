@@ -23,6 +23,7 @@
 package cormoran.pepper.primitives;
 
 import java.util.Arrays;
+import java.util.function.IntPredicate;
 
 import org.roaringbitmap.RoaringBitmap;
 
@@ -44,9 +45,9 @@ public class RunningCompressedIntArray extends AbstractIntList implements Clonea
 	protected final int[] nbConstant;
 	protected final int[] constantBits;
 	protected final int[] constantMasks;
-	protected final RoaringBitmap bits;
+	protected final IntPredicate bits;
 
-	public RunningCompressedIntArray(int[] nbConstant, int[] constantBits, int[] constantMasks, RoaringBitmap bits) {
+	public RunningCompressedIntArray(int[] nbConstant, int[] constantBits, int[] constantMasks, IntPredicate bits) {
 		this.nbConstant = nbConstant;
 		this.constantBits = constantBits;
 		this.constantMasks = constantMasks;
@@ -90,7 +91,7 @@ public class RunningCompressedIntArray extends AbstractIntList implements Clonea
 		for (int bitIndex = 0; bitIndex < Integer.SIZE; bitIndex++) {
 			if ((differentBits & Integer.rotateLeft(1, bitIndex)) != 0) {
 
-				if (bits.contains(Ints.checkedCast(bitShift))) {
+				if (bits.test(Ints.checkedCast(bitShift))) {
 					value |= Integer.rotateLeft(1, bitIndex);
 				}
 

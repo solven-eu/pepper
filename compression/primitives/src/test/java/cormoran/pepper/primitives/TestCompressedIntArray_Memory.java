@@ -22,11 +22,14 @@
  */
 package cormoran.pepper.primitives;
 
+import java.util.PrimitiveIterator;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import cormoran.pepper.memory.IPepperMemoryConstants;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TestCompressedIntArray_Memory {
@@ -117,6 +120,7 @@ public class TestCompressedIntArray_Memory {
 		Assert.assertArrayEquals(new int[] { 2, 1, 0 }, array.toIntArray());
 	}
 
+	// Generate an array of all ints having a single bit set to 1, others are set to 0
 	@Test
 	public void testAllSingleBit() {
 		IntList array =
@@ -127,6 +131,8 @@ public class TestCompressedIntArray_Memory {
 		Assert.assertEquals(Integer.MIN_VALUE, array.getInt(31));
 	}
 
+	// Generate an array of all ints having a single bit set to 1, others are set to 0, and last one is the same as the
+	// first int
 	@Test
 	public void testAllSingleBit_WithOverflow() {
 		IntList array =
@@ -136,5 +142,21 @@ public class TestCompressedIntArray_Memory {
 		Assert.assertEquals(1, array.getInt(0));
 		Assert.assertEquals(Integer.MIN_VALUE, array.getInt(31));
 		Assert.assertEquals(1, array.getInt(32));
+	}
+
+	@Test
+	public void testFuzzy_small() {
+		IntStream source = new Random(0).ints().limit(IPepperMemoryConstants.KB);
+		IntList array = CompressedIntArrays.compress(source);
+
+		PrimitiveIterator.OfInt source_2 = new Random(0).ints().limit(IPepperMemoryConstants.KB).iterator();
+
+		for (int i = 0; i < array.size(); i++) {
+			Assert.assertEquals(source_2.nextInt(), array.getInt(i));
+		}
+
+		if (source_2.hasNext()) {
+			Assert.fail("The source have more elements not present in the compressed list");
+		}
 	}
 }

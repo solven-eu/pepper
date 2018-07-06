@@ -40,6 +40,7 @@ notifications:
   webhooks: https://coveralls.io/webhook?repo_token=jDBhichjx0dczfgRHEuKVHD3ULFv6absA
 
 
+# This will prevent downloading JARs on each build
 cache:
   directories:
     - '$HOME/.m2/repository'

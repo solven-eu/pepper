@@ -47,6 +47,10 @@ public class CompressedIntArrays {
 		// hidden
 	}
 
+	public static IntList compress(int[] input) {
+		return compress(IntStream.of(input));
+	}
+
 	public static IntList compress(IntStream input) {
 		AtomicBoolean firstDone = new AtomicBoolean();
 
@@ -125,7 +129,7 @@ public class CompressedIntArrays {
 		});
 
 		RunningCompressedIntArray compressed =
-				new RunningCompressedIntArray(nbConstant, constantBits, constantMasks, bits);
+				new RunningCompressedIntArray(nbConstant, constantBits, constantMasks, bits::contains);
 
 		if (uncompressedTrail.get() == null) {
 			return compressed;

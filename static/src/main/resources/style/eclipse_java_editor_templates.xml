@@ -37,7 +37,7 @@
 }
 
 return ${name};</template><template autoinsert="true" context="java" deleted="false" description="Add SLF4J Logger" enabled="true" name="LOGGER">${:import(org.slf4j.Logger,org.slf4j.LoggerFactory)}&#13;
-protected static final Logger LOGGER = LoggerFactory.getLogger(${enclosing_type}.class);</template><template autoinsert="false" context="java-members" deleted="false" description="main method" enabled="true" id="org.eclipse.jdt.ui.templates.main" name="main">public static void main(String[] args) {
+private static final Logger LOGGER = LoggerFactory.getLogger(${enclosing_type}.class);</template><template autoinsert="false" context="java-members" deleted="false" description="main method" enabled="true" id="org.eclipse.jdt.ui.templates.main" name="main">public static void main(String[] args) {
 	${cursor}
 }</template><template autoinsert="false" context="java" deleted="false" description="create new object" enabled="true" id="org.eclipse.jdt.ui.templates.new" name="new">${type} ${name} = new ${type}(${});</template><template autoinsert="false" context="java-members" deleted="false" description="private method" enabled="true" id="org.eclipse.jdt.ui.templates.private_method" name="private_method">private ${return_type} ${name}(${}) {
 	${cursor}

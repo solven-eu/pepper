@@ -43,9 +43,9 @@ public class TestCompressedIntArray {
 		IntList array = CompressedIntArrays.compress(IntStream.range(0, size));
 
 		LOGGER.info("testGrowingBy1 CompressedSize: {}",
-				PepperLogHelper.getNiceMemory(PepperMemoryHelper.deepSize(array)));
+				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
 		LOGGER.info("testGrowingBy1 RawSize: {}",
-				PepperLogHelper.getNiceMemory(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
+				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
 	}
 
 	@Test
@@ -55,9 +55,9 @@ public class TestCompressedIntArray {
 		IntList array = CompressedIntArrays.compress(IntStream.range(0, size).map(i -> i % 16));
 
 		LOGGER.info("testManyVerySmall CompressedSize: {}",
-				PepperLogHelper.getNiceMemory(PepperMemoryHelper.deepSize(array)));
+				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
 		LOGGER.info("testManyVerySmall RawSize: {}",
-				PepperLogHelper.getNiceMemory(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
+				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
 	}
 
 	@Test
@@ -66,10 +66,9 @@ public class TestCompressedIntArray {
 
 		IntList array = CompressedIntArrays.compress(IntStream.range(0, size).map(i -> i % 1024));
 
-		LOGGER.info("testManySmall CompressedSize: {}",
-				PepperLogHelper.getNiceMemory(PepperMemoryHelper.deepSize(array)));
+		LOGGER.info("testManySmall CompressedSize: {}", PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
 		LOGGER.info("testManySmall RawSize: {}",
-				PepperLogHelper.getNiceMemory(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
+				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
 	}
 
 	@Test
@@ -79,10 +78,9 @@ public class TestCompressedIntArray {
 
 		IntList array = CompressedIntArrays.compress(IntStream.range(0, size).map(i -> r.nextInt()));
 
-		LOGGER.info("testManySmall CompressedSize: {}",
-				PepperLogHelper.getNiceMemory(PepperMemoryHelper.deepSize(array)));
+		LOGGER.info("testManySmall CompressedSize: {}", PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
 		LOGGER.info("testManySmall RawSize: {}",
-				PepperLogHelper.getNiceMemory(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
+				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
 	}
 
 }
