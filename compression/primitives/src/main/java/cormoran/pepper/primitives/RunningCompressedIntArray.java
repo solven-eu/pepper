@@ -25,8 +25,6 @@ package cormoran.pepper.primitives;
 import java.util.Arrays;
 import java.util.function.IntPredicate;
 
-import org.roaringbitmap.RoaringBitmap;
-
 import com.google.common.primitives.Ints;
 
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
