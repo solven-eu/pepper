@@ -202,8 +202,9 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	// of OOM, or Dead/LiveLock
 	@Deprecated
 	protected void addShutdownHook() {
-		Runtime.getRuntime().addShutdownHook(
-				new Thread(() -> executeDuringShutdown(), this.getClass().getSimpleName() + "-ShutdownHook"));
+		Runtime.getRuntime()
+				.addShutdownHook(
+						new Thread(() -> executeDuringShutdown(), this.getClass().getSimpleName() + "-ShutdownHook"));
 	}
 
 	protected void executeDuringShutdown() {
@@ -820,12 +821,8 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	protected long getMemoryPerThread(List<String> arguments) {
 		// '-XX:ThreadStackSize=512' or '-Xss64k'
 
-		Optional<String> xss =
-				arguments.stream().filter(s -> s.startsWith(XSS)).map(s -> s.substring(XSS.length())).findAny();
-		Optional<String> tss = arguments.stream()
-				.filter(s -> s.startsWith(XX_THREADSTACKSIZE))
-				.map(s -> s.substring(XX_THREADSTACKSIZE.length()))
-				.findAny();
+		Optional<String> xss = getOptionalArgument(arguments, XSS);
+		Optional<String> tss = getOptionalArgument(arguments, XX_THREADSTACKSIZE);
 
 		if (xss.isPresent()) {
 			return PepperMemoryHelper.memoryAsLong(xss.get());
@@ -835,6 +832,12 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 			// https://stackoverflow.com/questions/6020619/where-to-find-default-xss-value-for-sun-oracle-jvm
 			return IPepperMemoryConstants.MB;
 		}
+	}
+
+	public static Optional<String> getOptionalArgument(List<String> arguments, String option) {
+		Optional<String> xss =
+				arguments.stream().filter(s -> s.startsWith(option)).map(s -> s.substring(option.length())).findAny();
+		return xss;
 	}
 
 	protected RuntimeMXBean getRuntimeMXBean() {

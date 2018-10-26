@@ -88,27 +88,6 @@ package cormoran.pepper.jvm;
 public interface IPepperJVMConstants {
 	/**
 	 * 
-	 * Enable HeapDump on OutOfMemoryError
-	 * 
-	 * -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/disk2/dumps
-	 * 
-	 * jmap <pid>
-	 * 
-	 * jmap -histo <pid>
-	 * 
-	 * jmap -histo -F <pid> > some.file
-	 * 
-	 * jmap -dump:format=b,file=<filename> <pid> -J-Dsun.tools.attach.attachTimeout=<milliseconds>
-	 * 
-	 * @author Benoit Lacelle
-	 *
-	 */
-	interface IPepperHeapAnalysis {
-
-	}
-
-	/**
-	 * 
 	 * Enable Java Mission Control http://docs.oracle.com/cd/E15289_01/doc.40/e15070/usingjfr.htm
 	 * -XX:+UnlockCommercialFeatures -XX:+FlightRecorder
 	 * 
