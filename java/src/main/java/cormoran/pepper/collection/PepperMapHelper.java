@@ -27,9 +27,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 /**
  * Various helpers for Map
@@ -91,5 +95,127 @@ public class PepperMapHelper {
 		clone.putAll(first);
 
 		return Collections.unmodifiableMap(clone);
+	}
+
+	public static <T> T getAs(Object body, String firstKey, String... moreKeys) {
+		Object value = body;
+
+		List<String> allKeys = Lists.asList(firstKey, moreKeys);
+		for (String key : allKeys) {
+			if (value == null) {
+				return null;
+			} else if (value instanceof Map<?, ?>) {
+				value = ((Map<?, ?>) value).get(key);
+			} else {
+				throw new IllegalArgumentException("Can not process " + body + " given " + allKeys);
+			}
+		}
+
+		return (T) value;
+	}
+
+	public static Map<?, ?> imbricatedMap(Object value, String firstKey, String... moreKeys) {
+		for (int i = moreKeys.length - 1; i >= 0; i--) {
+			value = Collections.singletonMap(moreKeys[i], value);
+		}
+
+		return Collections.singletonMap(firstKey, value);
+	}
+
+	public static Map<?, ? extends Map<?, ?>> imbricatedMap2(Object value,
+			String firstKey,
+			String secondKey,
+			String... moreKeys) {
+		Map<?, ?> subMap = imbricatedMap(value, secondKey, moreKeys);
+
+		return Collections.singletonMap(firstKey, subMap);
+	}
+
+	public static Optional<String> getOptionalString(Map<?, ?> map, String key) {
+		if (map == null) {
+			throw new IllegalArgumentException("Null Map while requiring key=" + key);
+		}
+
+		Object rawValue = map.get(key);
+
+		if (rawValue == null) {
+			return Optional.empty();
+		} else if (rawValue instanceof String) {
+			String rawString = rawValue.toString();
+			if (Strings.isNullOrEmpty(rawString)) {
+				return Optional.empty();
+			} else {
+				return Optional.of(rawString);
+			}
+		} else {
+			throw new IllegalArgumentException("We have a not-String value for '" + key + "' in " + map);
+		}
+
+	}
+
+	public static String checkNonNullString(String keyName, Object value) {
+		if (value == null) {
+			throw new IllegalArgumentException("'" + keyName + "' is required but null");
+		} else if (!(value instanceof String)) {
+			throw new IllegalArgumentException("'" + keyName + "' has invalid type: " + value.getClass());
+		}
+
+		return (String) value;
+	}
+
+	public static String getRequiredString(Map<?, ?> map, String key) {
+		if (map == null) {
+			throw new IllegalArgumentException("Null Map while requiring key=" + key);
+		}
+
+		Object rawValue = map.get(key);
+
+		if (rawValue == null || rawValue instanceof String && Strings.isNullOrEmpty(rawValue.toString())) {
+			throw new IllegalArgumentException("We miss '" + key + "' amongst available: " + map.keySet());
+		}
+
+		return checkNonNullString(key, rawValue);
+	}
+
+	public static String getRequiredString(Map<?, ?> map, String mainKey, String subKey) {
+		if (map == null) {
+			throw new IllegalArgumentException("Null Map while requiring key=" + mainKey);
+		}
+
+		Object rawValue = map.get(mainKey);
+
+		if (rawValue == null || !(rawValue instanceof Map<?, ?>)) {
+			throw new IllegalArgumentException("We miss '" + mainKey + "' as Map amongst available: " + map.keySet());
+		}
+
+		return getRequiredString((Map<?, ?>) rawValue, subKey);
+	}
+
+	public static <T> Map<T, ?> hideKey(Map<T, ?> formRegisterApp, String key) {
+		if (formRegisterApp.containsKey(key)) {
+			Map<T, ?> clone = new HashMap<>(formRegisterApp);
+			clone.remove(key);
+			return ImmutableMap.copyOf(clone);
+		} else {
+			throw new IllegalArgumentException("Can not hide a not present key: " + key);
+		}
+	}
+
+	public static <T> Map<T, ?> hideKeys(Map<T, ?> mapToHide, String key, String... moreKeys) {
+		AtomicReference<Map<T, ?>> hidden = new AtomicReference<>(mapToHide);
+
+		Lists.asList(key, moreKeys).forEach(oneKey -> {
+			hidden.set(hideKey(hidden.get(), oneKey));
+		});
+
+		return hidden.get();
+	}
+
+	public static <T> void transferValue(T key, Map<? extends T, ?> source, Map<T, Object> output) {
+		Object valueToWrite = source.get(key);
+
+		if (valueToWrite != null) {
+			output.put(key, valueToWrite);
+		}
 	}
 }

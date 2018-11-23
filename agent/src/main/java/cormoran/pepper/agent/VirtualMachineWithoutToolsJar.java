@@ -56,6 +56,8 @@ import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider.Accessor;
  */
 // https://github.com/javamelody/javamelody/blob/master/javamelody-core/src/main/java/net/bull/javamelody/VirtualMachine.java
 public class VirtualMachineWithoutToolsJar {
+	private static final String ENV_JAVA_SPECIFICATION_VERSION = "java.specification.version";
+
 	protected static final Logger LOGGER = LoggerFactory.getLogger(VirtualMachineWithoutToolsJar.class);
 
 	// http://cr.openjdk.java.net/~malenkov/8022746.8.1/jdk/src/share/classes/sun/tools/jmap/JMap.java.html
@@ -68,8 +70,31 @@ public class VirtualMachineWithoutToolsJar {
 	private static final AtomicReference<Class<?>> JVM_VIRTUAL_MACHINE_CLASS = new AtomicReference<Class<?>>();
 	private static final AtomicReference<Object> JVM_VIRTUAL_MACHINE = new AtomicReference<Object>();
 
+	// https://stackoverflow.com/questions/2591083/getting-java-version-at-runtime
+	// https://stackoverflow.com/questions/5103121/how-to-find-the-jvm-version-from-a-program
+	public static final boolean IS_JDK_9 = "9".equals(System.getProperty(ENV_JAVA_SPECIFICATION_VERSION));
+	public static final boolean IS_JDK_11 = "11".equals(System.getProperty(ENV_JAVA_SPECIFICATION_VERSION));
+
+	public static final boolean IS_JDK_9_OR_LATER = isJdk9OrLater();
+
 	protected VirtualMachineWithoutToolsJar() {
 		// hidden
+	}
+
+	private static boolean isJdk9OrLater() {
+		String specificationVersion = System.getProperty(ENV_JAVA_SPECIFICATION_VERSION);
+		try {
+			int asInt = Integer.parseInt(specificationVersion);
+
+			if (asInt >= 9) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (RuntimeException e) {
+			LOGGER.trace("Not 9 or later", e);
+			return false;
+		}
 	}
 
 	/**
@@ -157,7 +182,12 @@ public class VirtualMachineWithoutToolsJar {
 					JVM_VIRTUAL_MACHINE.set(attachMethod.invoke(null, pid));
 				} finally {
 					if (JVM_VIRTUAL_MACHINE.get() == null) {
-						LOGGER.warn("Failure attaching VirtualMachine");
+						if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
+							LOGGER.warn(
+									"Failure attaching VirtualMachine. You may add '-Djdk.attach.allowAttachSelf=true'");
+						} else {
+							LOGGER.warn("Failure attaching VirtualMachine");
+						}
 						WILL_NOT_WORK.set(true);
 					} else {
 						LOGGER.trace("VirtualMachine has been loaded: {}. Available methods: {}",
@@ -344,7 +374,7 @@ public class VirtualMachineWithoutToolsJar {
 	}
 
 	private static String getJavaSpecification() {
-		return System.getProperty("java.specification.version");
+		return System.getProperty(ENV_JAVA_SPECIFICATION_VERSION);
 	}
 
 	public static boolean isVirtualMachineAvailable() {

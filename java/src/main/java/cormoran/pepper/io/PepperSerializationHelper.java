@@ -228,8 +228,9 @@ public class PepperSerializationHelper {
 	}
 
 	public static String convertToString(Map<?, ?> asMap) {
-		return Joiner.on(MAP_ENTRY_SEPARATOR).withKeyValueSeparator(Character.toString(MAP_KEY_VALUE_SEPARATOR)).join(
-				Maps.transformValues(asMap, input -> {
+		return Joiner.on(MAP_ENTRY_SEPARATOR)
+				.withKeyValueSeparator(Character.toString(MAP_KEY_VALUE_SEPARATOR))
+				.join(Maps.transformValues(asMap, input -> {
 					if (input == null) {
 						return "";
 					} else if (input instanceof Iterable<?>) {
@@ -433,8 +434,9 @@ public class PepperSerializationHelper {
 	}
 
 	public static List<String> parseList(String asString) {
-		return Splitter.on(',').trimResults().splitToList(
-				asString.substring(asString.indexOf('[') + 1, asString.lastIndexOf(']')));
+		return Splitter.on(',')
+				.trimResults()
+				.splitToList(asString.substring(asString.indexOf('[') + 1, asString.lastIndexOf(']')));
 	}
 
 	/**

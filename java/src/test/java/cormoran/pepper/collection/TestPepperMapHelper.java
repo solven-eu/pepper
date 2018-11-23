@@ -22,18 +22,26 @@
  */
 package cormoran.pepper.collection;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
 
 public class TestPepperMapHelper {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestPepperMapHelper.class);
+
 	@Test
 	public void testMergeOnNullValue() {
 		Map<String, Object> map = new HashMap<>();
@@ -65,5 +73,151 @@ public class TestPepperMapHelper {
 		Map<String, String> map = PepperMapHelper.fromLists(Arrays.asList("k1", "k2"), Arrays.asList("v1", "v2"));
 
 		Assert.assertEquals(ImmutableMap.of("k1", "v1", "k2", "v2"), map);
+	}
+
+	@Test
+	public void testMissingKeyInMap() {
+		Map<String, ?> map = ImmutableMap.of("someKey", "v");
+
+		try {
+			PepperMapHelper.getRequiredString(map, "requiredKey");
+			Assert.fail("Should reject on missing");
+		} catch (RuntimeException e) {
+			LOGGER.trace("Arg", e);
+			Assert.assertTrue(e instanceof IllegalArgumentException);
+			// Ensure the present keys are logged
+			Assertions.assertThat(e.getMessage()).contains("someKey");
+		}
+	}
+
+	@Test
+	public void testGetRequiredStringRecursive() {
+		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", "v"));
+
+		Assert.assertEquals("v", PepperMapHelper.getRequiredString(map, "k1", "k2"));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetRequiredStringRecursive_NotString() {
+		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", OffsetDateTime.now()));
+
+		PepperMapHelper.getRequiredString(map, "k1", "k2");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetRequiredStringRecursive_NotIntermediateMap() {
+		Map<String, ?> map = ImmutableMap.of("k1", "v1");
+
+		PepperMapHelper.getRequiredString(map, "k1", "k2");
+	}
+
+	@Test
+	public void testPresentKeyInMap() {
+		Map<String, ?> map = ImmutableMap.of("requiredKey", "v");
+
+		Assert.assertEquals("v", PepperMapHelper.getRequiredString(map, "requiredKey"));
+	}
+
+	@Test
+	public void testHideKey() {
+		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
+
+		Assert.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKey(map, "k1"));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testHideKey_UnknownKey() {
+		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
+
+		PepperMapHelper.hideKey(map, "k3");
+	}
+
+	@Test
+	public void testHideKeys_singleKey() {
+		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
+
+		Assert.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKeys(map, "k1"));
+	}
+
+	@Test
+	public void testHideKeys_multipleKeys_hideAll() {
+		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
+
+		Assert.assertEquals(ImmutableMap.of(), PepperMapHelper.hideKeys(map, "k1", "k2"));
+	}
+
+	@Test
+	public void testHideKeys_multipleKeys_hideSome() {
+		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2", "k3", "v3");
+
+		Assert.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKeys(map, "k1", "k3"));
+	}
+
+	@Test
+	public void testGetOptionalString_Ok() {
+		Map<String, ?> map = ImmutableMap.of("k1", "v1");
+
+		Assert.assertEquals("v1", PepperMapHelper.getOptionalString(map, "k1").get());
+	}
+
+	@Test
+	public void testGetOptionalString_Missing() {
+		Map<String, ?> map = ImmutableMap.of("k1", "v1");
+
+		Assert.assertFalse(PepperMapHelper.getOptionalString(map, "k2").isPresent());
+	}
+
+	@Test
+	public void testGetOptionalString_Null() {
+		Map<String, ?> map = Collections.singletonMap("k1", null);
+
+		Assert.assertTrue(map.containsKey("k1"));
+		Assert.assertFalse(PepperMapHelper.getOptionalString(map, "k1").isPresent());
+	}
+
+	@Test
+	public void testGetOptionalString_Empty() {
+		Map<String, ?> map = Collections.singletonMap("k1", "");
+
+		Assert.assertTrue(map.containsKey("k1"));
+		Assert.assertFalse(PepperMapHelper.getOptionalString(map, "k1").isPresent());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetOptionalString_WrongType() {
+		Map<String, ?> map = Collections.singletonMap("k1", 123L);
+
+		PepperMapHelper.getOptionalString(map, "k1").isPresent();
+	}
+
+	@Test
+	public void testTransferValue_notAlreadyPresent() {
+		Map<String, ?> source = ImmutableMap.of("k1", "v1", "k2", "v2");
+		Map<String, Object> sink = new LinkedHashMap<>();
+
+		PepperMapHelper.transferValue("k1", source, sink);
+
+		Assert.assertEquals(ImmutableMap.of("k1", "v1"), sink);
+	}
+
+	@Test
+	public void testTransferValue_alreadyPresent() {
+		Map<String, ?> source = ImmutableMap.of("k1", "v1", "k2", "v2");
+		Map<String, Object> sink = new LinkedHashMap<>();
+		sink.put("k1", "alreadyPresent");
+
+		PepperMapHelper.transferValue("k1", source, sink);
+
+		Assert.assertEquals(ImmutableMap.of("k1", "v1"), sink);
+	}
+
+	@Test
+	public void testTransferValue_notExisting() {
+		Map<String, ?> source = ImmutableMap.of("k1", "v1", "k2", "v2");
+		Map<String, Object> sink = new LinkedHashMap<>();
+
+		PepperMapHelper.transferValue("k?", source, sink);
+
+		Assert.assertEquals(ImmutableMap.of(), sink);
 	}
 }

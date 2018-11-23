@@ -16,11 +16,15 @@ public class PepperTestHelper {
 		// hidden
 	}
 
+	/**
+	 * This will check internet (global) is available by checking the connectivity to a global resource expected to be
+	 * always UP (e.g. google.com)
+	 */
 	public static void assumeInternetIsAvailable() {
 		try {
 			new URL("https://google.com").openConnection();
 		} catch (RuntimeException | IOException e) {
-			Assume.assumeNoException("Internet is not available: can not tet Xambox API", e);
+			Assume.assumeNoException("Internet is not available", e);
 		}
 	}
 }

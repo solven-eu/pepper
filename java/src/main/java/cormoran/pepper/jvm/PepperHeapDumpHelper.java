@@ -54,6 +54,7 @@ public class PepperHeapDumpHelper {
 		return getHeapDumpOnErrorPath(arguments);
 	}
 
+	// TODO Try detecting default files around 'java_pid23227.hprof'
 	protected static Optional<String> getHeapDumpOnErrorPath(List<String> arguments) {
 		String option = IPepperHeapAnalysis.PREFIX_OPTION_XX + IPepperHeapAnalysis.HEAP_DUMP_PATH
 				+ IPepperHeapAnalysis.SEPARATOR_EQUALS;

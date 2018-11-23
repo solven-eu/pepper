@@ -165,8 +165,10 @@ public class PepperLogHelper {
 				if (size <= limitSize) {
 					return iterable.toString();
 				} else {
-					return "[" + Streams.stream(iterable).limit(limitSize).map(Object::toString).collect(
-							Collectors.joining(", ")) + ", (" + (size - limitSize) + " more elements)]";
+					return "[" + Streams.stream(iterable)
+							.limit(limitSize)
+							.map(Object::toString)
+							.collect(Collectors.joining(", ")) + ", (" + (size - limitSize) + " more elements)]";
 				}
 			}
 		});
@@ -393,8 +395,9 @@ public class PepperLogHelper {
 	}
 
 	public static Object escapeNewLines(Object toString) {
-		return lazyToString(() -> toString.toString().replaceAll("\r", Matcher.quoteReplacement("\\r")).replaceAll("\n",
-				Matcher.quoteReplacement("\\n")));
+		return lazyToString(() -> toString.toString()
+				.replaceAll("\r", Matcher.quoteReplacement("\\r"))
+				.replaceAll("\n", Matcher.quoteReplacement("\\n")));
 	}
 
 	// TODO

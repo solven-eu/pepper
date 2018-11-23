@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -21,7 +22,8 @@
 	<!-- mvn com.mycila:license-maven-plugin:format -->
 
 	<!-- Make a release -->
-	<!-- Do not -DskipTests, else it will skip javadoc which is mandatory for sonatype -->
+	<!-- Do not -DskipTests, else it will skip javadoc which is mandatory for 
+		sonatype -->
 	<!-- mvn release:clean release:prepare -Darguments="-Dmaven.test.skip" -->
 	<!-- mvn release:perform -Darguments="-Dmaven.test.skip" -->
 	<!-- mvn release:rollback -->
@@ -48,6 +50,9 @@
 		<findbugs.version>3.0.4</findbugs.version>
 		<equals.verifier.version>2.3.1</equals.verifier.version>
 		<checker.quals.version>2.1.10</checker.quals.version>
+
+		<!-- newer version than spring-boot-dependencies, for JDK11 -->
+		<mockito.version>2.23.0</mockito.version>
 
 		<jacoco.instruction.ratio>0.70</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
@@ -141,7 +146,7 @@
 		<module>jmh</module>
 
 		<module>unittest</module>
-		
+
 		<module>serialization</module>
 		<module>compression</module>
 
@@ -166,7 +171,8 @@
 				<scope>test</scope>
 			</dependency>
 
-			<!-- annotations from the Checker Framework: nullness, interning, locking, ... -->
+			<!-- annotations from the Checker Framework: nullness, interning, locking, 
+				... -->
 			<dependency>
 				<groupId>org.checkerframework</groupId>
 				<artifactId>checker-qual</artifactId>
@@ -212,7 +218,8 @@
 		</dependency>
 
 		<!-- Always added, to facilitate logging -->
-		<!-- Do not add logback, as the library user may prefer another logging framework -->
+		<!-- Do not add logback, as the library user may prefer another logging 
+			framework -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -267,7 +274,8 @@
 							<artifactId>plexus-compiler-javac-errorprone</artifactId>
 							<version>2.5</version>
 						</dependency>
-						<!-- override plexus-compiler-javac-errorprone's dependency on Error Prone with the latest version -->
+						<!-- override plexus-compiler-javac-errorprone's dependency on Error 
+							Prone with the latest version -->
 						<dependency>
 							<groupId>com.google.errorprone</groupId>
 							<artifactId>error_prone_core</artifactId>
@@ -277,7 +285,8 @@
 				</plugin>
 
 				<!-- -Dtest=TestClassToFileMapped selects a single test class -->
-				<!-- -Dmaven.surefire.debug enables debug on Surefire plugin on port 5005 -->
+				<!-- -Dmaven.surefire.debug enables debug on Surefire plugin on port 
+					5005 -->
 				<!-- mvn -Dtest=TestClassToFileMapped -Dmaven.surefire.debug test -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -288,7 +297,8 @@
 						<!-- https://groups.google.com/forum/#!topic/jacoco/LzmCezW8VKA -->
 
 						<!-- -XX:+StartAttachListener is for http://comments.gmane.org/gmane.comp.java.openjdk.macosx-port.devel/6094 -->
-						<!-- -XX:-HeapDumpOnOutOfMemoryError because TestGCInspector will force an OOM -->
+						<!-- -XX:-HeapDumpOnOutOfMemoryError because TestGCInspector will force 
+							an OOM -->
 						<!-- -Djava.util.logging.config.file so that tests fallback on logback -->
 						<argLine><![CDATA[-ea -Xmx${xmx} -XX:+StartAttachListener -XX:-HeapDumpOnOutOfMemoryError -Djava.util.logging.config.file=logging.properties ${argLine}]]></argLine>
 
@@ -344,7 +354,7 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.0</version>
+					<version>0.8.2</version>
 					<executions>
 						<execution>
 							<id>default-prepare-agent</id>
@@ -473,7 +483,7 @@
 			<plugin>
 				<groupId>net.revelc.code.formatter</groupId>
 				<artifactId>formatter-maven-plugin</artifactId>
-				<version>2.7.0</version>
+				<version>2.8.0</version>
 				<configuration>
 					<configFile>style/eclipse_java_code_formatter.xml</configFile>
 				</configuration>
@@ -572,7 +582,8 @@
 				</dependencies>
 				<executions>
 					<execution>
-						<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
+						<!-- default phase is verify, which is after tests. We prefer to run 
+							static analysis before tests not to wait -->
 						<phase>compile</phase>
 						<goals>
 							<goal>check</goal>
@@ -585,7 +596,8 @@
 	</build>
 
 	<scm>
-		<!-- Only developerConnection was not set in parent po;m as its own parent was not a SNAPSHOT -->
+		<!-- Only developerConnection was not set in parent po;m as its own parent 
+			was not a SNAPSHOT -->
 		<developerConnection>${scm.developerConnection}</developerConnection>
 		<tag>HEAD</tag>
 	</scm>

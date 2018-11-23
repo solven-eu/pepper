@@ -30,6 +30,7 @@ public class TestMultipleAgents {
 	@Test
 	public void testVMThenAgent() {
 		Assume.assumeFalse("TODO JDK9", TestInstrumentAgent.IS_JDK_9);
+		Assume.assumeFalse("TODO JDK9", TestInstrumentAgent.IS_JDK_11);
 
 		VirtualMachineWithoutToolsJar.getJvmVirtualMachine().get();
 		InstrumentationAgent.getInstrumentation().get();
@@ -38,6 +39,7 @@ public class TestMultipleAgents {
 	@Test
 	public void testAgentThenVM() {
 		Assume.assumeFalse("TODO JDK9", TestInstrumentAgent.IS_JDK_9);
+		Assume.assumeFalse("TODO JDK9", TestInstrumentAgent.IS_JDK_11);
 
 		InstrumentationAgent.getInstrumentation().get().getClass().getClassLoader();
 		VirtualMachineWithoutToolsJar.getJvmVirtualMachine().get();

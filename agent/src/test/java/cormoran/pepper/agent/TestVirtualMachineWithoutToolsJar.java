@@ -49,12 +49,14 @@ public class TestVirtualMachineWithoutToolsJar {
 	@Test
 	public void testHeapHisto() throws Exception {
 		Assume.assumeFalse("TODO JDK9", TestInstrumentAgent.IS_JDK_9);
+		Assume.assumeFalse("TODO JDK11", TestInstrumentAgent.IS_JDK_11);
 
 		InputStream is = VirtualMachineWithoutToolsJar.heapHisto().get();
 
 		// We do not use Guava CharSteam as it is marked @Beta
-		String asString = new BufferedReader(new InputStreamReader(is, Charsets.UTF_8)).lines().parallel().collect(
-				Collectors.joining("\n"));
+		String asString = new BufferedReader(new InputStreamReader(is, Charsets.UTF_8)).lines()
+				.parallel()
+				.collect(Collectors.joining("\n"));
 		Assert.assertNotNull(asString);
 	}
 

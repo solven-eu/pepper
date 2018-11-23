@@ -37,19 +37,22 @@ import cormoran.pepper.memory.IPepperMemoryConstants;
 public class TestPepperProcessHelper {
 	@Test
 	public void testMemoryOnMac() throws IOException {
-		String macMemoryOutput = Arrays.asList("mapped file 32.9M 10.7M 32K 0K 0K 0K 0K 139",
-				"shared memory 44K 44K 44K 0K 0K 0K 0K 6",
-				"=========== ======= ======== ===== ======= ======== ====== ===== =======",
-				"TOTAL 2.2G 538.2M 377.3M 0K 0K 16K 0K 845",
-				"TOTAL, minus reserved VM space 2.2G 538.2M 377.3M 0K 0K 16K 0K 845",
-				"",
-				"VIRTUAL RESIDENT DIRTY SWAPPED ALLOCATION BYTES DIRTY+SWAP REGION",
-				"MALLOC ZONE SIZE SIZE SIZE SIZE COUNT ALLOCATED FRAG SIZE % FRAG COUNT",
-				"=========== ======= ========= ========= ========= ========= ========= ========= ======",
-				"DefaultMallocZone_0x10b7b6000 203.0M 148.4M 87.4M 0K 167902 64.5M 22.9M 27% 19",
-				"GFXMallocZone_0x10b7e7000 0K 0K 0K 0K 0 0K 0K 0% 0",
-				"=========== ======= ========= ========= ========= ========= ========= ========= ======",
-				"TOTAL 203.0M 148.4M 87.4M 0K 167902 64.5M 22.9M 27% 19").stream().collect(Collectors.joining("\r"));
+		String macMemoryOutput = Arrays
+				.asList("mapped file 32.9M 10.7M 32K 0K 0K 0K 0K 139",
+						"shared memory 44K 44K 44K 0K 0K 0K 0K 6",
+						"=========== ======= ======== ===== ======= ======== ====== ===== =======",
+						"TOTAL 2.2G 538.2M 377.3M 0K 0K 16K 0K 845",
+						"TOTAL, minus reserved VM space 2.2G 538.2M 377.3M 0K 0K 16K 0K 845",
+						"",
+						"VIRTUAL RESIDENT DIRTY SWAPPED ALLOCATION BYTES DIRTY+SWAP REGION",
+						"MALLOC ZONE SIZE SIZE SIZE SIZE COUNT ALLOCATED FRAG SIZE % FRAG COUNT",
+						"=========== ======= ========= ========= ========= ========= ========= ========= ======",
+						"DefaultMallocZone_0x10b7b6000 203.0M 148.4M 87.4M 0K 167902 64.5M 22.9M 27% 19",
+						"GFXMallocZone_0x10b7e7000 0K 0K 0K 0K 0 0K 0K 0% 0",
+						"=========== ======= ========= ========= ========= ========= ========= ========= ======",
+						"TOTAL 203.0M 148.4M 87.4M 0K 167902 64.5M 22.9M 27% 19")
+				.stream()
+				.collect(Collectors.joining("\r"));
 
 		long nbBytes = PepperProcessHelper
 				.extractMemory(PepperProcessHelper.OS_MARKER_MAC, new ByteArrayInputStream(macMemoryOutput.getBytes()))

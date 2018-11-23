@@ -25,7 +25,7 @@ package net.bull.javamelody;
 import org.junit.Assert;
 import org.junit.Test;
 
-import cormoran.pepper.jvm.TestGCInspector;
+import cormoran.pepper.agent.VirtualMachineWithoutToolsJar;
 import cormoran.pepper.memory.histogram.HeapHistogram;
 import cormoran.pepper.memory.histogram.IHeapHistogram;
 
@@ -34,7 +34,7 @@ public class TestHeapHistogram {
 	public void testHeapHistogramm() throws Exception {
 		IHeapHistogram heapHisto = HeapHistogram.createHeapHistogram();
 
-		if (TestGCInspector.IS_JDK_9) {
+		if (VirtualMachineWithoutToolsJar.IS_JDK_9 || VirtualMachineWithoutToolsJar.IS_JDK_11) {
 			Assert.assertNull(heapHisto);
 		} else {
 			Assert.assertTrue(heapHisto.getTotalHeapBytes() > 0);

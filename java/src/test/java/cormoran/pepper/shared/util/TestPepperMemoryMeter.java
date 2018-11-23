@@ -35,11 +35,10 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 
 import cormoran.pepper.agent.InstrumentationAgent;
+import cormoran.pepper.agent.VirtualMachineWithoutToolsJar;
 import cormoran.pepper.memory.PepperMemoryHelper;
 
 public class TestPepperMemoryMeter {
-
-	public static final boolean IS_JDK_9 = "9".equals(System.getProperty("java.specification.version"));
 
 	@BeforeClass
 	public static void assumeAgentLoaded() {
@@ -49,7 +48,7 @@ public class TestPepperMemoryMeter {
 
 	@Test
 	public void testStringWeight() {
-		if (IS_JDK_9) {
+		if (VirtualMachineWithoutToolsJar.IS_JDK_9 || VirtualMachineWithoutToolsJar.IS_JDK_11) {
 			// Lower in JDK9: good!
 			Assert.assertEquals(48, PepperMemoryHelper.deepSize("Youpi"));
 		} else {
@@ -77,7 +76,7 @@ public class TestPepperMemoryMeter {
 		recursiveMap.put("myself", recursiveMap);
 
 		long deepSize = PepperMemoryHelper.deepSize(recursiveMap);
-		if (IS_JDK_9) {
+		if (VirtualMachineWithoutToolsJar.IS_JDK_9 || VirtualMachineWithoutToolsJar.IS_JDK_11) {
 			// Lower in JDK9: good!
 			Assert.assertEquals(208, deepSize);
 		} else {
