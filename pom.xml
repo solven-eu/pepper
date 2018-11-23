@@ -36,7 +36,7 @@
 
 	<properties>
 		<!-- https://github.com/google/guava/releases -->
-		<guava.version>24.1-jre</guava.version>
+		<guava.version>27.0.1-jre</guava.version>
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
 		<errorprone.version>2.0.21</errorprone.version>
@@ -46,13 +46,13 @@
 
 		<javolution.version>6.0.0</javolution.version>
 
-		<awaitility.version>3.0.0</awaitility.version>
+		<awaitility.version>3.1.3</awaitility.version>
 		<findbugs.version>3.0.4</findbugs.version>
 		<equals.verifier.version>2.3.1</equals.verifier.version>
 		<checker.quals.version>2.1.10</checker.quals.version>
 
 		<!-- newer version than spring-boot-dependencies, for JDK11 -->
-		<mockito.version>2.23.0</mockito.version>
+		<mockito.version>2.23.4</mockito.version>
 
 		<jacoco.instruction.ratio>0.70</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
@@ -483,7 +483,7 @@
 			<plugin>
 				<groupId>net.revelc.code.formatter</groupId>
 				<artifactId>formatter-maven-plugin</artifactId>
-				<version>2.8.0</version>
+				<version>2.8.1</version>
 				<configuration>
 					<configFile>style/eclipse_java_code_formatter.xml</configFile>
 				</configuration>

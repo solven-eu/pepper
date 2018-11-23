@@ -129,7 +129,7 @@ public class PepperGzipHelper {
 	public static void packToZip(final File folder, final File zipFilePath) throws IOException {
 		try (FileOutputStream fos = new FileOutputStream(zipFilePath); ZipOutputStream zos = new ZipOutputStream(fos)) {
 			// https://stackoverflow.com/questions/15968883/how-to-zip-a-folder-itself-using-java
-			Iterator<File> iterator = Files.fileTreeTraverser().preOrderTraversal(folder).iterator();
+			Iterator<File> iterator = Files.fileTraverser().depthFirstPreOrder(folder).iterator();
 
 			while (iterator.hasNext()) {
 				File next = iterator.next();

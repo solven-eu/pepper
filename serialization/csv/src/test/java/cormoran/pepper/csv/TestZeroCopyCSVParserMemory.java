@@ -113,11 +113,13 @@ public class TestZeroCopyCSVParserMemory {
 	public void testMemoryConsumptionIsConstantOverProblemSize() throws IOException {
 		int smallProblemSize = 100;
 
-		String smallProblem = streamOfValues(smallProblemSize).mapToInt(i -> (int) i).mapToObj(i -> i + "\r\n").collect(
-				Collectors.joining());
+		String smallProblem = streamOfValues(smallProblemSize).mapToInt(i -> (int) i)
+				.mapToObj(i -> i + "\r\n")
+				.collect(Collectors.joining());
 
-		String bigProblem = streamOfValues(largeProblem).mapToInt(i -> (int) i).mapToObj(i -> i + "\r\n").collect(
-				Collectors.joining());
+		String bigProblem = streamOfValues(largeProblem).mapToInt(i -> (int) i)
+				.mapToObj(i -> i + "\r\n")
+				.collect(Collectors.joining());
 
 		int[] smallArray = new int[smallProblemSize];
 		int[] bigArray = new int[largeProblem];
@@ -152,8 +154,9 @@ public class TestZeroCopyCSVParserMemory {
 
 	@Test
 	public void testBenchMemoryConsumption_int() throws IOException {
-		String oneColumnOfInts = streamOfValues(largeProblem).mapToInt(i -> (int) i).mapToObj(i -> i + "\r\n").collect(
-				Collectors.joining());
+		String oneColumnOfInts = streamOfValues(largeProblem).mapToInt(i -> (int) i)
+				.mapToObj(i -> i + "\r\n")
+				.collect(Collectors.joining());
 
 		int[] array = new int[largeProblem];
 
@@ -179,9 +182,9 @@ public class TestZeroCopyCSVParserMemory {
 
 	@Test
 	public void testBenchMemoryConsumption_long() throws IOException {
-		String oneColumnOfLongs =
-				streamOfValues(largeProblem).mapToLong(i -> (long) i).mapToObj(i -> i + "\r\n").collect(
-						Collectors.joining());
+		String oneColumnOfLongs = streamOfValues(largeProblem).mapToLong(i -> (long) i)
+				.mapToObj(i -> i + "\r\n")
+				.collect(Collectors.joining());
 
 		long[] array = new long[largeProblem];
 

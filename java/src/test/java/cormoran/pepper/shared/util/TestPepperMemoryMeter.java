@@ -48,7 +48,7 @@ public class TestPepperMemoryMeter {
 
 	@Test
 	public void testStringWeight() {
-		if (VirtualMachineWithoutToolsJar.IS_JDK_9 || VirtualMachineWithoutToolsJar.IS_JDK_11) {
+		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			// Lower in JDK9: good!
 			Assert.assertEquals(48, PepperMemoryHelper.deepSize("Youpi"));
 		} else {
@@ -76,7 +76,7 @@ public class TestPepperMemoryMeter {
 		recursiveMap.put("myself", recursiveMap);
 
 		long deepSize = PepperMemoryHelper.deepSize(recursiveMap);
-		if (VirtualMachineWithoutToolsJar.IS_JDK_9 || VirtualMachineWithoutToolsJar.IS_JDK_11) {
+		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			// Lower in JDK9: good!
 			Assert.assertEquals(208, deepSize);
 		} else {

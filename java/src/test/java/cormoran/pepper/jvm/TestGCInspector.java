@@ -153,7 +153,7 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		// It appears that even under windows, the separator is '\n', not System.lineSeparator()
 		List<String> asList = Splitter.on("\n").splitToList(gcInspector.getHeapHistogram());
 
-		if (VirtualMachineWithoutToolsJar.IS_JDK_9) {
+		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			LOGGER.error("Arg on JDK9: {}", asList);
 			Assert.assertEquals(1, asList.size());
 		} else {
@@ -171,7 +171,7 @@ public class TestGCInspector implements IPepperMemoryConstants {
 
 		String outputMsg = gcInspector.saveHeapDump(heapFile);
 
-		if (VirtualMachineWithoutToolsJar.IS_JDK_9 || VirtualMachineWithoutToolsJar.IS_JDK_11) {
+		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			Assertions.assertThat(outputMsg).startsWith("Heap Histogram is not available");
 		} else {
 			Assertions.assertThat(outputMsg).startsWith("Heap dump file created");
@@ -232,7 +232,7 @@ public class TestGCInspector implements IPepperMemoryConstants {
 	public void limitedHeapHisto() {
 		String firstRows = GCInspector.getHeapHistogramAsString(5);
 
-		if (VirtualMachineWithoutToolsJar.IS_JDK_9 || VirtualMachineWithoutToolsJar.IS_JDK_11) {
+		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			LOGGER.error("HeapHistogram in JDK9: {}", firstRows);
 			Assert.assertEquals(1, firstRows.split(System.lineSeparator()).length);
 		} else {

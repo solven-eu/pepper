@@ -183,23 +183,24 @@ public class DominatorTree {
 
 			// pre-condition for index writing:
 			// retainedSetIdx is still sorted by object id
-			snapshot.getIndexManager().setReader(IndexManager.Index.DOMINATOR,
-					new IndexWriter.IntIndexStreamer().writeTo(
-							IndexManager.Index.DOMINATOR.getFile(snapshot.getSnapshotInfo().getPrefix()),
-							new IteratorInt() {
-								int nextIndex = 2;
+			snapshot.getIndexManager()
+					.setReader(IndexManager.Index.DOMINATOR,
+							new IndexWriter.IntIndexStreamer().writeTo(
+									IndexManager.Index.DOMINATOR.getFile(snapshot.getSnapshotInfo().getPrefix()),
+									new IteratorInt() {
+										int nextIndex = 2;
 
-								@Override
-								public boolean hasNext() {
-									return nextIndex < dom.length;
-								}
+										@Override
+										public boolean hasNext() {
+											return nextIndex < dom.length;
+										}
 
-								@Override
-								public int next() {
-									return dom[nextIndex++];
-								}
+										@Override
+										public int next() {
+											return dom[nextIndex++];
+										}
 
-							}));
+									}));
 
 			int[] objectIds = new int[snapshot.getSnapshotInfo().getNumberOfObjects() + 2];
 			for (int i = 0; i < objectIds.length; i++)
@@ -551,8 +552,10 @@ public class DominatorTree {
 					}
 				}
 
-				dump.getIndexManager().setReader(Index.O2RETAINED,
-						retained.writeTo(IndexManager.Index.O2RETAINED.getFile(dump.getSnapshotInfo().getPrefix())));
+				dump.getIndexManager()
+						.setReader(Index.O2RETAINED,
+								retained.writeTo(
+										IndexManager.Index.O2RETAINED.getFile(dump.getSnapshotInfo().getPrefix())));
 				retained = null;
 
 				progressListener.done();

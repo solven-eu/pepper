@@ -34,7 +34,7 @@ public class TestHeapHistogram {
 	public void testHeapHistogramm() throws Exception {
 		IHeapHistogram heapHisto = HeapHistogram.createHeapHistogram();
 
-		if (VirtualMachineWithoutToolsJar.IS_JDK_9 || VirtualMachineWithoutToolsJar.IS_JDK_11) {
+		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			Assert.assertNull(heapHisto);
 		} else {
 			Assert.assertTrue(heapHisto.getTotalHeapBytes() > 0);

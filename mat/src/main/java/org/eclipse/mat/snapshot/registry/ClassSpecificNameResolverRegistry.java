@@ -62,16 +62,18 @@ public final class ClassSpecificNameResolverRegistry {
 				}
 				return null;
 			} catch (RuntimeException e) {
-				Logger.getLogger(ClassSpecificNameResolverRegistry.class.getName()).log(Level.SEVERE,
-						MessageUtil.format(Messages.ClassSpecificNameResolverRegistry_ErrorMsg_DuringResolving,
-								object.getTechnicalName()),
-						e);
+				Logger.getLogger(ClassSpecificNameResolverRegistry.class.getName())
+						.log(Level.SEVERE,
+								MessageUtil.format(Messages.ClassSpecificNameResolverRegistry_ErrorMsg_DuringResolving,
+										object.getTechnicalName()),
+								e);
 				return null;
 			} catch (SnapshotException e) {
-				Logger.getLogger(ClassSpecificNameResolverRegistry.class.getName()).log(Level.SEVERE,
-						MessageUtil.format(Messages.ClassSpecificNameResolverRegistry_ErrorMsg_DuringResolving,
-								object.getTechnicalName()),
-						e);
+				Logger.getLogger(ClassSpecificNameResolverRegistry.class.getName())
+						.log(Level.SEVERE,
+								MessageUtil.format(Messages.ClassSpecificNameResolverRegistry_ErrorMsg_DuringResolving,
+										object.getTechnicalName()),
+								e);
 				return null;
 			}
 		}

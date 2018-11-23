@@ -46,8 +46,9 @@ public class TestWriteLargeAvro {
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(ImmutableMap.of("key", 1));
 
 		int nbRows1 = 1000 * 1000;
-		Stream<GenericRecord> stream = IntStream.range(0, nbRows1).mapToObj(i -> ImmutableMap.of("key", i)).map(
-				AvroStreamHelper.toGenericRecord(schema));
+		Stream<GenericRecord> stream = IntStream.range(0, nbRows1)
+				.mapToObj(i -> ImmutableMap.of("key", i))
+				.map(AvroStreamHelper.toGenericRecord(schema));
 
 		// Parallel and unordered: suggest data can be processed concurrently: we want to check we do not try to write
 		// concurrently in the outputstream

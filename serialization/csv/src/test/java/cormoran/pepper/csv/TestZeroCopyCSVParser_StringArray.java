@@ -37,9 +37,9 @@ public class TestZeroCopyCSVParser_StringArray {
 	public void toListOfStringArray() {
 		int smallProblemSize = 100;
 
-		String smallProblem =
-				TestZeroCopyCSVParserMemory.streamOfValues(smallProblemSize).mapToObj(i -> i + "\r\n").collect(
-						Collectors.joining());
+		String smallProblem = TestZeroCopyCSVParserMemory.streamOfValues(smallProblemSize)
+				.mapToObj(i -> i + "\r\n")
+				.collect(Collectors.joining());
 		List<String[]> asList =
 				parser.parseAsStringArrays(new StringReader(smallProblem), ',').collect(Collectors.toList());
 

@@ -83,4 +83,9 @@ public class TestVirtualMachineWithoutToolsJar {
 	public void testGetVMs() {
 		VirtualMachineWithoutToolsJar.getJvmVirtualMachines();
 	}
+
+	@Test
+	public void testIsJmapSupported() {
+		Assert.assertTrue(VirtualMachineWithoutToolsJar.isJmapSupported());
+	}
 }

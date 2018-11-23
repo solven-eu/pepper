@@ -56,8 +56,9 @@ public class CsvFormatHelper {
 
 			String candidateSeparators = allowedSeparators.retainFrom(row);
 
-			Optional<Integer> optMax = candidateSeparators.chars().mapToObj(Integer::valueOf).max(
-					Comparator.comparing(i -> CharMatcher.is((char) i.intValue()).countIn(row)));
+			Optional<Integer> optMax = candidateSeparators.chars()
+					.mapToObj(Integer::valueOf)
+					.max(Comparator.comparing(i -> CharMatcher.is((char) i.intValue()).countIn(row)));
 
 			if (optMax.isPresent()) {
 				int max = optMax.get().intValue();
