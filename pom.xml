@@ -27,8 +27,15 @@
 	<!-- mvn release:clean release:prepare -Darguments="-Dmaven.test.skip" -->
 	<!-- mvn release:perform -Darguments="-Dmaven.test.skip" -->
 	<!-- mvn release:rollback -->
+	
+	<!-- Configure GPG -->
+	<!-- https://central.sonatype.org/pages/working-with-pgp-signatures.html -->
+	<!-- brew install gpg -->
+	<!-- gpg \-\-gen-key -->
+	<!-- gpg \-\-list-keys -->
+	<!-- Then, maven release process will use this key to sign the artifacts uploaded to sonatype -->
 
-	<!-- Deployement -->
+	<!-- Deployment -->
 	<!-- mvn deploy -PSonatype -DskipTests -->
 	<!-- Release in https://oss.sonatype.org -->
 	<!-- Jira ticket: https://issues.sonatype.org/browse/OSSRH-10350 -->
