@@ -31,10 +31,11 @@
 	<!-- brew install gpg -->
 	<!-- gpg \-\-gen-key -->
 	<!-- gpg \-\-list-keys -->
+	<!-- gpg \-\-keyserver http://keyserver.ubuntu.com:11371 \-\-send-keys keyid -->
 	<!-- Then, maven release process will use this key to sign the artifacts uploaded to sonatype -->
 
 	<!-- Deployment -->
-	<!-- mvn deploy -PSonatype -DskipTests -->
+	<!-- mvn deploy -PSonatype -Dmaven.test.skip -->
 	<!-- Release in https://oss.sonatype.org -->
 	<!-- Jira ticket: https://issues.sonatype.org/browse/OSSRH-10350 -->
 	<!-- Needs 2 hours to appear in http://search.maven.org/ -->
