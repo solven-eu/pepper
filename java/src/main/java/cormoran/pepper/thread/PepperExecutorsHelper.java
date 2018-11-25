@@ -254,11 +254,19 @@ public class PepperExecutorsHelper {
 		return newShrinkableScheduledThreadPool(threadNamePrefix, DEFAULT_REJECTION_POLICY);
 	}
 
+	public static ListeningScheduledExecutorService newShrinkableScheduledThreadPool(int nbThreads,
+			String threadNamePrefix) {
+		return newShrinkableScheduledThreadPool(nbThreads, threadNamePrefix, DEFAULT_REJECTION_POLICY);
+	}
+
 	public static ListeningScheduledExecutorService newShrinkableScheduledThreadPool(String threadNamePrefix,
 			RejectedExecutionHandler rejectedExecutionHandler) {
-		// At most nbThreads scheduled tasks could be active at the same time
-		int nbThreads = getDefaultNbThreads();
+		return newShrinkableScheduledThreadPool(getDefaultNbThreads(), threadNamePrefix, rejectedExecutionHandler);
+	}
 
+	public static ListeningScheduledExecutorService newShrinkableScheduledThreadPool(int nbThreads,
+			String threadNamePrefix,
+			RejectedExecutionHandler rejectedExecutionHandler) {
 		ScheduledThreadPoolExecutor tpExecutor = new ScheduledThreadPoolExecutor(nbThreads,
 				makeDaemonThreadFactory(threadNamePrefix),
 				rejectedExecutionHandler);
