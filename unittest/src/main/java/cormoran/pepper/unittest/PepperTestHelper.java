@@ -2,6 +2,7 @@ package cormoran.pepper.unittest;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 
 import org.junit.Assume;
 
@@ -22,7 +23,10 @@ public class PepperTestHelper {
 	 */
 	public static void assumeInternetIsAvailable() {
 		try {
-			new URL("https://google.com").openConnection();
+			URLConnection connection = new URL("https://google.com").openConnection();
+			Assume.assumeNotNull(connection);
+			// We check some data from the connection as we may receive a not connection connection
+			Assume.assumeNotNull(connection.getContentType());
 		} catch (RuntimeException | IOException e) {
 			Assume.assumeNoException("Internet is not available", e);
 		}

@@ -36,6 +36,7 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
@@ -107,6 +108,8 @@ public class PepperSerializationHelper {
 	public static final char FORCE_SEPARATOR = '#';
 
 	private static final int HEX_FILTER = 0xFF;
+	private static final int HEX_SHIFT = 0x100;
+	private static final int RADIX_16 = 16;
 
 	// TODO: Not useful at all?
 	@Deprecated
@@ -531,6 +534,30 @@ public class PepperSerializationHelper {
 			hexString.append(hex);
 		}
 		return hexString.toString();
+	}
+
+	public static String toSha512(String input, String salt) {
+		final MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("SHA-512");
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
+
+		return toSha512(input, salt, StandardCharsets.UTF_8, md);
+	}
+
+	// https://stackoverflow.com/questions/33085493/hash-a-password-with-sha-512-in-java
+	public static String toSha512(String input, String salt, Charset charset, MessageDigest md) {
+		md.update(salt.getBytes(charset));
+
+		byte[] bytes = md.digest(input.getBytes(charset));
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < bytes.length; i++) {
+			int asInt = (bytes[i] & HEX_FILTER) + HEX_SHIFT;
+			sb.append(Integer.toString(asInt, RADIX_16).substring(1));
+		}
+		return sb.toString();
 	}
 
 }
