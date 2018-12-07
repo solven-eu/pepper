@@ -141,6 +141,20 @@ public class TestPepperSerializationHelper {
 	}
 
 	@Test
+	public void testSha512() throws NoSuchAlgorithmException {
+		String sha512 = PepperSerializationHelper.toSha512("Youpi", "someSalt");
+		Assert.assertEquals(
+				"a2972849746c35f2dc82dc1cedb9e78318508b93b6b007f37f779838f62ca196612c8c6fb8f18b83d9cf144ce4b373d84781b69a9301097d9b53ab7516ed553d",
+				sha512);
+	}
+
+	@Test
+	public void testSha512_Random() throws NoSuchAlgorithmException {
+		String output = PepperSerializationHelper.generateSha512();
+		Assert.assertTrue(output.length() > 0);
+	}
+
+	@Test
 	public void testSafeToObject_LocalDate() {
 		Object object = LocalDate.now();
 		Assert.assertEquals(object, PepperSerializationHelper.safeToObject(LocalDate.class, object.toString()).get());

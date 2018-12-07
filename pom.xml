@@ -14,7 +14,7 @@
 	<inceptionYear>2014</inceptionYear>
 
 	<!-- Format source code -->
-	<!-- mvn net.revelc.code.formatter:formatter-maven-plugin:2.7.0:format -->
+	<!-- mvn net.revelc.code.formatter:formatter-maven-plugin:2.8.0:format -->
 
 	<!-- Add missing licenses -->
 	<!-- mvn com.mycila:license-maven-plugin:format -->

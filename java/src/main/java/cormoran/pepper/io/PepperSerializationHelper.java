@@ -36,6 +36,7 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
@@ -49,6 +50,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +109,8 @@ public class PepperSerializationHelper {
 	public static final char FORCE_SEPARATOR = '#';
 
 	private static final int HEX_FILTER = 0xFF;
+	private static final int HEX_SHIFT = 0x100;
+	private static final int RADIX_16 = 16;
 
 	// TODO: Not useful at all?
 	@Deprecated
@@ -531,6 +535,28 @@ public class PepperSerializationHelper {
 			hexString.append(hex);
 		}
 		return hexString.toString();
+	}
+
+	// https://stackoverflow.com/questions/33085493/hash-a-password-with-sha-512-in-java
+	public static String toSha512(String stringToHash, String salt) {
+		String generatedPassword = null;
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-512");
+			md.update(salt.getBytes(StandardCharsets.UTF_8));
+			byte[] bytes = md.digest(stringToHash.getBytes(StandardCharsets.UTF_8));
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < bytes.length; i++) {
+				sb.append(Integer.toString((bytes[i] & HEX_FILTER) + HEX_SHIFT, RADIX_16).substring(1));
+			}
+			generatedPassword = sb.toString();
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException(e);
+		}
+		return generatedPassword;
+	}
+
+	public static String generateSha512() {
+		return toSha512(UUID.randomUUID().toString(), UUID.randomUUID().toString());
 	}
 
 }
