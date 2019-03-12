@@ -43,8 +43,8 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<!-- https://github.com/google/guava/wiki/Compatibility -->
-			<!-- Guava for JDK6 srops at 20.0 -->
-			<version>27.1-jre</version><!--$NO-MVN-MAN-VER$ -->
+			<!-- Guava for JDK6 stops at 20.0 -->
+			<version>20.0</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
 
 		<dependency>
