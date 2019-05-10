@@ -18,7 +18,7 @@
 		<avro.version>1.8.2</avro.version>
 
 		<!-- TODO: What is the diff between 2.9.X and 2.8.X? -->
-		<hadoop-common.version>2.9.0</hadoop-common.version>
+		<hadoop-common.version>2.9.2</hadoop-common.version>
 		<!-- <hadoop-common.version>2.8.3</hadoop-common.version> -->
 
 		<!-- Keep in mind a stack compatible with Avro 1.7.X -->
