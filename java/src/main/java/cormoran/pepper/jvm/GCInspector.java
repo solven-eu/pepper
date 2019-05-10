@@ -699,7 +699,8 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		printThreadDump();
 	}
 
-	public static final Set<String> FULL_GC_NAMES = ImmutableSet.of("PS MarkSweep", "G1 Old Generation");
+	public static final Set<String> FULL_GC_NAMES =
+			ImmutableSet.of("PS MarkSweep", "G1 Old Generation", "MarkSweepCompact");
 
 	/**
 	 * Print the heap histogram only up to given % of total heap

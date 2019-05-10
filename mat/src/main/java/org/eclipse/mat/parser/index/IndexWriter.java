@@ -376,9 +376,9 @@ public abstract class IndexWriter {
 			long bytesAfter = identifiers.serializedSizeInBytes();
 
 			LOGGER.info(".runOptimize moved from {} to {}. As long[], it would consume {}",
-					PepperLogHelper.getNiceMemory(bytesBefore),
-					PepperLogHelper.getNiceMemory(bytesAfter),
-					PepperLogHelper.getNiceMemory(IPepperMemoryConstants.LONG * identifiers.getLongCardinality()));
+					PepperLogHelper.humanBytes(bytesBefore),
+					PepperLogHelper.humanBytes(bytesAfter),
+					PepperLogHelper.humanBytes(IPepperMemoryConstants.LONG * identifiers.getLongCardinality()));
 
 			addedAfterSort = false;
 
