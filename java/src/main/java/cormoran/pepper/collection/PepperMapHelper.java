@@ -191,6 +191,20 @@ public class PepperMapHelper {
 		return getRequiredString((Map<?, ?>) rawValue, subKey);
 	}
 
+	public static Number getRequiredNumber(Map<?, ?> map, String key) {
+		if (map == null) {
+			throw new IllegalArgumentException("Null Map while requiring key=" + key);
+		}
+
+		Object rawValue = map.get(key);
+
+		if (rawValue == null || !(rawValue instanceof Number)) {
+			throw new IllegalArgumentException("We miss '" + key + "' amongst available: " + map.keySet());
+		}
+
+		return (Number) rawValue;
+	}
+
 	public static <T> Map<T, ?> hideKey(Map<T, ?> formRegisterApp, String key) {
 		if (formRegisterApp.containsKey(key)) {
 			Map<T, ?> clone = new HashMap<>(formRegisterApp);

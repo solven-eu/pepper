@@ -119,6 +119,18 @@ public class TestPepperMapHelper {
 	}
 
 	@Test
+	public void testPresentNumberKeyInMap_Int() {
+		Map<String, ?> map = ImmutableMap.of("requiredKey", 123);
+
+		Assert.assertEquals(123, PepperMapHelper.getRequiredNumber(map, "requiredKey"));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testPresentNumberKeyInMap_String() {
+		PepperMapHelper.getRequiredNumber(ImmutableMap.of("requiredKey", "123"), "requiredKey");
+	}
+
+	@Test
 	public void testHideKey() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
 

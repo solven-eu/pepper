@@ -43,6 +43,7 @@ public class TestPepperMemoryHelper {
 		Assert.assertEquals(56, PepperMemoryHelper.getObjectArrayMemory(new int[9]));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testDouble() {
 		Assert.assertEquals(24, PepperMemoryHelper.getDoubleMemory());

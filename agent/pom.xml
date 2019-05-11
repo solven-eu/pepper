@@ -20,7 +20,6 @@
 		<compiler.targetVersion>1.6</compiler.targetVersion>
 
 		<sizeof.version>0.3.0</sizeof.version>
-		<byte-buddy.version>1.7.9</byte-buddy.version>
 	</properties>
 
 	<profiles>
@@ -43,7 +42,7 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<!-- https://github.com/google/guava/wiki/Compatibility -->
-			<!-- Guava for JDK6 srops at 20.0 -->
+			<!-- Guava for JDK6 drops at 20.0 -->
 			<version>20.0</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
 
@@ -62,7 +61,6 @@
 		<dependency>
 			<groupId>net.bytebuddy</groupId>
 			<artifactId>byte-buddy-agent</artifactId>
-			<version>${byte-buddy.version}</version>
 		</dependency>
 
 	</dependencies>

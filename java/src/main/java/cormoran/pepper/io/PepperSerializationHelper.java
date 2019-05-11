@@ -537,22 +537,28 @@ public class PepperSerializationHelper {
 		return hexString.toString();
 	}
 
-	// https://stackoverflow.com/questions/33085493/hash-a-password-with-sha-512-in-java
-	public static String toSha512(String stringToHash, String salt) {
-		String generatedPassword = null;
+	public static String toSha512(String input, String salt) {
+		final MessageDigest md;
 		try {
-			MessageDigest md = MessageDigest.getInstance("SHA-512");
-			md.update(salt.getBytes(StandardCharsets.UTF_8));
-			byte[] bytes = md.digest(stringToHash.getBytes(StandardCharsets.UTF_8));
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < bytes.length; i++) {
-				sb.append(Integer.toString((bytes[i] & HEX_FILTER) + HEX_SHIFT, RADIX_16).substring(1));
-			}
-			generatedPassword = sb.toString();
+			md = MessageDigest.getInstance("SHA-512");
 		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalStateException(e);
+			throw new RuntimeException(e);
 		}
-		return generatedPassword;
+
+		return toSha512(input, salt, StandardCharsets.UTF_8, md);
+	}
+
+	// https://stackoverflow.com/questions/33085493/hash-a-password-with-sha-512-in-java
+	public static String toSha512(String input, String salt, Charset charset, MessageDigest md) {
+		md.update(salt.getBytes(charset));
+
+		byte[] bytes = md.digest(input.getBytes(charset));
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < bytes.length; i++) {
+			int asInt = (bytes[i] & HEX_FILTER) + HEX_SHIFT;
+			sb.append(Integer.toString(asInt, RADIX_16).substring(1));
+		}
+		return sb.toString();
 	}
 
 	public static String generateSha512() {

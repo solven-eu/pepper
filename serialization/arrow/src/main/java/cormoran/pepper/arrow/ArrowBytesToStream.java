@@ -155,7 +155,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 	}
 
 	private void showIntAccessor(FieldVector fx, int rowIndex, Map<String, Object> asMap) {
-		IntVector intVector = ((IntVector) fx);
+		IntVector intVector = (IntVector) fx;
 		if (!intVector.isNull(rowIndex)) {
 			int value = intVector.get(rowIndex);
 
@@ -164,7 +164,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 	}
 
 	private void showBigIntAccessor(FieldVector fx, int rowIndex, Map<String, Object> asMap) {
-		BigIntVector intVector = ((BigIntVector) fx);
+		BigIntVector intVector = (BigIntVector) fx;
 		if (!intVector.isNull(rowIndex)) {
 			long value = intVector.get(rowIndex);
 
@@ -173,7 +173,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 	}
 
 	private void showFloat4Accessor(FieldVector fx, int rowIndex, Map<String, Object> asMap) {
-		Float4Vector intVector = ((Float4Vector) fx);
+		Float4Vector intVector = (Float4Vector) fx;
 		if (!intVector.isNull(rowIndex)) {
 			float value = intVector.get(rowIndex);
 
@@ -182,7 +182,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 	}
 
 	private void showFloat8Accessor(FieldVector fx, int rowIndex, Map<String, Object> asMap) {
-		Float8Vector intVector = ((Float8Vector) fx);
+		Float8Vector intVector = (Float8Vector) fx;
 		if (!intVector.isNull(rowIndex)) {
 			double value = intVector.get(rowIndex);
 
@@ -191,7 +191,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 	}
 
 	private void showVarcharAccessor(FieldVector fx, int rowIndex, Map<String, Object> asMap) {
-		VarCharVector intVector = ((VarCharVector) fx);
+		VarCharVector intVector = (VarCharVector) fx;
 		if (!intVector.isNull(rowIndex)) {
 			String value = new String(intVector.get(rowIndex), StandardCharsets.UTF_8);
 
@@ -200,7 +200,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 	}
 
 	private void showVarBinaryAccessor(FieldVector fx, int rowIndex, Map<String, Object> asMap) {
-		VarBinaryVector intVector = ((VarBinaryVector) fx);
+		VarBinaryVector intVector = (VarBinaryVector) fx;
 		if (!intVector.isNull(rowIndex)) {
 			byte[] value = intVector.get(rowIndex);
 

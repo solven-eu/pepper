@@ -25,6 +25,7 @@ package cormoran.pepper.io;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.FileSystems;
@@ -105,7 +106,7 @@ public class PepperFileHelper {
 			return new ClassPathResource(path).getURL();
 		} catch (IOException e) {
 			// Do not throw the explicit IOException so this method can be used for field definition in tests
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
