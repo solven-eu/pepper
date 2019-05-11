@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -558,6 +559,10 @@ public class PepperSerializationHelper {
 			sb.append(Integer.toString(asInt, RADIX_16).substring(1));
 		}
 		return sb.toString();
+	}
+
+	public static String generateSha512() {
+		return toSha512(UUID.randomUUID().toString(), UUID.randomUUID().toString());
 	}
 
 }

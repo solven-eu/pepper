@@ -17,7 +17,7 @@
 		<!-- <scala.version>2.10</scala.version> -->
 
 		<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core_2.10 -->
-		<spark.version>2.2.1</spark.version>
+		<spark.version>2.4.0</spark.version>
 	</properties>
 
 	<modules>
