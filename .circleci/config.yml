@@ -1,3 +1,4 @@
+# Check with 'circleci config validate'
 version: 2
 jobs:
   build:
@@ -11,9 +12,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+        - v1-dependencies-{{ checksum "pom.xml" }}
+        # fallback to using the latest cache if no exact match is found
+        - v1-dependencies-
       - run: mvn dependency:resolve-plugins dependency:go-offline
       - save_cache:
           paths:
