@@ -12,6 +12,9 @@
 
 	<properties>
 		<avro.version>1.8.2</avro.version>
+		
+        <!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
+        <arrow.version>0.8.0</arrow.version>
 
 		<scala.version>2.11</scala.version>
 		<!-- <scala.version>2.10</scala.version> -->

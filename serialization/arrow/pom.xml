@@ -32,17 +32,15 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-memory -->
         <dependency>
             <groupId>org.apache.arrow</groupId>
             <artifactId>arrow-memory</artifactId>
-            <version>0.8.0</version>
+            <version>${arrow.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
         <dependency>
             <groupId>org.apache.arrow</groupId>
             <artifactId>arrow-vector</artifactId>
-            <version>0.8.0</version>
+            <version>${arrow.version}</version>
         </dependency>
     </dependencies>
 </project>

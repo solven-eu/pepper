@@ -330,8 +330,6 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>2.20</version>
-
 					<configuration>
 						<forkCount>1C</forkCount>
 						<runOrder>alphabetical</runOrder>
@@ -341,7 +339,6 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.4.3</version>
 					<configuration>
 						<encoding>${project.build.sourceEncoding}</encoding>
 						<overwrite>true</overwrite>
@@ -353,7 +350,6 @@
 					<!-- mvn source:jar -->
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>3.0.1</version>
 					<executions>
 						<execution>
 							<id>attach-sources</id>
