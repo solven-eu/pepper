@@ -15,6 +15,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       # https://stackoverflow.com/questions/29712865/maven-cannot-resolve-dependency-for-module-in-same-multi-module-project
+      - run: mvn help:all-profiles -DskipTests
       - run: mvn clean install -DskipTests
       - run: mvn dependency:resolve-plugins dependency:go-offline
       - save_cache:
@@ -37,13 +38,12 @@ jobs:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
+      - run: mvn help:all-profiles -DskipTests
       - run: mvn clean test
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
-      
-      - run: mvn package
       
       - store_test_results:
           path: target/surefire-reports
