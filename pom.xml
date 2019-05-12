@@ -139,7 +139,7 @@
 				</property>
 			</activation>
 			<properties>
-				<!-- CircleCI machines seems to have a lot of cores -->
+				<!-- CircleCI machines seems to have a lot of cores, which would led to too many forks given available memory -->
 				<forkCount>1</forkCount>
 			</properties>
 		</profile>

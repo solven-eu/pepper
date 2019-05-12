@@ -60,4 +60,10 @@ workflows:
     jobs:
       - build
       - test
-      
+
+# https://github.com/lemurheavy/coveralls-public/issues/552
+# https://github.com/lemurheavy/coveralls-public/issues/1169
+# https://github.com/lemurheavy/coveralls-public/issues/1151
+notify:
+  webhooks:
+    - url: https://coveralls.io/webhook?repo_token=$COVERALLS_REPO_TOKEN
