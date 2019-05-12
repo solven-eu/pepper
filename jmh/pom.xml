@@ -15,7 +15,7 @@
 		<!-- JMH produces a lot of redundancy -->
 		<cpd.skip>true</cpd.skip>
 
-		<jmh.version>1.19</jmh.version>
+		<jmh.version>1.21</jmh.version>
 	</properties>
 
 	<dependencies>
