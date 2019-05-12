@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -20,12 +21,11 @@
 	<!-- mvn com.mycila:license-maven-plugin:format -->
 
 	<!-- Make a release -->
-	<!-- Do not -DskipTests, else it will skip javadoc which is mandatory for 
-		sonatype -->
+	<!-- Do not -DskipTests, else it will skip javadoc which is mandatory for sonatype -->
 	<!-- mvn release:clean release:prepare -Darguments="-Dmaven.test.skip" -->
 	<!-- mvn release:perform -Darguments="-Dmaven.test.skip" -->
 	<!-- mvn release:rollback -->
-	
+
 	<!-- Configure GPG -->
 	<!-- https://central.sonatype.org/pages/working-with-pgp-signatures.html -->
 	<!-- brew install gpg -->
@@ -129,6 +129,20 @@
 				<maven.javadoc.skip>true</maven.javadoc.skip>
 			</properties>
 		</profile>
+
+		<profile>
+			<id>circleci</id>
+			<activation>
+				<property>
+					<name>CIRCLECI</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<properties>
+				<!-- CircleCI machines seems to have a lot of cores -->
+				<forkCount>1</forkCount>
+			</properties>
+		</profile>
 	</profiles>
 
 	<modules>
@@ -177,8 +191,7 @@
 				<scope>test</scope>
 			</dependency>
 
-			<!-- annotations from the Checker Framework: nullness, interning, locking, 
-				... -->
+			<!-- annotations from the Checker Framework: nullness, interning, locking, ... -->
 			<dependency>
 				<groupId>org.checkerframework</groupId>
 				<artifactId>checker-qual</artifactId>
@@ -224,8 +237,7 @@
 		</dependency>
 
 		<!-- Always added, to facilitate logging -->
-		<!-- Do not add logback, as the library user may prefer another logging 
-			framework -->
+		<!-- Do not add logback, as the library user may prefer another logging framework -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -280,8 +292,7 @@
 							<artifactId>plexus-compiler-javac-errorprone</artifactId>
 							<version>2.5</version>
 						</dependency>
-						<!-- override plexus-compiler-javac-errorprone's dependency on Error 
-							Prone with the latest version -->
+						<!-- override plexus-compiler-javac-errorprone's dependency on Error Prone with the latest version -->
 						<dependency>
 							<groupId>com.google.errorprone</groupId>
 							<artifactId>error_prone_core</artifactId>
@@ -291,8 +302,7 @@
 				</plugin>
 
 				<!-- -Dtest=TestClassToFileMapped selects a single test class -->
-				<!-- -Dmaven.surefire.debug enables debug on Surefire plugin on port 
-					5005 -->
+				<!-- -Dmaven.surefire.debug enables debug on Surefire plugin on port 5005 -->
 				<!-- mvn -Dtest=TestClassToFileMapped -Dmaven.surefire.debug test -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -303,8 +313,7 @@
 						<!-- https://groups.google.com/forum/#!topic/jacoco/LzmCezW8VKA -->
 
 						<!-- -XX:+StartAttachListener is for http://comments.gmane.org/gmane.comp.java.openjdk.macosx-port.devel/6094 -->
-						<!-- -XX:-HeapDumpOnOutOfMemoryError because TestGCInspector will force 
-							an OOM -->
+						<!-- -XX:-HeapDumpOnOutOfMemoryError because TestGCInspector will force an OOM -->
 						<!-- -Djava.util.logging.config.file so that tests fallback on logback -->
 						<argLine><![CDATA[-ea -Xmx${xmx} -XX:+StartAttachListener -XX:-HeapDumpOnOutOfMemoryError -Djava.util.logging.config.file=logging.properties ${argLine}]]></argLine>
 
@@ -588,8 +597,7 @@
 				</dependencies>
 				<executions>
 					<execution>
-						<!-- default phase is verify, which is after tests. We prefer to run 
-							static analysis before tests not to wait -->
+						<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
 						<phase>compile</phase>
 						<goals>
 							<goal>check</goal>
@@ -602,8 +610,7 @@
 	</build>
 
 	<scm>
-		<!-- Only developerConnection was not set in parent po;m as its own parent 
-			was not a SNAPSHOT -->
+		<!-- Only developerConnection was not set in parent po;m as its own parent was not a SNAPSHOT -->
 		<developerConnection>${scm.developerConnection}</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
