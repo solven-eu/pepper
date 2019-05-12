@@ -134,7 +134,7 @@
 			<id>circleci</id>
 			<activation>
 				<property>
-					<name>CIRCLECI</name>
+					<name>env.CIRCLECI</name>
 					<value>true</value>
 				</property>
 			</activation>
