@@ -121,7 +121,7 @@
 				<!-- Skip tests -->
 				<maven.test.skip>true</maven.test.skip>
 
-				<!-- Skip code checkings -->
+				<!-- Skip code validations -->
 				<jacoco.skip>true</jacoco.skip>
 				<checkstyle.skip>true</checkstyle.skip>
 				<pmd.skip>true</pmd.skip>
