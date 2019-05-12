@@ -24,6 +24,7 @@ package cormoran.pepper.collection;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,7 +49,7 @@ public class PepperMapHelper {
 
 	public static <K1, V, K2 extends K1> Map<K1, V> transcodeColumns(BiMap<?, ? extends K2> mapping, Map<K1, V> map) {
 		// https://stackoverflow.com/questions/24630963/java-8-nullpointerexception-in-collectors-tomap
-		return map.entrySet().stream().collect(HashMap::new, (m, e) -> {
+		return map.entrySet().stream().collect(LinkedHashMap::new, (m, e) -> {
 			K1 newKey;
 			{
 
@@ -59,7 +60,7 @@ public class PepperMapHelper {
 				}
 			}
 			m.put(newKey, e.getValue());
-		}, HashMap::putAll);
+		}, Map::putAll);
 	}
 
 	public static <K, V> Map<K, V> fromLists(List<? extends K> keys, List<? extends V> values) {
@@ -89,7 +90,7 @@ public class PepperMapHelper {
 	 */
 	public static <K, V> Map<K, V> decoratePutAll(Map<? extends K, ? extends V> first,
 			Map<? extends K, ? extends V> second) {
-		Map<K, V> clone = new HashMap<>(second);
+		Map<K, V> clone = new LinkedHashMap<>(second);
 
 		// Give priority to first
 		clone.putAll(first);
@@ -107,7 +108,11 @@ public class PepperMapHelper {
 			} else if (value instanceof Map<?, ?>) {
 				value = ((Map<?, ?>) value).get(key);
 			} else {
-				throw new IllegalArgumentException("Can not process " + body + " given " + allKeys);
+				throw new IllegalArgumentException("Can not process keys" + allKeys
+						+ " on Map: "
+						+ body
+						+ " as value has type: "
+						+ value.getClass().getSimpleName());
 			}
 		}
 
@@ -163,32 +168,48 @@ public class PepperMapHelper {
 		return (String) value;
 	}
 
-	public static String getRequiredString(Map<?, ?> map, String key) {
+	public static Map<?, ?> getRequiredMap(Map<?, ?> map, String key) {
 		if (map == null) {
 			throw new IllegalArgumentException("Null Map while requiring key=" + key);
 		}
 
 		Object rawValue = map.get(key);
 
-		if (rawValue == null || rawValue instanceof String && Strings.isNullOrEmpty(rawValue.toString())) {
+		if (rawValue == null || !(rawValue instanceof Map)) {
 			throw new IllegalArgumentException("We miss '" + key + "' amongst available: " + map.keySet());
 		}
 
-		return checkNonNullString(key, rawValue);
+		return (Map<?, ?>) rawValue;
 	}
 
-	public static String getRequiredString(Map<?, ?> map, String mainKey, String subKey) {
+	public static String getRequiredString(final Map<?, ?> map, String mainKey, String... subKeys) {
 		if (map == null) {
 			throw new IllegalArgumentException("Null Map while requiring key=" + mainKey);
 		}
 
-		Object rawValue = map.get(mainKey);
+		List<String> allKeys = Lists.asList(mainKey, subKeys);
 
-		if (rawValue == null || !(rawValue instanceof Map<?, ?>)) {
-			throw new IllegalArgumentException("We miss '" + mainKey + "' as Map amongst available: " + map.keySet());
+		Map<?, ?> currentMap = map;
+		for (int i = 0; i < allKeys.size(); i++) {
+			String currentKey = allKeys.get(i);
+			Object rawValue = currentMap.get(currentKey);
+			if (i == allKeys.size() - 1) {
+				if (rawValue == null || rawValue instanceof String && Strings.isNullOrEmpty(rawValue.toString())) {
+					throw new IllegalArgumentException(
+							"We miss '" + currentKey + "' amongst available: " + map.keySet());
+				}
+
+				return checkNonNullString(currentKey, rawValue);
+			} else {
+				if (rawValue == null || !(rawValue instanceof Map<?, ?>)) {
+					throw new IllegalArgumentException(
+							"We miss '" + currentKey + "' as Map amongst available: " + currentMap.keySet());
+				}
+				currentMap = (Map<?, ?>) rawValue;
+			}
 		}
 
-		return getRequiredString((Map<?, ?>) rawValue, subKey);
+		throw new IllegalStateException("Would never happen");
 	}
 
 	public static Number getRequiredNumber(Map<?, ?> map, String key) {
