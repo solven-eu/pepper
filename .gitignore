@@ -1,6 +1,8 @@
 # Binaries
 ######################
 *.class
+
+.java-version
  
 # Eclipse
 ######################
