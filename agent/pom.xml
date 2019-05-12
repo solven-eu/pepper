@@ -57,7 +57,7 @@
 			<artifactId>guava</artifactId>
 			<!-- https://github.com/google/guava/wiki/Compatibility -->
 			<!-- Guava for JDK6 drops at 20.0 -->
-			<version>20.0</version><!--$NO-MVN-MAN-VER$ -->
+			<version>23.0</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
 
 		<dependency>
