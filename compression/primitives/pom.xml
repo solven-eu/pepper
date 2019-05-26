@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <roaringbitmap.version>0.8.5</roaringbitmap.version>
+        <roaringbitmap.version>0.8.6</roaringbitmap.version>
         <fastpfor.version>0.1.12</fastpfor.version>
         <fastutil.version>8.2.2</fastutil.version>
 
