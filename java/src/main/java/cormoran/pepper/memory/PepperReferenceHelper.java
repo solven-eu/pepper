@@ -63,10 +63,10 @@ public class PepperReferenceHelper {
 			java.time.LocalDateTime.class,
 			java.time.OffsetDateTime.class,
 			java.time.LocalTime.class,
-			java.lang.Integer.class,
-			java.lang.Long.class,
-			java.lang.Float.class,
-			java.lang.Double.class);
+			Integer.class,
+			Long.class,
+			Float.class,
+			Double.class);
 
 	// Map each class requested for interning, and its eligible Fields
 	private static final ConcurrentMap<Class<?>, List<Field>> CLASS_TO_ELECTED_FIELDS = new ConcurrentHashMap<>();
