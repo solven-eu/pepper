@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.Writer;
@@ -498,10 +499,16 @@ public class PepperSerializationHelper {
 	public static byte[] toBytes(Serializable o) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+		toBytes(o, baos);
+
+		return baos.toByteArray();
+	}
+
+	private static void toBytes(Serializable o, OutputStream outputStream) throws IOException {
+		// TODO Do not close the input outputStream
+		try (ObjectOutputStream oos = new ObjectOutputStream(outputStream)) {
 			oos.writeObject(o);
 		}
-		return baos.toByteArray();
 	}
 
 	public static String toMD5(String input) {

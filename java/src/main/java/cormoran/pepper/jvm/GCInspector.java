@@ -80,6 +80,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AtomicLongMap;
 
 import cormoran.pepper.agent.VirtualMachineWithoutToolsJar;
@@ -702,13 +703,26 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	public static final Set<String> FULL_GC_NAMES =
 			ImmutableSet.of("PS MarkSweep", "G1 Old Generation", "MarkSweepCompact");
 
+	public static final Set<String> NOT_FULL_GC_NAMES = ImmutableSet.of();
+
+	public static final Set<String> REPORTED_UNKNOWN_GC_NAMES = Sets.newConcurrentHashSet();
+
 	/**
 	 * Print the heap histogram only up to given % of total heap
 	 */
 	private static final int HEAP_HISTO_LIMIT_NB_ROWS = 20;
 
 	protected boolean isFullGC(IPepperGarbageCollectionNotificationInfo info) {
-		return FULL_GC_NAMES.contains(info.getGcName());
+		String gcName = info.getGcName();
+		boolean isFullGC = FULL_GC_NAMES.contains(gcName);
+
+		if (!isFullGC && !NOT_FULL_GC_NAMES.contains(gcName) && REPORTED_UNKNOWN_GC_NAMES.add(gcName)) {
+			LOGGER.info("We encountered an Unknown GC name: {}. Please report to {}",
+					gcName,
+					"https://github.com/cormoran-io/pepper/issues");
+		}
+
+		return isFullGC;
 	}
 
 	protected void printThreadDump() {

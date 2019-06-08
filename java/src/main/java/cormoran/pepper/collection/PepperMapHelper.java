@@ -23,7 +23,6 @@
 package cormoran.pepper.collection;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +118,16 @@ public class PepperMapHelper {
 		return (T) value;
 	}
 
+	/**
+	 * 
+	 * @param value
+	 *            attached to the deepest key
+	 * @param firstKey
+	 *            a first required key
+	 * @param moreKeys
+	 *            more optional keys
+	 * @return a Map looking like: {'k1': {'k2': 'v'}}
+	 */
 	public static Map<?, ?> imbricatedMap(Object value, String firstKey, String... moreKeys) {
 		for (int i = moreKeys.length - 1; i >= 0; i--) {
 			value = Collections.singletonMap(moreKeys[i], value);
@@ -127,6 +136,7 @@ public class PepperMapHelper {
 		return Collections.singletonMap(firstKey, value);
 	}
 
+	@Deprecated
 	public static Map<?, ? extends Map<?, ?>> imbricatedMap2(Object value,
 			String firstKey,
 			String secondKey,
@@ -226,9 +236,9 @@ public class PepperMapHelper {
 		return (Number) rawValue;
 	}
 
-	public static <T> Map<T, ?> hideKey(Map<T, ?> formRegisterApp, String key) {
+	private static <T> Map<T, ?> hideKey(Map<T, ?> formRegisterApp, T key) {
 		if (formRegisterApp.containsKey(key)) {
-			Map<T, ?> clone = new HashMap<>(formRegisterApp);
+			Map<T, ?> clone = new LinkedHashMap<>(formRegisterApp);
 			clone.remove(key);
 			return ImmutableMap.copyOf(clone);
 		} else {
@@ -236,12 +246,23 @@ public class PepperMapHelper {
 		}
 	}
 
-	public static <T> Map<T, ?> hideKeys(Map<T, ?> mapToHide, String key, String... moreKeys) {
+	/**
+	 * 
+	 * @param <T>
+	 *            the type of the keys
+	 * @param mapToHide
+	 *            the Map from which given keys has to be hidden
+	 * @param key
+	 *            the first key to hide
+	 * @param moreKeys
+	 *            more keys to Map
+	 * @return from a Map like {'k1': 'v1', 'k2': 'v2'}, hiding k1 leads to the map {'k2': 'v2'}
+	 */
+	@SafeVarargs
+	public static <T> Map<T, ?> hideKeys(Map<T, ?> mapToHide, T key, T... moreKeys) {
 		AtomicReference<Map<T, ?>> hidden = new AtomicReference<>(mapToHide);
 
-		Lists.asList(key, moreKeys).forEach(oneKey -> {
-			hidden.set(hideKey(hidden.get(), oneKey));
-		});
+		Lists.asList(key, moreKeys).forEach(oneKey -> hidden.set(hideKey(hidden.get(), oneKey)));
 
 		return hidden.get();
 	}

@@ -134,14 +134,14 @@ public class TestPepperMapHelper {
 	public void testHideKey() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
 
-		Assert.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKey(map, "k1"));
+		Assert.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKeys(map, "k1"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testHideKey_UnknownKey() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
 
-		PepperMapHelper.hideKey(map, "k3");
+		PepperMapHelper.hideKeys(map, "k3");
 	}
 
 	@Test

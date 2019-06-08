@@ -281,24 +281,27 @@ public class PepperThreadDumper implements IThreadDumper {
 	// at java.lang.Thread.run(Thread.java:745)
 
 	public void dumpSmart(Charset charset, OutputStream out, boolean withMonitorsAndSynchronizers) throws IOException {
-		dumpSkeleton(charset, out, withMonitorsAndSynchronizers, (writer, stream) -> {
-			// Group the thread with same state together
-			stream.collect(Collectors.groupingBy(t -> {
-				Writer localWriter = new StringWriter();
-				try {
-					appendThreadStack(localWriter, t);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-				return localWriter.toString();
-			})).forEach((stack, tis) -> {
-				try {
-					printThreadGroup(writer, tis);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			});
-		});
+		dumpSkeleton(charset,
+				out,
+				withMonitorsAndSynchronizers,
+				(writer, stream) -> {
+					// Group the thread with same state together
+					stream.collect(Collectors.groupingBy(t -> {
+						Writer localWriter = new StringWriter();
+						try {
+							appendThreadStack(localWriter, t);
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+						return localWriter.toString();
+					})).forEach((stack, tis) -> {
+						try {
+							printThreadGroup(writer, tis);
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					});
+				});
 	}
 
 	protected void printThreadGroup(PrintWriter writer, List<ThreadInfo> tis)
