@@ -29,7 +29,7 @@ import org.apache.avro.Schema;
 import org.junit.Assert;
 import org.junit.Test;
 
-import avro.shaded.com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap;
 
 public class TestAvroProposeSchema implements IPepperSchemaConstants {
 	@Test
