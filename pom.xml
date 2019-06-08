@@ -567,7 +567,7 @@
 				<!-- http://pmd.sourceforge.net/pmd-4.3.0/suppressing.html -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.10.0</version>
+				<version>3.12.0</version>
 				<configuration>
 					<!-- <includeTests>true</includeTests> -->
 					<indentSize>4</indentSize>
