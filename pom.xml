@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>com.github.cormoran-io.pepper</groupId>
 		<artifactId>pepper-metadata</artifactId>
-		<version>1.19-SNAPSHOT</version>
+		<version>1.19</version>
 		<relativePath>metadata</relativePath>
 	</parent>
 
@@ -622,6 +621,6 @@
 	<scm>
 		<!-- Only developerConnection was not set in parent po;m as its own parent was not a SNAPSHOT -->
 		<developerConnection>${scm.developerConnection}</developerConnection>
-		<tag>HEAD</tag>
+		<tag>pepper-core1.19</tag>
 	</scm>
 </project>
