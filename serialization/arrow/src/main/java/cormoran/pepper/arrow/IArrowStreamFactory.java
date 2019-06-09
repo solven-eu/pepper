@@ -22,13 +22,15 @@
  */
 package cormoran.pepper.arrow;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.channels.Channels;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -53,8 +55,9 @@ public interface IArrowStreamFactory {
 	default long serialize(URI uri, Schema schema, Stream<? extends Map<String, ?>> rowsToWrite) throws IOException {
 		if (uri.getScheme().equals("file")) {
 			// Arrow add magic-headers when writing to files
-			try (FileOutputStream fos = new FileOutputStream(Paths.get(uri).toFile())) {
-				return serialize(fos.getChannel(), true, schema, rowsToWrite);
+			try (SeekableByteChannel fos =
+					Files.newByteChannel(Paths.get(uri), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
+				return serialize(fos, true, schema, rowsToWrite);
 			}
 		} else {
 			return serialize(Channels.newChannel(PepperURLHelper.outputStream(uri)), false, schema, rowsToWrite);

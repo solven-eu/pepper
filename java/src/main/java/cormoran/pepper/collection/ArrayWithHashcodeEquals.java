@@ -29,35 +29,41 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * This class is useful when one want to consider a generic List of Object as key in a hashed structure.
  * 
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings({ "PMD.UseUnderscoresInNumericLiterals",
+		"PMD.ArrayIsStoredDirectly",
+		"PMD.AvoidProtectedFieldInFinalClass" })
 public final class ArrayWithHashcodeEquals {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(ArrayWithHashcodeEquals.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ArrayWithHashcodeEquals.class);
 
 	public static final int COLLISION_COUNT_LOG = 1000000;
 
 	// precompute the hashcode for performance consideration
-	protected final int hashcode;
+	private final int arrayHash;
 
+	@VisibleForTesting
 	protected final Object[] array;
 
-	protected static final AtomicLong COLLISION_COUNTER = new AtomicLong();
+	private static final AtomicLong COLLISION_COUNTER = new AtomicLong();
 
-	public ArrayWithHashcodeEquals(Object[] array) {
+	public ArrayWithHashcodeEquals(Object... array) {
 		// We do not copy the array, but this originating array should not be mutated
 		this.array = array;
 
 		// Accept null array
-		hashcode = Objects.hash(array);
+		arrayHash = Objects.hash(array);
 	}
 
 	@Override
 	public int hashCode() {
-		return hashcode;
+		return arrayHash;
 	}
 
 	@Override
@@ -72,7 +78,7 @@ public final class ArrayWithHashcodeEquals {
 			return false;
 		}
 		ArrayWithHashcodeEquals other = (ArrayWithHashcodeEquals) obj;
-		if (hashcode != other.hashcode) {
+		if (arrayHash != other.arrayHash) {
 			return false;
 		}
 		if (!Arrays.equals(array, other.array)) {

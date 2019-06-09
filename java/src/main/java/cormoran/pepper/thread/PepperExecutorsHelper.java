@@ -79,6 +79,9 @@ public class PepperExecutorsHelper {
 	@Deprecated
 	public static final int DEFAULT_SPLIT_TASK_SIZE = DEFAULT_PARTITION_TASK_SIZE;
 
+	// see ForkJoinPool.MAX_CAP and new ForkJoinPool()
+	private static final int MAX_CAP = 0x7fff; // max #workers - 1
+
 	public static final RejectedExecutionHandler TIMEOUT_POLICY_1_HOUR =
 			makeRejectedExecutionHandler(1, TimeUnit.HOURS);
 
@@ -411,9 +414,6 @@ public class PepperExecutorsHelper {
 	public static ForkJoinPool newForkJoinPool(String threadPrefix) {
 		return newForkJoinPool(threadPrefix, defaultForkJoinPoolParallelism());
 	}
-
-	// see ForkJoinPool.MAX_CAP and new ForkJoinPool()
-	private static final int MAX_CAP = 0x7fff; // max #workers - 1
 
 	private static int defaultForkJoinPoolParallelism() {
 		return Math.min(MAX_CAP, Runtime.getRuntime().availableProcessors());

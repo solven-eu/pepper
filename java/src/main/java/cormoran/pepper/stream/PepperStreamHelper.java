@@ -180,27 +180,27 @@ public class PepperStreamHelper {
 	public static <T, A, R, C extends Collection<T>> Collector<T, ?, R> unorderedBatches(int batchSize,
 			Collector<C, A, R> downstream,
 			Supplier<? extends C> queueSupplier) {
-		class Acc {
+		final class Acc {
 			C cur = queueSupplier.get();
-			A acc = downstream.supplier().get();
+			A accumulator = downstream.supplier().get();
 		}
 		BiConsumer<Acc, T> accumulator = (acc, t) -> {
 			acc.cur.add(t);
 			if (acc.cur.size() == batchSize) {
-				downstream.accumulator().accept(acc.acc, acc.cur);
+				downstream.accumulator().accept(acc.accumulator, acc.cur);
 				acc.cur = queueSupplier.get();
 			}
 		};
 		return Collector.of(Acc::new, accumulator, (acc1, acc2) -> {
-			acc1.acc = downstream.combiner().apply(acc1.acc, acc2.acc);
+			acc1.accumulator = downstream.combiner().apply(acc1.accumulator, acc2.accumulator);
 			acc2.cur.forEach(t -> accumulator.accept(acc1, t));
 
 			return acc1;
 		}, acc -> {
 			if (!acc.cur.isEmpty()) {
-				downstream.accumulator().accept(acc.acc, acc.cur);
+				downstream.accumulator().accept(acc.accumulator, acc.cur);
 			}
-			return downstream.finisher().apply(acc.acc);
+			return downstream.finisher().apply(acc.accumulator);
 		}, Collector.Characteristics.UNORDERED);
 	}
 

@@ -58,6 +58,7 @@ import cormoran.pepper.io.PepperSerializationHelper;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("PMD.GodClass")
 public class AvroTranscodingHelper {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AvroTranscodingHelper.class);
 

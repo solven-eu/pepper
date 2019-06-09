@@ -45,6 +45,7 @@ public class RunningCompressedIntArray extends AbstractIntList implements Clonea
 	protected final int[] constantMasks;
 	protected final IntPredicate bits;
 
+	@SuppressWarnings("PMD.ArrayIsStoredDirectly")
 	public RunningCompressedIntArray(int[] nbConstant, int[] constantBits, int[] constantMasks, IntPredicate bits) {
 		this.nbConstant = nbConstant;
 		this.constantBits = constantBits;

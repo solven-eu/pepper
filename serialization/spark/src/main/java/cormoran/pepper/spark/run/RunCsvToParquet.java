@@ -45,7 +45,7 @@ public class RunCsvToParquet {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RunCsvToParquet.class);
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String... args) throws FileNotFoundException, IOException {
 		if (!PepperHadoopHelper.isHadoopReady()) {
 			throw new IllegalStateException("Hadoop is not ready");
 		}

@@ -54,6 +54,12 @@ import cormoran.pepper.primitive.PepperParserHelper;
  */
 public class ZeroCopyCSVParser implements IZeroCopyCSVParser {
 
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ZeroCopyCSVParser.class);
+
+	private static final int DEFAULT_BUFFER_SIZE = 1024;
+
+	protected final int bufferSize;
+
 	private final class Youpi implements IZeroCopyConsumer, Consumer<CharSequence> {
 		private final List<String> pendingStrings;
 
@@ -77,12 +83,6 @@ public class ZeroCopyCSVParser implements IZeroCopyCSVParser {
 		}
 	}
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(ZeroCopyCSVParser.class);
-
-	private static final int DEFAULT_BUFFER_SIZE = 1024;
-
-	protected final int bufferSize;
-
 	public ZeroCopyCSVParser() {
 		bufferSize = DEFAULT_BUFFER_SIZE;
 	}
@@ -92,6 +92,7 @@ public class ZeroCopyCSVParser implements IZeroCopyCSVParser {
 	}
 
 	// Minimal memory consumption: bufferSize * (4(CharBuffer) + 4 (char[] buffer))
+	@SuppressWarnings("PMD.NPathComplexity")
 	@Override
 	public void parse(Reader reader, char separator, List<IZeroCopyConsumer> consumers) throws IOException {
 		consumers.stream().filter(Objects::nonNull).forEach(consumer -> {
@@ -184,6 +185,7 @@ public class ZeroCopyCSVParser implements IZeroCopyCSVParser {
 		}
 	}
 
+	@SuppressWarnings({ "PMD.NPathComplexity", "PMD.ExcessiveMethodLength" })
 	public Stream<String[]> parseAsStringArrays(Reader reader, char separator) {
 		CharBuffer charBuffer = CharBuffer.allocate(bufferSize);
 
@@ -244,7 +246,7 @@ public class ZeroCopyCSVParser implements IZeroCopyCSVParser {
 			protected void fillBuffer(Reader reader,
 					CharBuffer charBuffer,
 					AtomicBoolean moreToRead,
-					final char[] buffer) {
+					final char... buffer) {
 				if (moreToRead.get() && !charBuffer.hasRemaining()) {
 					charBuffer.compact();
 
@@ -294,7 +296,7 @@ public class ZeroCopyCSVParser implements IZeroCopyCSVParser {
 
 					if (!pendingStrings.isEmpty()) {
 						if (action != null) {
-							action.accept(pendingStrings.toArray(new String[pendingStrings.size()]));
+							action.accept(pendingStrings.toArray(new String[0]));
 						}
 						pendingStrings.clear();
 						actionHasBeenTriggered = true;

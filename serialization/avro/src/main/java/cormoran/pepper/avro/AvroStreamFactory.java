@@ -22,7 +22,6 @@
  */
 package cormoran.pepper.avro;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -157,7 +156,7 @@ public class AvroStreamFactory implements IAvroStreamFactory {
 	protected OutputStream outputStream(URI uri) throws IOException, MalformedURLException {
 		if (uri.getScheme().equals("file")) {
 			// For an unknown reason, the default connection to a file is not writable: we prepare the file manually
-			return new FileOutputStream(Paths.get(uri).toFile());
+			return java.nio.file.Files.newOutputStream(Paths.get(uri));
 		} else {
 			return uri.toURL().openConnection().getOutputStream();
 		}

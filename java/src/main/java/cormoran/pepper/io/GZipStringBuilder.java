@@ -90,7 +90,7 @@ public class GZipStringBuilder implements Appendable {
 	}
 
 	private interface CopyChars {
-		void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin);
+		void copyChars(int srcBegin, int srcEnd, char[] dst, int dstBegin);
 	}
 
 	protected GZipStringBuilder appendChars(int length, CopyChars copyChars) {
@@ -100,7 +100,7 @@ public class GZipStringBuilder implements Appendable {
 				// byteBuffer = new byte[length];
 			}
 
-			copyChars.getChars(0, length, charBuffer, 0);
+			copyChars.copyChars(0, length, charBuffer, 0);
 
 			byte[] byteBuffer = toBytes(charBuffer, length, Charsets.UTF_8);
 

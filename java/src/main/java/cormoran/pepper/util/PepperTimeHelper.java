@@ -87,7 +87,7 @@ public class PepperTimeHelper {
 								currentMax,
 								newValue);
 					} else {
-						LOGGER.info("{}.{} increased its max from {} to {}", className, methodName, newValue);
+						LOGGER.info("{}.{} increased its max to {}", className, methodName, newValue);
 					}
 				}
 			} else {

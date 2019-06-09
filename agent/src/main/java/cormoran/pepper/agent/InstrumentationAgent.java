@@ -44,6 +44,7 @@ import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider.Accessor;
  * @author Benoit Lacelle
  * 
  */
+@SuppressWarnings("PMD.AvoidSynchronizedAtMethodLevel")
 public class InstrumentationAgent {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(InstrumentationAgent.class);

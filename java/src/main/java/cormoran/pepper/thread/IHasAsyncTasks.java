@@ -32,20 +32,31 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("PMD.BooleanGetMethodName")
 @ManagedResource
 public interface IHasAsyncTasks {
+
+	@Deprecated
+	default boolean getHasPending() {
+		return isHasPending();
+	}
 
 	/**
 	 * 
 	 * @return true if we have some pending tasks, maybe not already started
 	 */
 	@ManagedAttribute
-	boolean getHasPending();
+	boolean isHasPending();
+
+	@Deprecated
+	default boolean getIsActive() {
+		return isActive();
+	}
 
 	/**
 	 * 
 	 * @return true if this bean is active, synchronously or asynchronously
 	 */
 	@ManagedAttribute
-	boolean getIsActive();
+	boolean isActive();
 }

@@ -107,8 +107,7 @@ public class SetStaticMBean {
 		return field.get(null);
 	}
 
-	private Field getField(Class<?> classToSet, String fieldName)
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	private Field getField(Class<?> classToSet, String fieldName) throws NoSuchFieldException, IllegalAccessException {
 		Field field = ReflectionUtils.findField(classToSet, fieldName);
 
 		if (forceForPrivateFinal) {
@@ -124,6 +123,7 @@ public class SetStaticMBean {
 		return field;
 	}
 
+	@SuppressWarnings("PMD.AvoidReassigningLoopVariables")
 	@Beta
 	public static <T> T safeTrySingleArgConstructor(Class<? extends T> fieldType, Object argument) {
 		if (argument == null) {
@@ -179,6 +179,9 @@ public class SetStaticMBean {
 		}
 	}
 
+	@SuppressWarnings({ "PMD.AvoidReassigningLoopVariables",
+			"PMD.AvoidReassigningParameters",
+			"PMD.AvoidReassigningLoopVariables" })
 	private static <T> T parseWithMethod(Class<? extends T> fieldType, Object argument, String methodName, T output) {
 		// iterate through classes and interfaces
 		if (output == null) {
@@ -264,15 +267,20 @@ public class SetStaticMBean {
 	/**
 	 * One could write "org.joda.time.LocalDate" One could write "org/joda/time/LocalDate.class"
 	 */
+	@SuppressWarnings("PMD.UseProperClassLoader")
 	@ManagedOperation
 	public List<String> getResourcesFor(String path) throws IOException {
 		List<String> resources = new ArrayList<>();
 
-		Enumeration<URL> urlEnum = this.getClass().getClassLoader().getResources(path);
+		// Rely on class ClassLoader and not Thread class loader as the Thread might be a Tomcat thread while we look
+		// for a class in the WebApp context
+		ClassLoader classLoader = this.getClass().getClassLoader();
+
+		Enumeration<URL> urlEnum = classLoader.getResources(path);
 		if (!urlEnum.hasMoreElements()) {
 			// Transform "org.joda.time.LocalDate" to
 			// "org/joda/time/LocalDate.class"
-			urlEnum = this.getClass().getClassLoader().getResources(path.replace('.', '/') + ".class");
+			urlEnum = classLoader.getResources(path.replace('.', '/') + ".class");
 		}
 		while (urlEnum.hasMoreElements()) {
 			resources.add(urlEnum.nextElement().toString());

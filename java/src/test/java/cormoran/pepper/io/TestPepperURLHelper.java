@@ -55,8 +55,8 @@ public class TestPepperURLHelper {
 	public void testGetHost_lowerCase() throws MalformedURLException {
 		PepperHostDescriptor host = PepperURLHelper.getHost("YOUpi.com").get();
 
-		Assert.assertFalse(host.getIsIP());
-		Assert.assertTrue(host.getIsValid());
+		Assert.assertFalse(host.isIP());
+		Assert.assertTrue(host.isValid());
 		Assert.assertEquals("youpi.com", host.getHost());
 	}
 
@@ -67,8 +67,8 @@ public class TestPepperURLHelper {
 
 		PepperHostDescriptor host = PepperURLHelper.getHost("http://youpi.com#arf").get();
 
-		Assert.assertFalse(host.getIsIP());
-		Assert.assertTrue(host.getIsValid());
+		Assert.assertFalse(host.isIP());
+		Assert.assertTrue(host.isValid());
 		Assert.assertEquals("youpi.com", host.getHost());
 	}
 

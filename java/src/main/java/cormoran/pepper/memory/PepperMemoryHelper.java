@@ -51,14 +51,20 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperMemoryHelper.class);
 
-	protected PepperMemoryHelper() {
-		// hidden
-	}
+	private static final ReflectionSizeOf REFLECTION_SIZE_OF = new ReflectionSizeOf();
+	private static final Double AUTOBOZED_ZERO = new Double(0);
 
 	// http://java-performance.info/overview-of-memory-saving-techniques-java/
 	public static final int JVM_MEMORY_CHUNK = 8;
 	public static final int JVM_BYTES_PER_CHAR = 2;
 	public static final int JVM_STRING_HEADER = 45;
+
+	private static final long MASK = 0xFFFFFFFFL;
+	private static final int SHIFT = 32;
+
+	protected PepperMemoryHelper() {
+		// hidden
+	}
 
 	public static long getStringMemory(CharSequence existingRef) {
 		// http://www.javamex.com/tutorials/memory/string_memory_usage.shtml
@@ -200,15 +206,12 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 		}
 	}
 
-	private static final ReflectionSizeOf reflectionSizeOf = new ReflectionSizeOf();
-	private static final Double autoboxedZero = new Double(0);
-
 	@Deprecated
 	public static long getDoubleMemory() {
-		return reflectionSizeOf.deepSizeOf(autoboxedZero);
+		return REFLECTION_SIZE_OF.deepSizeOf(AUTOBOZED_ZERO);
 	}
 
-	public static long getObjectArrayMemory(Object[] asArray) {
+	public static long getObjectArrayMemory(Object... asArray) {
 		if (asArray == null) {
 			return 0L;
 		}
@@ -225,11 +228,8 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 			return 0L;
 		}
 
-		return reflectionSizeOf.deepSizeOf(asArray);
+		return REFLECTION_SIZE_OF.deepSizeOf(asArray);
 	}
-
-	private static final long MASK = 0xFFFFFFFFL;
-	private static final int SHIFT = 32;
 
 	/**
 	 * It might be useful to have an long<->(int,int) packing guaranteeing both integers to be positive if the long is
@@ -305,39 +305,40 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 		return (long) (parsedAsDouble * multiplier);
 	}
 
-	public static String memoryAsString(long bytes) {
+	public static String memoryAsString(long initialBytes) {
+		long leftBytes = initialBytes;
 		String string = "";
 
 		int unitsDone = 0;
 		if (unitsDone < 2) {
-			long gb = bytes / IPepperMemoryConstants.GB;
+			long gb = leftBytes / IPepperMemoryConstants.GB;
 			if (gb > 0) {
 				unitsDone++;
 				string += gb + "G";
-				bytes -= gb * IPepperMemoryConstants.GB;
+				leftBytes -= gb * IPepperMemoryConstants.GB;
 			}
 		}
 
 		if (unitsDone < 2) {
-			long mb = bytes / IPepperMemoryConstants.MB;
+			long mb = leftBytes / IPepperMemoryConstants.MB;
 			if (mb > 0) {
 				unitsDone++;
 				string += mb + "M";
-				bytes -= mb * IPepperMemoryConstants.MB;
+				leftBytes -= mb * IPepperMemoryConstants.MB;
 			}
 		}
 		if (unitsDone < 2) {
-			long kb = bytes / IPepperMemoryConstants.KB;
+			long kb = leftBytes / IPepperMemoryConstants.KB;
 			if (kb > 0) {
 				unitsDone++;
 				string += kb + "K";
-				bytes -= kb * IPepperMemoryConstants.KB;
+				leftBytes -= kb * IPepperMemoryConstants.KB;
 			}
 		}
 
 		if (unitsDone < 2) {
-			if (bytes > 0) {
-				string += bytes + "B";
+			if (leftBytes > 0) {
+				string += leftBytes + "B";
 			} else {
 				LOGGER.trace("No more bytes");
 			}

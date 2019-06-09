@@ -46,6 +46,7 @@ public class ByteArrayMarker implements Serializable {
 		return nbBytes;
 	}
 
+	@SuppressWarnings("PMD.BooleanGetMethodName")
 	public boolean getIsFinished() {
 		return isfinished;
 	}

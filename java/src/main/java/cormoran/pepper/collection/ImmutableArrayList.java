@@ -35,31 +35,36 @@ import java.util.Objects;
  *
  * @param <T>
  */
+@SuppressWarnings({ "PMD.ArrayIsStoredDirectly", "PMD.AvoidProtectedFieldInFinalClass" })
 public final class ImmutableArrayList<T> extends AbstractList<T> {
 
 	private static final int HASHCODE_CONSTANT = 31;
 
 	protected final T[] underlyingArray;
 	protected final int[] indexes;
-	protected final int hashCode;
+	protected final int filteredArrayHash;
 
+	@SuppressWarnings("PMD.UseVarargs")
 	public ImmutableArrayList(T[] underlyingArray, int[] indexes) {
 		this.underlyingArray = underlyingArray;
 		this.indexes = indexes;
 
 		// Precompute hashCode for better performance in TuplesToInsertForVersioningKeyId
 		// Do not use super.hashCode else it would generate a List.Iterator
-		this.hashCode = filteredHashCode(underlyingArray, indexes);
+		this.filteredArrayHash = filteredHashCode(underlyingArray, indexes);
 	}
 
-	public ImmutableArrayList(T[] underlyingArray) {
+	@SuppressWarnings("PMD.NullAssignment")
+	@SafeVarargs
+	public ImmutableArrayList(T... underlyingArray) {
 		this.underlyingArray = underlyingArray;
 		this.indexes = null;
 
 		// Should be the same than filteredHashCode
-		this.hashCode = Arrays.hashCode(underlyingArray);
+		this.filteredArrayHash = Arrays.hashCode(underlyingArray);
 	}
 
+	@SuppressWarnings("PMD.UseVarargs")
 	private static int filteredHashCode(Object[] array, int[] indexes) {
 		if (array == null) {
 			return 0;
@@ -101,7 +106,7 @@ public final class ImmutableArrayList<T> extends AbstractList<T> {
 
 	@Override
 	public int hashCode() {
-		return hashCode;
+		return filteredArrayHash;
 	}
 
 	// Based on AbstractList.equals

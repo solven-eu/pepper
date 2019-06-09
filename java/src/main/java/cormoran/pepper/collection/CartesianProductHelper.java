@@ -59,6 +59,7 @@ import com.google.common.math.LongMath;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings({ "PMD.GodClass", "PMD.UseUnderscoresInNumericLiterals" })
 @Beta
 public class CartesianProductHelper {
 
@@ -208,7 +209,7 @@ public class CartesianProductHelper {
 
 					Set<V> valueAsSet = new LinkedHashSet<>(collectionValue);
 
-					if (valueAsSet.size() == 0) {
+					if (valueAsSet.isEmpty()) {
 						LOGGER.debug("We skip {} as it holds an empty Collection value", map);
 						// This Map is kind of empty
 						continue nextMap;
@@ -336,11 +337,13 @@ public class CartesianProductHelper {
 		}
 	}
 
-	private static <T, V> void fillReverseCovering(Set<Map<T, V>> flatMaps,
+	private static <T, V> void fillReverseCovering(Set<Map<T, V>> initialFlatMaps,
 			List<T> subCartesianKeys,
 			Set<T> keySet,
 			Iterator<T> keysToConsider,
 			SetMultimap<Map<T, ? extends Set<V>>, Map<T, V>> reverseCovering) {
+		Set<Map<T, V>> flatMaps = initialFlatMaps;
+
 		// Process until all flatMaps have been coverered
 		while (!flatMaps.isEmpty()) {
 			if (subCartesianKeys.size() + 1 == keySet.size()) {
@@ -570,7 +573,7 @@ public class CartesianProductHelper {
 
 				Object intersection = intersectCoordinates(baseCoordinate, additionalCoordinate);
 
-				if (intersection == GROUP_NOT_EXPRESSED) {
+				if (isGroupNotExpress(intersection)) {
 					return Optional.empty();
 				} else {
 					mergedTemplate.put(key, intersection);
@@ -597,13 +600,18 @@ public class CartesianProductHelper {
 		if (intersection == null) {
 			// No need to write wildcard constrain
 			return true;
-		} else if (intersection == GROUP_NOT_EXPRESSED) {
+		} else if (isGroupNotExpress(intersection)) {
 			columnNameToConstraint.put(columnName, GROUP_NOT_EXPRESSED);
 			return false;
 		} else {
 			columnNameToConstraint.put(columnName, intersection);
 			return true;
 		}
+	}
+
+	@SuppressWarnings("PMD.CompareObjectsWithEquals")
+	private static boolean isGroupNotExpress(Object intersection) {
+		return intersection == GROUP_NOT_EXPRESSED;
 	}
 
 	public static <T> boolean intersectMapCoordinates(Map<T, Object> target, Map<? extends T, ?> source) {

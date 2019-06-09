@@ -34,7 +34,15 @@ import java.util.Objects;
  *
  */
 // https://stackoverflow.com/questions/5767747/pmd-cpd-ignore-bits-of-code-using-comments
-@SuppressWarnings("CPD-START")
+@SuppressWarnings({ "CPD-START",
+		"PMD.CommentSize",
+		"PMD.AvoidUncheckedExceptionsInSignatures",
+		"PMD.AvoidReassigningParameters",
+		"PMD.ControlStatementBraces",
+		"PMD.NPathComplexity",
+		"PMD.AvoidDuplicateLiterals",
+		"PMD.GodClass",
+		"PMD.AvoidUsingShortType" })
 public class Jdk9CharSequenceParsers {
 	/**
 	 * Parses the {@link CharSequence} argument as a signed {@code int} in the specified {@code radix}, beginning at the

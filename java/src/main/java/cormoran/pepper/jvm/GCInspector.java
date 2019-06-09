@@ -101,6 +101,10 @@ import cormoran.pepper.util.PepperTimeHelper;
  * @author Benoit Lacelle
  * @since Oracle Java 7 update 4 JVM
  */
+@SuppressWarnings({ "PMD.AvoidDuplicateLiterals",
+		"PMD.GodClass",
+		"PMD.UseUnderscoresInNumericLiterals",
+		"PMD.ConsecutiveLiteralAppends" })
 @ManagedResource
 public class GCInspector implements NotificationListener, InitializingBean, DisposableBean, IGCInspector {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GCInspector.class);
@@ -141,6 +145,9 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	public static final long DEFAULT_MAX_HEAP_GB_HEAPHISTOGRAM = 20;
 	protected long maxHeapGbForHeapHistogram = DEFAULT_MAX_HEAP_GB_HEAPHISTOGRAM;
 
+	private static final String XSS = "-Xss";
+	private static final String XX_THREADSTACKSIZE = "-XX:ThreadStackSize=";
+
 	protected static final MBeanServer MBEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
 	protected static final OperatingSystemMXBean OS_MBEAN = ManagementFactory.getOperatingSystemMXBean();
 	protected static final ThreadMXBean THREAD_MBEAN = ManagementFactory.getThreadMXBean();
@@ -163,6 +170,18 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	protected final IThreadDumper pepperThreadDumper;
 
 	protected final AtomicLong targetMaxTotalMemory = new AtomicLong(Long.MAX_VALUE);
+
+	public static final Set<String> FULL_GC_NAMES =
+			ImmutableSet.of("PS MarkSweep", "G1 Old Generation", "MarkSweepCompact");
+
+	public static final Set<String> NOT_FULL_GC_NAMES = ImmutableSet.of();
+
+	public static final Set<String> REPORTED_UNKNOWN_GC_NAMES = Sets.newConcurrentHashSet();
+
+	/**
+	 * Print the heap histogram only up to given % of total heap
+	 */
+	private static final int HEAP_HISTO_LIMIT_NB_ROWS = 20;
 
 	public GCInspector(IThreadDumper apexThreadDumper) {
 		this.pepperThreadDumper = apexThreadDumper;
@@ -377,9 +396,9 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 			appendPercentage(sb, afterUsed, afterCommited);
 			sb.append(" (");
 			appendSize(sb, afterUsed);
-			sb.append(")");
+			sb.append(')');
 		} else {
-			sb.append(key).append(" ");
+			sb.append(key).append(' ');
 			appendPercentage(sb, beforeUsed, beforeCommited);
 			sb.append("->");
 			appendPercentage(sb, afterUsed, afterCommited);
@@ -400,7 +419,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 			sb.append("->");
 			appendSize(sb, afterUsed);
 
-			sb.append(")");
+			sb.append(')');
 		}
 	}
 
@@ -435,7 +454,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	}
 
 	protected void appendDetailsAboutMove(StringBuilder sb, long totalAfterMinusbefore, long totalHeapUsedBefore) {
-		sb.append("=");
+		sb.append('=');
 		appendSize(sb, totalHeapUsedBefore);
 
 		if (totalAfterMinusbefore < 0) {
@@ -589,7 +608,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 			additionalMemory.addAndGet(threadMemory);
 			sb.append(" (");
 			appendSize(sb, threadMemory);
-			sb.append(")");
+			sb.append(')');
 		}
 
 		return additionalMemory.get();
@@ -699,18 +718,6 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 				overThresholdSince);
 		printThreadDump();
 	}
-
-	public static final Set<String> FULL_GC_NAMES =
-			ImmutableSet.of("PS MarkSweep", "G1 Old Generation", "MarkSweepCompact");
-
-	public static final Set<String> NOT_FULL_GC_NAMES = ImmutableSet.of();
-
-	public static final Set<String> REPORTED_UNKNOWN_GC_NAMES = Sets.newConcurrentHashSet();
-
-	/**
-	 * Print the heap histogram only up to given % of total heap
-	 */
-	private static final int HEAP_HISTO_LIMIT_NB_ROWS = 20;
 
 	protected boolean isFullGC(IPepperGarbageCollectionNotificationInfo info) {
 		String gcName = info.getGcName();
@@ -829,9 +836,6 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 
 		return getMemoryPerThread(arguments);
 	}
-
-	private static final String XSS = "-Xss";
-	private static final String XX_THREADSTACKSIZE = "-XX:ThreadStackSize=";
 
 	protected long getMemoryPerThread(List<String> arguments) {
 		// '-XX:ThreadStackSize=512' or '-Xss64k'

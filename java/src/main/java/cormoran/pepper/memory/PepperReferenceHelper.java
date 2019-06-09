@@ -132,6 +132,7 @@ public class PepperReferenceHelper {
 	 * @param field
 	 * @param object
 	 */
+	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 	protected static void internFieldsFieldValue(Field field, Object object) {
 		if (field == null || object == null) {
 			return;
@@ -170,13 +171,9 @@ public class PepperReferenceHelper {
 					} else {
 						FIELD_TO_CACHE_HIT.incrementAndGet(field);
 					}
-
 				}
 			}
-
-		} catch (IllegalArgumentException e) {
-			stopDictionarizing(object.getClass(), field);
-		} catch (IllegalAccessException e) {
+		} catch (IllegalArgumentException | IllegalAccessException e) {
 			stopDictionarizing(object.getClass(), field);
 		}
 	}
@@ -242,7 +239,9 @@ public class PepperReferenceHelper {
 		return CLASS_TO_ELECTED_FIELDS.get(clazz);
 	}
 
-	public static <T> void internalizeArray(T[] array) {
+	@SuppressWarnings("PMD.CompareObjectsWithEquals")
+	@SafeVarargs
+	public static <T> void internalizeArray(T... array) {
 		if (array == null) {
 			return;
 		}

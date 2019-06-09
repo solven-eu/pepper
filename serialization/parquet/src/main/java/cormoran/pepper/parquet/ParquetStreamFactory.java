@@ -22,13 +22,12 @@
  */
 package cormoran.pepper.parquet;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -66,6 +65,8 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 	// Then, we use this mechanism to load the default configuration only once
 	private static final Supplier<Configuration> DEFAULT_CONFIGURATION = Suppliers.memoize(() -> new Configuration());
 
+	private final Configuration configuration;
+
 	public static Configuration cloneDefaultConfiguration() {
 		// Ensure the default properties have been loaded before cloning
 		DEFAULT_CONFIGURATION.get().get("name");
@@ -73,8 +74,6 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 		// Clone the default as it may be modified later
 		return new Configuration(DEFAULT_CONFIGURATION.get());
 	}
-
-	private final Configuration configuration;
 
 	public ParquetStreamFactory() {
 		this(cloneDefaultConfiguration());
@@ -122,10 +121,7 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 					.withFilter(filter)
 					.withConf(getConfiguration())
 					.build();
-		} catch (IOException e) {
-			// Default exception may not refer the input path
-			throw new IOException("Issue on path: " + hadoopPath, e);
-		} catch (RuntimeException e) {
+		} catch (IOException | RuntimeException e) {
 			// Default exception may not refer the input path
 			throw new IOException("Issue on path: " + hadoopPath, e);
 		}
@@ -163,9 +159,9 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 
 	public static Stream<Map<String, ?>> readParquetAsStream(URI uriToParquet, Map<String, ?> exampleTypes)
 			throws FileNotFoundException, IOException {
-		File file = Paths.get(uriToParquet).toFile();
-		return new ParquetBytesToStream().stream(new FileInputStream(file))
-				.map(AvroTranscodingHelper.toJavaMap(exampleTypes));
+		ParquetBytesToStream parquetBytesToStream = new ParquetBytesToStream();
+		InputStream inputStream = Files.newInputStream(Paths.get(uriToParquet));
+		return parquetBytesToStream.stream(inputStream).map(AvroTranscodingHelper.toJavaMap(exampleTypes));
 	}
 
 	@Override

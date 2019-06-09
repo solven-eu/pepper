@@ -26,7 +26,6 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -38,7 +37,9 @@ import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -374,8 +375,13 @@ public class PepperSerializationHelper {
 	// synchronized to prevent interlaced rows
 	// TODO: one lock per actual file
 	@Beta
-	public static synchronized void appendLineInCSVFile(Path file, Iterable<?> row) throws IOException {
-		appendLineInCSVFile(new FileWriter(file.toFile(), true), row);
+	public static void appendLineInCSVFile(Path file, Iterable<?> row) throws IOException {
+		synchronized (PepperSerializationHelper.class) {
+			try (BufferedWriter newBufferedWriter =
+					Files.newBufferedWriter(file, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+				appendLineInCSVFile(newBufferedWriter, row);
+			}
+		}
 	}
 
 	@Beta
@@ -476,6 +482,7 @@ public class PepperSerializationHelper {
 	 * @return the String associated to given bytes
 	 * @throws IOException
 	 */
+	@SuppressWarnings("PMD.AssignmentInOperand")
 	public static String toString(InputStream inputStream, Charset charset) throws IOException {
 		// We picked the faster implementation proposed in
 		// https://stackoverflow.com/questions/309424/read-convert-an-inputstream-to-a-string
@@ -499,12 +506,12 @@ public class PepperSerializationHelper {
 	public static byte[] toBytes(Serializable o) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		toBytes(o, baos);
+		writeToStream(o, baos);
 
 		return baos.toByteArray();
 	}
 
-	private static void toBytes(Serializable o, OutputStream outputStream) throws IOException {
+	private static void writeToStream(Serializable o, OutputStream outputStream) throws IOException {
 		// TODO Do not close the input outputStream
 		try (ObjectOutputStream oos = new ObjectOutputStream(outputStream)) {
 			oos.writeObject(o);
@@ -532,8 +539,8 @@ public class PepperSerializationHelper {
 		byte[] digest = md.digest();
 
 		StringBuffer hexString = new StringBuffer();
-		for (int i = 0; i < digest.length; i++) {
-			String hex = Integer.toHexString(HEX_FILTER & digest[i]);
+		for (byte someByte : digest) {
+			String hex = Integer.toHexString(HEX_FILTER & someByte);
 			if (hex.length() == 1) {
 				// could use a for loop, but we're only dealing with a
 				// single byte
@@ -561,8 +568,8 @@ public class PepperSerializationHelper {
 
 		byte[] bytes = md.digest(input.getBytes(charset));
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < bytes.length; i++) {
-			int asInt = (bytes[i] & HEX_FILTER) + HEX_SHIFT;
+		for (byte someByte : bytes) {
+			int asInt = (someByte & HEX_FILTER) + HEX_SHIFT;
 			sb.append(Integer.toString(asInt, RADIX_16).substring(1));
 		}
 		return sb.toString();

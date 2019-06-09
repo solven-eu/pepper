@@ -25,9 +25,9 @@ package cormoran.pepper.io;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -127,7 +127,8 @@ public class PepperGzipHelper {
 	 * @throws IOException
 	 */
 	public static void packToZip(final File folder, final File zipFilePath) throws IOException {
-		try (FileOutputStream fos = new FileOutputStream(zipFilePath); ZipOutputStream zos = new ZipOutputStream(fos)) {
+		try (OutputStream fos = java.nio.file.Files.newOutputStream(zipFilePath.toPath());
+				ZipOutputStream zos = new ZipOutputStream(fos)) {
 			// https://stackoverflow.com/questions/15968883/how-to-zip-a-folder-itself-using-java
 			Iterator<File> iterator = Files.fileTraverser().depthFirstPreOrder(folder).iterator();
 
@@ -163,7 +164,7 @@ public class PepperGzipHelper {
 	 * @throws IOException
 	 */
 	public static void packToGzip(final File inputPath, final File zipFilePath) throws IOException {
-		try (FileOutputStream fos = new FileOutputStream(zipFilePath);
+		try (OutputStream fos = java.nio.file.Files.newOutputStream(zipFilePath.toPath());
 				GZIPOutputStream zos = new GZIPOutputStream(fos)) {
 			Files.copy(inputPath, zos);
 		}

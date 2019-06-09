@@ -57,6 +57,7 @@ import cormoran.pepper.stream.PepperStreamHelper;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("PMD.AvoidReassigningParameters")
 public class PepperJMXHelper {
 
 	// By default, the JConsole prefill String arguments with this value

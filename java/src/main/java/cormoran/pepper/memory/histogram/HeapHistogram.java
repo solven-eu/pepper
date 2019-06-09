@@ -62,6 +62,8 @@ public class HeapHistogram implements IHeapHistogram, Serializable {
 	private long totalPermgenInstances;
 	private boolean sourceDisplayed;
 
+	private static final int DECIMAL_RADIX = 10;
+
 	HeapHistogram(InputStream in, boolean jrockit) {
 		time = new Date();
 		final Scanner sc = new Scanner(in, JMAP_CHARSET.toString());
@@ -152,8 +154,6 @@ public class HeapHistogram implements IHeapHistogram, Serializable {
 			sc.nextLine();
 		}
 	}
-
-	private static final int DECIMAL_RADIX = 10;
 
 	protected List<ClassInfo> scan(Scanner sc, boolean jrockit) {
 		final Map<String, ClassInfo> classInfoMap = new HashMap<String, ClassInfo>();

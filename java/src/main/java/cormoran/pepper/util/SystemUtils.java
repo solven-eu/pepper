@@ -22,16 +22,17 @@
  */
 package cormoran.pepper.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Port of org.apache.commons.lang3.SystemUtils.OS_NAME_WINDOWS_PREFIX
  * 
  * @author Benoit Lacelle
  *
  */
-class SystemUtils {
-	private SystemUtils() {
-		// hidden
-	}
+final class SystemUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SystemUtils.class);
 
 	/**
 	 * The prefix String for all Windows OS.
@@ -92,6 +93,10 @@ class SystemUtils {
 	 */
 	public static final boolean IS_OS_MAC = getOSMatchesName("Mac");
 
+	private SystemUtils() {
+		// hidden
+	}
+
 	/**
 	 * Decides if the operating system matches.
 	 *
@@ -121,8 +126,10 @@ class SystemUtils {
 			return System.getProperty(property);
 		} catch (final SecurityException ex) {
 			// we are not allowed to look at this property
-			System.err.println("Caught a SecurityException reading the system property '" + property
-					+ "'; the SystemUtils property value will default to null.");
+			LOGGER.warn(
+					"Caught a SecurityException reading the system property '" + property
+							+ "'; the SystemUtils property value will default to null.",
+					ex);
 			return null;
 		}
 	}

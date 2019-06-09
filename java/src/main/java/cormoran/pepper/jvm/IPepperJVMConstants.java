@@ -85,6 +85,7 @@ package cormoran.pepper.jvm;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("PMD.CommentSize")
 public interface IPepperJVMConstants {
 	/**
 	 * 

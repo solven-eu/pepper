@@ -38,11 +38,13 @@ public class CloseableIntBuffer implements AutoCloseable {
 	protected final MappedByteBuffer buffer;
 	protected final IntBuffer heapBuffer;
 
+	@SuppressWarnings("PMD.NullAssignment")
 	public CloseableIntBuffer(MappedByteBuffer buffer) {
 		this.buffer = buffer;
 		this.heapBuffer = null;
 	}
 
+	@SuppressWarnings("PMD.NullAssignment")
 	public CloseableIntBuffer(IntBuffer heapBuffer) {
 		this.heapBuffer = heapBuffer;
 		this.buffer = null;

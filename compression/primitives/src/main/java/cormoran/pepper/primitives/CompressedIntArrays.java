@@ -47,7 +47,7 @@ public class CompressedIntArrays {
 		// hidden
 	}
 
-	public static IntList compress(int[] input) {
+	public static IntList compress(int... input) {
 		return compress(IntStream.of(input));
 	}
 
@@ -117,10 +117,10 @@ public class CompressedIntArrays {
 				int bitsToWrite = ~currentConstantBits;
 
 				for (int bitIndex = 0; bitIndex < Integer.SIZE; bitIndex++) {
-					int isBitToWrite = bitsToWrite & Integer.rotateLeft(1, bitIndex);
-					if (isBitToWrite != 0) {
+					int intIsBitToWrite = bitsToWrite & Integer.rotateLeft(1, bitIndex);
+					if (intIsBitToWrite != 0) {
 						int newPosition = index.getAndIncrement();
-						if ((isBitToWrite & i) != 0) {
+						if ((intIsBitToWrite & i) != 0) {
 							bits.add(newPosition);
 						}
 					}

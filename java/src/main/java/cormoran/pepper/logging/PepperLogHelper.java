@@ -54,6 +54,13 @@ public class PepperLogHelper {
 	public static final int THOUSAND = 1000;
 	public static final int TEN_F = 10;
 
+	private static final String DAYS_PREFIX = "days";
+	private static final String HOURS_PREFIX = "hours";
+	private static final String MINUTES_PREFIX = "min";
+	private static final String SECONDS_PREFIX = "sec";
+	private static final String MILLIS_PREFIX = "ms";
+	private static final String NANOS_PREFIX = "ns";
+
 	protected PepperLogHelper() {
 		// hidden
 	}
@@ -230,13 +237,6 @@ public class PepperLogHelper {
 		return getNiceTime(timeInMs, TimeUnit.MILLISECONDS);
 	}
 
-	private static final String DAYS_PREFIX = "days";
-	private static final String HOURS_PREFIX = "hours";
-	private static final String MINUTES_PREFIX = "min";
-	private static final String SECONDS_PREFIX = "sec";
-	private static final String MILLIS_PREFIX = "ms";
-	private static final String NANOS_PREFIX = "ns";
-
 	public static Object getNiceTime(long time, TimeUnit timeUnit) {
 		return PepperLogHelper.lazyToString(() -> {
 			long timeInMs = timeUnit.toMillis(time);
@@ -294,6 +294,7 @@ public class PepperLogHelper {
 		});
 	}
 
+	@SuppressWarnings("PMD.NPathComplexity")
 	private static String rawHumanRate(long nbEntries, long time, TimeUnit timeUnit) {
 		if (time <= 0) {
 			// Edge case

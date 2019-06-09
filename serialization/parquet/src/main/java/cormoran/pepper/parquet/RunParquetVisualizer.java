@@ -48,7 +48,7 @@ public class RunParquetVisualizer {
 				.forEach(row -> LOGGER.info("row #{}: {}", rowIndex.getAndIncrement(), row));
 	}
 
-	protected static Path getParquetFile(String[] args) {
+	protected static Path getParquetFile(String... args) {
 		if (args == null || args.length < 1) {
 			throw new IllegalArgumentException("We expect at least one argument being the path top the parquet file");
 		}

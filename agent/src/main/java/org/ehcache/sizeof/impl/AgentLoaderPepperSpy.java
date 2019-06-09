@@ -47,10 +47,7 @@ public class AgentLoaderPepperSpy {
 		return AgentLoader.loadAgent();
 	}
 
-	public static Optional<Instrumentation> getInstrumentation()
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		// ByteBuddyAgent.install();
-
+	public static Optional<Instrumentation> getInstrumentation() throws NoSuchFieldException, IllegalAccessException {
 		if (HAS_TRIED_LOADING_AGENT.compareAndSet(false, true)) {
 			LOGGER.info("Initializing Agent to provide a reference to {}", Instrumentation.class.getName());
 

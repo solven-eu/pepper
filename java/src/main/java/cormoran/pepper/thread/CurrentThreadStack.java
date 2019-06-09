@@ -36,6 +36,7 @@ package cormoran.pepper.thread;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("PMD.DoNotExtendJavaLangThrowable")
 public class CurrentThreadStack extends Throwable {
 	private static final long serialVersionUID = -4426770891772850366L;
 

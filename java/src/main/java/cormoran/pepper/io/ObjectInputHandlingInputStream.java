@@ -111,16 +111,16 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 		if (next instanceof ByteArrayMarker) {
 			// We received an ByteArrayMarker: it has to be converted to an InputStream
 
-			// Wait for PipedOutputStream to be connected before returning the PipedInputStream
-			CountDownLatch connectedCdl = new CountDownLatch(1);
-
-			// DO not auto-close as this inputStream will be consumed out of this loop
-			PipedInputStream pis = makePipedInputStream();
-
 			// Connect a PipedOutputStream in which we will write the transmitted InputStream
 			if (!pipedOutputStreamIsOpen.compareAndSet(false, true)) {
 				throw new IllegalStateException("Pipe was already open");
 			}
+
+			// Do not auto-close as this inputStream will be consumed out of this loop
+			PipedInputStream pis = makePipedInputStream();
+
+			// Wait for PipedOutputStream to be connected before returning the PipedInputStream
+			CountDownLatch connectedCdl = new CountDownLatch(1);
 
 			LOGGER.debug("We received a {}. Initiating an aynchronous pumping", next.getClass());
 			inputStreamFiller.get()

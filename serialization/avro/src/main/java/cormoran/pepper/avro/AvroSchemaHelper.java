@@ -176,6 +176,7 @@ public class AvroSchemaHelper {
 	/**
 	 * @deprecated This method seems meaningless
 	 */
+	@SuppressWarnings("PMD.UseUnderscoresInNumericLiterals")
 	@Deprecated
 	public static Optional<?> proposeDefaultValueForType(Type type) {
 		// If default value is set to null, we would get org.apache.avro.AvroRuntimeException: Field portfoliocode

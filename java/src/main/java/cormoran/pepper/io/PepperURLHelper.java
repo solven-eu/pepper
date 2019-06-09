@@ -22,12 +22,12 @@
  */
 package cormoran.pepper.io;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,6 +44,8 @@ import com.google.common.base.Strings;
  *
  */
 public class PepperURLHelper {
+	private static final String DEFAULT_PROTOCOL = "http";
+
 	protected PepperURLHelper() {
 		// hidden
 	}
@@ -67,8 +69,6 @@ public class PepperURLHelper {
 			return Objects.equals(left.toExternalForm(), right.toExternalForm());
 		}
 	}
-
-	private static final String DEFAULT_PROTOCOL = "http";
 
 	/**
 	 * 
@@ -111,7 +111,7 @@ public class PepperURLHelper {
 			// } else {
 			// }
 		} catch (MalformedURLException e) {
-			throw new RuntimeException("Issue while converting '" + asString + "'");
+			throw new RuntimeException("Issue while converting '" + asString + "'", e);
 		}
 	}
 
@@ -163,10 +163,12 @@ public class PepperURLHelper {
 	 * @throws MalformedURLException
 	 *             if an error occurred generating the URL
 	 */
+	@SuppressWarnings("PMD.AvoidReassigningParameters'")
 	public static URL resolve(URL base, String relUrl) throws MalformedURLException {
 		// workaround: java resolves '//path/file + ?foo' to '//path/?foo', not '//path/file?foo' as desired
-		if (relUrl.startsWith("?"))
+		if (relUrl.startsWith("?")) {
 			relUrl = base.getPath() + relUrl;
+		}
 		// workaround: //example.com + ./foo = //example.com/./foo, not //example.com/foo
 		if (relUrl.indexOf('.') == 0 && base.getFile().indexOf('/') != 0) {
 			base = new URL(base.getProtocol(), base.getHost(), base.getPort(), "/" + base.getFile());
@@ -178,7 +180,7 @@ public class PepperURLHelper {
 	public static OutputStream outputStream(URI uri) throws IOException, MalformedURLException {
 		if (uri.getScheme().equals("file")) {
 			// For an unknown reason, the default connection to a file is not writable: we prepare the file manually
-			return new FileOutputStream(Paths.get(uri).toFile());
+			return Files.newOutputStream(Paths.get(uri));
 		} else {
 			return uri.toURL().openConnection().getOutputStream();
 		}

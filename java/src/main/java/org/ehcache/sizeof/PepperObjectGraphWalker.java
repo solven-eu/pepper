@@ -75,7 +75,7 @@ public final class PepperObjectGraphWalker {
 	private static final AtomicLongMap<Class<?>> ARRAY_COMPONENT_TO_CACHE_MISS = AtomicLongMap.create();
 
 	static {
-		USE_VERBOSE_DEBUG_LOGGING = getVerboseSizeOfDebugLogging();
+		USE_VERBOSE_DEBUG_LOGGING = isVerboseSizeOfDebugLogging();
 	}
 
 	/**
@@ -92,17 +92,14 @@ public final class PepperObjectGraphWalker {
 	 */
 	public PepperObjectGraphWalker(SizeOfFilter filter, final boolean bypassFlyweight) {
 		if (filter == null) {
-			throw new NullPointerException("SizeOfFilter can't be null");
+			throw new IllegalArgumentException("SizeOfFilter can't be null");
 		}
 		this.sizeOfFilter = filter;
 		this.bypassFlyweight = bypassFlyweight;
 	}
 
-	private static boolean getVerboseSizeOfDebugLogging() {
-
-		String verboseString = System.getProperty(VERBOSE_DEBUG_LOGGING, "false").toLowerCase();
-
-		return verboseString.equals("true");
+	private static boolean isVerboseSizeOfDebugLogging() {
+		return "true".equalsIgnoreCase(System.getProperty(VERBOSE_DEBUG_LOGGING, "false"));
 	}
 
 	/**
@@ -112,6 +109,7 @@ public final class PepperObjectGraphWalker {
 	 *            the roots of the objects (a shared graph will only be visited once)
 	 * @return the sum of all Visitor#visit returned values
 	 */
+	@SuppressWarnings({ "PMD.NPathComplexity", "PMD.ExcessiveMethodLength" })
 	public void walk(Object... root) {
 		final StringBuilder traversalDebugMessage;
 		if (USE_VERBOSE_DEBUG_LOGGING && LOGGER.isDebugEnabled()) {
@@ -131,13 +129,13 @@ public final class PepperObjectGraphWalker {
 				nullSafeAdd(toVisit, object);
 				if (traversalDebugMessage != null && object != null) {
 					traversalDebugMessage.append(object.getClass().getName())
-							.append("@")
+							.append('@')
 							.append(System.identityHashCode(object))
 							.append(", ");
 				}
 			}
 			if (traversalDebugMessage != null) {
-				traversalDebugMessage.deleteCharAt(traversalDebugMessage.length() - 2).append("\n");
+				traversalDebugMessage.deleteCharAt(traversalDebugMessage.length() - 2).append('\n');
 			}
 		}
 
@@ -213,16 +211,16 @@ public final class PepperObjectGraphWalker {
 
 				if (traversalDebugMessage != null) {
 					traversalDebugMessage.append(ref.getClass().getName())
-							.append("@")
+							.append('@')
 							.append(System.identityHashCode(ref))
-							.append("\n");
+							.append('\n');
 				}
 			} else if (traversalDebugMessage != null) {
 				traversalDebugMessage.append("  ignored\t")
 						.append(ref.getClass().getName())
-						.append("@")
+						.append('@')
 						.append(System.identityHashCode(ref))
-						.append("\n");
+						.append('\n');
 			}
 			visited.put(ref, null);
 		}

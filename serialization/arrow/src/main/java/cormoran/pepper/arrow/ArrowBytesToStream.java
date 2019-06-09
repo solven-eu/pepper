@@ -23,13 +23,13 @@
 package cormoran.pepper.arrow;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,26 +97,26 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 						List<FieldVector> fieldVector = root.getFieldVectors();
 
 						Map<String, Object> asMap = new HashMap<>();
-						for (int j = 0; j < fieldVector.size(); j++) {
-							Types.MinorType mt = fieldVector.get(j).getMinorType();
+						for (FieldVector oneFieldVector : fieldVector) {
+							Types.MinorType mt = oneFieldVector.getMinorType();
 							switch (mt) {
 							case INT:
-								showIntAccessor(fieldVector.get(j), rowIndex, asMap);
+								showIntAccessor(oneFieldVector, rowIndex, asMap);
 								break;
 							case BIGINT:
-								showBigIntAccessor(fieldVector.get(j), rowIndex, asMap);
+								showBigIntAccessor(oneFieldVector, rowIndex, asMap);
 								break;
 							case VARBINARY:
-								showVarBinaryAccessor(fieldVector.get(j), rowIndex, asMap);
+								showVarBinaryAccessor(oneFieldVector, rowIndex, asMap);
 								break;
 							case FLOAT4:
-								showFloat4Accessor(fieldVector.get(j), rowIndex, asMap);
+								showFloat4Accessor(oneFieldVector, rowIndex, asMap);
 								break;
 							case FLOAT8:
-								showFloat8Accessor(fieldVector.get(j), rowIndex, asMap);
+								showFloat8Accessor(oneFieldVector, rowIndex, asMap);
 								break;
 							case VARCHAR:
-								showVarcharAccessor(fieldVector.get(j), rowIndex, asMap);
+								showVarcharAccessor(oneFieldVector, rowIndex, asMap);
 								break;
 							default:
 								throw new RuntimeException(" MinorType " + mt);
@@ -209,10 +209,10 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 	}
 
 	public Stream<Map<String, ?>> stream(File file) throws FileNotFoundException, IOException {
-		FileInputStream fis = new FileInputStream(file);
-		return stream(true, fis.getChannel()).onClose(() -> {
+		SeekableByteChannel channel = Files.newByteChannel(file.toPath());
+		return stream(true, channel).onClose(() -> {
 			try {
-				fis.close();
+				channel.close();
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}

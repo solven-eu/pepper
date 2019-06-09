@@ -51,7 +51,7 @@ public class UnsafeNavigableMapListValueComparator
 
 	protected static final Comparator<Object> KEY_COMPARATOR = new Comparator<Object>() {
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings({ "unchecked", "rawtypes", "PMD.CompareObjectsWithEquals" })
 		@Override
 		public int compare(Object key, Object key2) {
 			if (key == key2) {

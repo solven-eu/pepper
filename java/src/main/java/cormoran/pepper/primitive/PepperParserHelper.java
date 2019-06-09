@@ -43,10 +43,12 @@ public class PepperParserHelper {
 	/**
 	 * Initializes the cache for sin and cos and the rest.
 	 */
-	public static synchronized void initialize() {
-		pow10 = new double[634];
-		for (int i = 0; i < pow10.length; i++) {
-			pow10[i] = Double.parseDouble("1.0e" + (i - 325)); // Math.pow(10.0, i-308);
+	public static void initialize() {
+		synchronized (PepperParserHelper.class) {
+			pow10 = new double[634];
+			for (int i = 0; i < pow10.length; i++) {
+				pow10[i] = Double.parseDouble("1.0e" + (i - 325)); // Math.pow(10.0, i-308);
+			}
 		}
 	}
 
@@ -58,19 +60,23 @@ public class PepperParserHelper {
 	 *            The string.
 	 * @return The double value.
 	 */
+	@SuppressWarnings({ "PMD.NPathComplexity", "PMD.ExcessiveMethodLength", "PMD.AvoidReassigningParameters" })
 	public static double parseDouble(CharSequence s) {
-		if (pow10 == null)
+		if (pow10 == null) {
 			initialize();
-		if (s.charAt(0) == 'N' && s.charAt(1) == 'a' && s.charAt(2) == 'N')
+		}
+		if (s.charAt(0) == 'N' && s.charAt(1) == 'a' && s.charAt(2) == 'N') {
 			return Double.NaN;
+		}
 		if (s.charAt(0) == 'I' && s.charAt(1) == 'n'
 				&& s.charAt(2) == 'f'
 				&& s.charAt(3) == 'i'
 				&& s.charAt(4) == 'n'
 				&& s.charAt(5) == 'i'
 				&& s.charAt(6) == 't'
-				&& s.charAt(7) == 'y')
+				&& s.charAt(7) == 'y') {
 			return Double.POSITIVE_INFINITY;
+		}
 
 		if (s.charAt(0) == '-' && s.charAt(1) == 'I'
 				&& s.charAt(2) == 'n'
@@ -79,8 +85,9 @@ public class PepperParserHelper {
 				&& s.charAt(5) == 'n'
 				&& s.charAt(6) == 'i'
 				&& s.charAt(7) == 't'
-				&& s.charAt(8) == 'y')
+				&& s.charAt(8) == 'y') {
 			return Double.POSITIVE_INFINITY;
+		}
 
 		int first = 0;
 		int last = s.length();
@@ -105,8 +112,9 @@ public class PepperParserHelper {
 			exp = Jdk9CharSequenceParsers.parseShort(s, expStart, last, 10);
 			last = e;
 		} else {
-			if (PLUS_MATCHER.lastIndexIn(s) > 0 || MINUS_MATCHER.lastIndexIn(s) > 0)
+			if (PLUS_MATCHER.lastIndexIn(s) > 0 || MINUS_MATCHER.lastIndexIn(s) > 0) {
 				throw new RuntimeException("Not a number");
+			}
 		}
 
 		int n;

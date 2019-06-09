@@ -97,10 +97,6 @@ public class TaskStartEvent implements ITaskActivityEvent {
 	public final Object source;
 	public final List<? extends String> names;
 
-	public static void setDoRememberStack(boolean doRememberStack) {
-		TaskStartEvent.doRememberStack = doRememberStack;
-	}
-
 	// Remember the stack could be much helpful
 	public final Optional<StackTraceElement[]> stack;
 
@@ -118,8 +114,9 @@ public class TaskStartEvent implements ITaskActivityEvent {
 	protected final LongSupplier progress;
 	private static final LongSupplier NO_PROGRESS = () -> -1L;
 
-	// By default, we have no result size
-	// protected long resultSize = -1;
+	public static void setDoRememberStack(boolean doRememberStack) {
+		TaskStartEvent.doRememberStack = doRememberStack;
+	}
 
 	private static Optional<StackTraceElement[]> fastCurrentStackIfRemembering() {
 		if (doRememberStack) {

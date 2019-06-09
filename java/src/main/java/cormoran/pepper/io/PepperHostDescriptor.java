@@ -22,6 +22,7 @@
  */
 package cormoran.pepper.io;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -31,12 +32,6 @@ public class PepperHostDescriptor {
 	protected final String host;
 	protected final boolean hostIsIp;
 	protected final boolean hostIsValid;
-
-	protected PepperHostDescriptor(String host, boolean hostIsIp, boolean hostIsValid) {
-		this.host = host;
-		this.hostIsIp = hostIsIp;
-		this.hostIsValid = hostIsValid;
-	}
 
 	// http://stackoverflow.com/questions/10306690/domain-name-validation-with-regex
 	// public static final Pattern DOMAIN_PATTERN =
@@ -49,6 +44,13 @@ public class PepperHostDescriptor {
 	private static final Pattern IP_PATTERN = Pattern
 			.compile("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)");
 
+	protected PepperHostDescriptor(String host, boolean hostIsIp, boolean hostIsValid) {
+		this.host = host;
+		this.hostIsIp = hostIsIp;
+		this.hostIsValid = hostIsValid;
+	}
+
+	@SuppressWarnings("PMD.AvoidReassigningParameters")
 	public static Optional<PepperHostDescriptor> parseHost(String host) {
 		if (Strings.isNullOrEmpty(host)) {
 			// Happens on 'mailto:' for instance
@@ -63,11 +65,11 @@ public class PepperHostDescriptor {
 			host = host.substring(0, host.length() - 1);
 		}
 
-		String lowerCaseHost = host.toLowerCase();
+		String lowerCaseHost = host.toLowerCase(Locale.US);
 		return Optional.of(new PepperHostDescriptor(lowerCaseHost, hostIsIp, hostIsValid));
 	}
 
-	public boolean getIsIP() {
+	public boolean isIP() {
 		return hostIsIp;
 	}
 
@@ -76,7 +78,7 @@ public class PepperHostDescriptor {
 	 * @return true if the host is a valid hostname. For instance, a host is not valid if it holds more less than 3
 	 *         characters
 	 */
-	public boolean getIsValid() {
+	public boolean isValid() {
 		return hostIsValid;
 	}
 
@@ -124,7 +126,7 @@ public class PepperHostDescriptor {
 	 * @return the space domain. Given 'http://www.corman.io/youpi', it would return 'cormoran.io'
 	 */
 	public Optional<String> getHostSpace() {
-		if (!getIsValid() || getIsIP()) {
+		if (!isValid() || isIP()) {
 			return Optional.empty();
 		}
 

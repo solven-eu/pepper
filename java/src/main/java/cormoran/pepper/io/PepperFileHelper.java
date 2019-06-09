@@ -58,6 +58,11 @@ public class PepperFileHelper {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperFileHelper.class);
 
+	private static final String GLOB_PREFIX = "glob:";
+
+	// Match also in sub-directories
+	private static final String GLOB_MATCH_ANY_ALL = "**";
+
 	protected PepperFileHelper() {
 		// hidden
 	}
@@ -177,7 +182,7 @@ public class PepperFileHelper {
 
 	public static Optional<Path> getHoldingJarPath(URI resource) throws IOException {
 		// "jar:file:/C:/HOMEWARE/ITEC-Toolbox/apps/jdk/sunjdk180_112_x64/jre/lib/rt.jar!/java/lang/String.class";
-		if (resource.getScheme().toLowerCase().equals("jar")) {
+		if ("jar".equalsIgnoreCase(resource.getScheme())) {
 			String path = resource.getRawSchemeSpecificPart();
 
 			int indexOfInsideJar = path.indexOf("!/");
@@ -201,6 +206,7 @@ public class PepperFileHelper {
 	 * @param pathToFileOrFolder
 	 * @return a fully resolved Path
 	 */
+	@SuppressWarnings("PMD.NullAssignment")
 	public static Path resolveToPath(ResourceLoader resourceLoader, String pathToFileOrFolder) {
 		if (Strings.isNullOrEmpty(pathToFileOrFolder)) {
 			throw new IllegalArgumentException("We are missing an environment variable: " + pathToFileOrFolder);
@@ -236,11 +242,6 @@ public class PepperFileHelper {
 
 		return directoryAsPath;
 	}
-
-	private static final String GLOB_PREFIX = "glob:";
-
-	// Match also in sub-directories
-	private static final String GLOB_MATCH_ANY_ALL = "**";
 
 	public static PathMatcher makePathMatcher(String globPathMatcher, boolean matchAnySubdirectory) {
 		// We add '**/' as we always receive absolute pathes

@@ -109,16 +109,8 @@ public class ClassInfo implements Serializable {
 		try {
 			final Class<?> clazz = Class.forName(jvmName);
 			return findSource(clazz);
-		} catch (final LinkageError e) {
-			// dans jonas en OSGI, par exemple avec des classes Quartz, il
-			// peut survenir
-			// des LinkageError (rq: NoClassDefFoundError hérite également
-			// de LinkageError)
-			return null;
-		} catch (final ClassNotFoundException e) {
-			// on suppose qu'il y a une seule webapp et que la plupart des
-			// classes peuvent être chargées
-			// sinon il y a une exception et on retourne null
+		} catch (final LinkageError | ClassNotFoundException e) {
+			// LinkageError happens in OSGI with Quartz classes for instance
 			return null;
 		}
 	}

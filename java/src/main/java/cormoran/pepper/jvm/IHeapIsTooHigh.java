@@ -37,6 +37,7 @@ public interface IHeapIsTooHigh {
 	 */
 	int DEFAULT_HEAP_RATIO_WRITE_LIMIT = 80;
 
+	@SuppressWarnings("PMD.BooleanGetMethodName")
 	boolean getHeapIsTooHigh();
 
 	void setRatioForTooHigh(int ratioForTooHigh);

@@ -58,21 +58,25 @@ public class PepperProcessHelper {
 	// UNIXProcess class is loaded only udner a linux environment
 	private static final String CLASS_PROCESS_UNIX = "java.lang.UNIXProcess";
 
-	// Deprecated in Java9
-	public static synchronized long getPidOfProcess(Process p) {
-		long pid = -1;
+	private static final String WINDOWS_MEMORY_PATTERN = "\",\"";
 
-		try {
-			if (isUnixProcess(p.getClass().getName())) {
-				Field f = p.getClass().getDeclaredField("pid");
-				f.setAccessible(true);
-				pid = f.getLong(p);
-				f.setAccessible(false);
+	// Deprecated in Java9
+	public static long getPidOfProcess(Process p) {
+		synchronized (PepperProcessHelper.class) {
+			long pid = -1;
+
+			try {
+				if (isUnixProcess(p.getClass().getName())) {
+					Field f = p.getClass().getDeclaredField("pid");
+					f.setAccessible(true);
+					pid = f.getLong(p);
+					f.setAccessible(false);
+				}
+			} catch (Exception e) {
+				pid = -1;
 			}
-		} catch (Exception e) {
-			pid = -1;
+			return pid;
 		}
-		return pid;
 	}
 
 	// Used to prevent Sonar complaining about not using instanceof
@@ -111,10 +115,6 @@ public class PepperProcessHelper {
 
 		LOGGER.debug("About to execute {}", PepperProcessHelper.getCommandAsString(memoryBuilder.command()));
 
-		Process memoryProcess = memoryBuilder.start();
-
-		InputStream inputStream = memoryProcess.getInputStream();
-
 		int osFlag;
 		if (SystemUtils.IS_OS_LINUX) {
 			osFlag = OS_MARKER_LINUX;
@@ -127,6 +127,8 @@ public class PepperProcessHelper {
 			return OptionalLong.empty();
 		}
 
+		Process memoryProcess = memoryBuilder.start();
+		InputStream inputStream = memoryProcess.getInputStream();
 		return extractMemory(osFlag, inputStream);
 	}
 
@@ -140,6 +142,7 @@ public class PepperProcessHelper {
 		}).collect(Collectors.joining(" "));
 	}
 
+	@SuppressWarnings("PMD.ExcessiveMethodLength")
 	@VisibleForTesting
 	protected static OptionalLong extractMemory(int osFlag, InputStream inputStream) throws IOException {
 		LineProcessor<String> processor = new LineProcessor<String>() {
@@ -226,8 +229,6 @@ public class PepperProcessHelper {
 				// specified criteria.
 				// If matching with "/fo csv": "chrome.exe","6740","Console","1","107,940 K"
 				// If matching with "/fo table": "chrome.exe\t6740\tConsole\t1\t108,760 K"
-				String WINDOWS_MEMORY_PATTERN = "\",\"";
-
 				try {
 					int indexLastComa = lastLine.lastIndexOf(WINDOWS_MEMORY_PATTERN);
 					if (indexLastComa < 0) {

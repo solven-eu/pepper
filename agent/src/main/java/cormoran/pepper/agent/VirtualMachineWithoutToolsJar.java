@@ -55,6 +55,7 @@ import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider.Accessor;
  * @author Benoit Lacelle
  */
 // https://github.com/javamelody/javamelody/blob/master/javamelody-core/src/main/java/net/bull/javamelody/VirtualMachine.java
+@SuppressWarnings("PMD.AvoidSynchronizedAtMethodLevel")
 public class VirtualMachineWithoutToolsJar {
 	private static final String ENV_JAVA_SPECIFICATION_VERSION = "java.specification.version";
 
@@ -63,6 +64,8 @@ public class VirtualMachineWithoutToolsJar {
 	// http://cr.openjdk.java.net/~malenkov/8022746.8.1/jdk/src/share/classes/sun/tools/jmap/JMap.java.html
 	private static final String LIVE_OBJECTS_OPTION = "-live";
 	private static final String ALL_OBJECTS_OPTION = "-all";
+
+	private static final Set<Class<?>> REPORTED_ERRORS_FOR_VM = Sets.newConcurrentHashSet();
 
 	// Switched to true if incompatible JVM, or attach failed
 	private static final AtomicBoolean WILL_NOT_WORK = new AtomicBoolean(false);
@@ -87,6 +90,7 @@ public class VirtualMachineWithoutToolsJar {
 			int asInt = Integer.parseInt(specificationVersion);
 
 			if (asInt >= 9) {
+				LOGGER.debug("{} is jdk9 or later", specificationVersion);
 				return true;
 			} else {
 				return false;
@@ -116,8 +120,6 @@ public class VirtualMachineWithoutToolsJar {
 	public static boolean isJRockit() {
 		return getJavaVendor().contains("BEA");
 	}
-
-	private static final Set<Class<?>> REPORTED_ERRORS_FOR_VM = Sets.newConcurrentHashSet();
 
 	public static synchronized Optional<Object> getJvmVirtualMachine() {
 		try {
@@ -224,8 +226,15 @@ public class VirtualMachineWithoutToolsJar {
 
 	/**
 	 * Force detaching the VirtualMachine object
+	 * 
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
 	 */
-	public static synchronized void detach() throws Exception {
+	public static synchronized void detach()
+			throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		// Ensure VirtualMachine reference will not be used anymore
 		Object localRef = JVM_VIRTUAL_MACHINE.getAndSet(null);
 		if (localRef != null) {
@@ -353,8 +362,8 @@ public class VirtualMachineWithoutToolsJar {
 	 * @throws IllegalAccessException
 	 */
 	protected static InputStream invokeForInputStream(Object virtualMachine, String methodName, String... argument)
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException,
-			MalformedURLException, NoSuchMethodException {
+			throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, MalformedURLException,
+			NoSuchMethodException {
 		if (virtualMachine == null) {
 			throw new IllegalArgumentException("VirtualMachine is null");
 		}
@@ -379,10 +388,11 @@ public class VirtualMachineWithoutToolsJar {
 
 	public static boolean isVirtualMachineAvailable() {
 		try {
-			if (getJvmVirtualMachine() != null) {
-				return true;
-			} else {
+			if (getJvmVirtualMachine() == null) {
+				LOGGER.trace("VirtualMachine is null");
 				return false;
+			} else {
+				return true;
 			}
 		} catch (Throwable e) {
 			// Whatever the reason is, the VirtualMachine is not available. It

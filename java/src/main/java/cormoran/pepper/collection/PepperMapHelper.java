@@ -41,6 +41,7 @@ import com.google.common.collect.Lists;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings({ "PMD.GodClass", "PMD.AvoidDuplicateLiterals" })
 public class PepperMapHelper {
 	protected PepperMapHelper() {
 		// hidden
@@ -129,11 +130,12 @@ public class PepperMapHelper {
 	 * @return a Map looking like: {'k1': {'k2': 'v'}}
 	 */
 	public static Map<?, ?> imbricatedMap(Object value, String firstKey, String... moreKeys) {
+		Object nextValue = value;
 		for (int i = moreKeys.length - 1; i >= 0; i--) {
-			value = Collections.singletonMap(moreKeys[i], value);
+			nextValue = Collections.singletonMap(moreKeys[i], nextValue);
 		}
 
-		return Collections.singletonMap(firstKey, value);
+		return Collections.singletonMap(firstKey, nextValue);
 	}
 
 	@Deprecated
@@ -185,11 +187,11 @@ public class PepperMapHelper {
 
 		Object rawValue = map.get(key);
 
-		if (rawValue == null || !(rawValue instanceof Map)) {
+		if (rawValue instanceof Map) {
+			return (Map<?, ?>) rawValue;
+		} else {
 			throw new IllegalArgumentException("We miss '" + key + "' amongst available: " + map.keySet());
 		}
-
-		return (Map<?, ?>) rawValue;
 	}
 
 	public static String getRequiredString(final Map<?, ?> map, String mainKey, String... subKeys) {
@@ -210,12 +212,11 @@ public class PepperMapHelper {
 				}
 
 				return checkNonNullString(currentKey, rawValue);
-			} else {
-				if (rawValue == null || !(rawValue instanceof Map<?, ?>)) {
-					throw new IllegalArgumentException(
-							"We miss '" + currentKey + "' as Map amongst available: " + currentMap.keySet());
-				}
+			} else if (rawValue instanceof Map<?, ?>) {
 				currentMap = (Map<?, ?>) rawValue;
+			} else {
+				throw new IllegalArgumentException(
+						"We miss '" + currentKey + "' as Map amongst available: " + currentMap.keySet());
 			}
 		}
 
@@ -229,11 +230,12 @@ public class PepperMapHelper {
 
 		Object rawValue = map.get(key);
 
-		if (rawValue == null || !(rawValue instanceof Number)) {
+		if (rawValue instanceof Number) {
+			return (Number) rawValue;
+		} else {
 			throw new IllegalArgumentException("We miss '" + key + "' amongst available: " + map.keySet());
 		}
 
-		return (Number) rawValue;
 	}
 
 	private static <T> Map<T, ?> hideKey(Map<T, ?> formRegisterApp, T key) {

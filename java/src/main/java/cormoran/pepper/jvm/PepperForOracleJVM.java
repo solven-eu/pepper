@@ -38,19 +38,20 @@ import com.google.common.annotations.Beta;
 @SuppressWarnings("restriction")
 @Beta
 public class PepperForOracleJVM {
-	protected PepperForOracleJVM() {
-		// hidden
-	}
 
 	// com.sun.management.GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION
 	public static final String GARBAGE_COLLECTION_NOTIFICATION = "com.sun.management.gc.notification";
 
+	protected PepperForOracleJVM() {
+		// hidden
+	}
+
 	public static long maxDirectMemory() {
 		try {
 			// return sun.misc.VM.maxDirectMemory();
-			Class<?> VM = Class.forName("sun.misc.VM");
+			Class<?> vm = Class.forName("sun.misc.VM");
 
-			return ((Long) VM.getMethod("maxDirectMemory").invoke(null)).longValue();
+			return ((Long) vm.getMethod("maxDirectMemory").invoke(null)).longValue();
 		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			// JDK9?

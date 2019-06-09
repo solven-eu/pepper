@@ -128,8 +128,8 @@ public class ZeroCopyCSVWriter implements IZeroCopyCSVWriter {
 
 			// We write to proxy to count characters
 			Appendable output = joiner.appendTo(proxy, escaped.iterator());
-			// For the sake of SpotBugs
-			assert output == proxy;
+			// For the sake of SpotBugs and PMD
+			assert output.equals(proxy);
 
 			writer.write(newLine);
 			nbLinesWritten.incrementAndGet();
