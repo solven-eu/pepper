@@ -35,7 +35,8 @@ jobs:
 
     environment:
       # As it seems mvn is not seeing the default environment variable
-      CIRCLECI: "true"
+      - CIRCLECI: "true"
+      - MAVEN_OPTS: -Xmx256m
     steps:
       - checkout
       - restore_cache:

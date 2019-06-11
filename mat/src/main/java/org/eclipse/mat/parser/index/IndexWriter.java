@@ -375,10 +375,14 @@ public abstract class IndexWriter {
 			identifiers.runOptimize();
 			long bytesAfter = identifiers.serializedSizeInBytes();
 
-			LOGGER.info(".runOptimize moved from {} to {}. As long[], it would consume {}",
-					PepperLogHelper.humanBytes(bytesBefore),
-					PepperLogHelper.humanBytes(bytesAfter),
-					PepperLogHelper.humanBytes(IPepperMemoryConstants.LONG * identifiers.getLongCardinality()));
+			Object before = PepperLogHelper.humanBytes(bytesBefore);
+			Object after = PepperLogHelper.humanBytes(bytesAfter);
+			if (!before.toString().equals(after.toString())) {
+				LOGGER.info(".runOptimize moved from {} to {}. As long[], it would consume {}",
+						before,
+						after,
+						PepperLogHelper.humanBytes(IPepperMemoryConstants.LONG * identifiers.getLongCardinality()));
+			}
 
 			addedAfterSort = false;
 

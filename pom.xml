@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -45,11 +46,6 @@
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
 		<errorprone.version>2.3.3</errorprone.version>
-		<!-- <errorprone.version>2.1.3</errorprone.version> -->
-		<!-- 2.2.0 is for Javac9? -->
-		<!-- <errorprone.version>2.2.0</errorprone.version> -->
-
-		<javolution.version>6.0.0</javolution.version>
 
 		<awaitility.version>3.1.6</awaitility.version>
 		<findbugs.version>3.0.5</findbugs.version>
@@ -182,7 +178,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<!-- Not in spring-boot as of spring-boot:1.5.2 -->
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>${guava.version}</version>
@@ -260,9 +255,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
 					<configuration>
-
 						<!-- errorprone supports >=6 -->
 						<source>${compiler.targetVersion}</source>
 						<target>${compiler.targetVersion}</target>
@@ -311,7 +304,6 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.2</version>
 					<configuration>
 						<!-- Add ${argLine} to maintain the argument from Jacoco -->
 						<!-- https://groups.google.com/forum/#!topic/jacoco/LzmCezW8VKA -->
@@ -468,8 +460,6 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5.3</version>
-
 					<configuration>
 						<!-- Prevent git to clone the whole repo which is quite slow -->
 						<!-- https://issues.apache.org/jira/browse/MRELEASE-777 -->
