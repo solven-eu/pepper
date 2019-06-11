@@ -174,7 +174,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	public static final Set<String> FULL_GC_NAMES =
 			ImmutableSet.of("PS MarkSweep", "G1 Old Generation", "MarkSweepCompact");
 
-	public static final Set<String> NOT_FULL_GC_NAMES = ImmutableSet.of();
+	public static final Set<String> NOT_FULL_GC_NAMES = ImmutableSet.of("G1 Young Generation");
 
 	public static final Set<String> REPORTED_UNKNOWN_GC_NAMES = Sets.newConcurrentHashSet();
 

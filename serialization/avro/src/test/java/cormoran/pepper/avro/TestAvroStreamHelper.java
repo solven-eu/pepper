@@ -143,6 +143,19 @@ public class TestAvroStreamHelper {
 	}
 
 	@Test
+	public void testToGenericRecord_NullValue() {
+		Schema schema = AvroSchemaHelper.proposeSimpleSchema(ImmutableMap.of("k1", 123L));
+
+		Function<Map<String, ?>, GenericRecord> mapper = AvroTranscodingHelper.toGenericRecord(schema);
+
+		GenericRecord firstRecord = mapper.apply(Collections.singletonMap("k1", null));
+		Assert.assertNull(firstRecord.get("k1"));
+
+		Map<String, ?> backToMapNoType = AvroTranscodingHelper.toJavaMap(firstRecord);
+		Assert.assertNull(backToMapNoType.get("k1"));
+	}
+
+	@Test
 	public void testAvroToByteArray() throws IOException {
 		Map<String, String> singleMap = ImmutableMap.of("k1", "v1");
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(singleMap);

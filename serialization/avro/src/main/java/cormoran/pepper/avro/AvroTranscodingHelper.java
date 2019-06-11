@@ -329,11 +329,6 @@ public class AvroTranscodingHelper {
 			// value is useful to interpret raw bytes or complex types
 			Object recordValue = indexedRecord.get(i);
 
-			if (recordValue == null) {
-				// The input object is not useful: we prefer to rely on the schema
-				recordValue = AvroSchemaHelper.exampleValue(f.schema());
-			}
-
 			Object cleanValue = AvroTranscodingHelper.toJdk(recordValue, () -> exampleValue);
 			asMap.put(fieldName, cleanValue);
 		}
