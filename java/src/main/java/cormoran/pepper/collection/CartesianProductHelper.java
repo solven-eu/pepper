@@ -59,7 +59,7 @@ import com.google.common.math.LongMath;
  * @author Benoit Lacelle
  *
  */
-@SuppressWarnings({ "PMD.GodClass", "PMD.UseUnderscoresInNumericLiterals" })
+@SuppressWarnings({ "PMD.GodClass" })
 @Beta
 public class CartesianProductHelper {
 
@@ -70,7 +70,7 @@ public class CartesianProductHelper {
 	 */
 	public static final Object GROUP_NOT_EXPRESSED = new Object();
 
-	private static final int CARTESIAN_CARDINALITY_LOG = 1000000;
+	private static final int CARTESIAN_CARDINALITY_LOG = 1_000_000;
 
 	protected CartesianProductHelper() {
 		// hidden

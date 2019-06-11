@@ -37,13 +37,11 @@ import com.google.common.annotations.VisibleForTesting;
  * @author Benoit Lacelle
  *
  */
-@SuppressWarnings({ "PMD.UseUnderscoresInNumericLiterals",
-		"PMD.ArrayIsStoredDirectly",
-		"PMD.AvoidProtectedFieldInFinalClass" })
+@SuppressWarnings({ "PMD.ArrayIsStoredDirectly", "PMD.AvoidProtectedFieldInFinalClass" })
 public final class ArrayWithHashcodeEquals {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ArrayWithHashcodeEquals.class);
 
-	public static final int COLLISION_COUNT_LOG = 1000000;
+	public static final int COLLISION_COUNT_LOG = 1_000_000;
 
 	// precompute the hashcode for performance consideration
 	private final int arrayHash;

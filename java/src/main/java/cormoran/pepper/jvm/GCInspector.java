@@ -101,10 +101,7 @@ import cormoran.pepper.util.PepperTimeHelper;
  * @author Benoit Lacelle
  * @since Oracle Java 7 update 4 JVM
  */
-@SuppressWarnings({ "PMD.AvoidDuplicateLiterals",
-		"PMD.GodClass",
-		"PMD.UseUnderscoresInNumericLiterals",
-		"PMD.ConsecutiveLiteralAppends" })
+@SuppressWarnings({ "PMD.AvoidDuplicateLiterals", "PMD.GodClass", "PMD.ConsecutiveLiteralAppends" })
 @ManagedResource
 public class GCInspector implements NotificationListener, InitializingBean, DisposableBean, IGCInspector {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GCInspector.class);
@@ -117,13 +114,13 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	/**
 	 * If the first GC pause is bigger than this size, we expect GC pauses are expressed in NS
 	 */
-	protected static final long MAX_FIRST_PAUSE_MS = 5000;
+	protected static final long MAX_FIRST_PAUSE_MS = TimeUnit.SECONDS.toMillis(5);
 
 	/**
 	 * @deprecated One should use TimeUnit.NANOSECONDS.toMillis(timeInNs)
 	 */
 	@Deprecated
-	public static final int NS_TO_MS = 1000000;
+	public static final long NS_TO_MS = TimeUnit.MILLISECONDS.toNanos(1);
 
 	public static final float BETWEEN_MINUS_ONE_AND_ZERO = -0.5F;
 

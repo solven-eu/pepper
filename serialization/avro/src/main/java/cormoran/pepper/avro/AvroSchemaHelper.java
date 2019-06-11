@@ -176,7 +176,6 @@ public class AvroSchemaHelper {
 	/**
 	 * @deprecated This method seems meaningless
 	 */
-	@SuppressWarnings("PMD.UseUnderscoresInNumericLiterals")
 	@Deprecated
 	public static Optional<?> proposeDefaultValueForType(Type type) {
 		// If default value is set to null, we would get org.apache.avro.AvroRuntimeException: Field portfoliocode
@@ -202,7 +201,7 @@ public class AvroSchemaHelper {
 		} else if (type == Type.INT) {
 			return Optional.of(123);
 		} else if (type == Type.LONG) {
-			return Optional.of(12345L);
+			return Optional.of(12_345L);
 		} else if (type == Type.MAP) {
 			return Optional.of(ImmutableMap.of("key", "value"));
 		} else if (type == Type.NULL) {

@@ -55,8 +55,7 @@ public interface IPepperSchemaConstants {
 
 	int SOME_INT = 456;
 
-	@SuppressWarnings("PMD.UseUnderscoresInNumericLiterals")
-	long SOME_LONG = 456789;
+	long SOME_LONG = 456_789L;
 
 	LocalDate SOME_LOCALDATE = LocalDate.now();
 
