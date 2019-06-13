@@ -56,6 +56,10 @@ public class PepperBufferHelper {
 	@VisibleForTesting
 	protected static boolean forceNoHeap = false;
 
+	protected PepperBufferHelper() {
+		// hidden
+	}
+
 	public static CloseableIntBuffer makeIntBuffer(int nbIntegers) throws IOException {
 		if (nbIntegers < 0) {
 			throw new IllegalArgumentException("Can not allocate a buffer with a negative size");

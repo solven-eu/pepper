@@ -54,6 +54,8 @@ import cormoran.pepper.primitive.PepperParserHelper;
  */
 public class ZeroCopyCSVParser implements IZeroCopyCSVParser {
 
+	private static final int DEFAULT_RADIX = 10;
+
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ZeroCopyCSVParser.class);
 
 	private static final int DEFAULT_BUFFER_SIZE = 1024;
@@ -386,15 +388,15 @@ public class ZeroCopyCSVParser implements IZeroCopyCSVParser {
 				if (subSequence.length() == 0) {
 					consumer.nextRowIsMissing();
 				} else {
-					((IntConsumer) consumer)
-							.accept(Jdk9CharSequenceParsers.parseInt(subSequence, 0, charBuffer.length(), 10));
+					((IntConsumer) consumer).accept(
+							Jdk9CharSequenceParsers.parseInt(subSequence, 0, charBuffer.length(), DEFAULT_RADIX));
 				}
 			} else if (consumer instanceof LongConsumer) {
 				if (subSequence.length() == 0) {
 					consumer.nextRowIsMissing();
 				} else {
-					((LongConsumer) consumer)
-							.accept(Jdk9CharSequenceParsers.parseLong(subSequence, 0, charBuffer.length(), 10));
+					((LongConsumer) consumer).accept(
+							Jdk9CharSequenceParsers.parseLong(subSequence, 0, charBuffer.length(), DEFAULT_RADIX));
 				}
 			} else if (consumer instanceof DoubleConsumer) {
 				if (subSequence.length() == 0) {

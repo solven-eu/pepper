@@ -60,6 +60,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.ListenerNotFoundException;
@@ -133,11 +134,11 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	/**
 	 * If a MarkSweep GC lasts more than this duration, we log a ThreadDump
 	 */
-	public static final long DEFAULT_MARKSWEEP_MILLIS_THREADDUMP = 10000;
-	protected long marksweepDurationMillisForThreadDump = DEFAULT_MARKSWEEP_MILLIS_THREADDUMP;
+	public static final long DEFAULT_FULLGC_MILLIS_THREADDUMP = TimeUnit.SECONDS.toMillis(10);
+	protected long minFullGCMillisForThreadDump = DEFAULT_FULLGC_MILLIS_THREADDUMP;
 
-	public static final long DEFAULT_MARKSWEEP_MILLIS_HEAPHISTOGRAM = 10000;
-	protected long marksweepDurationMillisForHeapHistogram = DEFAULT_MARKSWEEP_MILLIS_HEAPHISTOGRAM;
+	public static final long DEFAULT_FULLGC_MILLIS_HEAPHISTOGRAM = TimeUnit.SECONDS.toMillis(10);
+	protected long minFullGCForHeapHistogram = DEFAULT_FULLGC_MILLIS_HEAPHISTOGRAM;
 
 	public static final long DEFAULT_MAX_HEAP_GB_HEAPHISTOGRAM = 20;
 	protected long maxHeapGbForHeapHistogram = DEFAULT_MAX_HEAP_GB_HEAPHISTOGRAM;
@@ -239,8 +240,12 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	public static boolean inUnitTest() {
 		// In maven: org.apache.maven.surefire.booter.ForkedBooter.exit(ForkedBooter.java:144)
 		// Bean disposing is expected to be done in the main thead: does this main thread comes from junit or surefire?
+		// SpringBootTest close the AppContext in a different thread, through an ApplicationShutdownHooks
 
-		Optional<StackTraceElement> matching = Arrays.stream(Thread.currentThread().getStackTrace())
+		Optional<StackTraceElement> matching = Thread.getAllStackTraces()
+				.values()
+				.stream()
+				.flatMap(steArray -> Stream.of(steArray))
 				.filter(ste -> Arrays.asList(".surefire.", ".failsafe.", ".junit.")
 						.stream()
 						.filter(name -> ste.getClassName().contains(name))
@@ -428,7 +433,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	protected void appendCurrentGCDuration(StringBuilder sb,
 			IPepperGarbageCollectionNotificationInfo info,
 			long duration) {
-		sb.append(info.getGcName()).append(" lasted ").append(PepperLogHelper.getNiceTime(duration)).append(". ");
+		sb.append(info.getGcName()).append(" lasted ").append(PepperLogHelper.humanDuration(duration)).append(". ");
 	}
 
 	protected void appendHeap(StringBuilder sb, long totalHeapUsedAfter) {
@@ -648,16 +653,24 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	protected void onFullGC(IPepperGarbageCollectionNotificationInfo info) {
 		long duration = computeDurationMs(info);
 
-		if (duration > marksweepDurationMillisForThreadDump) {
+		if (duration > minFullGCMillisForThreadDump) {
 			printThreadDump();
+		} else {
+			LOGGER.info("We encountered a FullGC but short enough ({}) not to print a ThreadDump",
+					PepperLogHelper.humanDuration(duration));
 		}
 
 		// This block is comparable to the usage of -XX:+PrintClassHistogramAfterFullGC
-		if (duration > marksweepDurationMillisForHeapHistogram) {
+		if (duration > minFullGCForHeapHistogram) {
 			long heapUsed = getUsedHeap();
-			if (heapUsed < maxHeapGbForHeapHistogram * GB) {
+			long maxHeapBytesForHeapHisto = maxHeapGbForHeapHistogram * GB;
+			if (heapUsed < maxHeapBytesForHeapHisto) {
 				// Print HeapHistogram only if heap is small enough
 				printHeapHistogram(HEAP_HISTO_LIMIT_NB_ROWS);
+			} else {
+				LOGGER.info("We encountered a long FullGC but no Heap histogram as {} < {}",
+						PepperLogHelper.humanBytes(heapUsed),
+						PepperLogHelper.humanBytes(maxHeapBytesForHeapHisto));
 			}
 		}
 	}
@@ -702,16 +715,16 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	protected void onMemoryBackUnderThreshold(long heapUsed, long heapMax) {
 		// We got back under a nice memory level
 		LOGGER.info("The heap got back under the threashold: {} out of {}",
-				getNiceBytes(heapUsed),
-				getNiceBytes(heapMax));
+				PepperLogHelper.humanBytes(heapUsed),
+				PepperLogHelper.humanBytes(heapMax));
 	}
 
 	protected void onOverHeapAlertSinceTooLong(LocalDateTime overThresholdSince) {
 		long heapUsed = getUsedHeap();
 		long heapMax = getMaxHeap();
 		LOGGER.warn("We have a heap of {} given a max of {} since {}",
-				getNiceBytes(heapUsed),
-				getNiceBytes(heapMax),
+				PepperLogHelper.humanBytes(heapUsed),
+				PepperLogHelper.humanBytes(heapMax),
 				overThresholdSince);
 		printThreadDump();
 	}
@@ -885,25 +898,25 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 
 	@ManagedAttribute
 	public void setMarksweepDurationMillisForThreadDump(long marksweepDurationMillisForThreadDump) {
-		this.marksweepDurationMillisForThreadDump = marksweepDurationMillisForThreadDump;
+		this.minFullGCMillisForThreadDump = marksweepDurationMillisForThreadDump;
 	}
 
 	@Override
 	@ManagedAttribute
 	public long getMarksweepDurationMillisForThreadDump() {
-		return marksweepDurationMillisForThreadDump;
+		return minFullGCMillisForThreadDump;
 	}
 
 	@Override
 	@ManagedAttribute
 	public void setMarksweepDurationMillisForHeapHistogram(long marksweepDurationMillisForHeapHistogram) {
-		this.marksweepDurationMillisForHeapHistogram = marksweepDurationMillisForHeapHistogram;
+		this.minFullGCForHeapHistogram = marksweepDurationMillisForHeapHistogram;
 	}
 
 	@Override
 	@ManagedAttribute
 	public long getMarksweepDurationMillisForHeapHistogram() {
-		return marksweepDurationMillisForHeapHistogram;
+		return minFullGCForHeapHistogram;
 	}
 
 	@Override
@@ -1030,7 +1043,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 
 	public static <T> Map<T, String> convertByteValueToString(Map<T, Long> threadNameToAllocatedHeap) {
 		// Convert byte as long to byte as Nice String
-		return Maps.transformValues(threadNameToAllocatedHeap, GCInspector::getNiceBytes);
+		return Maps.transformValues(threadNameToAllocatedHeap, b -> PepperLogHelper.humanBytes(b).toString());
 	}
 
 	/**

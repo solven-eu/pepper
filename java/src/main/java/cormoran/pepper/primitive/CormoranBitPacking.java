@@ -6,6 +6,7 @@ package cormoran.pepper.primitive;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("checkstyle:magicnumber")
 public class CormoranBitPacking {
 	protected CormoranBitPacking() {
 		// hidden

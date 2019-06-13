@@ -148,48 +148,48 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testGetNiceTimeMillis() {
-		Assert.assertEquals("912ms", PepperLogHelper.getNiceTime(912).toString());
+		Assert.assertEquals("912ms", PepperLogHelper.humanDuration(912).toString());
 	}
 
 	@Test
 	public void testGetNiceTimeSecondsAndMillis() {
-		Assert.assertEquals("9sec 600ms", PepperLogHelper.getNiceTime(9600).toString());
+		Assert.assertEquals("9sec 600ms", PepperLogHelper.humanDuration(9600).toString());
 	}
 
 	@Test
 	public void testGetNiceTimeSecondsAndMillis_NoHundredsInMillis() {
-		Assert.assertEquals("9sec 60ms", PepperLogHelper.getNiceTime(9060).toString());
+		Assert.assertEquals("9sec 60ms", PepperLogHelper.humanDuration(9060).toString());
 	}
 
 	@Test
 	public void testGetNiceTimeMinAndSeconds() {
-		Assert.assertEquals("2min 11sec", PepperLogHelper.getNiceTime(131, TimeUnit.SECONDS).toString());
+		Assert.assertEquals("2min 11sec", PepperLogHelper.humanDuration(131, TimeUnit.SECONDS).toString());
 	}
 
 	@Test
 	public void testGetNiceTimeRoundMinutes() {
-		Assert.assertEquals("2min", PepperLogHelper.getNiceTime(120, TimeUnit.SECONDS).toString());
+		Assert.assertEquals("2min", PepperLogHelper.humanDuration(120, TimeUnit.SECONDS).toString());
 	}
 
 	@Test
 	public void testGetNiceTimeHoursAndMinutes() {
-		Assert.assertEquals("2hours 11min", PepperLogHelper.getNiceTime(131, TimeUnit.MINUTES).toString());
+		Assert.assertEquals("2hours 11min", PepperLogHelper.humanDuration(131, TimeUnit.MINUTES).toString());
 	}
 
 	@Test
 	public void testGetNiceDays() {
-		Assert.assertEquals("5days", PepperLogHelper.getNiceTime(5, TimeUnit.DAYS).toString());
+		Assert.assertEquals("5days", PepperLogHelper.humanDuration(5, TimeUnit.DAYS).toString());
 	}
 
 	@Test
 	public void testGetNiceDaysAndHours() {
-		Assert.assertEquals("4days 4hours", PepperLogHelper.getNiceTime(100, TimeUnit.HOURS).toString());
+		Assert.assertEquals("4days 4hours", PepperLogHelper.humanDuration(100, TimeUnit.HOURS).toString());
 	}
 
 	@Test
 	public void testGetNiceTimeFromNanos() {
 		Assert.assertEquals("1sec",
-				PepperLogHelper.getNiceTime(TimeUnit.SECONDS.toNanos(1), TimeUnit.NANOSECONDS).toString());
+				PepperLogHelper.humanDuration(TimeUnit.SECONDS.toNanos(1), TimeUnit.NANOSECONDS).toString());
 	}
 
 	@Test

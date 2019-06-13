@@ -40,6 +40,10 @@ public class RunParquetVisualizer {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RunParquetVisualizer.class);
 
+	protected RunParquetVisualizer() {
+		// hidden
+	}
+
 	public static void main(String[] args) throws IOException {
 		Path path = getParquetFile(args);
 

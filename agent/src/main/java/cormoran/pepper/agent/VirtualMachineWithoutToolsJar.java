@@ -57,6 +57,8 @@ import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider.Accessor;
 // https://github.com/javamelody/javamelody/blob/master/javamelody-core/src/main/java/net/bull/javamelody/VirtualMachine.java
 @SuppressWarnings("PMD.AvoidSynchronizedAtMethodLevel")
 public class VirtualMachineWithoutToolsJar {
+	private static final int JDK_9_VERSION = 9;
+
 	private static final String ENV_JAVA_SPECIFICATION_VERSION = "java.specification.version";
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(VirtualMachineWithoutToolsJar.class);
@@ -89,7 +91,7 @@ public class VirtualMachineWithoutToolsJar {
 		try {
 			int asInt = Integer.parseInt(specificationVersion);
 
-			if (asInt >= 9) {
+			if (asInt >= JDK_9_VERSION) {
 				LOGGER.debug("{} is jdk9 or later", specificationVersion);
 				return true;
 			} else {
@@ -331,11 +333,10 @@ public class VirtualMachineWithoutToolsJar {
 	}
 
 	/**
-	 * @param string
+	 * @param methodName
 	 *            the methodName
-	 * @param string2
+	 * @param argument
 	 * @return
-	 * @throws Exception
 	 */
 	protected static InputStream invokeForInputStream(String methodName, String... argument) {
 		try {

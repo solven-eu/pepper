@@ -7,4 +7,14 @@ public class TestPepperTestHelper {
 	public void testAssumeInternet() {
 		PepperTestHelper.assumeInternetIsAvailable();
 	}
+
+	@Test
+	public void testDisableLog() {
+		PepperTestHelper.disableLog(getClass());
+	}
+
+	@Test
+	public void testEnableLogToInfo() {
+		PepperTestHelper.enableLogToInfo(getClass());
+	}
 }

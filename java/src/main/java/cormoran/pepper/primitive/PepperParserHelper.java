@@ -31,14 +31,19 @@ import com.google.common.base.CharMatcher;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("checkstyle:MagicNumber")
 public class PepperParserHelper {
-	private static double pow10[];
+	private static double[] pow10;
 
 	private static final CharMatcher E_UPPER_MATCHER = CharMatcher.is('E').precomputed();
 	private static final CharMatcher PLUS_MATCHER = CharMatcher.is('+').precomputed();
 	private static final CharMatcher MINUS_MATCHER = CharMatcher.is('-').precomputed();
 	private static final CharMatcher E_LOWER_MATCHER = CharMatcher.is('e').precomputed();
 	private static final CharMatcher DOT_MATCHER = CharMatcher.is('.').precomputed();
+
+	protected PepperParserHelper() {
+		// hidden
+	}
 
 	/**
 	 * Initializes the cache for sin and cos and the rest.
@@ -60,7 +65,10 @@ public class PepperParserHelper {
 	 *            The string.
 	 * @return The double value.
 	 */
-	@SuppressWarnings({ "PMD.NPathComplexity", "PMD.ExcessiveMethodLength", "PMD.AvoidReassigningParameters" })
+	@SuppressWarnings({ "PMD.NPathComplexity",
+			"PMD.ExcessiveMethodLength",
+			"PMD.AvoidReassigningParameters",
+			"checkstyle:MagicNumber" })
 	public static double parseDouble(CharSequence s) {
 		if (pow10 == null) {
 			initialize();

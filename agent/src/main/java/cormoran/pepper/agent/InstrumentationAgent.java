@@ -55,6 +55,10 @@ public class InstrumentationAgent {
 	// java.lang.UnsatisfiedLinkError: Native Library ...\jre\bin\attach.dll already loaded in another classloader
 	protected static final AtomicReference<Accessor> DEFAULT_ATTEMPT = new AtomicReference<Accessor>();
 
+	protected InstrumentationAgent() {
+		// hidden
+	}
+
 	/**
 	 * It may not be available for many reasons (tools.jar no in the class path, or "Failed to attach to VM and load the
 	 * agent: class java.lang.UnsatisfiedLinkError: Native Library /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libattach.so
@@ -93,7 +97,7 @@ public class InstrumentationAgent {
 	/**
 	 * Also referred by {cormoran.pepper.agent.VirtualMachineWithoutToolsJar#findVirtualMachineClass()}
 	 */
-	synchronized static Accessor safeGetDefaultAttempt() {
+	static synchronized Accessor safeGetDefaultAttempt() {
 		if (DEFAULT_ATTEMPT.get() == null) {
 			final Accessor singleAttempt = ByteBuddyAgent.AttachmentProvider.DEFAULT.attempt();
 			DEFAULT_ATTEMPT.compareAndSet(null, singleAttempt);

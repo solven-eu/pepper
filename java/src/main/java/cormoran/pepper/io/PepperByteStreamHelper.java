@@ -51,8 +51,7 @@ public class PepperByteStreamHelper {
 	/**
 	 * This is useful for tests, as it enable retrieving the avro binary through an InputStream
 	 * 
-	 * @param rowsToWrite
-	 *            the stream of {@link GenericRecord} to write
+	 * @param outputStreamConsumer
 	 * @param executor
 	 *            an Async {@link Executor} supplier. It MUST not be synchronous else the underlying PipedInputStream
 	 *            may dead-lock waiting for the PipedInputStream to be filled
