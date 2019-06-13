@@ -651,7 +651,7 @@
 						<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
 						<phase>validate</phase>
 						<configuration>
-							<configLocation>style/pepper.checkstyle.HARD.xml</configLocation>
+							<configLocation>style/pepper.checkstyle.xml</configLocation>
 							<!--<configLocation>checkstyle/mitrust.checkstyle.xml</configLocation> -->
 							<encoding>UTF-8</encoding>
 							<consoleOutput>true</consoleOutput>
