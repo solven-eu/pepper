@@ -60,6 +60,11 @@
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.pmd/pmd -->
 		<pmd.version>6.15.0</pmd.version>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
+		<maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
+		<!-- https://mvnrepository.com/artifact/com.puppycrawl.tools/checkstyle -->
+		<checkstyle.version>8.21</checkstyle.version>
+
 		<jacoco.instruction.ratio>0.70</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
 
@@ -96,6 +101,7 @@
 		</profile>
 		<profile>
 			<!-- Checks for compilation and tests, but not code quality -->
+			<!-- mvn verify -PstyleOnly -->
 			<id>styleOnly</id>
 			<activation>
 				<property>
@@ -612,6 +618,50 @@
 						<goals>
 							<goal>check</goal>
 							<goal>cpd-check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- https://maven.apache.org/plugins/maven-checkstyle-plugin/ -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${maven-checkstyle-plugin.version}</version>
+				<dependencies>
+					<dependency>
+						<!-- This dependency holds the default configuration -->
+						<groupId>com.github.cormoran-io.pepper</groupId>
+						<artifactId>pepper-static</artifactId>
+						<version>${project.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
+						<!-- more recent than brought by maven plugin -->
+						<groupId>com.puppycrawl.tools</groupId>
+						<artifactId>checkstyle</artifactId>
+						<version>${checkstyle.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<excludes>**/generated/**</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>check</id>
+						<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
+						<phase>validate</phase>
+						<configuration>
+							<configLocation>style/pepper.checkstyle.xml</configLocation>
+							<!--<configLocation>checkstyle/mitrust.checkstyle.xml</configLocation> -->
+							<encoding>UTF-8</encoding>
+							<consoleOutput>true</consoleOutput>
+							<failsOnError>true</failsOnError>
+							<!-- Prevent [WARNING] Unable to locate Source XRef to link to - DISABLED -->
+							<!-- only with goal checkstyle-aggregate or checkstyle generating a report -->
+							<!--<linkXRef>false</linkXRef> -->
+						</configuration>
+						<goals>
+							<goal>check</goal>
 						</goals>
 					</execution>
 				</executions>

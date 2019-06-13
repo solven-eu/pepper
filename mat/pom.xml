@@ -20,6 +20,7 @@
 
 		<!-- more checks to do -->
 		<pmd.skip>true</pmd.skip>
+		<checkstyle.skip>true</checkstyle.skip>
 		<cpd.skip>true</cpd.skip>
 
 		<!-- MAT needs more memory to handle heapdumps -->

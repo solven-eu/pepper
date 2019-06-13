@@ -62,6 +62,8 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 	private static final long MASK = 0xFFFFFFFFL;
 	private static final int SHIFT = 32;
 
+	private static final int KB = 1024;
+
 	protected PepperMemoryHelper() {
 		// hidden
 	}
@@ -92,7 +94,7 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 	 */
 	public static long deepSize(Object object) {
 		// http://stackoverflow.com/questions/1063068/how-does-the-jvm-ensure-that-system-identityhashcode-will-never-change
-		return deepSizeWithBloomFilter(object, Integer.MAX_VALUE / 1024);
+		return deepSizeWithBloomFilter(object, Integer.MAX_VALUE / KB);
 	}
 
 	public static long recursiveSize(Object object, IntPredicate identityPredicate) {
@@ -255,6 +257,7 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 		return Integer.rotateRight((int) (Long.rotateLeft(packed, 1) & MASK), 1);
 	}
 
+	@SuppressWarnings("checkstyle:magicnumber")
 	public static long memoryAsLong(String targetMax) {
 		// https://stackoverflow.com/questions/1098488/jvm-heap-parameters
 

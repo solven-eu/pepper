@@ -91,7 +91,7 @@ public class CreateCollectionDump {
 			}
 		}
 
-		public abstract boolean accept(Class<? extends Collection> c);
+		public abstract boolean accept(@SuppressWarnings("rawtypes") Class<? extends Collection> c);
 
 		@SuppressWarnings("unchecked")
 		public CollectionTestData() {
@@ -195,7 +195,7 @@ public class CreateCollectionDump {
 	 */
 	public static class NonListCollectionTestData extends CollectionTestData {
 		@Override
-		public boolean accept(Class<? extends Collection> c) {
+		public boolean accept(@SuppressWarnings("rawtypes") Class<? extends Collection> c) {
 			return !List.class.isAssignableFrom(c);
 		}
 	}
@@ -216,7 +216,7 @@ public class CreateCollectionDump {
 	public static class ListCollectionTestData extends CollectionTestData {
 
 		@Override
-		public boolean accept(Class<? extends Collection> c) {
+		public boolean accept(@SuppressWarnings("rawtypes") Class<? extends Collection> c) {
 			return List.class.isAssignableFrom(c);
 		}
 	}

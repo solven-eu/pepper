@@ -101,8 +101,6 @@ public class PepperStreamHelper {
 	/**
 	 * Enable consuming a stream by blocks of given size
 	 * 
-	 * @param queueSupplier
-	 *            we may need multiple queues if the stream is parallel
 	 * @param stream
 	 *            the stream to process
 	 * @param consumer

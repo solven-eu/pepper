@@ -80,7 +80,10 @@ import cormoran.pepper.jmx.SetStaticMBean;
  *
  */
 public class PepperSerializationHelper {
+
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperSerializationHelper.class);
+
+	private static final int KB = 1024;
 
 	// Excel accepts only 32,767 chars per cell: we accept up to 4 MDX in a row
 	// https://support.office.com/en-us/article/Excel-specifications-and-limits-16c69c74-3d6a-4aaf-ba35-e6eb276e8eaa
@@ -487,7 +490,7 @@ public class PepperSerializationHelper {
 		// We picked the faster implementation proposed in
 		// https://stackoverflow.com/questions/309424/read-convert-an-inputstream-to-a-string
 		ByteArrayOutputStream result = new ByteArrayOutputStream();
-		byte[] buffer = new byte[1024];
+		byte[] buffer = new byte[KB];
 		int length;
 		while ((length = inputStream.read(buffer)) != -1) {
 			result.write(buffer, 0, length);

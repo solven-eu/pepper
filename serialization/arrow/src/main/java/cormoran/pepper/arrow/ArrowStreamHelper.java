@@ -42,36 +42,41 @@ import cormoran.pepper.logging.PepperLogHelper;
  */
 public class ArrowStreamHelper {
 
+	private static final int INT_BIT_WIDTH = 32;
+	private static final int LONG_BIT_WIDTH = INT_BIT_WIDTH * 2;
+
 	protected ArrowStreamHelper() {
 		// hidden
 	}
 
 	public static Schema guessSchema(Map<String, ?> exampleMap) {
-		ImmutableList.Builder<Field> childrenBuilder = ImmutableList.builder();
+		ImmutableList.Builder<Field> fieldsBuilder = ImmutableList.builder();
 
 		exampleMap.forEach((fieldName, fieldValue) -> {
 			if (fieldValue instanceof Integer) {
-				childrenBuilder.add(new Field(fieldName, FieldType.nullable(new ArrowType.Int(32, true)), null));
+				fieldsBuilder
+						.add(new Field(fieldName, FieldType.nullable(new ArrowType.Int(INT_BIT_WIDTH, true)), null));
 			} else if (fieldValue instanceof Long) {
-				childrenBuilder.add(new Field(fieldName, FieldType.nullable(new ArrowType.Int(64, true)), null));
+				fieldsBuilder
+						.add(new Field(fieldName, FieldType.nullable(new ArrowType.Int(LONG_BIT_WIDTH, true)), null));
 			} else if (fieldValue instanceof byte[]) {
-				childrenBuilder.add(new Field(fieldName, FieldType.nullable(new ArrowType.Binary()), null));
+				fieldsBuilder.add(new Field(fieldName, FieldType.nullable(new ArrowType.Binary()), null));
 			} else if (fieldValue instanceof Float) {
-				childrenBuilder.add(new Field(fieldName,
+				fieldsBuilder.add(new Field(fieldName,
 						FieldType.nullable(new ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE)),
 						null));
 			} else if (fieldValue instanceof Double) {
-				childrenBuilder.add(new Field(fieldName,
+				fieldsBuilder.add(new Field(fieldName,
 						FieldType.nullable(new ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE)),
 						null));
 			} else if (fieldValue instanceof CharSequence) {
-				childrenBuilder.add(new Field(fieldName, FieldType.nullable(new ArrowType.Utf8()), null));
+				fieldsBuilder.add(new Field(fieldName, FieldType.nullable(new ArrowType.Utf8()), null));
 			} else {
 				throw new IllegalArgumentException(
 						"We can not handle " + PepperLogHelper.getObjectAndClass(fieldValue));
 			}
 		});
 
-		return new Schema(childrenBuilder.build(), null);
+		return new Schema(fieldsBuilder.build(), null);
 	}
 }

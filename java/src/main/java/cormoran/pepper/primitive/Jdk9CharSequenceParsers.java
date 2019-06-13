@@ -42,8 +42,13 @@ import java.util.Objects;
 		"PMD.NPathComplexity",
 		"PMD.AvoidDuplicateLiterals",
 		"PMD.GodClass",
-		"PMD.AvoidUsingShortType" })
+		"PMD.AvoidUsingShortType",
+		"checkstyle:AvoidInlineConditionals" })
 public class Jdk9CharSequenceParsers {
+	protected Jdk9CharSequenceParsers() {
+		// hidden
+	}
+
 	/**
 	 * Parses the {@link CharSequence} argument as a signed {@code int} in the specified {@code radix}, beginning at the
 	 * specified {@code beginIndex} and extending to {@code endIndex - 1}.
@@ -236,9 +241,10 @@ public class Jdk9CharSequenceParsers {
 	public static short parseShort(CharSequence s, int beginIndex, int endIndex, int radix)
 			throws NumberFormatException {
 		int i = parseInt(s, beginIndex, endIndex, radix);
-		if (i < Short.MIN_VALUE || i > Short.MAX_VALUE)
+		if (i < Short.MIN_VALUE || i > Short.MAX_VALUE) {
 			throw new NumberFormatException(
 					"Value out of range. Value:\"" + s.subSequence(beginIndex, endIndex) + "\" Radix:" + radix);
+		}
 		return (short) i;
 	}
 

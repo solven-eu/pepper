@@ -60,6 +60,10 @@ public class PepperProcessHelper {
 
 	private static final String WINDOWS_MEMORY_PATTERN = "\",\"";
 
+	protected PepperProcessHelper() {
+		// hidden
+	}
+
 	// Deprecated in Java9
 	public static long getPidOfProcess(Process p) {
 		synchronized (PepperProcessHelper.class) {

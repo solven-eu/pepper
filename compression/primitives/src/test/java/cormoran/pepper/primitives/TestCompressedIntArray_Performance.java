@@ -50,8 +50,8 @@ public class TestCompressedIntArray_Performance {
 		long decompressed = System.currentTimeMillis();
 
 		LOGGER.info("Time to compress: {}, Time to decompress: {}",
-				PepperLogHelper.getNiceTime(compressed - start),
-				PepperLogHelper.getNiceTime(decompressed - start));
+				PepperLogHelper.humanDuration(compressed - start),
+				PepperLogHelper.humanDuration(decompressed - start));
 	}
 
 }

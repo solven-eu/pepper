@@ -33,10 +33,10 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.ehcache.sizeof.ObjectGraphWalker.Visitor;
 import org.ehcache.sizeof.filters.SizeOfFilter;
 import org.ehcache.sizeof.util.WeakIdentityConcurrentMap;
 import org.slf4j.Logger;
@@ -54,6 +54,7 @@ import com.google.common.util.concurrent.AtomicLongMap;
 // FlyweightType is package-friendly
 public final class PepperObjectGraphWalker {
 
+	private static final int MISS_COUNT = 1000;
 	private static final Logger LOGGER = LoggerFactory.getLogger(PepperObjectGraphWalker.class);
 	private static final String VERBOSE_DEBUG_LOGGING = "org.ehcache.sizeof.verboseDebugLogging";
 
@@ -81,13 +82,10 @@ public final class PepperObjectGraphWalker {
 	/**
 	 * Constructor
 	 *
-	 * @param visitor
-	 *            the visitor to use
 	 * @param filter
 	 *            the filtering
 	 * @param bypassFlyweight
 	 *            the filtering
-	 * @see Visitor
 	 * @see SizeOfFilter
 	 */
 	public PepperObjectGraphWalker(SizeOfFilter filter, final boolean bypassFlyweight) {
@@ -107,7 +105,6 @@ public final class PepperObjectGraphWalker {
 	 *
 	 * @param root
 	 *            the roots of the objects (a shared graph will only be visited once)
-	 * @return the sum of all Visitor#visit returned values
 	 */
 	@SuppressWarnings({ "PMD.NPathComplexity", "PMD.ExcessiveMethodLength" })
 	public void walk(Object... root) {
@@ -169,7 +166,7 @@ public final class PepperObjectGraphWalker {
 									ARRAY_COMPONENT_TO_CACHE_HIT.incrementAndGet(component);
 								} else {
 									long miss = ARRAY_COMPONENT_TO_CACHE_MISS.incrementAndGet(component);
-									if (miss > 1000) {
+									if (miss > MISS_COUNT) {
 										// TODO: Check if we should stop considering this field
 										LOGGER.trace("Consider me");
 									}
@@ -196,7 +193,7 @@ public final class PepperObjectGraphWalker {
 										FIELD_TO_CACHE_HIT.incrementAndGet(field);
 									} else {
 										long miss = FIELD_TO_CACHE_MISS.incrementAndGet(field);
-										if (miss > 1000) {
+										if (miss > MISS_COUNT) {
 											// TODO: Check if we should stop considering this field
 											LOGGER.trace("Consider me");
 										}
@@ -239,7 +236,7 @@ public final class PepperObjectGraphWalker {
 	 */
 	private Collection<Field> getFilteredFields(Class<?> refClass) {
 		SoftReference<Collection<Field>> ref = fieldCache.get(refClass);
-		Collection<Field> fieldList = ref != null ? ref.get() : null;
+		Collection<Field> fieldList = Optional.ofNullable(ref).map(SoftReference::get).orElse(null);
 		if (fieldList != null) {
 			return fieldList;
 		} else {

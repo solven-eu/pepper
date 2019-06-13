@@ -43,6 +43,10 @@ public class AgentLoaderPepperSpy {
 
 	private static final AtomicBoolean HAS_TRIED_LOADING_AGENT = new AtomicBoolean();
 
+	protected AgentLoaderPepperSpy() {
+		// hidden
+	}
+
 	public static boolean loadAgent() {
 		return AgentLoader.loadAgent();
 	}

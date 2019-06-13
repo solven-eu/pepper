@@ -10,9 +10,16 @@ import java.util.Locale;
 
 /**
  * Demonstrate default Charset-related details.
+ * 
+ * @author Benoit Lacelle
  */
 // https://dzone.com/articles/java-may-use-utf-8-as-its-default-charset
 public class RunCharsetDemo {
+
+	protected RunCharsetDemo() {
+		// hidden
+	}
+
 	/**
 	 * Supplies the default encoding without using Charset.defaultCharset() and without accessing
 	 * System.getProperty("file.encoding").

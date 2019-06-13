@@ -14,10 +14,7 @@ jobs:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-      - run: echo $CIRCLECI
-      - run: echo $CIRCLE_BUILD_URL
       # https://stackoverflow.com/questions/29712865/maven-cannot-resolve-dependency-for-module-in-same-multi-module-project
-      - run: mvn help:all-profiles -X
       - run: mvn clean install -DskipTests
       - run: mvn dependency:resolve-plugins dependency:go-offline
       - save_cache:
@@ -44,20 +41,16 @@ jobs:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-      - run: echo $CIRCLECI
-      - run: echo $CIRCLE_BUILD_URL
-      - run: mvn help:all-profiles -X
       - run: mvn clean test
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
-      
-      - store_test_results:
-          path: target/surefire-reports
           
       - run: mvn surefire-report:report
 
+      - store_test_results:
+          path: target/surefire-reports
       - store_artifacts:
           path: target/site
           destination: test-reports

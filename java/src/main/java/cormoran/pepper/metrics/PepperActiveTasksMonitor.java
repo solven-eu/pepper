@@ -184,7 +184,7 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 
 			long longRunningInMillis = TimeUnit.SECONDS.toMillis(longRunningCheckSeconds);
 			Object lazyToString = PepperLogHelper.lazyToString(() -> endEvent.get().startEvent.toStringNoStack());
-			Object niceTime = PepperLogHelper.getNiceTime(timeInMs);
+			Object niceTime = PepperLogHelper.humanDuration(timeInMs);
 			if (timeInMs > factorForTooOld * longRunningInMillis) {
 				LOGGER.info("After {}, end of very-long {}", niceTime, lazyToString);
 			} else if (timeInMs > longRunningInMillis) {
@@ -260,7 +260,7 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 
 		cleanAndGetActiveTasks().asMap().forEach((startEvent, activeSince) -> {
 			long seconds = activeSince.until(now, ChronoUnit.SECONDS);
-			Object time = PepperLogHelper.getNiceTime(seconds, TimeUnit.SECONDS);
+			Object time = PepperLogHelper.humanDuration(seconds, TimeUnit.SECONDS);
 
 			Object cleanKey = noNewLine(startEvent);
 
@@ -434,7 +434,7 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 	/**
 	 * In some cases, we may have ghosts active tasks. One can invalidate them manually through this method
 	 * 
-	 * @param name
+	 * @param nameOrStar
 	 *            the full name of the activeTask to invalidate. If '*', we cancel all monitor-tasks
 	 * @return true if we succeeded removing this entry
 	 */

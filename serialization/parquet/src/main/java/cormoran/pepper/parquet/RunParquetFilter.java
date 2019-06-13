@@ -44,6 +44,12 @@ public class RunParquetFilter {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RunParquetFilter.class);
 
+	private static final int DEFAULT_NB_ROWS_TO_SHOW = 10;
+
+	protected RunParquetFilter() {
+		// hidden
+	}
+
 	public static void main(String[] args) throws IOException {
 		Path path = RunParquetVisualizer.getParquetFile(args);
 
@@ -55,7 +61,7 @@ public class RunParquetFilter {
 		}
 
 		// Configure with '-Dpepper.limit=123'
-		int limit = Integer.getInteger("pepper.limit", 10);
+		int limit = Integer.getInteger("pepper.limit", DEFAULT_NB_ROWS_TO_SHOW);
 
 		ParquetBytesToStream parquetBytesToStream = new ParquetBytesToStream();
 

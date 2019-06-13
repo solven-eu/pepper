@@ -42,6 +42,10 @@ import com.google.common.primitives.Ints;
 public class ZeroCopyConsumers {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ZeroCopyConsumers.class);
 
+	protected ZeroCopyConsumers() {
+		// hidden
+	}
+
 	public static IZeroCopyConsumer intConsumer(IntConsumer intConsumer) {
 		return intBinaryOperator((rowIndex, r) -> {
 			intConsumer.accept(r);

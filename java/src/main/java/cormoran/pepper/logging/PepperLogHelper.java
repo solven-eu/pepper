@@ -44,6 +44,10 @@ import cormoran.pepper.memory.IPepperMemoryConstants;
  *
  */
 public class PepperLogHelper {
+	private static final int NB_ZERO_BEFORE_FIRST_ZERO = 15;
+
+	private static final double HALF_ONE = 0.5D;
+
 	private static final long HUNDRED = 100L;
 
 	/**
@@ -206,14 +210,14 @@ public class PepperLogHelper {
 			myFormatter.setMinimumFractionDigits(1);
 
 			double absValue = Math.abs(value);
-			if (absValue > 0D && Math.abs(value) < 0.5) {
+			if (absValue > 0D && absValue < HALF_ONE) {
 				// If value is 0.0001, the log would be 3
 				double log = Math.log10(value);
 
 				int nbZeroBeforeFirstDecimalNotZero = -1 * ((int) log);
 
 				// We feel not useful to print a large number of 0 for value right next to 0
-				nbZeroBeforeFirstDecimalNotZero = Math.min(15, nbZeroBeforeFirstDecimalNotZero);
+				nbZeroBeforeFirstDecimalNotZero = Math.min(NB_ZERO_BEFORE_FIRST_ZERO, nbZeroBeforeFirstDecimalNotZero);
 
 				myFormatter.setMaximumFractionDigits(nbZeroBeforeFirstDecimalNotZero + 2);
 			} else {
@@ -233,11 +237,21 @@ public class PepperLogHelper {
 		}
 	}
 
+	@Deprecated
 	public static Object getNiceTime(long timeInMs) {
-		return getNiceTime(timeInMs, TimeUnit.MILLISECONDS);
+		return humanDuration(timeInMs, TimeUnit.MILLISECONDS);
 	}
 
+	public static Object humanDuration(long timeInMs) {
+		return humanDuration(timeInMs, TimeUnit.MILLISECONDS);
+	}
+
+	@Deprecated
 	public static Object getNiceTime(long time, TimeUnit timeUnit) {
+		return humanDuration(time, timeUnit);
+	}
+
+	public static Object humanDuration(long time, TimeUnit timeUnit) {
 		return PepperLogHelper.lazyToString(() -> {
 			long timeInMs = timeUnit.toMillis(time);
 
