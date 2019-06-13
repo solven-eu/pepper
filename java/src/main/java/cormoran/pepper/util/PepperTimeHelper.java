@@ -23,7 +23,9 @@
 package cormoran.pepper.util;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
@@ -105,7 +107,15 @@ public class PepperTimeHelper {
 	 * @return the number of milliseconds since 1970
 	 */
 	public static long java8ToMillis(LocalDateTime localDateTime) {
-		return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+		return java8ToMillis(localDateTime.atZone(ZoneId.systemDefault()));
+	}
+
+	public static long java8ToMillis(ZonedDateTime zonedDateTime) {
+		return zonedDateTime.toInstant().toEpochMilli();
+	}
+
+	public static long java8ToMillis(OffsetDateTime offsetDateTime) {
+		return offsetDateTime.toInstant().toEpochMilli();
 	}
 
 	public static Date toDate(LocalDateTime ldt) {
