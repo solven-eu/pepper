@@ -238,7 +238,7 @@ public class PepperMapHelper {
 
 	}
 
-	private static <T> Map<T, ?> hideKey(Map<T, ?> formRegisterApp, T key) {
+	private static <T> Map<T, ?> hideKey(Map<T, ?> formRegisterApp, Object key) {
 		if (formRegisterApp.containsKey(key)) {
 			Map<T, ?> clone = new LinkedHashMap<>(formRegisterApp);
 			clone.remove(key);
@@ -261,7 +261,7 @@ public class PepperMapHelper {
 	 * @return from a Map like {'k1': 'v1', 'k2': 'v2'}, hiding k1 leads to the map {'k2': 'v2'}
 	 */
 	@SafeVarargs
-	public static <T> Map<T, ?> hideKeys(Map<T, ?> mapToHide, T key, T... moreKeys) {
+	public static <T> Map<T, ?> hideKeys(Map<T, ?> mapToHide, Object key, Object... moreKeys) {
 		AtomicReference<Map<T, ?>> hidden = new AtomicReference<>(mapToHide);
 
 		Lists.asList(key, moreKeys).forEach(oneKey -> hidden.set(hideKey(hidden.get(), oneKey)));
