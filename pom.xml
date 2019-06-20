@@ -493,7 +493,7 @@
 			<plugin>
 				<groupId>net.revelc.code.formatter</groupId>
 				<artifactId>formatter-maven-plugin</artifactId>
-				<version>2.9.0</version>
+				<version>2.10.0</version>
 				<configuration>
 					<configFile>style/eclipse_java_code_formatter.xml</configFile>
 				</configuration>
