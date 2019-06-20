@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -61,9 +62,9 @@ public class TestPepperThreadDumper {
 			td.appendThreadFooter(writer, ti);
 
 			if (td.hasFooter(firstThreadInfo)) {
-				Assert.assertFalse(writer.toString().isEmpty());
+				Assertions.assertThat(writer.toString()).isNotEmpty();
 			} else {
-				Assert.assertTrue(writer.toString().isEmpty());
+				Assertions.assertThat(writer.toString()).isEmpty();
 			}
 		}
 

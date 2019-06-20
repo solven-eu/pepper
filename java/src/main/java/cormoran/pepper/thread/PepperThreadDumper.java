@@ -331,7 +331,7 @@ public class PepperThreadDumper implements IThreadDumper {
 				appendThreadFooter(writer, t);
 				println(writer, "---------------------");
 
-				// Ensure the row after the footer is empty, and not rightaway the next thread
+				// Ensure the row after the footer is empty, and not right-away the next thread
 				println(writer, "\r\n");
 			}
 		}
