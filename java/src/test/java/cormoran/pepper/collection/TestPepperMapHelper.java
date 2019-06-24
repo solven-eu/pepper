@@ -130,6 +130,12 @@ public class TestPepperMapHelper {
 		PepperMapHelper.getRequiredNumber(ImmutableMap.of("requiredKey", "123"), "requiredKey");
 	}
 
+	// Not a NullPointerException
+	@Test(expected = IllegalArgumentException.class)
+	public void testPresentNumberKeyInMap_null() {
+		PepperMapHelper.getRequiredNumber(Collections.singletonMap("requiredKey", null), "requiredKey");
+	}
+
 	@Test
 	public void testHideKey() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");

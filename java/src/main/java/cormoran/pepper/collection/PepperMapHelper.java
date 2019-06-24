@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
@@ -180,38 +181,50 @@ public class PepperMapHelper {
 		return (String) value;
 	}
 
-	public static Map<?, ?> getRequiredMap(Map<?, ?> map, String key) {
-		if (map == null) {
-			throw new IllegalArgumentException("Null Map while requiring key=" + key);
-		}
+	public static Map<?, ?> getRequiredMap(Map<?, ?> map, String mainKey, String... subKeys) {
+		List<String> allKeys = checkNullMap(map, mainKey, subKeys);
 
-		Object rawValue = map.get(key);
-
-		if (rawValue instanceof Map) {
-			return (Map<?, ?>) rawValue;
-		} else {
-			throw new IllegalArgumentException("We miss '" + key + "' amongst available: " + map.keySet());
-		}
+		return digForValue(map, allKeys, (currentKey, rawValue) -> {
+			if (rawValue instanceof Map<?, ?>) {
+				return (Map<?, ?>) rawValue;
+			} else {
+				// Do not throw the value which might be a personal value
+				throw new IllegalArgumentException("Not a Map<?,?> (" + rawValue
+						.getClass() + ") for " + allKeys + ". Deepest Map<?,?> keys: " + map.keySet());
+			}
+		});
 	}
 
 	public static String getRequiredString(final Map<?, ?> map, String mainKey, String... subKeys) {
-		if (map == null) {
-			throw new IllegalArgumentException("Null Map while requiring key=" + mainKey);
-		}
+		List<String> allKeys = checkNullMap(map, mainKey, subKeys);
 
-		List<String> allKeys = Lists.asList(mainKey, subKeys);
+		return digForValue(map, allKeys, (currentKey, rawValue) -> {
+			if (rawValue instanceof String && Strings.isNullOrEmpty(rawValue.toString())) {
+				throw new IllegalArgumentException(
+						"We miss '" + currentKey + "' (empty string) amongst available: " + map.keySet());
+			}
 
+			return checkNonNullString(currentKey, rawValue);
+		});
+	}
+
+	private static <T> T digForValue(final Map<?, ?> map, List<String> allKeys, BiFunction<String, Object, T> toValue) {
 		Map<?, ?> currentMap = map;
 		for (int i = 0; i < allKeys.size(); i++) {
 			String currentKey = allKeys.get(i);
 			Object rawValue = currentMap.get(currentKey);
 			if (i == allKeys.size() - 1) {
-				if (rawValue == null || rawValue instanceof String && Strings.isNullOrEmpty(rawValue.toString())) {
-					throw new IllegalArgumentException(
-							"We miss '" + currentKey + "' amongst available: " + map.keySet());
+				if (rawValue == null) {
+					if (currentMap.containsKey(currentKey)) {
+						throw new IllegalArgumentException(
+								"We miss '" + currentKey + "' (value is null) amongst available: " + map.keySet());
+					} else {
+						throw new IllegalArgumentException(
+								"We miss '" + currentKey + "' (key not present) amongst available: " + map.keySet());
+					}
 				}
 
-				return checkNonNullString(currentKey, rawValue);
+				return toValue.apply(currentKey, rawValue);
 			} else if (rawValue instanceof Map<?, ?>) {
 				currentMap = (Map<?, ?>) rawValue;
 			} else {
@@ -223,19 +236,26 @@ public class PepperMapHelper {
 		throw new IllegalStateException("Would never happen");
 	}
 
-	public static Number getRequiredNumber(Map<?, ?> map, String key) {
+	private static List<String> checkNullMap(Map<?, ?> map, String mainKey, String... subKeys) {
+		List<String> keys = Lists.asList(mainKey, subKeys);
 		if (map == null) {
-			throw new IllegalArgumentException("Null Map while requiring key=" + key);
+			throw new IllegalArgumentException("Input Map<?,?> while requiring keys=" + keys);
 		}
+		return keys;
+	}
 
-		Object rawValue = map.get(key);
+	public static Number getRequiredNumber(Map<?, ?> map, String mainKey, String... subKeys) {
+		List<String> allKeys = checkNullMap(map, mainKey, subKeys);
 
-		if (rawValue instanceof Number) {
-			return (Number) rawValue;
-		} else {
-			throw new IllegalArgumentException("We miss '" + key + "' amongst available: " + map.keySet());
-		}
-
+		return digForValue(map, allKeys, (currentKey, rawValue) -> {
+			if (rawValue instanceof Number) {
+				return (Number) rawValue;
+			} else {
+				// Do not throw the value which might be a personal value
+				throw new IllegalArgumentException("Not a number (" + rawValue
+						.getClass() + ") for " + allKeys + ". Deepest Map<?,?> keys: " + map.keySet());
+			}
+		});
 	}
 
 	private static <T> Map<T, ?> hideKey(Map<T, ?> formRegisterApp, Object key) {

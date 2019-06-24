@@ -51,7 +51,8 @@ public class PepperTestHelper {
 	public static void setLogbackLoggerLevel(Class<?> clazz, String levelToSet) {
 		Logger slf4jLogger = LoggerFactory.getLogger(clazz);
 
-		if ("ch.qos.logback.classic.Logger".equals(slf4jLogger.getClass().getName())) {
+		String loggerClassName = slf4jLogger.getClass().getName();
+		if ("ch.qos.logback.classic.Logger".equals(loggerClassName)) {
 			try {
 				Class<?> logbackLevelClass = Class.forName("ch.qos.logback.classic.Level");
 				Method setLevelMethod = slf4jLogger.getClass().getMethod("setLevel", logbackLevelClass);
@@ -62,7 +63,7 @@ public class PepperTestHelper {
 				throw new RuntimeException(e);
 			}
 		} else {
-			LOGGER.info("This work only with LogBack");
+			LOGGER.info("This work only with LogBack while it was: {}", loggerClassName);
 		}
 	}
 
