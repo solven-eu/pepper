@@ -112,6 +112,22 @@ public class TestPepperMapHelper {
 	}
 
 	@Test
+	public void testGetRequiredMap() {
+		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", "v"));
+
+		Map<Object, Object> requiredMap = PepperMapHelper.getRequiredMap(map, "k1");
+		Assert.assertEquals(ImmutableMap.of("k2", "v"), requiredMap);
+	}
+
+	@Test
+	public void testGetRequiredMap_Generic() {
+		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", "v"));
+
+		Map<String, ?> requiredMap = PepperMapHelper.getRequiredMap(map, "k1");
+		Assert.assertEquals(ImmutableMap.of("k2", "v"), requiredMap);
+	}
+
+	@Test
 	public void testPresentKeyInMap() {
 		Map<String, ?> map = ImmutableMap.of("requiredKey", "v");
 

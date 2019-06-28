@@ -181,12 +181,12 @@ public class PepperMapHelper {
 		return (String) value;
 	}
 
-	public static Map<?, ?> getRequiredMap(Map<?, ?> map, String mainKey, String... subKeys) {
+	public static <S, T> Map<S, T> getRequiredMap(Map<?, ?> map, String mainKey, String... subKeys) {
 		List<String> allKeys = checkNullMap(map, mainKey, subKeys);
 
 		return digForValue(map, allKeys, (currentKey, rawValue) -> {
 			if (rawValue instanceof Map<?, ?>) {
-				return (Map<?, ?>) rawValue;
+				return (Map<S, T>) rawValue;
 			} else {
 				// Do not throw the value which might be a personal value
 				throw new IllegalArgumentException("Not a Map<?,?> (" + rawValue
