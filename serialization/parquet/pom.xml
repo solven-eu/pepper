@@ -59,7 +59,7 @@
 				<!-- https://stackoverflow.com/questions/42352091/spark-sql-fails-with-java-lang-noclassdeffounderror-org-codehaus-commons-compil -->
 				<groupId>org.codehaus.janino</groupId>
 				<artifactId>commons-compiler</artifactId>
-				<version>3.0.13</version>
+				<version>3.0.14</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
