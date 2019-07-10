@@ -89,13 +89,19 @@ public class VirtualMachineWithoutToolsJar {
 	private static boolean isJdk9OrLater() {
 		String specificationVersion = System.getProperty(ENV_JAVA_SPECIFICATION_VERSION);
 		try {
-			int asInt = Integer.parseInt(specificationVersion);
-
-			if (asInt >= JDK_9_VERSION) {
-				LOGGER.debug("{} is jdk9 or later", specificationVersion);
-				return true;
-			} else {
+			if (specificationVersion.indexOf('.') >= 0) {
+				// Before jdk8, versions are '1.8'...
 				return false;
+			} else {
+				// After jdk9, versions are '9', '10', ...
+				int asInt = Integer.parseInt(specificationVersion);
+
+				if (asInt >= JDK_9_VERSION) {
+					LOGGER.debug("{} is jdk9 or later", specificationVersion);
+					return true;
+				} else {
+					return false;
+				}
 			}
 		} catch (RuntimeException e) {
 			LOGGER.trace("Not 9 or later", e);

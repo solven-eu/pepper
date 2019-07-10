@@ -208,6 +208,14 @@ public class PepperMapHelper {
 		});
 	}
 
+	public static <T> T getRequiredAs(final Map<?, ?> map, String mainKey, String... subKeys) {
+		List<String> allKeys = checkNullMap(map, mainKey, subKeys);
+
+		return digForValue(map, allKeys, (currentKey, rawValue) -> {
+			return (T) rawValue;
+		});
+	}
+
 	private static <T> T digForValue(final Map<?, ?> map, List<String> allKeys, BiFunction<String, Object, T> toValue) {
 		Map<?, ?> currentMap = map;
 		for (int i = 0; i < allKeys.size(); i++) {

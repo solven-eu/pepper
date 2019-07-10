@@ -50,6 +50,7 @@ public class TestVirtualMachineWithoutToolsJar {
 	public void testHeapHisto() throws Exception {
 		Assume.assumeFalse("TODO JDK9", TestInstrumentAgent.IS_JDK_9);
 		Assume.assumeFalse("TODO JDK11", TestInstrumentAgent.IS_JDK_11);
+		Assume.assumeFalse("TODO JDK12", TestInstrumentAgent.IS_JDK_12);
 
 		InputStream is = VirtualMachineWithoutToolsJar.heapHisto().get();
 
@@ -86,6 +87,7 @@ public class TestVirtualMachineWithoutToolsJar {
 
 	@Test
 	public void testIsJmapSupported() {
+		Assume.assumeFalse("TODO JDK12", TestInstrumentAgent.IS_JDK_12);
 		Assert.assertTrue(VirtualMachineWithoutToolsJar.isJmapSupported());
 	}
 }
