@@ -12,6 +12,7 @@
 
 #IntelliJ
 *.iml
+.idea
  
 # Maven
 ######################
