@@ -64,7 +64,7 @@ public class TestPepperThreadDumper {
 			if (td.hasFooter(firstThreadInfo)) {
 				Assertions.assertThat(writer.toString()).isNotEmpty();
 			} else {
-				Assertions.assertThat(writer.toString()).isEmpty();
+				Assertions.assertThat(writer.toString()).withFailMessage(td.getThreadDumpAsString(true)).isEmpty();
 			}
 		}
 
