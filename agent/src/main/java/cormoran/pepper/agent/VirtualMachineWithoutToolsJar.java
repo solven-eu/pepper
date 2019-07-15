@@ -118,6 +118,7 @@ public class VirtualMachineWithoutToolsJar {
 		// http://www.oracle.com/technetwork/middleware/jrockit/overview/index.html
 		// https://github.com/openjdk-mirror/jdk7u-jdk/blob/master/make/tools/manifest.mf
 		return javaVendor.contains("Sun") || javaVendor.contains("Oracle")
+				|| javaVendor.contains("AdoptOpenJDK")
 				|| javaVendor.contains("Apple")
 				|| isJRockit();
 	}
