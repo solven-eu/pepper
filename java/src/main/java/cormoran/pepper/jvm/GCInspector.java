@@ -96,13 +96,16 @@ import cormoran.pepper.thread.PepperThreadDumper;
 import cormoran.pepper.util.PepperTimeHelper;
 
 /**
- * 
+ *
  * This class registers itself as listener on GC events. It will produce a thread-dump when long GC pauses happens
- * 
+ *
  * @author Benoit Lacelle
  * @since Oracle Java 7 update 4 JVM
  */
-@SuppressWarnings({ "PMD.AvoidDuplicateLiterals", "PMD.GodClass", "PMD.ConsecutiveLiteralAppends" })
+@SuppressWarnings({ "PMD.AvoidDuplicateLiterals",
+		"PMD.GodClass",
+		"PMD.ConsecutiveLiteralAppends",
+		"PMD.ExcessiveClassLength" })
 @ManagedResource
 public class GCInspector implements NotificationListener, InitializingBean, DisposableBean, IGCInspector {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GCInspector.class);
@@ -169,10 +172,26 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 
 	protected final AtomicLong targetMaxTotalMemory = new AtomicLong(Long.MAX_VALUE);
 
-	public static final Set<String> FULL_GC_NAMES =
-			ImmutableSet.of("PS MarkSweep", "G1 Old Generation", "MarkSweepCompact");
+	// see also: http://www.fasterj.com/articles/oraclecollectors1.shtml
+	public static final Set<String> FULL_GC_NAMES = ImmutableSet.of(
+			// enable with -XX:+UseParallelOldGC
+			"PS MarkSweep",
+			// enable with -XX:+UseG1GC
+			"G1 Old Generation",
+			// enable with -XX:+UseSerialGC
+			"MarkSweepCompact",
+			// enable with -XX:+UseConcMarkSweepGC
+			"ConcurrentMarkSweep");
 
-	public static final Set<String> NOT_FULL_GC_NAMES = ImmutableSet.of("G1 Young Generation");
+	public static final Set<String> NOT_FULL_GC_NAMES = ImmutableSet.of(
+			// enable with -XX:+UseG1GC
+			"G1 Young Generation",
+			// enable with -XX:+UseParallelGC
+			"PS Scavenge",
+			// enable with -XX:+UseSerialGC
+			"Copy",
+			// enable with -XX:+UseParNewGC
+			"ParNew");
 
 	public static final Set<String> REPORTED_UNKNOWN_GC_NAMES = Sets.newConcurrentHashSet();
 
@@ -895,7 +914,6 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	}
 
 	@Override
-
 	@ManagedAttribute
 	public void setMarksweepDurationMillisForThreadDump(long marksweepDurationMillisForThreadDump) {
 		this.minFullGCMillisForThreadDump = marksweepDurationMillisForThreadDump;

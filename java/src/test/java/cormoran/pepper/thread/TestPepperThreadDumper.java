@@ -24,7 +24,6 @@ package cormoran.pepper.thread;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 
@@ -53,18 +52,17 @@ public class TestPepperThreadDumper {
 	}
 
 	@Test
-	public void testHasFooter() throws UnsupportedEncodingException, IOException {
+	public void testHasFooter() throws IOException {
 		final ThreadInfo[] threads = td.dumpAllThreads(true, true);
-		ThreadInfo firstThreadInfo = threads[0];
 
 		for (ThreadInfo ti : threads) {
 			StringWriter writer = new StringWriter();
 			td.appendThreadFooter(writer, ti);
 
-			if (td.hasFooter(firstThreadInfo)) {
+			if (td.hasFooter(ti)) {
 				Assertions.assertThat(writer.toString()).isNotEmpty();
 			} else {
-				Assertions.assertThat(writer.toString()).isEmpty();
+				Assertions.assertThat(writer.toString()).withFailMessage(td.getThreadDumpAsString(true)).isEmpty();
 			}
 		}
 
