@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.cormoran-io.pepper</groupId>
         <artifactId>pepper-compression</artifactId>
-        <version>1.22-SNAPSHOT</version>
+        <version>1.22</version>
     </parent>
 
     <artifactId>pepper-primitives</artifactId>
