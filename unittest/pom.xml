@@ -7,7 +7,7 @@
 		<version>1.23-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>unittest</artifactId>
+	<artifactId>pepper-unittest</artifactId>
 	<packaging>jar</packaging>
 
 	<properties>
