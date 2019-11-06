@@ -117,7 +117,7 @@
 				<jdk>9</jdk>
 			</activation>
 			<properties>
-				<plexus-archiver.version>2.4.4</plexus-archiver.version>
+				<plexus-archiver.version>4.2.1</plexus-archiver.version>
 			</properties>
 			<dependencyManagement>
 				<dependencies>
