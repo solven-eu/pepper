@@ -55,8 +55,8 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<!-- https://github.com/google/guava/wiki/Compatibility -->
-			<!-- Guava for JDK6 drops at 20.0 -->
-			<version>20.0</version><!--$NO-MVN-MAN-VER$ -->
+			<!-- Guava for JDK6 drops at 28.1-jre -->
+			<version>28.1-jre</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
 
 		<dependency>
