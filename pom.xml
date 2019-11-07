@@ -41,7 +41,7 @@
 
 	<properties>
 		<!-- https://github.com/google/guava/releases -->
-		<guava.version>27.0.1-jre</guava.version>
+		<guava.version>28.1-jre</guava.version>
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
 		<errorprone.version>2.3.3</errorprone.version>
