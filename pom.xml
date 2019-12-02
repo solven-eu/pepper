@@ -44,7 +44,7 @@
 		<guava.version>28.1-jre</guava.version>
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
-		<errorprone.version>2.3.3</errorprone.version>
+		<errorprone.version>2.3.4</errorprone.version>
 
 		<awaitility.version>4.0.1</awaitility.version>
 		<findbugs.version>3.0.5</findbugs.version>
