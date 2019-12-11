@@ -62,3 +62,13 @@ A fork from Eclipse MAT for HeapDump analysis. It improves original MAT by lower
 Original work:
 https://git.eclipse.org/c/mat/org.eclipse.mat.git
 
+Additional way to fetch a HeapDump:
+https://schwartzdaniel.com/how-to-take-a-java-heapdump-without-downtime/
+The point of this way is GDB produce a dump much faster than the JVM. Then, a new JVM can be started and the original JVM can be reloaded in a different machine.
+https://www.gnu.org/software/gdb/
+
+- gdb –pid=$PID
+- (gdb) gcore /tmp/jvm.core
+- (gdb) detach
+- (gdb) quit
+- jmap -dump:format=b,file=jvm.hprof /usr/bin/java /tmp/jvm.core

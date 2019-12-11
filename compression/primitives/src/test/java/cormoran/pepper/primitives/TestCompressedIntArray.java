@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import cormoran.pepper.logging.PepperLogHelper;
 import cormoran.pepper.memory.PepperMemoryHelper;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TestCompressedIntArray {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestCompressedIntArray.class);
@@ -40,7 +39,7 @@ public class TestCompressedIntArray {
 	public void testGrowingBy1() {
 		int size = 1024 * 1024;
 
-		IntList array = CompressedIntArrays.compress(IntStream.range(0, size));
+		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size));
 
 		LOGGER.info("testGrowingBy1 CompressedSize: {}",
 				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
@@ -52,7 +51,7 @@ public class TestCompressedIntArray {
 	public void testManyVerySmall() {
 		int size = 1024 * 1024;
 
-		IntList array = CompressedIntArrays.compress(IntStream.range(0, size).map(i -> i % 16));
+		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size).map(i -> i % 16));
 
 		LOGGER.info("testManyVerySmall CompressedSize: {}",
 				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
@@ -64,7 +63,7 @@ public class TestCompressedIntArray {
 	public void testManySmall() {
 		int size = 1024 * 1024;
 
-		IntList array = CompressedIntArrays.compress(IntStream.range(0, size).map(i -> i % 1024));
+		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size).map(i -> i % 1024));
 
 		LOGGER.info("testManySmall CompressedSize: {}", PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
 		LOGGER.info("testManySmall RawSize: {}",
@@ -76,7 +75,7 @@ public class TestCompressedIntArray {
 		int size = 1024 * 1024;
 		Random r = new Random(0);
 
-		IntList array = CompressedIntArrays.compress(IntStream.range(0, size).map(i -> r.nextInt()));
+		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size).map(i -> r.nextInt()));
 
 		LOGGER.info("testManySmall CompressedSize: {}", PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
 		LOGGER.info("testManySmall RawSize: {}",

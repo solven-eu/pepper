@@ -44,6 +44,9 @@ public class MainSnapshotPreparer {
 			throws SnapshotException, MalformedObjectNameException, InstanceNotFoundException {
 		new GCInspector().afterPropertiesSet();
 
+		if (args.length < 1) {
+			throw new IllegalArgumentException("We miss a first argument being the path to the file to analyze");
+		}
 		String path = args[0];
 
 		SnapshotFactory.openSnapshot(new File(path), new ConsoleProgressListener(System.out));

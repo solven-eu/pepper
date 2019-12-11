@@ -53,7 +53,9 @@ import org.roaringbitmap.longlong.Roaring64NavigableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cormoran.pepper.buffer.CloseableCompositeIntBuffer;
 import cormoran.pepper.buffer.CloseableIntBuffer;
+import cormoran.pepper.buffer.IIntBufferWrapper;
 import cormoran.pepper.buffer.PepperBufferHelper;
 import cormoran.pepper.logging.PepperLogHelper;
 import cormoran.pepper.memory.IPepperMemoryConstants;
@@ -886,8 +888,8 @@ public abstract class IndexWriter {
 	}
 
 	public static class IntArray1NWriter {
-		CloseableIntBuffer closeable;
-		IntBuffer header;
+		CloseableCompositeIntBuffer closeable;
+		IIntBufferWrapper header;
 		// Used to expand the range of values stored in the header up to 2^40
 		ByteBuffer header2;
 		File indexFile;
@@ -897,12 +899,12 @@ public abstract class IndexWriter {
 
 		public IntArray1NWriter(int size, File indexFile) throws IOException {
 			try {
-				this.closeable = PepperBufferHelper.makeIntBuffer(size);
+				this.closeable = PepperBufferHelper.makeIntLargeBuffer(size);
 				this.header = this.closeable.asIntBuffer();
 
 				LOGGER.info("Use a mapped intBuffer of size={}, memory={}",
 						header.capacity(),
-						PepperLogHelper.getNiceMemory(IPepperMemoryConstants.INT * header.capacity()));
+						PepperLogHelper.humanBytes(IPepperMemoryConstants.INT * header.capacity()));
 				// this.header = IntBuffer.allocate(size);
 			} catch (RuntimeException | IOException e) {
 				e.printStackTrace();
@@ -2108,6 +2110,25 @@ public abstract class IndexWriter {
 			@Override
 			public boolean hasNext() {
 				return header.hasRemaining();
+			}
+		};
+
+		return it;
+	}
+	
+	private static IteratorInt asIntIterator(IIntBufferWrapper header) {
+		int capacity = header.capacity();
+
+		IteratorInt it = new IteratorInt() {
+			int nextIndex = 0;
+			@Override
+			public int next() {
+				return header.get(nextIndex++);
+			}
+
+			@Override
+			public boolean hasNext() {
+				return nextIndex < capacity;
 			}
 		};
 

@@ -30,6 +30,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import cormoran.pepper.memory.IPepperMemoryConstants;
+
 public class TestPepperBufferHelper {
 	@Before
 	public void resetConstants() {
@@ -71,5 +73,31 @@ public class TestPepperBufferHelper {
 		PepperBufferHelper.forceNoHeap = true;
 
 		PepperBufferHelper.makeIntBuffer(123);
+	}
+
+	@Test
+	public void testBuffer_huge() throws IOException {
+		int nbIntegers = Integer.MAX_VALUE / 2;
+
+		// We can not map a File bigger than Integer.MAX_VALUE
+		Assertions.assertThat(nbIntegers * IPepperMemoryConstants.INT).isGreaterThan(Integer.MAX_VALUE);
+
+		try (CloseableCompositeIntBuffer buffer = PepperBufferHelper.makeIntLargeBuffer(nbIntegers)) {
+			IntBuffer intBuffer = buffer.asIntBuffer().getFirstRawBuffer();
+			Assertions.assertThat(intBuffer.getClass().getSimpleName()).contains("Direct");
+
+			// By default, we are filled with 0
+			Assert.assertEquals(0, intBuffer.get(0));
+		}
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testBuffer_huge_notExpecxtingHuge() throws IOException {
+		int nbIntegers = Integer.MAX_VALUE / 2;
+
+		// We can not map a File bigger than Integer.MAX_VALUE
+		Assertions.assertThat(nbIntegers * IPepperMemoryConstants.INT).isGreaterThan(Integer.MAX_VALUE);
+
+		PepperBufferHelper.makeIntBuffer(nbIntegers);
 	}
 }

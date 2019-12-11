@@ -25,22 +25,26 @@ package cormoran.pepper.buffer;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.UncheckedIOException;
 import java.lang.management.ManagementFactory;
 import java.nio.IntBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.primitives.Ints;
 
 import cormoran.pepper.logging.PepperLogHelper;
 import cormoran.pepper.memory.IPepperMemoryConstants;
 
 /**
- * Helpers related to Buffers. TYpically enable quick and easy allocating of a ByteBuffer over a blank memory mapped
+ * Helpers related to Buffers. Typically enable quick and easy allocating of a ByteBuffer over a blank memory mapped
  * file
  * 
  * @author Benoit Lacelle
@@ -67,6 +71,10 @@ public class PepperBufferHelper {
 
 		long targetNbBytes = IPepperMemoryConstants.INT * nbIntegers;
 
+		if (targetNbBytes > Integer.MAX_VALUE) {
+			throw new IllegalStateException("Should rely on .makeIntLargeBuffer");
+		}
+
 		Optional<File> tmpFile = prepareIntArrayInFile(".IntArray1NWriter", targetNbBytes);
 
 		if (tmpFile.isPresent()) {
@@ -74,9 +82,12 @@ public class PepperBufferHelper {
 			// used to create it". See FileChannel.map
 			try (RandomAccessFile randomAccessFile = new RandomAccessFile(tmpFile.get(), "rw");
 					FileChannel fc = randomAccessFile.getChannel()) {
+				long fileChannelSize = fc.size();
 
 				// https://stackoverflow.com/questions/2972986/how-to-unmap-a-file-from-memory-mapped-using-filechannel-in-java
-				return new CloseableIntBuffer(fc.map(FileChannel.MapMode.READ_WRITE, 0, fc.size()));
+				MappedByteBuffer mappedByteBuffer = fc.map(FileChannel.MapMode.READ_WRITE, 0, fileChannelSize);
+
+				return new CloseableIntBuffer(mappedByteBuffer);
 			}
 		} else {
 			long availableHeap = getAvailableHeap();
@@ -93,6 +104,63 @@ public class PepperBufferHelper {
 				LOGGER.warn("The disk seems full, allocating in heap");
 
 				return new CloseableIntBuffer(IntBuffer.wrap(array));
+			} catch (OutOfMemoryError oomError) {
+				LOGGER.error("There is neither enough spaceDisk nor heap left for " + nbIntegers + " ints", oomError);
+
+				throw oomError;
+			}
+		}
+	}
+
+	@Beta
+	public static CloseableCompositeIntBuffer makeIntLargeBuffer(int nbIntegers) throws IOException {
+		if (nbIntegers < 0) {
+			throw new IllegalArgumentException("Can not allocate a buffer with a negative size");
+		}
+
+		long targetNbBytes = IPepperMemoryConstants.INT * nbIntegers;
+
+		Optional<File> tmpFile = prepareIntArrayInFile(".IntArray1NWriter", targetNbBytes);
+
+		if (tmpFile.isPresent()) {
+			// FileChannel can be closed as "mapping, once established, is not dependent upon the file channel that was
+			// used to create it". See FileChannel.map
+			try (RandomAccessFile randomAccessFile = new RandomAccessFile(tmpFile.get(), "rw");
+					FileChannel fc = randomAccessFile.getChannel()) {
+
+				// https://stackoverflow.com/questions/8076472/why-does-filechannel-map-take-up-to-integer-max-value-of-data
+				long fileChannelSize = fc.size();
+
+				MappedByteBuffer[] array =
+						IntStream.range(0, Ints.saturatedCast(fileChannelSize / Integer.MAX_VALUE)).mapToObj(b -> {
+							try {
+								long start = Math.multiplyExact(b, Integer.MAX_VALUE);
+								long end = Math.min(Integer.MAX_VALUE, fileChannelSize - start);
+
+								// https://stackoverflow.com/questions/2972986/how-to-unmap-a-file-from-memory-mapped-using-filechannel-in-java
+								return fc.map(FileChannel.MapMode.READ_WRITE, start, end);
+							} catch (IOException e) {
+								throw new UncheckedIOException(e);
+							}
+						}).toArray(MappedByteBuffer[]::new);
+
+				return new CloseableCompositeIntBuffer(array);
+			}
+		} else {
+			long availableHeap = getAvailableHeap();
+
+			if (availableHeap < targetNbBytes) {
+				// TODO: Try allocating in direct memory
+				throw new IllegalStateException("Not enough disk-space nor memory");
+			}
+
+			try {
+				int[] array = new int[nbIntegers];
+
+				// Log the switch to heap only if the allocation in the heap succeeded
+				LOGGER.warn("The disk seems full, allocating in heap");
+
+				return new CloseableCompositeIntBuffer(IntBuffer.wrap(array));
 			} catch (OutOfMemoryError oomError) {
 				LOGGER.error("There is neither enough spaceDisk nor heap left for " + nbIntegers + " ints", oomError);
 

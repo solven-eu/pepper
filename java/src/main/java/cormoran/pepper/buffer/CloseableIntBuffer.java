@@ -56,21 +56,24 @@ public class CloseableIntBuffer implements AutoCloseable {
 	public void close() {
 		// We clean the hook to the mapped file, else even a shutdown-hook would not remove the mapped-file
 		if (this.buffer != null) {
-			try {
-				// sun.misc.Cleaner cleaner = ((DirectBuffer) buffer).cleaner();
-				// cleaner.clean();
-				Class<?> directBufferClass = Class.forName("sun.nio.ch.DirectBuffer");
-				Object cleaner = directBufferClass.getMethod("cleaner").invoke(buffer);
+			closeBuffer(this.buffer);
+		}
+	}
 
-				Class<?> cleanerClass = Class.forName("sun.misc.Cleaner");
-				cleanerClass.getMethod("clean").invoke(cleaner);
-			} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				LOGGER.trace("Ouch", e);
-				// JDK9?
-				return;
-			}
+	public static void closeBuffer(MappedByteBuffer buffer) {
+		try {
+			// sun.misc.Cleaner cleaner = ((DirectBuffer) buffer).cleaner();
+			// cleaner.clean();
+			Class<?> directBufferClass = Class.forName("sun.nio.ch.DirectBuffer");
+			Object cleaner = directBufferClass.getMethod("cleaner").invoke(buffer);
 
+			Class<?> cleanerClass = Class.forName("sun.misc.Cleaner");
+			cleanerClass.getMethod("clean").invoke(cleaner);
+		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			LOGGER.trace("Ouch", e);
+			// JDK9?
+			return;
 		}
 	}
 

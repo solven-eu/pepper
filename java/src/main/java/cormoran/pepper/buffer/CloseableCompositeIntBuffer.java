@@ -20,38 +20,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package cormoran.pepper.primitives;
+package cormoran.pepper.buffer;
 
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.IntConsumer;
-import java.util.stream.IntStream;
+import java.nio.IntBuffer;
+import java.nio.MappedByteBuffer;
+import java.util.stream.Stream;
 
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cormoran.pepper.logging.PepperLogHelper;
-import it.unimi.dsi.fastutil.ints.IntList;
+import com.google.common.annotations.Beta;
 
-public class TestCompressedIntArray_Performance {
+@Beta
+public class CloseableCompositeIntBuffer implements AutoCloseable {
+	protected static final Logger LOGGER = LoggerFactory.getLogger(CloseableCompositeIntBuffer.class);
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(TestCompressedIntArray_Performance.class);
+	protected final MappedByteBuffer[] buffers;
 
-	@Test
-	public void testCompresseeDecompress_Smalls() {
-		int size = 8 * 1024 * 1024;
+	protected final IIntBufferWrapper heapBuffer;
 
-		long start = System.currentTimeMillis();
-		IntList array = CompressedIntArrays.compress(IntStream.range(0, size).map(i -> i % 1024));
-		long compressed = System.currentTimeMillis();
+	public CloseableCompositeIntBuffer(MappedByteBuffer[] buffers) {
+		this.buffers = buffers;
 
-		AtomicLong sum = new AtomicLong(0);
-		array.iterator().forEachRemaining((IntConsumer) i -> sum.addAndGet(i));
-		long decompressed = System.currentTimeMillis();
+		this.heapBuffer = new IntBufferCompositeWrapper(
+				Stream.of(buffers).map(MappedByteBuffer::asIntBuffer).toArray(IntBuffer[]::new));
+	}
 
-		LOGGER.info("Time to compress: {}, Time to decompress: {}",
-				PepperLogHelper.humanDuration(compressed - start),
-				PepperLogHelper.humanDuration(decompressed - start));
+	public CloseableCompositeIntBuffer(IntBuffer wrap) {
+		this.buffers = null;
+		this.heapBuffer = new IntBufferWrapper(wrap);
+	}
+
+	@Override
+	public void close() {
+		if (this.buffers != null) {
+			for (MappedByteBuffer buffer : this.buffers) {
+				CloseableIntBuffer.closeBuffer(buffer);
+			}
+		}
+	}
+
+	public IIntBufferWrapper asIntBuffer() {
+		return heapBuffer;
 	}
 
 }
