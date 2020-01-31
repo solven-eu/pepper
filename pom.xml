@@ -48,7 +48,7 @@
 
 		<awaitility.version>4.0.1</awaitility.version>
 		<findbugs.version>3.0.5</findbugs.version>
-		<equals.verifier.version>3.1.10</equals.verifier.version>
+		<equals.verifier.version>3.1.12</equals.verifier.version>
 		<checker.quals.version>3.0.1</checker.quals.version>
 
 		<!-- newer version than spring-boot-dependencies, for JDK11 -->
