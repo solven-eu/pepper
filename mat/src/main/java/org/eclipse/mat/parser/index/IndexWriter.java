@@ -2115,12 +2115,13 @@ public abstract class IndexWriter {
 
 		return it;
 	}
-	
+
 	private static IteratorInt asIntIterator(IIntBufferWrapper header) {
 		int capacity = header.capacity();
 
 		IteratorInt it = new IteratorInt() {
 			int nextIndex = 0;
+
 			@Override
 			public int next() {
 				return header.get(nextIndex++);

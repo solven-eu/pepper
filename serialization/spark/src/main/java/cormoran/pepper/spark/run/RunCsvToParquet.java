@@ -41,6 +41,12 @@ import org.slf4j.LoggerFactory;
 import cormoran.pepper.hadoop.PepperHadoopHelper;
 import cormoran.pepper.parquet.ParquetStreamFactory;
 
+/**
+ * A procedure to convert a CSV file into a Parquet file
+ * 
+ * @author Benoit Lacelle
+ *
+ */
 public class RunCsvToParquet {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RunCsvToParquet.class);

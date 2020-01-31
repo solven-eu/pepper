@@ -131,18 +131,22 @@ public class PepperBufferHelper {
 				// https://stackoverflow.com/questions/8076472/why-does-filechannel-map-take-up-to-integer-max-value-of-data
 				long fileChannelSize = fc.size();
 
-				MappedByteBuffer[] array =
-						IntStream.range(0, Ints.saturatedCast(fileChannelSize / Integer.MAX_VALUE)).mapToObj(b -> {
-							try {
-								long start = Math.multiplyExact(b, Integer.MAX_VALUE);
-								long end = Math.min(Integer.MAX_VALUE, fileChannelSize - start);
+				if (fileChannelSize == 0) {
+					return new CloseableCompositeIntBuffer(IntBuffer.wrap(new int[0]));
+				}
 
-								// https://stackoverflow.com/questions/2972986/how-to-unmap-a-file-from-memory-mapped-using-filechannel-in-java
-								return fc.map(FileChannel.MapMode.READ_WRITE, start, end);
-							} catch (IOException e) {
-								throw new UncheckedIOException(e);
-							}
-						}).toArray(MappedByteBuffer[]::new);
+				int nbArrays = Ints.saturatedCast((fileChannelSize - 1) / Integer.MAX_VALUE) + 1;
+				MappedByteBuffer[] array = IntStream.range(0, nbArrays).mapToObj(b -> {
+					try {
+						long start = Math.multiplyExact(b, Integer.MAX_VALUE);
+						long end = Math.min(Integer.MAX_VALUE, fileChannelSize - start);
+
+						// https://stackoverflow.com/questions/2972986/how-to-unmap-a-file-from-memory-mapped-using-filechannel-in-java
+						return fc.map(FileChannel.MapMode.READ_WRITE, start, end);
+					} catch (IOException e) {
+						throw new UncheckedIOException(e);
+					}
+				}).toArray(MappedByteBuffer[]::new);
 
 				return new CloseableCompositeIntBuffer(array);
 			}

@@ -55,6 +55,12 @@ import org.apache.arrow.vector.types.pojo.Schema;
 import cormoran.pepper.stream.PepperStreamHelper;
 import io.netty.buffer.ArrowBuf;
 
+/**
+ * Default implementation for {@link IArrowStreamFactory}
+ * 
+ * @author Benoit Lacelle
+ *
+ */
 public class ArrowStreamFactory implements IArrowStreamFactory {
 	private static final int PARTITION_TARGET_SIZE = 1024;
 

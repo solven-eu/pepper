@@ -11,6 +11,7 @@ import com.google.common.primitives.Ints;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("checkstyle:MagicNumber")
 public class ConstantBitsIntArray implements IReadableIntArray {
 	// 1 means given bit takes different values through the array: rely on varyingBits
 	// 0 means given bit takes same value through the array: rely on constantBitMask
@@ -24,7 +25,7 @@ public class ConstantBitsIntArray implements IReadableIntArray {
 
 	protected transient int[] varyingIndexes;
 
-	protected ConstantBitsIntArray(int[] input) {
+	protected ConstantBitsIntArray(int... input) {
 		length = input.length;
 		int intLength = input.length;
 
@@ -76,7 +77,7 @@ public class ConstantBitsIntArray implements IReadableIntArray {
 				for (int j : varyingIndexes) {
 					if (bitIndexIsVarying(j)) {
 						if (bitIsSet(currentInput, j)) {
-							varyingBits[longIndex] = setBit(varyingBits[longIndex], longBitIndex);
+							varyingBits[longIndex] = computeBit(varyingBits[longIndex], longBitIndex);
 						}
 
 						longBitIndex++;
@@ -106,9 +107,9 @@ public class ConstantBitsIntArray implements IReadableIntArray {
 			// https://stackoverflow.com/questions/9354860/how-to-get-the-value-of-a-bit-at-a-certain-position-from-a-byte/9354899
 			if (bitIndexIsVarying(i)) {
 				if (bitIsSet(varyingBits[longIndex], longBitIndex)) {
-					output = setBit(output, i);
+					output = computeBit(output, i);
 				} else {
-					output = setBitToZero(output, i);
+					output = computeBitToZero(output, i);
 				}
 
 				longBitIndex++;
@@ -128,15 +129,15 @@ public class ConstantBitsIntArray implements IReadableIntArray {
 		return output;
 	}
 
-	private int setBit(int someInteger, int longBitIndex) {
+	private int computeBit(int someInteger, int longBitIndex) {
 		return someInteger | (1 << longBitIndex);
 	}
 
-	private int setBitToZero(int someInteger, int longBitIndex) {
+	private int computeBitToZero(int someInteger, int longBitIndex) {
 		return someInteger & ~(1 << longBitIndex);
 	}
 
-	private long setBit(long someLong, int longBitIndex) {
+	private long computeBit(long someLong, int longBitIndex) {
 		return someLong | (1 << longBitIndex);
 	}
 

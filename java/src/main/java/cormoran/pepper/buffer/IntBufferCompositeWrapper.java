@@ -2,6 +2,12 @@ package cormoran.pepper.buffer;
 
 import java.nio.IntBuffer;
 
+/**
+ * Wraps at most 2 {@link IntBuffer}
+ * 
+ * @author Benoit Lacelle
+ *
+ */
 public class IntBufferCompositeWrapper implements IIntBufferWrapper {
 
 	private final IntBuffer asIntBuffer;

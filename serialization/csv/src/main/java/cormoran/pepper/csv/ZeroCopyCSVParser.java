@@ -62,6 +62,147 @@ public class ZeroCopyCSVParser implements IZeroCopyCSVParser {
 
 	protected final int bufferSize;
 
+	@SuppressWarnings({ "checkstyle:ParameterNumber", "PMD.ExcessiveParameterList" })
+	private final class CsvSpliterator extends Spliterators.AbstractSpliterator<String[]> {
+		private final char[] buffer;
+		private final char separator;
+		private final CharBuffer charBuffer;
+		private final List<String> pendingStrings;
+		private final CharBuffer nextValue;
+		private final IntFunction<IZeroCopyConsumer> indexToConsumer;
+		private final Reader reader;
+		private final AtomicInteger columnIndex;
+		private final AtomicBoolean moreToRead;
+
+		@SuppressWarnings("PMD.ArrayIsStoredDirectly")
+		private CsvSpliterator(long est,
+				int additionalCharacteristics,
+				char[] buffer,
+				char separator,
+				CharBuffer charBuffer,
+				List<String> pendingStrings,
+				CharBuffer nextValue,
+				IntFunction<IZeroCopyConsumer> indexToConsumer,
+				Reader reader,
+				AtomicInteger columnIndex,
+				AtomicBoolean moreToRead) {
+			super(est, additionalCharacteristics);
+			this.buffer = buffer;
+			this.separator = separator;
+			this.charBuffer = charBuffer;
+			this.pendingStrings = pendingStrings;
+			this.nextValue = nextValue;
+			this.indexToConsumer = indexToConsumer;
+			this.reader = reader;
+			this.columnIndex = columnIndex;
+			this.moreToRead = moreToRead;
+		}
+
+		@Override
+		public boolean tryAdvance(Consumer<? super String[]> action) {
+			boolean actionHasBeenTriggered = false;
+
+			// Continue until there is bytes to process
+			// Stop if no more bytes, or else if a row have been processed
+			while ((moreToRead.get() || charBuffer.hasRemaining()) && !actionHasBeenTriggered) {
+				fillBuffer(reader, charBuffer, moreToRead, buffer);
+
+				while (charBuffer.hasRemaining() && !actionHasBeenTriggered) {
+					actionHasBeenTriggered = processBuffer(separator,
+							charBuffer,
+							columnIndex,
+							nextValue,
+							pendingStrings,
+							indexToConsumer,
+							action);
+				}
+
+				if (!moreToRead.get() && !charBuffer.hasRemaining() && !actionHasBeenTriggered) {
+					// We are at the end of the file
+					// We have detected the beginning of an input and then encounter EOF: we have to flush the
+					// column
+
+					columnIndex.set(flushColumn(indexToConsumer, nextValue, columnIndex.get(), false));
+					warnConsumersWithoutColumn(indexToConsumer, columnIndex.get(), -1);
+				}
+			}
+
+			return actionHasBeenTriggered;
+		}
+
+		protected void fillBuffer(Reader reader,
+				CharBuffer charBuffer,
+				AtomicBoolean moreToRead,
+				final char... buffer) {
+			if (moreToRead.get() && !charBuffer.hasRemaining()) {
+				charBuffer.compact();
+
+				// We do not use Reader.read(CharBuffer) as it would allocate a transient char[]
+				int nbRead;
+				try {
+					nbRead = reader.read(buffer, 0, Math.min(buffer.length, charBuffer.remaining()));
+				} catch (IOException e) {
+					throw new UncheckedIOException(e);
+				}
+				if (nbRead > 0) {
+					charBuffer.put(buffer, 0, nbRead);
+				}
+
+				if (nbRead == 0) {
+					// Is it legal ? We may have 0 bytes if it is buffered but the buffer is not filled yet
+					// Or is it a bug in our code? Or is it the buffer is too small?
+					throw new IllegalStateException("Unable to read data");
+				}
+				charBuffer.flip();
+
+				if (nbRead < 0) {
+					moreToRead.set(false);
+				}
+			}
+		}
+
+		protected boolean processBuffer(char separator,
+				CharBuffer charBuffer,
+				AtomicInteger columnIndex,
+				CharBuffer nextValue,
+				List<String> pendingStrings,
+				IntFunction<IZeroCopyConsumer> indexToConsumer,
+				Consumer<? super String[]> action) {
+			boolean actionHasBeenTriggered = false;
+
+			// Next char is the one not yet processed
+			char nextChar = charBuffer.get();
+
+			if (nextChar == separator) {
+				// We are closing a column: publish the column content
+				columnIndex.set(flushColumn(indexToConsumer, nextValue, columnIndex.get(), true));
+			} else if (nextChar == '\r' || nextChar == '\n') {
+				columnIndex.set(flushColumn(indexToConsumer, nextValue, columnIndex.get(), false));
+
+				warnConsumersWithoutColumn(indexToConsumer, columnIndex.get(), -1);
+
+				if (!pendingStrings.isEmpty()) {
+					if (action != null) {
+						action.accept(pendingStrings.toArray(new String[0]));
+					}
+					pendingStrings.clear();
+					actionHasBeenTriggered = true;
+				}
+
+				// Reset the columnIndex
+				columnIndex.set(-1);
+			} else {
+				// We have an interesting character
+				if (columnIndex.get() < 0 && nextValue.position() == 0) {
+					// First character of current row
+					columnIndex.incrementAndGet();
+				}
+				nextValue.put(nextChar);
+			}
+			return actionHasBeenTriggered;
+		}
+	}
+
 	private final class Youpi implements IZeroCopyConsumer, Consumer<CharSequence> {
 		private final List<String> pendingStrings;
 
@@ -211,112 +352,17 @@ public class ZeroCopyCSVParser implements IZeroCopyCSVParser {
 
 		IntFunction<IZeroCopyConsumer> indexToConsumer = index -> consumer;
 
-		return StreamSupport.stream(new Spliterators.AbstractSpliterator<String[]>(Long.MAX_VALUE, 0) {
-
-			@Override
-			public boolean tryAdvance(Consumer<? super String[]> action) {
-				boolean actionHasBeenTriggered = false;
-
-				// Continue until there is bytes to process
-				// Stop if no more bytes, or else if a row have been processed
-				while ((moreToRead.get() || charBuffer.hasRemaining()) && !actionHasBeenTriggered) {
-					fillBuffer(reader, charBuffer, moreToRead, buffer);
-
-					while (charBuffer.hasRemaining() && !actionHasBeenTriggered) {
-						actionHasBeenTriggered = processBuffer(separator,
-								charBuffer,
-								columnIndex,
-								nextValue,
-								pendingStrings,
-								indexToConsumer,
-								action);
-					}
-
-					if (!moreToRead.get() && !charBuffer.hasRemaining() && !actionHasBeenTriggered) {
-						// We are at the end of the file
-						// We have detected the beginning of an input and then encounter EOF: we have to flush the
-						// column
-
-						columnIndex.set(flushColumn(indexToConsumer, nextValue, columnIndex.get(), false));
-						warnConsumersWithoutColumn(indexToConsumer, columnIndex.get(), -1);
-					}
-				}
-
-				return actionHasBeenTriggered;
-			}
-
-			protected void fillBuffer(Reader reader,
-					CharBuffer charBuffer,
-					AtomicBoolean moreToRead,
-					final char... buffer) {
-				if (moreToRead.get() && !charBuffer.hasRemaining()) {
-					charBuffer.compact();
-
-					// We do not use Reader.read(CharBuffer) as it would allocate a transient char[]
-					int nbRead;
-					try {
-						nbRead = reader.read(buffer, 0, Math.min(buffer.length, charBuffer.remaining()));
-					} catch (IOException e) {
-						throw new UncheckedIOException(e);
-					}
-					if (nbRead > 0) {
-						charBuffer.put(buffer, 0, nbRead);
-					}
-
-					if (nbRead == 0) {
-						// Is it legal ? We may have 0 bytes if it is buffered but the buffer is not filled yet
-						// Or is it a bug in our code? Or is it the buffer is too small?
-						throw new IllegalStateException("Unable to read data");
-					}
-					charBuffer.flip();
-
-					if (nbRead < 0) {
-						moreToRead.set(false);
-					}
-				}
-			}
-
-			protected boolean processBuffer(char separator,
-					CharBuffer charBuffer,
-					AtomicInteger columnIndex,
-					CharBuffer nextValue,
-					List<String> pendingStrings,
-					IntFunction<IZeroCopyConsumer> indexToConsumer,
-					Consumer<? super String[]> action) {
-				boolean actionHasBeenTriggered = false;
-
-				// Next char is the one not yet processed
-				char nextChar = charBuffer.get();
-
-				if (nextChar == separator) {
-					// We are closing a column: publish the column content
-					columnIndex.set(flushColumn(indexToConsumer, nextValue, columnIndex.get(), true));
-				} else if (nextChar == '\r' || nextChar == '\n') {
-					columnIndex.set(flushColumn(indexToConsumer, nextValue, columnIndex.get(), false));
-
-					warnConsumersWithoutColumn(indexToConsumer, columnIndex.get(), -1);
-
-					if (!pendingStrings.isEmpty()) {
-						if (action != null) {
-							action.accept(pendingStrings.toArray(new String[0]));
-						}
-						pendingStrings.clear();
-						actionHasBeenTriggered = true;
-					}
-
-					// Reset the columnIndex
-					columnIndex.set(-1);
-				} else {
-					// We have an interesting character
-					if (columnIndex.get() < 0 && nextValue.position() == 0) {
-						// First character of current row
-						columnIndex.incrementAndGet();
-					}
-					nextValue.put(nextChar);
-				}
-				return actionHasBeenTriggered;
-			}
-		}, false);
+		return StreamSupport.stream(new CsvSpliterator(Long.MAX_VALUE,
+				0,
+				buffer,
+				separator,
+				charBuffer,
+				pendingStrings,
+				nextValue,
+				indexToConsumer,
+				reader,
+				columnIndex,
+				moreToRead), false);
 	}
 
 	protected void warnConsumersWithoutColumn(IntFunction<IZeroCopyConsumer> consumers, int columnIndex, int maxIndex) {

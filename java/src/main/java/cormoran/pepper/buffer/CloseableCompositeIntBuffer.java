@@ -31,6 +31,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.Beta;
 
+/**
+ * {@link AutoCloseable} onto {@link IIntBufferWrapper}
+ * 
+ * @author Benoit Lacelle
+ *
+ */
 @Beta
 public class CloseableCompositeIntBuffer implements AutoCloseable {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(CloseableCompositeIntBuffer.class);
@@ -39,13 +45,15 @@ public class CloseableCompositeIntBuffer implements AutoCloseable {
 
 	protected final IIntBufferWrapper heapBuffer;
 
-	public CloseableCompositeIntBuffer(MappedByteBuffer[] buffers) {
+	@SuppressWarnings("PMD.ArrayIsStoredDirectly")
+	public CloseableCompositeIntBuffer(MappedByteBuffer... buffers) {
 		this.buffers = buffers;
 
 		this.heapBuffer = new IntBufferCompositeWrapper(
 				Stream.of(buffers).map(MappedByteBuffer::asIntBuffer).toArray(IntBuffer[]::new));
 	}
 
+	@SuppressWarnings("PMD.NullAssignment")
 	public CloseableCompositeIntBuffer(IntBuffer wrap) {
 		this.buffers = null;
 		this.heapBuffer = new IntBufferWrapper(wrap);
