@@ -202,7 +202,6 @@ public class HeapHistogram implements IHeapHistogram, Serializable {
 	/**
 	 * 
 	 * @param file
-	 * @param gzipped
 	 * @return the number of written bytes
 	 * @throws Exception
 	 */

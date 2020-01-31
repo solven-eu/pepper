@@ -31,6 +31,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.Beta;
 
+/**
+ * Wrap a {@link MappedByteBuffer} or an {@link IntBuffer} into {@link AutoCloseable}
+ * 
+ * @author Benoit Lacelle
+ *
+ */
 @Beta
 public class CloseableIntBuffer implements AutoCloseable {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(CloseableIntBuffer.class);

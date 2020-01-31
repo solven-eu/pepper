@@ -28,6 +28,12 @@ import java.util.regex.Pattern;
 
 import com.google.common.base.Strings;
 
+/**
+ * Wraps details to identify a network host
+ * 
+ * @author Benoit Lacelle
+ *
+ */
 public class PepperHostDescriptor {
 	protected final String host;
 	protected final boolean hostIsIp;

@@ -358,7 +358,7 @@ public class VirtualMachineWithoutToolsJar {
 	}
 
 	/**
-	 * @param virtualMachineClass
+	 * @param virtualMachine
 	 * @param methodName
 	 * @param argument
 	 * @return

@@ -3,6 +3,7 @@
 	xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd"
 	xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd">
 
+	<!-- https://pmd.github.io/pmd-6.8.0/pmd_rules_java.html -->
 	<description>Nearly all PMD rules, except those considered not relevant
 		by Pepper
 	</description>
@@ -57,6 +58,7 @@
 		<exclude name="SimplifyBooleanReturns" />
 		<exclude name="TooManyMethods" />
 		<exclude name="ExcessiveImports" />
+		<exclude name="ExcessiveParameterList" />
 		<exclude name="NcssCount" />
 		<exclude name="DataClass" />
 		<exclude name="UseObjectForClearerAPI" />
@@ -75,6 +77,12 @@
 	<rule ref="category/java/design.xml/ExcessiveImports">
 		<properties>
 			<property name="minimum" value="200" />
+		</properties>
+	</rule>
+	<!-- Sync with checkstyle:ParameterNumber -->
+	<rule ref="category/java/design.xml/ExcessiveParameterList">
+		<properties>
+			<property name="minimum" value="10" />
 		</properties>
 	</rule>
 	<rule ref="category/java/design.xml/NcssCount">

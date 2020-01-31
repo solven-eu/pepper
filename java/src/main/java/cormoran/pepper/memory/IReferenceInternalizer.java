@@ -22,6 +22,13 @@
  */
 package cormoran.pepper.memory;
 
+/**
+ * Helps replacing reference to equals objects by a single reference. This would help other objects to be
+ * garbage-collected.
+ * 
+ * @author Benoit Lacelle
+ *
+ */
 public interface IReferenceInternalizer {
 
 	void internalize(Object... roots);

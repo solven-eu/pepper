@@ -24,6 +24,12 @@ package cormoran.pepper.metrics;
 
 import java.util.List;
 
+/**
+ * Helps managing {@link TaskStartEvent} and {@link TaskEndEvent}
+ * 
+ * @author Benoit Lacelle
+ *
+ */
 public interface ITaskActivityEvent {
 
 	/**

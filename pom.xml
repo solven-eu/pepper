@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -41,28 +42,28 @@
 
 	<properties>
 		<!-- https://github.com/google/guava/releases -->
-		<guava.version>28.1-jre</guava.version>
+		<guava.version>28.2-jre</guava.version>
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
 		<errorprone.version>2.3.4</errorprone.version>
 
-		<awaitility.version>4.0.1</awaitility.version>
+		<awaitility.version>4.0.2</awaitility.version>
 		<findbugs.version>3.0.5</findbugs.version>
-		<equals.verifier.version>3.1.10</equals.verifier.version>
-		<checker.quals.version>3.0.1</checker.quals.version>
+		<equals.verifier.version>3.1.12</equals.verifier.version>
+		<checker.quals.version>3.1.0</checker.quals.version>
 
 		<!-- newer version than spring-boot-dependencies, for JDK11 -->
-		<mockito.version>2.23.4</mockito.version>
+		<mockito.version>3.2.4</mockito.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-pmd-plugin -->
 		<maven-pmd-plugin.version>3.12.0</maven-pmd-plugin.version>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.pmd/pmd -->
-		<pmd.version>6.19.0</pmd.version>
+		<pmd.version>6.20.0</pmd.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
 		<maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
 		<!-- https://mvnrepository.com/artifact/com.puppycrawl.tools/checkstyle -->
-		<checkstyle.version>8.24</checkstyle.version>
+		<checkstyle.version>8.29</checkstyle.version>
 
 		<jacoco.instruction.ratio>0.70</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
@@ -399,12 +400,6 @@
 												<value>COVEREDRATIO</value>
 												<minimum>${jacoco.branch.ratio}</minimum>
 											</limit>
-										</limits>
-									</rule>
-									<rule implementation="org.jacoco.maven.RuleConfiguration">
-										<!-- BUNDLE, PACKAGE, CLASS, SOURCEFILE or METHOD -->
-										<element>BUNDLE</element>
-										<limits>
 											<limit implementation="org.jacoco.report.check.Limit">
 												<!-- INSTRUCTION, LINE, BRANCH, COMPLEXITY, METHOD, CLASS -->
 												<counter>INSTRUCTION</counter>
@@ -495,7 +490,7 @@
 				<artifactId>formatter-maven-plugin</artifactId>
 				<version>2.11.0</version>
 				<configuration>
-					<configFile>style/eclipse_java_code_formatter.xml</configFile>
+					<configFile>eclipse/eclipse_java_code_formatter.xml</configFile>
 				</configuration>
 				<dependencies>
 					<dependency>
