@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.github.cormoran-io.pepper</groupId>
 		<artifactId>pepper-parent</artifactId>
-		<version>1.23</version>
+		<version>1.24-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>unittest</artifactId>
