@@ -3,8 +3,10 @@ package cormoran.pepper.util;
 import static java.lang.System.out;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
@@ -29,9 +31,13 @@ public class RunCharsetDemo {
 	public static String getEncoding() {
 		final byte[] bytes = { 'D' };
 		final InputStream inputStream = new ByteArrayInputStream(bytes);
-		final InputStreamReader reader = new InputStreamReader(inputStream);
-		final String encoding = reader.getEncoding();
-		return encoding;
+
+		try (InputStreamReader reader = new InputStreamReader(inputStream, Charset.defaultCharset())) {
+			final String encoding = reader.getEncoding();
+			return encoding;
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	public static void main(final String[] arguments) {

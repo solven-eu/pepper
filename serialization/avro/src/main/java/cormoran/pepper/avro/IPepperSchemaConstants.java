@@ -47,7 +47,7 @@ public interface IPepperSchemaConstants {
 
 	float SOME_FLOAT = 1.2F;
 
-	float[] SOME_FLOAT_ARRAY = new float[] { SOME_FLOAT, SOME_FLOAT * 2 };
+	float[] SOME_FLOAT_ARRAY = { SOME_FLOAT, SOME_FLOAT * 2 };
 
 	boolean SOME_BOOLEAN = true;
 

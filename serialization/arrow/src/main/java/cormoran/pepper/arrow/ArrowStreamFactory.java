@@ -78,33 +78,35 @@ public class ArrowStreamFactory implements IArrowStreamFactory {
 			boolean outputIsFile,
 			Schema schema,
 			Stream<? extends Map<String, ?>> rowsToWrite) throws IOException {
-		BufferAllocator ra = new RootAllocator(Integer.MAX_VALUE);
-		VectorSchemaRoot root = VectorSchemaRoot.create(schema, ra);
-		DictionaryProvider.MapDictionaryProvider provider = new DictionaryProvider.MapDictionaryProvider();
+		try (BufferAllocator ra = new RootAllocator(Integer.MAX_VALUE);
+				VectorSchemaRoot root = VectorSchemaRoot.create(schema, ra);) {
 
-		AtomicLong nbRows = new AtomicLong();
+			DictionaryProvider.MapDictionaryProvider provider = new DictionaryProvider.MapDictionaryProvider();
 
-		if (outputIsFile) {
-			try (ArrowFileWriter arrowFileWriter = new ArrowFileWriter(root, provider, byteChannel)) {
-				writeData(rowsToWrite, root, nbRows, arrowFileWriter);
-				try {
-					arrowFileWriter.end();
-				} catch (IOException e) {
-					throw new UncheckedIOException(e);
+			AtomicLong nbRows = new AtomicLong();
+
+			if (outputIsFile) {
+				try (ArrowFileWriter arrowFileWriter = new ArrowFileWriter(root, provider, byteChannel)) {
+					writeData(rowsToWrite, root, nbRows, arrowFileWriter);
+					try {
+						arrowFileWriter.end();
+					} catch (IOException e) {
+						throw new UncheckedIOException(e);
+					}
+				}
+			} else {
+				try (ArrowStreamWriter arrowFileWriter = new ArrowStreamWriter(root, provider, byteChannel)) {
+					writeData(rowsToWrite, root, nbRows, arrowFileWriter);
+					try {
+						arrowFileWriter.end();
+					} catch (IOException e) {
+						throw new UncheckedIOException(e);
+					}
 				}
 			}
-		} else {
-			try (ArrowStreamWriter arrowFileWriter = new ArrowStreamWriter(root, provider, byteChannel)) {
-				writeData(rowsToWrite, root, nbRows, arrowFileWriter);
-				try {
-					arrowFileWriter.end();
-				} catch (IOException e) {
-					throw new UncheckedIOException(e);
-				}
-			}
+
+			return nbRows.get();
 		}
-
-		return nbRows.get();
 	}
 
 	private static void writeData(Stream<? extends Map<String, ?>> streamOfMap,
@@ -118,9 +120,9 @@ public class ArrowStreamFactory implements IArrowStreamFactory {
 		}
 
 		PepperStreamHelper.consumeByPartition(streamOfMap, c -> {
-			int partritionRowCount = c.size();
-			root.setRowCount(partritionRowCount);
-			nbRows.addAndGet(partritionRowCount);
+			int partitionRowCount = c.size();
+			root.setRowCount(partitionRowCount);
+			nbRows.addAndGet(partitionRowCount);
 
 			for (Field field : root.getSchema().getFields()) {
 				FieldVector vector = root.getVector(field.getName());

@@ -44,6 +44,7 @@ import org.apache.parquet.filter2.compat.FilterCompat;
 import org.apache.parquet.filter2.compat.FilterCompat.Filter;
 import org.apache.parquet.hadoop.ParquetReader;
 import org.apache.parquet.hadoop.ParquetWriter;
+import org.apache.parquet.hadoop.util.HadoopInputFile;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.AbstractIterator;
@@ -115,11 +116,14 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 	public Stream<GenericRecord> toStream(Path hadoopPath) throws IOException {
 		Filter filter = makeFilter();
 
+		@SuppressWarnings("PMD.CloseResource")
 		ParquetReader<GenericRecord> reader;
 		try {
-			reader = AvroParquetReader.<GenericRecord>builder(hadoopPath)
+			Configuration localConfiguration = getConfiguration();
+			HadoopInputFile inputFile = HadoopInputFile.fromPath(hadoopPath, localConfiguration);
+			reader = AvroParquetReader.<GenericRecord>builder(inputFile)
 					.withFilter(filter)
-					.withConf(getConfiguration())
+					.withConf(localConfiguration)
 					.build();
 		} catch (IOException | RuntimeException e) {
 			// Default exception may not refer the input path
@@ -160,12 +164,14 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 	public static Stream<Map<String, ?>> readParquetAsStream(URI uriToParquet, Map<String, ?> exampleTypes)
 			throws FileNotFoundException, IOException {
 		ParquetBytesToStream parquetBytesToStream = new ParquetBytesToStream();
+		@SuppressWarnings("PMD.CloseResource")
 		InputStream inputStream = Files.newInputStream(Paths.get(uriToParquet));
 		return parquetBytesToStream.stream(inputStream).map(AvroTranscodingHelper.toJavaMap(exampleTypes));
 	}
 
 	@Override
 	protected IGenericRecordConsumer prepareRecordConsumer(Schema schema, URI uri) throws IOException {
+		@SuppressWarnings("PMD.CloseResource")
 		ParquetWriter<GenericRecord> writer = AvroParquetWriter.<GenericRecord>builder(toHadoopPath(uri))
 				.withSchema(schema)
 				.withConf(getConfiguration())

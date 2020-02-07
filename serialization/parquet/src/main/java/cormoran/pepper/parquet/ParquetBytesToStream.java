@@ -39,8 +39,8 @@ import cormoran.pepper.avro.IBinaryToAvroStream;
 import cormoran.pepper.io.PepperFileHelper;
 
 /**
- * Automatic transformation of a Parquet InputStream to a Stream of objects. It requires to write the file first on the
- * file-system
+ * Automatic transformation of a Parquet InputStream to a Stream of objects. It requires to write the {@link File} first
+ * on the file-system
  * 
  * @author Benoit Lacelle
  *

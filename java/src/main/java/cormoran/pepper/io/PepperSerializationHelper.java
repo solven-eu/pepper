@@ -439,11 +439,8 @@ public class PepperSerializationHelper {
 	@Beta
 	public static void appendLineInCSVFile(FileOutputStream outputFileIS, Iterable<?> row) throws IOException {
 		// Use a filelock to prevent several process having their rows being interlaced
-		java.nio.channels.FileLock lock = outputFileIS.getChannel().lock();
-		try {
+		try (java.nio.channels.FileLock lock = outputFileIS.getChannel().lock()) {
 			appendLineInCSVFile(new OutputStreamWriter(outputFileIS, Charsets.UTF_8), row);
-		} finally {
-			lock.release();
 		}
 	}
 

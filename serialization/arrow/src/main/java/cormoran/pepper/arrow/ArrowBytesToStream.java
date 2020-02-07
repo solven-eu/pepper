@@ -71,7 +71,9 @@ import cormoran.pepper.io.IBinaryToStream;
 public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ArrowBytesToStream.class);
 
+	@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 	public Stream<Map<String, ?>> stream(boolean isFile, SeekableByteChannel channel) throws IOException {
+		@SuppressWarnings("PMD.CloseResource")
 		ArrowReader arrowReader;
 
 		if (isFile) {
@@ -80,6 +82,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 			arrowReader = new ArrowStreamReader(channel, new RootAllocator(Integer.MAX_VALUE));
 		}
 
+		@SuppressWarnings("PMD.CloseResource")
 		VectorSchemaRoot root = arrowReader.getVectorSchemaRoot();
 
 		return StreamSupport.stream(new AbstractSpliterator<Stream<Map<String, ?>>>(Long.MAX_VALUE, 0) {
@@ -139,6 +142,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 		}, false).onClose(() -> {
 			try {
 				arrowReader.close();
+				root.close();
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
@@ -148,6 +152,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 	@Override
 	public Stream<Map<String, ?>> stream(InputStream inputStream) throws IOException {
 		// TODO: Do we really need to load all bytes in memory?
+		@SuppressWarnings("PMD.CloseResource")
 		ByteArrayReadableSeekableByteChannel in =
 				new ByteArrayReadableSeekableByteChannel(ByteStreams.toByteArray(inputStream));
 
@@ -209,6 +214,7 @@ public class ArrowBytesToStream implements IBinaryToStream<Map<String, ?>> {
 	}
 
 	public Stream<Map<String, ?>> stream(File file) throws FileNotFoundException, IOException {
+		@SuppressWarnings("PMD.CloseResource")
 		SeekableByteChannel channel = Files.newByteChannel(file.toPath());
 		return stream(true, channel).onClose(() -> {
 			try {

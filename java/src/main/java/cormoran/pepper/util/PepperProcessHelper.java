@@ -132,8 +132,9 @@ public class PepperProcessHelper {
 		}
 
 		Process memoryProcess = memoryBuilder.start();
-		InputStream inputStream = memoryProcess.getInputStream();
-		return extractMemory(osFlag, inputStream);
+		try (InputStream inputStream = memoryProcess.getInputStream()) {
+			return extractMemory(osFlag, inputStream);
+		}
 	}
 
 	public static String getCommandAsString(List<String> command) {
