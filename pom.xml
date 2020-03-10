@@ -26,6 +26,7 @@
 	<!-- mvn release:rollback -->
 
 	<!-- In case of 'gpg: signing failed: Timeout' -->
+	<!-- Or [ERROR] * No public key: Key with id: -->
 	<!-- Configure GPG -->
 	<!-- https://central.sonatype.org/pages/working-with-pgp-signatures.html -->
 	<!-- brew install gpg -->
