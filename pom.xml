@@ -26,14 +26,16 @@
 	<!-- mvn release:rollback -->
 
 	<!-- In case of 'gpg: signing failed: Timeout' -->
-	<!-- Or [ERROR] * No public key: Key with id: -->
 	<!-- Configure GPG -->
 	<!-- https://central.sonatype.org/pages/working-with-pgp-signatures.html -->
 	<!-- brew install gpg -->
 	<!-- gpg \-\-gen-key -->
 	<!-- gpg \-\-list-keys -->
-	<!-- gpg \-\-keyserver http://keyserver.ubuntu.com:11371 \-\-send-keys keyid -->
+	<!-- gpg \-\-keyserver http://pool.sks-keyservers.net:11371 \-\-send-keys keyid -->
 	<!-- Then, maven release process will use this key to sign the artifacts uploaded to sonatype -->
+	
+	<!-- In case of [ERROR] * No public key: Key with id: -->
+	<!-- gpg \-\-keyserver https://HOST_TO_BE_CORRECTED:11371 \-\-send-keys keyid -->
 
 	<!-- Deployment -->
 	<!-- mvn deploy -PSonatype -Dmaven.test.skip -->
