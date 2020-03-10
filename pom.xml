@@ -331,7 +331,8 @@
 						<!-- -XX:+StartAttachListener is for http://comments.gmane.org/gmane.comp.java.openjdk.macosx-port.devel/6094 -->
 						<!-- -XX:-HeapDumpOnOutOfMemoryError because TestGCInspector will force an OOM -->
 						<!-- -Djava.util.logging.config.file so that tests fallback on logback -->
-						<argLine><![CDATA[-ea -Xmx${xmx} -XX:+StartAttachListener -XX:-HeapDumpOnOutOfMemoryError -Djava.util.logging.config.file=logging.properties ${argLine}]]></argLine>
+						<!-- -Dio.netty.tryReflectionSetAccessible=true for Netty in Arrow (https://github.com/apache/arrow/pull/4522) -->
+						<argLine><![CDATA[-ea -Xmx${xmx} -XX:+StartAttachListener -XX:-HeapDumpOnOutOfMemoryError -Djava.util.logging.config.file=logging.properties -Dio.netty.tryReflectionSetAccessible=true ${argLine}]]></argLine>
 
 						<!-- Alternative safer configuration for 1JVM per test -->
 						<!-- <forkCount>1</forkCount> -->
