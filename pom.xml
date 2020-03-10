@@ -31,11 +31,16 @@
 	<!-- brew install gpg -->
 	<!-- gpg \-\-gen-key -->
 	<!-- gpg \-\-list-keys -->
-	<!-- gpg \-\-keyserver http://pool.sks-keyservers.net:11371 \-\-send-keys keyid -->
-	<!-- Then, maven release process will use this key to sign the artifacts uploaded to sonatype -->
-	
+	<!-- gpg \-\-keyserver http://pool.sks-keyservers.net:11371 \-\-send-keys keyId -->
+	<!-- You may encounter IPv6 issues: trick for ipv4 -->
+	<!-- gpg \-\-keyserver http://ipv4.pool.sks-keyservers.net:11371 \-\-send-keys keyId -->
+	<!-- Then, maven release process will use this key to sign the artifacts uploaded to Sonatype -->
+
 	<!-- In case of [ERROR] * No public key: Key with id: -->
-	<!-- gpg \-\-keyserver https://HOST_TO_BE_CORRECTED:11371 \-\-send-keys keyid -->
+	<!-- gpg \-\-keyserver https://HOST_TO_BE_CORRECTED:11371 \-\-send-keys keyId -->
+
+	<!-- If everything fails, try opening https://pool.sks-keyservers.net in your browser for manual submission -->
+	<!-- gpg \-\-armor \-\-export keyId -->
 
 	<!-- Deployment -->
 	<!-- mvn deploy -PSonatype -Dmaven.test.skip -->
