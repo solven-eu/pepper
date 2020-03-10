@@ -178,6 +178,7 @@
 		<module>unittest</module>
 
 		<module>serialization</module>
+		<module>compression</module>
 
 		<!-- Helps integration of a PostgreSQL database -->
 		<module>pgsql</module>
