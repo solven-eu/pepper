@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -42,6 +43,10 @@
 	<properties>
 		<!-- https://github.com/google/guava/releases -->
 		<guava.version>28.2-jre</guava.version>
+
+		<!-- https://mvnrepository.com/artifact/org.jooq/jool -->
+		<jool.version>0.9.14</jool.version>
+
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
 		<errorprone.version>2.3.4</errorprone.version>
@@ -173,7 +178,9 @@
 		<module>unittest</module>
 
 		<module>serialization</module>
-		<module>compression</module>
+
+		<!-- Helps integration of a PostgreSQL database -->
+		<module>pgsql</module>
 
 		<!-- a JConsole plugin to facilitate tracking of off-heap -->
 		<!-- Excluded as it is an experimental project -->

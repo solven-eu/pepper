@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.cormoran-io.pepper</groupId>
+		<artifactId>pepper-parent</artifactId>
+		<version>1.24-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>pepper-pgsql</artifactId>
+	<packaging>jar</packaging>
+
+	<properties>
+		<jacoco.instruction.ratio>0.65</jacoco.instruction.ratio>
+		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.github.cormoran-io.pepper</groupId>
+			<artifactId>pepper</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jool</artifactId>
+			<version>${jool.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-meta</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-codegen</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+		</dependency>
+
+		<dependency>
+			<!-- Enable not default in H2/Embedded database in RunInitMiTrustTables -->
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<!-- Used to enable local generation of the schema -->
+			<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
