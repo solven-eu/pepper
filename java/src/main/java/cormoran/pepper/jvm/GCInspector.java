@@ -79,9 +79,12 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AtomicLongMap;
 
 import cormoran.pepper.agent.VirtualMachineWithoutToolsJar;
@@ -148,6 +151,9 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 
 	private static final String XSS = "-Xss";
 	private static final String XX_THREADSTACKSIZE = "-XX:ThreadStackSize=";
+
+	// https://stackoverflow.com/questions/50232400/xxexitonoutofmemoryerror-ignored-on-java-lang-outofmemoryerror-direct-buffe
+	private static final String XX_EXITONOUTOFMEMORYERROR = "-XX:+ExitOnOutOfMemoryError";
 
 	protected static final MBeanServer MBEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
 	protected static final OperatingSystemMXBean OS_MBEAN = ManagementFactory.getOperatingSystemMXBean();
@@ -302,7 +308,6 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	}
 
 	@Override
-
 	public void handleNotification(Notification notification, Object handback) {
 		String type = notification.getType();
 		if (type.equals(PepperForOracleJVM.GARBAGE_COLLECTION_NOTIFICATION)) {
@@ -312,6 +317,30 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 
 			doLog(info);
 		}
+	}
+
+	@Subscribe
+	@AllowConcurrentEvents
+	public void onThrowable(Throwable t) {
+		Throwables.getCausalChain(t)
+				.stream()
+				.filter(someT -> someT instanceof OutOfMemoryError)
+				.findAny()
+				.ifPresent(oom -> {
+					LOGGER.error("We encountered an {}", oom.getClass());
+
+					// https://stackoverflow.com/questions/48147092/how-to-listen-for-outofmemoryerror-and-exit-the-jvm
+					// java.nio.Bits.reserveMemory(long, int)
+					if (exitOnOutOfMemoryError() && "Direct buffer memory".equals(oom.getMessage())) {
+						LOGGER.error(
+								"We force System.exit as we encounteres an OutOfMemory, probably dues to java.nio.Bits.reserveMemory(...)");
+						System.exit(1);
+					}
+				});
+	}
+
+	private boolean exitOnOutOfMemoryError() {
+		return getOptionalArgument(getVMInputArguments(), XX_EXITONOUTOFMEMORYERROR).isPresent();
 	}
 
 	protected long computeDurationMs(IPepperGarbageCollectionNotificationInfo info) {
@@ -859,11 +888,16 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	}
 
 	protected long getMemoryPerThread() {
+		List<String> arguments = getVMInputArguments();
+
+		return getMemoryPerThread(arguments);
+	}
+
+	protected List<String> getVMInputArguments() {
 		// https://stackoverflow.com/questions/1490869/how-to-get-vm-arguments-from-inside-of-java-application
 		RuntimeMXBean runtimeMxBean = getRuntimeMXBean();
 		List<String> arguments = runtimeMxBean.getInputArguments();
-
-		return getMemoryPerThread(arguments);
+		return arguments;
 	}
 
 	protected long getMemoryPerThread(List<String> arguments) {
@@ -883,9 +917,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	}
 
 	public static Optional<String> getOptionalArgument(List<String> arguments, String option) {
-		Optional<String> xss =
-				arguments.stream().filter(s -> s.startsWith(option)).map(s -> s.substring(option.length())).findAny();
-		return xss;
+		return arguments.stream().filter(s -> s.startsWith(option)).map(s -> s.substring(option.length())).findAny();
 	}
 
 	protected RuntimeMXBean getRuntimeMXBean() {

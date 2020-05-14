@@ -263,4 +263,14 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		long memory = new GCInspector().getMemoryPerThread(Arrays.asList("-Xss512k"));
 		Assert.assertEquals(524288L, memory);
 	}
+
+	@Test
+	public void testGetOptionalArgument() {
+		Assertions.assertThat(GCInspector.getOptionalArgument(Arrays.asList("-Xss512k"), "-Xss"))
+				.isPresent()
+				.hasValue("512k");
+		Assertions.assertThat(GCInspector.getOptionalArgument(Arrays.asList("-Xss512k"), "-Xss512k"))
+				.isPresent()
+				.hasValue("");
+	}
 }
