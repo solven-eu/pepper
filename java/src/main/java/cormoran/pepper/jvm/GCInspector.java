@@ -326,20 +326,23 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 				.stream()
 				.filter(someT -> someT instanceof OutOfMemoryError)
 				.findAny()
-				.ifPresent(oom -> {
-					LOGGER.error("We encountered an {}", oom.getClass());
-
-					// https://stackoverflow.com/questions/48147092/how-to-listen-for-outofmemoryerror-and-exit-the-jvm
-					// java.nio.Bits.reserveMemory(long, int)
-					if (exitOnOutOfMemoryError() && "Direct buffer memory".equals(oom.getMessage())) {
-						LOGGER.error(
-								"We force System.exit as we encounteres an OutOfMemory, probably dues to java.nio.Bits.reserveMemory(...)");
-						System.exit(1);
-					}
-				});
+				.ifPresent(this::onOutOfMemoryError);
 	}
 
-	private boolean exitOnOutOfMemoryError() {
+	@SuppressWarnings("PMD.DoNotCallSystemExit")
+	private void onOutOfMemoryError(Throwable oom) {
+		LOGGER.error("We encountered an {}", oom.getClass());
+
+		// https://stackoverflow.com/questions/48147092/how-to-listen-for-outofmemoryerror-and-exit-the-jvm
+		// java.nio.Bits.reserveMemory(long, int)
+		if (isExitOnOutOfMemoryError() && "Direct buffer memory".equals(oom.getMessage())) {
+			LOGGER.error(
+					"We force System.exit as we encountered an OutOfMemory, probably dues to java.nio.Bits.reserveMemory(...)");
+			System.exit(1);
+		}
+	}
+
+	private boolean isExitOnOutOfMemoryError() {
 		return getOptionalArgument(getVMInputArguments(), XX_EXITONOUTOFMEMORYERROR).isPresent();
 	}
 
