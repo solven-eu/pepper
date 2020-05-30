@@ -31,6 +31,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.management.BufferPoolMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -41,6 +43,7 @@ import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -820,13 +823,18 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	}
 
 	public static String getHeapHistogramAsString(int nbRows) {
-		OutputStream os = new ByteArrayOutputStream();
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
 
 		// Do not query monitors and synchronizers are they are not the cause of
 		// a FullGC: we prevent not to freeze the JVM collecting these monitors
 		streamHeapHistogram(os, nbRows);
 
-		return os.toString();
+		// The bytes are for the default charset, possibly not UTF-8
+		try {
+			return os.toString(Charset.defaultCharset().name());
+		} catch (UnsupportedEncodingException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	public static void streamHeapHistogram(OutputStream os, int nbRows) {
