@@ -109,7 +109,7 @@ public class PepperMapHelper {
 			} else if (value instanceof Map<?, ?>) {
 				value = ((Map<?, ?>) value).get(key);
 			} else {
-				throw new IllegalArgumentException("Can not process keys" + allKeys
+				throw new IllegalArgumentException("Can not process keys " + allKeys
 						+ " on Map: "
 						+ body
 						+ " as value has type: "
