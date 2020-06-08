@@ -58,7 +58,7 @@
 		<betachecker.version>1.0</betachecker.version>
 		<errorprone.version>2.4.0</errorprone.version>
 
-		<awaitility.version>4.0.2</awaitility.version>
+		<awaitility.version>4.0.3</awaitility.version>
 		<findbugs.version>3.0.5</findbugs.version>
 		<equals.verifier.version>3.3</equals.verifier.version>
 		<checker.quals.version>3.2.0</checker.quals.version>
