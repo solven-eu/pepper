@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -30,16 +31,19 @@
 	<!-- brew install gpg -->
 	<!-- gpg \-\-gen-key -->
 	<!-- gpg \-\-list-keys -->
-	<!-- gpg \-\-keyserver http://pool.sks-keyservers.net:11371 \-\-send-keys keyId -->
+	<!-- gpg \-\-keyserver http://pool.sks-keyservers.net:11371 \-\-send-keys <key_id> -->
 	<!-- You may encounter IPv6 issues: trick for ipv4 -->
-	<!-- gpg \-\-keyserver http://ipv4.pool.sks-keyservers.net:11371 \-\-send-keys keyId -->
+	<!-- gpg \-\-keyserver http://ipv4.pool.sks-keyservers.net:11371 \-\-send-keys <key_id> -->
 	<!-- Then, maven release process will use this key to sign the artifacts uploaded to Sonatype -->
 
-	<!-- In case of [ERROR] * No public key: Key with id: -->
-	<!-- gpg \-\-keyserver https://HOST_TO_BE_CORRECTED:11371 \-\-send-keys keyId -->
+	<!-- In case of [ERROR] * No public key: Key with id: (<key_id>) -->
+	<!-- gpg \-\-keyserver https://HOST_TO_BE_CORRECTED:11371 \-\-send-keys <key_id> -->
 
 	<!-- If everything fails, try opening https://pool.sks-keyservers.net in your browser for manual submission -->
 	<!-- gpg \-\-armor \-\-export keyId -->
+	<!-- When searching the key manually, remember to add '0x' in front of the keys -->
+	<!-- https://stackoverflow.com/questions/59380162/openpgpkeyserver-no-keys-found-after-submit-openpgp-public-key -->
+	<!-- http://pool.sks-keyservers.net/pks/lookup?search=0xCB6E7A4E9502E68A&fingerprint=on&op=index -->
 
 	<!-- Deployment -->
 	<!-- mvn deploy -PSonatype -Dmaven.test.skip -->
