@@ -262,4 +262,12 @@ public class TestPepperMapHelper {
 		Assert.assertEquals(ImmutableMap.of(), sink);
 	}
 
+	@Test
+	public void testImbricatedMap() {
+		// Check keys can be of any-type
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key");
+
+		Assert.assertEquals(ImmutableMap.of(123, ImmutableMap.of("key", "value")), map);
+	}
+
 }

@@ -358,7 +358,7 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 	@AllowConcurrentEvents
 	public void onThrowable(Throwable t) {
 		// Wrap in RuntimeException for a cleaner stack-trace
-		LOGGER.warn("Not managed exception", new RuntimeException(t));
+		LOGGER.warn("Not managed exception", new RuntimeException("Throwable captured from EventBus", t));
 	}
 
 	protected void invalidateStartEvent(TaskStartEvent startEvent) {

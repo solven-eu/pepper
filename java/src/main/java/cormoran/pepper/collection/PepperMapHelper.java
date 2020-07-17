@@ -130,7 +130,7 @@ public class PepperMapHelper {
 	 *            more optional keys
 	 * @return a Map looking like: {'k1': {'k2': 'v'}}
 	 */
-	public static Map<?, ?> imbricatedMap(Object value, String firstKey, String... moreKeys) {
+	public static <T> Map<T, ?> imbricatedMap(Object value, T firstKey, String... moreKeys) {
 		Object nextValue = value;
 		for (int i = moreKeys.length - 1; i >= 0; i--) {
 			nextValue = Collections.singletonMap(moreKeys[i], nextValue);
