@@ -36,7 +36,7 @@ public final class PepperDateHelper {
 		String propertyKey = "user.timezone";
 		String previousZoneId = System.getProperty(propertyKey);
 
-		LOGGER.info("Switching ZoneId from -D{}={} to {}", previousZoneId, previousZoneId, zoneId);
+		LOGGER.info("Switching ZoneId from -D{}={} to {}", propertyKey, previousZoneId, zoneId);
 
 		REF_ZONE_ID.set(zoneId);
 	}

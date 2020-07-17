@@ -247,7 +247,7 @@ public class PepperMapHelper {
 	private static List<String> checkNullMap(Map<?, ?> map, String mainKey, String... subKeys) {
 		List<String> keys = Lists.asList(mainKey, subKeys);
 		if (map == null) {
-			throw new IllegalArgumentException("Input Map<?,?> while requiring keys=" + keys);
+			throw new IllegalArgumentException("Input Map<?,?> is null while requiring keys=" + keys);
 		}
 		return keys;
 	}
