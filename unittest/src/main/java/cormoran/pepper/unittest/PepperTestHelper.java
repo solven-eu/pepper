@@ -3,6 +3,7 @@ package cormoran.pepper.unittest;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -31,8 +32,18 @@ public class PepperTestHelper {
 	 * @return true if the internet is available
 	 */
 	public static boolean assumeInternetIsAvailable() {
+		URL url;
 		try {
-			URLConnection connection = new URL("https://google.com").openConnection();
+			url = new URL("https://google.com");
+		} catch (MalformedURLException e) {
+			throw new IllegalStateException("Issue parsing an https url");
+		}
+		return assumeDomainIsAvailable(url);
+	}
+
+	public static boolean assumeDomainIsAvailable(URL url) {
+		try {
+			URLConnection connection = url.openConnection();
 			Assume.assumeNotNull(connection);
 			// We check some data from the connection as we may receive a not connection connection
 			Assume.assumeNotNull(connection.getContentType());
@@ -69,5 +80,23 @@ public class PepperTestHelper {
 
 	public static void enableLogToInfo(Class<?> clazz) {
 		setLogbackLoggerLevel(clazz, "INFO");
+	}
+
+	/**
+	 * Enables using a try-with statement in order to deactivate logs for a given section of code.
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public static AutoCloseable logDisabled(Class<?> clazz) {
+		disableLog(clazz);
+
+		return new AutoCloseable() {
+
+			@Override
+			public void close() {
+				enableLogToInfo(clazz);
+			}
+		};
 	}
 }
