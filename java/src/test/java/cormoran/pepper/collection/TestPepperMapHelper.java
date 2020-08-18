@@ -22,6 +22,7 @@
  */
 package cormoran.pepper.collection;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -202,6 +203,13 @@ public class TestPepperMapHelper {
 	}
 
 	@Test
+	public void testGetOptionalString_Deep() {
+		Map<?, ?> map = ImmutableMap.of(123, ImmutableMap.of("k1", "v1"));
+
+		Assert.assertEquals("v1", PepperMapHelper.getOptionalString(map, 123, "k1").get());
+	}
+
+	@Test
 	public void testGetOptionalString_Missing() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1");
 
@@ -268,6 +276,15 @@ public class TestPepperMapHelper {
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key");
 
 		Assert.assertEquals(ImmutableMap.of(123, ImmutableMap.of("key", "value")), map);
+	}
+
+	@Test
+	public void testImbricatedMap_Deeper_DifferentTypes() {
+		// Check keys can be of any-type
+		LocalDate now = LocalDate.now();
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
+
+		Assert.assertEquals(ImmutableMap.of(123, ImmutableMap.of("key", ImmutableMap.of(now, "value"))), map);
 	}
 
 }

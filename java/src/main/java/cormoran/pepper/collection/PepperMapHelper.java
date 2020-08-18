@@ -36,6 +36,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
+import cormoran.pepper.logging.PepperLogHelper;
+
 /**
  * Various helpers for Map
  * 
@@ -99,11 +101,25 @@ public class PepperMapHelper {
 		return Collections.unmodifiableMap(clone);
 	}
 
-	public static <T> T getAs(Object body, String firstKey, String... moreKeys) {
+	/**
+	 * 
+	 * @param <T>
+	 * @param body
+	 * @param firstKey
+	 * @param moreKeys
+	 * @return the object mapped from body (generally a {@link Map}) following the chain of keys. This returns null if
+	 *         the path leads to nothing. This fails if the path is invalid given the {@link Map} (e.g. path is 'k1.k2'
+	 *         while the {@link Map} is ('k1': 'v1'))
+	 */
+	public static <T> T getAs(Object body, Object firstKey, Object... moreKeys) {
+		if (body == null) {
+			return null;
+		}
+
 		Object value = body;
 
-		List<String> allKeys = Lists.asList(firstKey, moreKeys);
-		for (String key : allKeys) {
+		List<Object> allKeys = Lists.asList(firstKey, moreKeys);
+		for (Object key : allKeys) {
 			if (value == null) {
 				return null;
 			} else if (value instanceof Map<?, ?>) {
@@ -112,8 +128,10 @@ public class PepperMapHelper {
 				throw new IllegalArgumentException("Can not process keys " + allKeys
 						+ " on Map: "
 						+ body
-						+ " as value has type: "
-						+ value.getClass().getSimpleName());
+						+ " as value for key="
+						+ key
+						+ " is: "
+						+ PepperLogHelper.getObjectAndClass(value));
 			}
 		}
 
@@ -121,54 +139,41 @@ public class PepperMapHelper {
 	}
 
 	/**
+	 * This helps building deeply nested Maps. It is especially useful for unit-tests.
 	 * 
 	 * @param value
 	 *            attached to the deepest key
 	 * @param firstKey
 	 *            a first required key
+	 * @param secondKey
+	 *            a second required key
 	 * @param moreKeys
 	 *            more optional keys
 	 * @return a Map looking like: {'k1': {'k2': 'v'}}
 	 */
-	public static <T> Map<T, ?> imbricatedMap(Object value, T firstKey, String... moreKeys) {
+	public static <T, U> Map<T, Map<U, ?>> imbricatedMap(Object value, T firstKey, U secondKey, Object... moreKeys) {
 		Object nextValue = value;
 		for (int i = moreKeys.length - 1; i >= 0; i--) {
 			nextValue = Collections.singletonMap(moreKeys[i], nextValue);
 		}
 
-		return Collections.singletonMap(firstKey, nextValue);
-	}
-
-	@Deprecated
-	public static Map<?, ? extends Map<?, ?>> imbricatedMap2(Object value,
-			String firstKey,
-			String secondKey,
-			String... moreKeys) {
-		Map<?, ?> subMap = imbricatedMap(value, secondKey, moreKeys);
+		Map<U, ?> subMap = Collections.singletonMap(secondKey, nextValue);
 
 		return Collections.singletonMap(firstKey, subMap);
 	}
 
-	public static Optional<String> getOptionalString(Map<?, ?> map, String key) {
-		if (map == null) {
-			throw new IllegalArgumentException("Null Map while requiring key=" + key);
-		}
+	public static Optional<String> getOptionalString(Map<?, ?> map, Object firstKey, Object... moreKeys) {
+		Object value = getAs(map, firstKey, moreKeys);
 
-		Object rawValue = map.get(key);
-
-		if (rawValue == null) {
+		if (value == null) {
 			return Optional.empty();
-		} else if (rawValue instanceof String) {
-			String rawString = rawValue.toString();
-			if (Strings.isNullOrEmpty(rawString)) {
-				return Optional.empty();
-			} else {
-				return Optional.of(rawString);
-			}
+		} else if (value instanceof String) {
+			return Optional.of(value.toString());
 		} else {
-			throw new IllegalArgumentException("We have a not-String value for '" + key + "' in " + map);
+			throw new IllegalArgumentException("keys=" + Lists.asList(firstKey, moreKeys)
+					+ " led to not-a-string: "
+					+ PepperLogHelper.getObjectAndClass(value));
 		}
-
 	}
 
 	public static String checkNonNullString(String keyName, Object value) {
