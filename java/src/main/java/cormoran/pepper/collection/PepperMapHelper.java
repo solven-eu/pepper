@@ -168,7 +168,12 @@ public class PepperMapHelper {
 		if (value == null) {
 			return Optional.empty();
 		} else if (value instanceof String) {
-			return Optional.of(value.toString());
+			String valueString = value.toString();
+			if (valueString.isEmpty()) {
+				return Optional.empty();
+			} else {
+				return Optional.of(valueString);
+			}
 		} else {
 			throw new IllegalArgumentException("keys=" + Lists.asList(firstKey, moreKeys)
 					+ " led to not-a-string: "

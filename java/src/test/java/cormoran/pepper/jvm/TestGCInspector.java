@@ -50,6 +50,8 @@ import cormoran.pepper.agent.VirtualMachineWithoutToolsJar;
 import cormoran.pepper.io.PepperFileHelper;
 import cormoran.pepper.memory.IPepperMemoryConstants;
 import cormoran.pepper.thread.IThreadDumper;
+import cormoran.pepper.unittest.ILogDisabler;
+import cormoran.pepper.unittest.PepperTestHelper;
 
 public class TestGCInspector implements IPepperMemoryConstants {
 
@@ -151,7 +153,10 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		GCInspector gcInspector = new GCInspector(Mockito.mock(IThreadDumper.class));
 
 		// It appears that even under windows, the separator is '\n', not System.lineSeparator()
-		List<String> asList = Splitter.on("\n").splitToList(gcInspector.getHeapHistogram());
+		List<String> asList;
+		try (ILogDisabler logDisabler = PepperTestHelper.disableLog(VirtualMachineWithoutToolsJar.class)) {
+			asList = Splitter.on("\n").splitToList(gcInspector.getHeapHistogram());
+		}
 
 		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			LOGGER.error("Arg on JDK9: {}", asList);
