@@ -176,7 +176,7 @@ public class PepperMapHelper {
 		}
 	}
 
-	public static String checkNonNullString(String keyName, Object value) {
+	public static String checkNonNullString(Object keyName, Object value) {
 		if (value == null) {
 			throw new IllegalArgumentException("'" + keyName + "' is required but null");
 		} else if (!(value instanceof String)) {
@@ -186,8 +186,8 @@ public class PepperMapHelper {
 		return (String) value;
 	}
 
-	public static <S, T> Map<S, T> getRequiredMap(Map<?, ?> map, String mainKey, String... subKeys) {
-		List<String> allKeys = checkNullMap(map, mainKey, subKeys);
+	public static <S, T> Map<S, T> getRequiredMap(Map<?, ?> map, Object mainKey, Object... subKeys) {
+		List<Object> allKeys = checkNullMap(map, mainKey, subKeys);
 
 		return digForValue(map, allKeys, (currentKey, rawValue) -> {
 			if (rawValue instanceof Map<?, ?>) {
@@ -200,8 +200,8 @@ public class PepperMapHelper {
 		});
 	}
 
-	public static String getRequiredString(final Map<?, ?> map, String mainKey, String... subKeys) {
-		List<String> allKeys = checkNullMap(map, mainKey, subKeys);
+	public static String getRequiredString(final Map<?, ?> map, Object mainKey, Object... subKeys) {
+		List<Object> allKeys = checkNullMap(map, mainKey, subKeys);
 
 		return digForValue(map, allKeys, (currentKey, rawValue) -> {
 			if (rawValue instanceof String && Strings.isNullOrEmpty(rawValue.toString())) {
@@ -214,17 +214,17 @@ public class PepperMapHelper {
 	}
 
 	public static <T> T getRequiredAs(final Map<?, ?> map, String mainKey, String... subKeys) {
-		List<String> allKeys = checkNullMap(map, mainKey, subKeys);
+		List<Object> allKeys = checkNullMap(map, mainKey, subKeys);
 
 		return digForValue(map, allKeys, (currentKey, rawValue) -> {
 			return (T) rawValue;
 		});
 	}
 
-	private static <T> T digForValue(final Map<?, ?> map, List<String> allKeys, BiFunction<String, Object, T> toValue) {
+	private static <T> T digForValue(final Map<?, ?> map, List<Object> allKeys, BiFunction<Object, Object, T> toValue) {
 		Map<?, ?> currentMap = map;
 		for (int i = 0; i < allKeys.size(); i++) {
-			String currentKey = allKeys.get(i);
+			Object currentKey = allKeys.get(i);
 			Object rawValue = currentMap.get(currentKey);
 			if (i == allKeys.size() - 1) {
 				if (rawValue == null) {
@@ -249,8 +249,8 @@ public class PepperMapHelper {
 		throw new IllegalStateException("Would never happen");
 	}
 
-	private static List<String> checkNullMap(Map<?, ?> map, String mainKey, String... subKeys) {
-		List<String> keys = Lists.asList(mainKey, subKeys);
+	private static List<Object> checkNullMap(Map<?, ?> map, Object mainKey, Object... subKeys) {
+		List<Object> keys = Lists.asList(mainKey, subKeys);
 		if (map == null) {
 			throw new IllegalArgumentException("Input Map<?,?> is null while requiring keys=" + keys);
 		}
@@ -258,7 +258,7 @@ public class PepperMapHelper {
 	}
 
 	public static Number getRequiredNumber(Map<?, ?> map, String mainKey, String... subKeys) {
-		List<String> allKeys = checkNullMap(map, mainKey, subKeys);
+		List<Object> allKeys = checkNullMap(map, mainKey, subKeys);
 
 		return digForValue(map, allKeys, (currentKey, rawValue) -> {
 			if (rawValue instanceof Number) {
