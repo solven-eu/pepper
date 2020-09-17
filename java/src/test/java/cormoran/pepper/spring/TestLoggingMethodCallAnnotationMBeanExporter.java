@@ -31,6 +31,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cormoran.pepper.unittest.ILogDisabler;
+import cormoran.pepper.unittest.PepperTestHelper;
+
 public class TestLoggingMethodCallAnnotationMBeanExporter {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestLoggingMethodCallAnnotationMBeanExporter.class);
@@ -41,7 +44,7 @@ public class TestLoggingMethodCallAnnotationMBeanExporter {
 
 		ModelMBean mbean = exporter.createModelMBean();
 
-		try {
+		try (ILogDisabler logDisabler = PepperTestHelper.disableLog(LoggingMethodCallAnnotationMBeanExporter.class)) {
 			mbean.invoke("actionName", new Object[0], new String[0]);
 		} catch (MBeanException e) {
 			LOGGER.trace("Expected", e);
@@ -54,12 +57,12 @@ public class TestLoggingMethodCallAnnotationMBeanExporter {
 	public void doLog_classLoaderNotExposed() throws MBeanException, ReflectionException {
 		LoggingMethodCallAnnotationMBeanExporter exporter = new LoggingMethodCallAnnotationMBeanExporter();
 
-		// We instanciate a different kind of bean in this boolean is false
+		// We instantiate a different kind of bean in this boolean is false
 		exporter.setExposeManagedResourceClassLoader(false);
 
 		ModelMBean mbean = exporter.createModelMBean();
 
-		try {
+		try (ILogDisabler logDisabler = PepperTestHelper.disableLog(LoggingMethodCallAnnotationMBeanExporter.class)) {
 			mbean.invoke("actionName", new Object[0], new String[0]);
 		} catch (MBeanException e) {
 			LOGGER.trace("Expected", e);

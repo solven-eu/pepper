@@ -52,7 +52,7 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperMemoryHelper.class);
 
 	private static final ReflectionSizeOf REFLECTION_SIZE_OF = new ReflectionSizeOf();
-	private static final Double AUTOBOZED_ZERO = new Double(0);
+	private static final Double AUTOBOXED_ZERO = Double.valueOf(0D);
 
 	// http://java-performance.info/overview-of-memory-saving-techniques-java/
 	public static final int JVM_MEMORY_CHUNK = 8;
@@ -210,7 +210,7 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 
 	@Deprecated
 	public static long getDoubleMemory() {
-		return REFLECTION_SIZE_OF.deepSizeOf(AUTOBOZED_ZERO);
+		return REFLECTION_SIZE_OF.deepSizeOf(AUTOBOXED_ZERO);
 	}
 
 	public static long getObjectArrayMemory(Object... asArray) {

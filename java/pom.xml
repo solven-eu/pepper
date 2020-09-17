@@ -64,6 +64,13 @@
 			<!-- Some behavior depends on OS -->
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.github.cormoran-io.pepper</groupId>
+			<artifactId>pepper-unittest</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

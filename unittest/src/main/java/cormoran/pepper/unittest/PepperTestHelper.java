@@ -55,27 +55,54 @@ public class PepperTestHelper {
 		}
 	}
 
-	public static void disableLog(Class<?> clazz) {
-		setLogbackLoggerLevel(clazz, "OFF");
+	public static ILogDisabler disableLog(Class<?> clazz) {
+		return setLogbackLoggerLevel(clazz, "OFF");
 	}
 
-	public static void setLogbackLoggerLevel(Class<?> clazz, String levelToSet) {
+	public static ILogDisabler setLogbackLoggerLevel(Class<?> clazz, String levelToSet) {
 		Logger slf4jLogger = LoggerFactory.getLogger(clazz);
 
 		String loggerClassName = slf4jLogger.getClass().getName();
 		if ("ch.qos.logback.classic.Logger".equals(loggerClassName)) {
 			try {
+				// Get current level
+				Method getLevelMethod = slf4jLogger.getClass().getMethod("getLevel");
+				Object originalLevel = getLevelMethod.invoke(slf4jLogger);
+
+				// Apply requested level
 				Class<?> logbackLevelClass = Class.forName("ch.qos.logback.classic.Level");
 				Method setLevelMethod = slf4jLogger.getClass().getMethod("setLevel", logbackLevelClass);
-
 				setLevelMethod.invoke(slf4jLogger, logbackLevelClass.getField(levelToSet).get(null));
+
+				return new ILogDisabler() {
+
+					@Override
+					public void close() {
+						// Restore original level
+						try {
+							setLevelMethod.invoke(slf4jLogger, originalLevel);
+						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+							throw new IllegalArgumentException(
+									"Issue while restoring the level of " + slf4jLogger + " to: " + originalLevel);
+						}
+					}
+				};
 			} catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException
 					| NoSuchFieldException e) {
 				throw new RuntimeException(e);
 			}
 		} else {
 			LOGGER.info("This work only with LogBack while it was: {}", loggerClassName);
+
+			return new ILogDisabler() {
+
+				@Override
+				public void close() {
+					LOGGER.trace("There is no level to restore");
+				}
+			};
 		}
+
 	}
 
 	public static void enableLogToInfo(Class<?> clazz) {
