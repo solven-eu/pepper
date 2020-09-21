@@ -122,6 +122,7 @@ public class PepperTestHelper {
 	 * @param clazz
 	 * @return
 	 */
+	@Deprecated
 	public static AutoCloseable logDisabled(Class<?> clazz) {
 		disableLog(clazz);
 
