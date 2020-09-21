@@ -36,7 +36,7 @@ public class PepperTestHelper {
 		try {
 			url = new URL("https://google.com");
 		} catch (MalformedURLException e) {
-			throw new IllegalStateException("Issue parsing an https url");
+			throw new IllegalStateException("Issue parsing an https url", e);
 		}
 		return assumeDomainIsAvailable(url);
 	}
@@ -56,10 +56,17 @@ public class PepperTestHelper {
 	}
 
 	public static ILogDisabler disableLog(Class<?> clazz) {
-		return setLogbackLoggerLevel(clazz, "OFF");
+		return disableLogbackLoggerLevel(clazz, "OFF");
 	}
 
-	public static ILogDisabler setLogbackLoggerLevel(Class<?> clazz, String levelToSet) {
+	@SuppressWarnings("PMD.CloseResource")
+	public static void setLogbackLoggerLevel(Class<?> clazz, String levelToSet) {
+		ILogDisabler logDisabler = disableLogbackLoggerLevel(clazz, levelToSet);
+
+		LOGGER.trace("One will have to restore the log level manually ({})", logDisabler);
+	}
+
+	public static ILogDisabler disableLogbackLoggerLevel(Class<?> clazz, String levelToSet) {
 		Logger slf4jLogger = LoggerFactory.getLogger(clazz);
 
 		String loggerClassName = slf4jLogger.getClass().getName();
@@ -83,7 +90,8 @@ public class PepperTestHelper {
 							setLevelMethod.invoke(slf4jLogger, originalLevel);
 						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 							throw new IllegalArgumentException(
-									"Issue while restoring the level of " + slf4jLogger + " to: " + originalLevel);
+									"Issue while restoring the level of " + slf4jLogger + " to: " + originalLevel,
+									e);
 						}
 					}
 				};
@@ -102,7 +110,6 @@ public class PepperTestHelper {
 				}
 			};
 		}
-
 	}
 
 	public static void enableLogToInfo(Class<?> clazz) {
