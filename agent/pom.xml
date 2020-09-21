@@ -19,7 +19,7 @@
 		<!-- Enable wider compatibility -->
 		<compiler.targetVersion>1.6</compiler.targetVersion>
 
-		<sizeof.version>0.3.0</sizeof.version>
+		<sizeof.version>0.4.0</sizeof.version>
 	</properties>
 
 	<profiles>
