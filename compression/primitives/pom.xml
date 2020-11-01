@@ -13,7 +13,7 @@
     <properties>
         <roaringbitmap.version>0.9.0</roaringbitmap.version>
         <fastpfor.version>0.1.12</fastpfor.version>
-        <fastutil.version>8.4.2</fastutil.version>
+        <fastutil.version>8.4.3</fastutil.version>
 
         <!-- TODO -->
         <jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
