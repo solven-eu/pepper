@@ -69,6 +69,10 @@ public class PepperTestHelper {
 	public static ILogDisabler disableLogbackLoggerLevel(Class<?> clazz, String levelToSet) {
 		Logger slf4jLogger = LoggerFactory.getLogger(clazz);
 
+		return disableLogbackLoggerLevel(levelToSet, slf4jLogger);
+	}
+
+	public static ILogDisabler disableLogbackLoggerLevel(String levelToSet, Logger slf4jLogger) {
 		String loggerClassName = slf4jLogger.getClass().getName();
 		if ("ch.qos.logback.classic.Logger".equals(loggerClassName)) {
 			try {
