@@ -93,7 +93,8 @@ public abstract class AOverDatasource<T extends org.jooq.Table<?>> {
 	protected <R> R onDSLContext(Function<DSLContext, R> contextConsumer,
 			Function<SQLException, RuntimeException> exceptionTranslator) {
 
-		try (Connection connection = datasource.get(); DSLContext context = makeDslContext(connection)) {
+		try (Connection connection = datasource.get()) {
+			DSLContext context = makeDslContext(connection);
 			return contextConsumer.apply(context);
 		} catch (SQLException e) {
 			throw exceptionTranslator.apply(e);

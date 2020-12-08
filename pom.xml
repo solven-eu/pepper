@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.github.cormoran-io.pepper</groupId>
 		<artifactId>pepper-metadata</artifactId>
-		<version>1.26-SNAPSHOT</version>
+		<version>2.0-SNAPSHOT</version>
 		<relativePath>metadata</relativePath>
 	</parent>
 
@@ -52,7 +52,7 @@
 
 	<properties>
 		<!-- https://github.com/google/guava/releases -->
-		<guava.version>29.0-jre</guava.version>
+		<guava.version>30.0-jre</guava.version>
 
 		<!-- https://mvnrepository.com/artifact/org.jooq/jool -->
 		<jool.version>0.9.14</jool.version>
@@ -63,8 +63,8 @@
 
 		<awaitility.version>4.0.3</awaitility.version>
 		<findbugs.version>3.0.5</findbugs.version>
-		<equals.verifier.version>3.4.3</equals.verifier.version>
-		<checker.quals.version>3.6.1</checker.quals.version>
+		<equals.verifier.version>3.5</equals.verifier.version>
+		<checker.quals.version>3.7.1</checker.quals.version>
 
 		<!-- newer version than spring-boot-dependencies, for JDK11 -->
 		<mockito.version>3.2.4</mockito.version>
@@ -78,7 +78,7 @@
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
 		<maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
 		<!-- https://mvnrepository.com/artifact/com.puppycrawl.tools/checkstyle -->
-		<checkstyle.version>8.36.1</checkstyle.version>
+		<checkstyle.version>8.37</checkstyle.version>
 
 		<jacoco.instruction.ratio>0.70</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
@@ -507,7 +507,7 @@
 			<plugin>
 				<groupId>net.revelc.code.formatter</groupId>
 				<artifactId>formatter-maven-plugin</artifactId>
-				<version>2.12.2</version>
+				<version>2.13.0</version>
 				<configuration>
 					<configFile>eclipse/eclipse_java_code_formatter.xml</configFile>
 				</configuration>

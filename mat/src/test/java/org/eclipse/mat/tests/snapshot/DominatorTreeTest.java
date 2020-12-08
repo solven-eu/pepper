@@ -117,8 +117,8 @@ public class DominatorTreeTest {
 			int[] dominatedIds = snapshot.getImmediateDominatedIds(id);
 			Set<String> childrenSet = children.get(name);
 			for (int child : dominatedIds) {
-				assert childrenSet
-						.contains(name(child, snapshot)) : "Unknown child of " + name + " -> " + name(child, snapshot);
+				assert childrenSet.contains(name(child, snapshot))
+						: "Unknown child of " + name + " -> " + name(child, snapshot);
 			}
 		}
 	}
