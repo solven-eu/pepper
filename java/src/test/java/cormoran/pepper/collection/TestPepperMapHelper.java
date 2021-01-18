@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
@@ -285,6 +286,53 @@ public class TestPepperMapHelper {
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		Assert.assertEquals(ImmutableMap.of(123, ImmutableMap.of("key", ImmutableMap.of(now, "value"))), map);
+	}
+
+	@Test
+	public void testGetOptionalAs() {
+		LocalDate now = LocalDate.now();
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
+
+		Assert.assertEquals(Optional.of("value"), PepperMapHelper.getOptionalAs(map, 123, "key", now));
+		Assert.assertEquals(Optional.of(ImmutableMap.of(now, "value")), PepperMapHelper.getOptionalAs(map, 123, "key"));
+		Assert.assertEquals(Optional.of(ImmutableMap.of("key", ImmutableMap.of(now, "value"))),
+				PepperMapHelper.getOptionalAs(map, 123));
+	}
+
+	@Test
+	public void testGetRequiredAs() {
+		LocalDate now = LocalDate.now();
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
+
+		Assert.assertEquals("value", PepperMapHelper.getRequiredAs(map, 123, "key", now));
+		Assert.assertEquals(ImmutableMap.of(now, "value"), PepperMapHelper.getRequiredAs(map, 123, "key"));
+		Assert.assertEquals(ImmutableMap.of("key", ImmutableMap.of(now, "value")),
+				PepperMapHelper.getRequiredAs(map, 123));
+	}
+
+	@Test
+	public void testGetOptionalAs_missing() {
+		LocalDate now = LocalDate.now();
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
+
+		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key2")).isEmpty();
+		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 124)).isEmpty();
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testGetRequiredAs_missing_depth2() {
+		LocalDate now = LocalDate.now();
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
+
+		PepperMapHelper.getRequiredAs(map, 123, "key2");
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testGetRequiredAs_missing_depth1() {
+		LocalDate now = LocalDate.now();
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
+
+		PepperMapHelper.getRequiredAs(map, 124);
 	}
 
 }
