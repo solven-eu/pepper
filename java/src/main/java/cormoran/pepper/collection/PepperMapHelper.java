@@ -111,7 +111,10 @@ public class PepperMapHelper {
 	 *         the path leads to nothing. This fails if the path is invalid given the {@link Map} (e.g. path is 'k1.k2'
 	 *         while the {@link Map} is ('k1': 'v1'))
 	 */
-	@Deprecated(since = "Prefer .getOptionalAs or .getRequiredAs")
+	// since is in JDK11
+	@Deprecated(
+	// since = "Prefer .getOptionalAs or .getRequiredAs"
+	)
 	public static <T> T getAs(Object body, Object firstKey, Object... moreKeys) {
 		if (body == null) {
 			return null;
