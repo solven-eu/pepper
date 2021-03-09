@@ -554,7 +554,7 @@
 				<!-- http://maven.apache.org/maven-release/maven-release-plugin/usage.html -->
 				<!-- mvn clean install -Pfull -->
 				<!-- mvn release:clean release:prepare -Darguments="-DskipTests" -->
-				<!-- mvn release:perform -Darguments="-DskipTests" -->
+				<!-- mvn release:perform -Darguments="-Dmaven.test.skip" -->
 				<!-- git reset \-\-hard SOMESHA1 -->
 				<!-- git push force -->
 				<!-- git tag -d 12345 -->
