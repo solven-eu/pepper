@@ -14,7 +14,7 @@
 		<jacoco.instruction.ratio>0.65</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
 
-		<parquet.version>1.11.1</parquet.version>
+		<parquet.version>1.12.0</parquet.version>
 		<avro.version>1.8.2</avro.version>
 
 		<!-- TODO: What is the diff between 2.9.X and 2.8.X? -->
