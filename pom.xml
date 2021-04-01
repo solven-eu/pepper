@@ -59,7 +59,7 @@
 
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
-		<errorprone.version>2.5.1</errorprone.version>
+		<errorprone.version>2.6.0</errorprone.version>
 
 		<awaitility.version>4.0.3</awaitility.version>
 		<findbugs.version>3.0.5</findbugs.version>
