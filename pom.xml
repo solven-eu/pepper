@@ -73,7 +73,7 @@
 		<maven-pmd-plugin.version>3.13.0</maven-pmd-plugin.version>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.pmd/pmd -->
 		<!-- Issue with 6.27, probably due to mvn plugin -->
-		<pmd.version>6.24.0</pmd.version>
+		<pmd.version>6.34.0</pmd.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
 		<maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
