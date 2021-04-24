@@ -70,7 +70,7 @@
 		<mockito.version>3.2.4</mockito.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-pmd-plugin -->
-		<maven-pmd-plugin.version>3.13.0</maven-pmd-plugin.version>
+		<maven-pmd-plugin.version>3.14.0</maven-pmd-plugin.version>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.pmd/pmd -->
 		<!-- Issue with 6.27, probably due to mvn plugin -->
 		<pmd.version>6.34.0</pmd.version>
