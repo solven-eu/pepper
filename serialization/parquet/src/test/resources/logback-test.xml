@@ -3,7 +3,7 @@
 
 	<!-- http://logback.qos.ch/manual/jmxConfig.html -->
 	<!-- TODO: stop in a ServletContextListener . See logback doc -->
-	<contextName>ApexCoreJavaTests</contextName>
+	<contextName>PepperParquetTests</contextName>
 	<jmxConfigurator />
 
 	<!-- http://logback.qos.ch/manual/configuration.html -->
@@ -20,7 +20,7 @@
 		</encoder>
 	</appender>
 
-	<root level="debug">
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

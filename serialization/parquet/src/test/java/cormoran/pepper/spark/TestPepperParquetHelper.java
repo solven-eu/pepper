@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.avro.AvroRuntimeException;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.GenericData;
@@ -259,6 +260,17 @@ public class TestPepperParquetHelper {
 
 		Map<String, ?> asMap = AvroTranscodingHelper.toJavaMap(element1);
 
-		Assert.assertTrue(asMap.get("name") instanceof Float);
+		Assertions.assertThat(asMap.get("name")).isNull();
+	}
+
+	@Test(expected = AvroRuntimeException.class)
+	public void testToJavaMap_SchemaFloat_ValueNull_notNullable() throws IOException {
+		Schema elementSchema = Schema.createRecord("arrayElement",
+				"doc",
+				"namespace",
+				false,
+				Arrays.asList(new Field("name", Schema.create(Schema.Type.FLOAT), "doc", (Object) null)));
+
+		new GenericRecordBuilder(elementSchema).set("name", null).build();
 	}
 }

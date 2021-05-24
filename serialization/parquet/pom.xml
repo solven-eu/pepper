@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -11,58 +13,9 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<jacoco.instruction.ratio>0.65</jacoco.instruction.ratio>
-		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
-
-		<parquet.version>1.12.0</parquet.version>
-		<avro.version>1.8.2</avro.version>
-
-		<!-- TODO: What is the diff between 2.9.X and 2.8.X? -->
-		<hadoop-common.version>3.3.0</hadoop-common.version>
-		<!-- <hadoop-common.version>2.8.3</hadoop-common.version> -->
-
-		<!-- Keep in mind a stack compatible with Avro 1.7.X -->
-		<!-- <parquet.version>1.7.0</parquet.version> -->
-		<!-- <avro.version>1.7.7</avro.version> -->
-		<!-- <hadoop-common.version>2.7.5</hadoop-common.version> -->
-
-		<!-- TODO -->
-		<jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
-		<jacoco.branch.ratio>0.0</jacoco.branch.ratio>
+		<jacoco.branch.ratio>0.27</jacoco.branch.ratio>
+		<jacoco.instruction.ratio>0.52</jacoco.instruction.ratio>
 	</properties>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.apache.parquet</groupId>
-				<artifactId>parquet-hadoop</artifactId>
-				<version>${parquet.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.parquet</groupId>
-				<artifactId>parquet-common</artifactId>
-				<version>${parquet.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.parquet</groupId>
-				<artifactId>parquet-column</artifactId>
-				<version>${parquet.version}</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.apache.parquet/parquet-avro -->
-			<dependency>
-				<groupId>org.apache.parquet</groupId>
-				<artifactId>parquet-avro</artifactId>
-				<version>${parquet.version}</version>
-			</dependency>
-
-
-			<dependency>
-				<!-- https://stackoverflow.com/questions/42352091/spark-sql-fails-with-java-lang-noclassdeffounderror-org-codehaus-commons-compil -->
-				<groupId>org.codehaus.janino</groupId>
-				<artifactId>commons-compiler</artifactId>
-				<version>3.1.3</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -131,10 +84,29 @@
 			<artifactId>parquet-avro</artifactId>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-mapreduce-client-core -->
+		<dependency>
+			<!-- HadoopReadOptions -->
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-mapreduce-client-core</artifactId>
+			<version>${hadoop-common.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<!-- Provided not to impose its usage, but available when running Run*** classes -->
+			<!-- Provided not to impose its usage, but available when running Run*** 
+				classes -->
 			<scope>provided</scope>
 		</dependency>
 
@@ -145,7 +117,8 @@
 		</dependency>
 
 		<dependency>
-			<!-- We ensure this module does not provide log4j, however, tests will needs a Log4J implementation anyway -->
+			<!-- We ensure this module does not provide log4j, however, tests will 
+				needs a Log4J implementation anyway -->
 			<groupId>org.slf4j</groupId>
 			<artifactId>log4j-over-slf4j</artifactId>
 			<scope>test</scope>

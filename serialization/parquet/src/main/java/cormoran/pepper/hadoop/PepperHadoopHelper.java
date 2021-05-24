@@ -58,8 +58,11 @@ public class PepperHadoopHelper {
 		}
 
 		// If we get here, it means winutils is missing
+		// Used to fetch Windows winutils at
+		// https://github.com/steveloughran/winutils.git
+		// An updted fork is available at https://github.com/cdarlint/winutils.git
 		LOGGER.error(
-				"Haddop winutils seems not installed. They can be checked-out from 'git clone https://github.com/steveloughran/winutils.git'");
+				"Haddop winutils seems not installed. They can be checked-out from 'git clone https://github.com/cdarlint/winutils.git'");
 		return false;
 	}
 }

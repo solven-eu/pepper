@@ -34,13 +34,21 @@
 
         <dependency>
             <groupId>org.apache.arrow</groupId>
-            <artifactId>arrow-memory</artifactId>
+            <artifactId>arrow-memory-core</artifactId>
             <version>${arrow.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.arrow</groupId>
             <artifactId>arrow-vector</artifactId>
             <version>${arrow.version}</version>
+        </dependency>
+        
+        <dependency>
+        	<!-- One may prefer arrow-memory-netty -->
+            <groupId>org.apache.arrow</groupId>
+            <artifactId>arrow-memory-unsafe</artifactId>
+            <version>${arrow.version}</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>
