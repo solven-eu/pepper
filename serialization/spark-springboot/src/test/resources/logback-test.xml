@@ -3,7 +3,7 @@
 
 	<!-- http://logback.qos.ch/manual/jmxConfig.html -->
 	<!-- TODO: stop in a ServletContextListener . See logback doc -->
-	<contextName>PepperSparkSpringBoot</contextName>
+	<contextName>PepperSparkTests</contextName>
 	<jmxConfigurator />
 
 	<!-- http://logback.qos.ch/manual/configuration.html -->

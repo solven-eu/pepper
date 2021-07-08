@@ -158,13 +158,13 @@ public class PepperSparkHelper {
 	public static Map<String, Object> convertSparkSchemaToExampleMap(StructType schema) {
 		Map<String, Object> schemaAsMap = new HashMap<>();
 		schema.foreach(JFunction.func(arg0 -> {
-			if (arg0.dataType().typeName().equals("string")) {
+			if ("string".equals(arg0.dataType().typeName())) {
 				schemaAsMap.put(arg0.name(), "someString");
-			} else if (arg0.dataType().typeName().equals("integer")) {
+			} else if ("integer".equals(arg0.dataType().typeName())) {
 				schemaAsMap.put(arg0.name(), 1);
-			} else if (arg0.dataType().typeName().equals("double")) {
+			} else if ("double".equals(arg0.dataType().typeName())) {
 				schemaAsMap.put(arg0.name(), 1D);
-			} else if (arg0.dataType().typeName().equals("array")) {
+			} else if ("array".equals(arg0.dataType().typeName())) {
 				ArrayType arrayType = (ArrayType) arg0.dataType();
 				DataType elementType = arrayType.elementType();
 

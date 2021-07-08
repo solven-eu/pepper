@@ -42,6 +42,9 @@
 
 		<!-- Beta: zero-copy CSV reader -->
 		<module>csv</module>
+		
+		<!-- Demonstrate how to package a Spark job with SpringBoot -->
+		<module>spark-springboot</module>
 	</modules>
 
 	<dependencyManagement>

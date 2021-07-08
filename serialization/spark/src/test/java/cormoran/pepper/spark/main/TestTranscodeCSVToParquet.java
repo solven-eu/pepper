@@ -49,7 +49,6 @@ import cormoran.pepper.spark.run.RunCsvToParquet;
  * @author Benoit Lacelle
  */
 public class TestTranscodeCSVToParquet {
-
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestTranscodeCSVToParquet.class);
 
 	@Before
