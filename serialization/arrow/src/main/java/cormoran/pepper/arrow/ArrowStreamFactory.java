@@ -66,7 +66,7 @@ public class ArrowStreamFactory implements IArrowStreamFactory {
 
 	@Override
 	public Stream<Map<String, ?>> stream(URI uri) throws IOException {
-		if (uri.getScheme().equals("file")) {
+		if ("file".equals(uri.getScheme())) {
 			return new ArrowBytesToStream().stream(Paths.get(uri).toFile());
 		} else {
 			return new ArrowBytesToStream().stream(uri.toURL().openStream());

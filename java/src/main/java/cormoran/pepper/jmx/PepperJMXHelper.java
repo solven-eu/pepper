@@ -218,31 +218,32 @@ public class PepperJMXHelper {
 	public static <S, T> Map<S, T> convertToJMXValueOrderedMap(Map<S, T> map,
 			Optional<? extends Comparator<? super Entry<S, T>>> comparator) {
 
-		Stream<Entry<S, T>> entries = map.entrySet().stream();
-
-		Supplier<Map<S, T>> mapSupplier;
-		if (comparator.isPresent()) {
-			entries = entries.sorted(comparator.get());
-			mapSupplier = LinkedHashMap::new;
-		} else {
-			if (map instanceof TreeMap) {
-				mapSupplier = TreeMap::new;
-			} else {
+		try (Stream<Entry<S, T>> entries = map.entrySet().stream()) {
+			Supplier<Map<S, T>> mapSupplier;
+			Stream<Entry<S, T>> entriesSortedIfNecessary;
+			if (comparator.isPresent()) {
+				entriesSortedIfNecessary = entries.sorted(comparator.get());
 				mapSupplier = LinkedHashMap::new;
-			}
-		}
-
-		// http://stackoverflow.com/questions/29567575/sort-map-by-value-using-java-8
-
-		return entries.collect(PepperStreamHelper.toMap(e -> {
-			if (e.getKey() instanceof List<?>) {
-				return (S) convertToJMXList((List) e.getKey());
 			} else {
-				return e.getKey();
+				entriesSortedIfNecessary = entries;
+				if (map instanceof TreeMap) {
+					mapSupplier = TreeMap::new;
+				} else {
+					mapSupplier = LinkedHashMap::new;
+				}
 			}
-			// LinkedHashMap to maintain order (as defined by values), and JMX
-			// Compatible
-		}, Entry::getValue, mapSupplier));
+
+			// http://stackoverflow.com/questions/29567575/sort-map-by-value-using-java-8
+			return entriesSortedIfNecessary.collect(PepperStreamHelper.toMap(e -> {
+				if (e.getKey() instanceof List<?>) {
+					return (S) convertToJMXList((List) e.getKey());
+				} else {
+					return e.getKey();
+				}
+				// LinkedHashMap to maintain order (as defined by values), and JMX
+				// Compatible
+			}, Entry::getValue, mapSupplier));
+		}
 	}
 
 	public static <T extends Comparable<T>> Set<T> convertToJMXSet(Iterable<? extends T> elements) {

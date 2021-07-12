@@ -13,8 +13,8 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<jacoco.branch.ratio>0.27</jacoco.branch.ratio>
-		<jacoco.instruction.ratio>0.52</jacoco.instruction.ratio>
+		<jacoco.branch.ratio>0.07</jacoco.branch.ratio>
+		<jacoco.instruction.ratio>0.10</jacoco.instruction.ratio>
 	</properties>
 
 	<dependencies>

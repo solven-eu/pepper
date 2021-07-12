@@ -154,6 +154,7 @@ public class SetStaticMBean {
 					return asObject;
 				} else {
 					classToTry = classToTry.getSuperclass();
+					LOGGER.debug("TODO Parent classes? {}", classToTry);
 				}
 			}
 
@@ -211,6 +212,7 @@ public class SetStaticMBean {
 					break;
 				} else {
 					classToTry = classToTry.getSuperclass();
+					LOGGER.debug("TODO Parent classes? {}", classToTry);
 				}
 			}
 		}

@@ -52,6 +52,7 @@ import com.google.common.util.concurrent.AtomicLongMap;
 // https://raw.githubusercontent.com/ehcache/sizeof/master/src/main/java/org/ehcache/sizeof/ObjectGraphWalker.java
 // 113b412 on 5 Oct
 // FlyweightType is package-friendly
+@SuppressWarnings("PMD.GodClass")
 public final class PepperObjectGraphWalker {
 
 	private static final int MISS_COUNT = 1000;

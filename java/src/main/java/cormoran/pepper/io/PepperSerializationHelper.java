@@ -79,6 +79,7 @@ import cormoran.pepper.jmx.SetStaticMBean;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("PMD.GodClass")
 public class PepperSerializationHelper {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperSerializationHelper.class);

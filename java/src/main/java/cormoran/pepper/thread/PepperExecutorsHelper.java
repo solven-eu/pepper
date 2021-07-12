@@ -193,6 +193,7 @@ public class PepperExecutorsHelper {
 
 		// TODO: we use MAX_VALUE else we seem to encounter thread starving, typically when adding ListeningFuture
 		// listener as it automatically submit new tasks while the queue may already be full
+		LOGGER.trace("TODO Is it OK to rely on a Integer.MAX_VALUE instead of {}?", queueCapacityAsInt);
 		queueCapacityAsInt = DEFAULT_QUEUE_CAPACITY;
 
 		return newShrinkableFixedThreadPool(maxThreads, threadNamePrefix, queueCapacityAsInt, DEFAULT_REJECTION_POLICY);

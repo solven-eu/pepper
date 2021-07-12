@@ -47,6 +47,7 @@ import cormoran.pepper.agent.InstrumentationAgent;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("PMD.GodClass")
 public class PepperMemoryHelper implements IPepperMemoryConstants {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperMemoryHelper.class);

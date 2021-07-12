@@ -53,7 +53,7 @@ public interface IArrowStreamFactory {
 	Stream<Map<String, ?>> stream(URI uri) throws IOException;
 
 	default long serialize(URI uri, Schema schema, Stream<? extends Map<String, ?>> rowsToWrite) throws IOException {
-		if (uri.getScheme().equals("file")) {
+		if ("file".equals(uri.getScheme())) {
 			// Arrow add magic-headers when writing to files
 			try (SeekableByteChannel fos =
 					Files.newByteChannel(Paths.get(uri), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {

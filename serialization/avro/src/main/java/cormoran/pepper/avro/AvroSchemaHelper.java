@@ -54,6 +54,7 @@ import cormoran.pepper.logging.PepperLogHelper;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("PMD.GodClass")
 public class AvroSchemaHelper {
 	protected AvroSchemaHelper() {
 		// hidden

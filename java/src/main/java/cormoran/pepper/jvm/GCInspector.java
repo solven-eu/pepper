@@ -332,7 +332,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 				.ifPresent(this::onOutOfMemoryError);
 	}
 
-	@SuppressWarnings("PMD.DoNotCallSystemExit")
+	@SuppressWarnings({ "PMD.DoNotCallSystemExit", "PMD.DoNotTerminateVM" })
 	private void onOutOfMemoryError(Throwable oom) {
 		LOGGER.error("We encountered an {}", oom.getClass());
 
@@ -382,12 +382,12 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	protected String makeGCMessage(IPepperGarbageCollectionNotificationInfo info) {
 		long duration = computeDurationMs(info);
 
-		String gctype = info.getGcAction();
-		if ("end of minor GC".equals(gctype)) {
-			gctype = "Young Gen GC";
-		} else if ("end of major GC".equals(gctype)) {
-			gctype = "Old Gen GC";
-		}
+		// String gctype = info.getGcAction();
+		// if ("end of minor GC".equals(gctype)) {
+		// gctype = "Young Gen GC";
+		// } else if ("end of major GC".equals(gctype)) {
+		// gctype = "Old Gen GC";
+		// }
 
 		StringBuilder sb = new StringBuilder();
 
@@ -938,7 +938,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	protected Optional<BufferPoolMXBean> directMemoryStatus() {
 		return ManagementFactory.getPlatformMXBeans(BufferPoolMXBean.class)
 				.stream()
-				.filter(b -> b.getName().equals("direct"))
+				.filter(b -> "direct".equals(b.getName()))
 				.findAny();
 	}
 

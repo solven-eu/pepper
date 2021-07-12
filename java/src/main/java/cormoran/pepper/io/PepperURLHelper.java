@@ -178,7 +178,7 @@ public class PepperURLHelper {
 
 	@Beta
 	public static OutputStream outputStream(URI uri) throws IOException, MalformedURLException {
-		if (uri.getScheme().equals("file")) {
+		if ("file".equals(uri.getScheme())) {
 			// For an unknown reason, the default connection to a file is not writable: we prepare the file manually
 			return Files.newOutputStream(Paths.get(uri));
 		} else {

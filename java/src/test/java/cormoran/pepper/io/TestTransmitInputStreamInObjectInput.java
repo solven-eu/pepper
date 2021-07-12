@@ -32,6 +32,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.ByteBuffer;
 
+import org.assertj.core.api.Assertions;
 import org.awaitility.Awaitility;
 import org.junit.Assert;
 import org.junit.Test;
@@ -268,7 +269,8 @@ public class TestTransmitInputStreamInObjectInput {
 
 		// Ensure we are retrieving the whole chunk
 		byte[] transmitted = ByteStreams.toByteArray(readIS);
-		Assert.assertTrue(bytesFrance.length > transmitted.length);
+		// transit is ongoing, and may be finished if very-fast
+		Assertions.assertThat(transmitted.length).isLessThanOrEqualTo(bytesFrance.length);
 		Awaitility.await().untilFalse(objectInput.pipedOutputStreamIsOpen);
 
 		Exception exceptionToRethrow = objectInput.ouch.get();

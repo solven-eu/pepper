@@ -55,7 +55,7 @@ import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider.Accessor;
  * @author Benoit Lacelle
  */
 // https://github.com/javamelody/javamelody/blob/master/javamelody-core/src/main/java/net/bull/javamelody/VirtualMachine.java
-@SuppressWarnings("PMD.AvoidSynchronizedAtMethodLevel")
+@SuppressWarnings({ "PMD.AvoidSynchronizedAtMethodLevel", "PMD.GodClass" })
 public class VirtualMachineWithoutToolsJar {
 	private static final int JDK_9_VERSION = 9;
 
