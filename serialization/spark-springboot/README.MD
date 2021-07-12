@@ -50,7 +50,10 @@ You'd better launching from Powershell:
 
     cd ../pepper/serialization/spark-springboot
     mvn install
-    spark-submit --class cormoran.pepper.spark.run.pi.RunSparkPiAsSpringBoot --master local[8] ./target/spark-springboot-2.1-SNAPSHOT-exec.jar 100
+    ./bin/spark-submit /
+        --class cormoran.pepper.spark.run.pi.RunSparkPiAsSpringBoot /
+        --master local[8] /
+        ./target/spark-springboot-2.1-SNAPSHOT-exec.jar 100
 
 # Deploy into a Kubernetes Cluster (Minikube)
 
@@ -59,6 +62,15 @@ https://spark.apache.org/docs/latest/running-on-kubernetes.html
     ./bin/docker-image-tool.sh -t benoitSparkPiSpringBoot build
     
 # The following will open a local proxy so the actual Kubernetes cluster (hence not requiring to find its deeper configuration like its port)
+
+Kubernetes needs the FatJar available on each executor node (plus the driver node). One may build a Docker image holding the FatJar.
+
+Another option is to make the FatJar available through the Network. One easy way is to rely on an simple http server. For instance:
+
+reference: https://superuser.com/questions/231080/extremely-simple-web-server-for-windows#comment359284_231106
+reference: https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds
+
+    python -m http.server
     
     kubectl proxy
     
@@ -68,9 +80,9 @@ https://spark.apache.org/docs/latest/running-on-kubernetes.html
         --name spark-pi \
         --class cormoran.pepper.spark.run.pi.RunSparkPiAsSpringBoot \
         --conf spark.executor.instances=5 \
-        --conf spark.kubernetes.container.image=docker.io/datamechanics/spark:3.1.1-dm13 \
+        --conf spark.kubernetes.container.image=kube3-dtr-dev.fr.world.socgen/x202014/spark:v2 \
 		--conf spark.kubernetes.file.upload.path=target/anythingTemporary \
-        ./target/spark-springboot-2.1-SNAPSHOT-exec.jar
+        http://localhost:8000/target/spark-springboot-2.1-SNAPSHOT-exec.jar
 
 ## Kubernetes Helpers
 
