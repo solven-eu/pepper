@@ -1,11 +1,9 @@
 One goal here is to demonstrate how to start a Spark application in a Kubernetes cluster.
 
+## Install Minikube
+
 For easy local deployment, we can rely on Minikube:
 https://minikube.sigs.k8s.io/docs/start/
-
-mvn install
-
-ls ./target/spark-springboot-2.1-SNAPSHOT-exec.jar
 
 ## Download Spark
 
@@ -53,3 +51,45 @@ You'd better launching from Powershell:
     cd ../pepper/serialization/spark-springboot
     mvn install
     spark-submit --class cormoran.pepper.spark.run.pi.RunSparkPiAsSpringBoot --master local[8] ./target/spark-springboot-2.1-SNAPSHOT-exec.jar 100
+
+# Deploy into a Kubernetes Cluster (Minikube)
+
+https://spark.apache.org/docs/latest/running-on-kubernetes.html
+
+    ./bin/docker-image-tool.sh -t benoitSparkPiSpringBoot build
+    
+# The following will open a local proxy so the actual Kubernetes cluster (hence not requiring to find its deeper configuration like its port)
+    
+    kubectl proxy
+    
+    ./bin/spark-submit \
+        --master k8s://http://localhost:8001 \
+        --deploy-mode cluster \
+        --name spark-pi \
+        --class cormoran.pepper.spark.run.pi.RunSparkPiAsSpringBoot \
+        --conf spark.executor.instances=5 \
+        --conf spark.kubernetes.container.image=docker.io/datamechanics/spark:3.1.1-dm13 \
+		--conf spark.kubernetes.file.upload.path=target/anythingTemporary \
+        ./target/spark-springboot-2.1-SNAPSHOT-exec.jar
+
+## Kubernetes Helpers
+
+### Monitoring:
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.4/aio/deploy/recommended.yaml
+    
+    http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+
+### Access local images (e.g. to workaround proxy issues)
+
+This will switch docker to Minikube environment
+
+    https://stackoverflow.com/questions/40144138/pull-a-local-image-to-run-a-pod-in-kubernetes/40150867#40150867
+    eval $(minikube docker-env)
+    
+Then you have to pull/build/tag the relevant image.
+    
+    docker pull datamechanics/spark:3.1.1-dm13
+    
+If this fails due to SSL (e.g. in some very tight environment/proxy), you may want to add '--insecure-registry' to Minikube start:
+
+    minikube start --insecure-registry registry-1.docker.io:443

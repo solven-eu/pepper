@@ -59,16 +59,15 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<dependencies>
 					<dependency>
+						<!-- We can not rely directly on spring-boot-maven-plugin -->
+						<!-- as it has its own structure, which prevents loading it to another -->
+						<!-- application ClassLoader, while it is exactly what's done by SparkSubmit -->
 						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-maven-plugin</artifactId>
 						<version>2.5.3</version>
 					</dependency>
 				</dependencies>
 				<configuration>
-					<!-- <mainClass>cormoran.pepper.spark.run.pi.RunSparkPiAsSpringBoot</mainClass> -->
-					<!-- <layout>JAR</layout> -->
-					<!-- <classifier>exec</classifier> -->
-
 					<!-- <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope> -->
 					<createDependencyReducedPom>true</createDependencyReducedPom>
 
