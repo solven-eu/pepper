@@ -51,6 +51,24 @@
 
 	</dependencies>
 
+	<!-- https://stackoverflow.com/questions/28458058/maven-shade-plugin-exclude-a-dependency-and-all-its-transitive-dependencies -->
+	<profiles>
+		<profile>
+			<!-- In this profile, we switch Spark dependencies as provided, so they 
+				are not included in the shadedJar (without having to list transitive dependencies 
+				individually) -->
+			<id>spark</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.apache.spark</groupId>
+					<artifactId>spark-sql_${scala.version}</artifactId>
+					<version>${spark.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -60,7 +78,7 @@
 				<dependencies>
 					<dependency>
 						<!-- We can not rely directly on spring-boot-maven-plugin -->
-						<!-- as it has its own structure, which prevents loading it to another -->
+						<!-- as it has its own structure, which prevents loading it from another -->
 						<!-- application ClassLoader, while it is exactly what's done by SparkSubmit -->
 						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-maven-plugin</artifactId>
@@ -125,37 +143,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<profiles>
-		<profile>
-			<!-- THIS DOES NOT WORK -->
-			<!-- As Spark needs to load the fatJar as an external dependency -->
-			<!-- While SpringBootMaven plugin builds an autonomous jar with its own 
-				structure -->
-			<!-- https://stackoverflow.com/questions/45523901/start-spring-boot-app-from-other-application -->
-			<id>springBootMavenPlugin</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
-						<configuration>
-							<mainClass>cormoran.pepper.spark.run.pi.RunSparkPiAsSpringBoot</mainClass>
-							<layout>JAR</layout>
-							<classifier>exec</classifier>
-						</configuration>
-						<!-- https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#packaging -->
-						<!-- This would be configured automatically if having as parent: spring-boot-starter-parent -->
-						<executions>
-							<execution>
-								<goals>
-									<goal>repackage</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>

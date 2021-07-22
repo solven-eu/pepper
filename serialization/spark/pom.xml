@@ -33,6 +33,8 @@
 		<dependency>
 			<groupId>org.apache.spark</groupId>
 			<artifactId>spark-core_${scala.version}</artifactId>
+			<!-- Should this be provided? -->
+			<!-- <scope>provided</scope> -->
 			<version>${spark.version}</version>
 			<exclusions>
 				<exclusion>
@@ -53,6 +55,8 @@
 			<!-- org.apache.spark.sql.Row through spark_catalyst -->
 			<groupId>org.apache.spark</groupId>
 			<artifactId>spark-sql_${scala.version}</artifactId>
+			<!-- Should this be provided? -->
+			<!-- <scope>provided</scope> -->
 			<version>${spark.version}</version>
 		</dependency>
 

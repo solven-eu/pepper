@@ -32,6 +32,9 @@ public class RunSparkPi {
 			l.add(i);
 		}
 
+		// The point of .getOrCreate is to either rely on SparkSession provided by the caller (e.g. in case of job
+		// started with SparkSubmit)
+		// Or to rely on given default configuration if started as a plain Java program
 		try (SparkSession spark =
 				SparkSession.builder().appName("EstimatePi").config("spark.master", "local[*]").getOrCreate()) {
 
