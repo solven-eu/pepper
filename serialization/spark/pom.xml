@@ -79,7 +79,7 @@
 			<!-- <scope>test</scope> -->
 		</dependency>
 		<dependency>
-			<!-- Use pepperHadoopHelper -->
+			<!-- Use PepperHadoopHelper -->
 			<groupId>com.github.cormoran-io.pepper</groupId>
 			<artifactId>pepper-parquet</artifactId>
 			<version>${project.version}</version>

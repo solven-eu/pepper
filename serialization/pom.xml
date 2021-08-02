@@ -14,31 +14,38 @@
 
 	<properties>
 		<avro.version>1.10.2</avro.version>
-		
-        <!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
-        <arrow.version>0.17.1</arrow.version>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
+		<arrow.version>0.17.1</arrow.version>
 		<parquet.version>1.12.0</parquet.version>
 
 		<!-- TODO: What is the diff between 2.9.X and 2.8.X? -->
 		<hadoop-common.version>3.3.0</hadoop-common.version>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
 		<arrow.version>5.0.0</arrow.version>
 		<!-- <arrow.version>0.16.0</arrow.version> -->
 
+		<!-- <scala.version>2.13</scala.version> -->
 		<scala.version>2.12</scala.version>
 		<!-- <scala.version>2.11</scala.version> -->
 		<!-- <scala.version>2.10</scala.version> -->
 
 		<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core_2.10 -->
 		<spark.version>3.1.1</spark.version>
+
+		<!-- 3.1.2 leads to org.codehaus.janino.InternalCompilerException -->
+		<!-- Indeed, moved to org.codehaus.commons.compiler.InternalCompilerException -->
+		<!-- <version>3.1.2</version> -->
+		<!-- <janino.version>3.1.6</janino.version> -->
+		<janino.version>3.0.16</janino.version>
 	</properties>
 
 	<modules>
 		<module>avro</module>
 		<module>parquet</module>
 		<module>arrow</module>
-		
+
 		<module>spark</module>
 		<module>spark_2.10</module>
 		<module>spark_2.11</module>
@@ -47,7 +54,7 @@
 
 		<!-- Beta: zero-copy CSV reader -->
 		<module>csv</module>
-		
+
 		<!-- Demonstrate how to package a Spark job with SpringBoot -->
 		<module>spark-springboot</module>
 	</modules>
@@ -63,19 +70,16 @@
 			<dependency>
 				<groupId>org.codehaus.janino</groupId>
 				<artifactId>janino</artifactId>
-				<version>3.1.6</version>
+				<version>${janino.version}</version>
 			</dependency>
 
 			<dependency>
 				<!-- https://stackoverflow.com/questions/42352091/spark-sql-fails-with-java-lang-noclassdeffounderror-org-codehaus-commons-compil -->
 				<groupId>org.codehaus.janino</groupId>
 				<artifactId>commons-compiler</artifactId>
-				<version>3.1.6</version>
-				<!-- 3.1.2 leads to org.codehaus.janino.InternalCompilerException -->
-				<!-- Indeed, moved to org.codehaus.commons.compiler.InternalCompilerException -->
-				<!-- <version>3.1.2</version> -->
+				<version>${janino.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.apache.parquet</groupId>
 				<artifactId>parquet-hadoop</artifactId>
