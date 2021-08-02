@@ -32,7 +32,7 @@
 		<!-- <scala.version>2.10</scala.version> -->
 
 		<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core_2.10 -->
-		<spark.version>3.1.1</spark.version>
+		<spark.version>3.1.2</spark.version>
 
 		<!-- 3.1.2 leads to org.codehaus.janino.InternalCompilerException -->
 		<!-- Indeed, moved to org.codehaus.commons.compiler.InternalCompilerException -->
