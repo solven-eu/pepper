@@ -37,8 +37,13 @@
 	<modules>
 		<module>avro</module>
 		<module>parquet</module>
-		<module>spark</module>
 		<module>arrow</module>
+		
+		<module>spark</module>
+		<module>spark_2.10</module>
+		<module>spark_2.11</module>
+		<module>spark_2.12</module>
+		<module>spark_2.13</module>
 
 		<!-- Beta: zero-copy CSV reader -->
 		<module>csv</module>

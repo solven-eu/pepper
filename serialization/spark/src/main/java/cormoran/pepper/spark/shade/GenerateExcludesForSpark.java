@@ -2,11 +2,6 @@ package cormoran.pepper.spark.shade;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -16,25 +11,29 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import com.google.common.io.ByteStreams;
 
+/**
+ * Helps generating the artifacSet excludes clause, given a local Spark installation
+ * 
+ * @author Benoit Lacelle
+ *
+ */
 public class GenerateExcludesForSpark {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GenerateExcludesForSpark.class);
 
-	public static void main(String[] args) throws IOException {
-		Path sparkLib = Paths.get(System.getenv("SPARK_HOME"), "jars");
-		Set<String> fileNames = Files.walk(sparkLib).map(p -> p.toFile().getName()).collect(Collectors.toSet());
-
-		String artifactSets = new GenerateExcludesForSpark().generatesExcludes(fileNames);
-
-		LOGGER.info("Generates excludes: {}{}", System.lineSeparator(), artifactSets);
-	}
-
-	public String generatesExcludes(Set<String> fileNames) throws IOException {
-		byte[] bytes = ByteStreams
-				.toByteArray(new ClassPathResource("/mvn_dependency_tree/mvn-dependency_tree.txt").getInputStream());
+	/**
+	 * Generates a full set of dependencies to exclude based on the jars provided by a Spark installation
+	 * 
+	 * @param dependencyTreeResource
+	 * @param fileNames
+	 * @return
+	 * @throws IOException
+	 */
+	public String generatesExcludes(Resource dependencyTreeResource, Set<String> fileNames) throws IOException {
+		byte[] bytes = ByteStreams.toByteArray(dependencyTreeResource.getInputStream());
 		String dependencyTree = new String(bytes, StandardCharsets.UTF_8);
 
 		Set<String> groupIdArtifactIdInTree = new TreeSet<>();
@@ -53,7 +52,8 @@ public class GenerateExcludesForSpark {
 			}
 		});
 
-		List<String> toExclude = new ArrayList<>();
+		// Ensure the exclusions are sorted for easy human-readability and git diffs
+		Set<String> toExclude = new TreeSet<>();
 
 		fileNames.forEach(fileName -> {
 			if (!fileName.endsWith(".jar")) {
@@ -62,49 +62,81 @@ public class GenerateExcludesForSpark {
 			}
 
 			String artifactInFileName = fileName.substring(0, fileName.lastIndexOf('-'));
+			int indexOfUnderscore = artifactInFileName.indexOf('_');
 
 			groupIdArtifactIdInTree.stream()
 					// Look for a groupIdArtifactId which has as artifact, the filename of current jar
 					.filter(artifactId -> {
-						int indexOfUnderscore = artifactInFileName.indexOf('_');
-						if (artifactId.startsWith("org.apache.spark:") && indexOfUnderscore >= 0) {
-							// Replace 'org.apache.spark:spark-core_2.12' by 'org.apache.spark:spark-core' to handle
-							// different scala versions
-							String artifactFileNameWithoutScala =
-									artifactInFileName.substring(0, indexOfUnderscore);
-							return artifactId.startsWith("org.apache.spark:" + artifactFileNameWithoutScala + "_");
-						} else {
-							return artifactId.endsWith(":" + artifactInFileName);
-						}
+						return filterArtifactId(artifactInFileName, indexOfUnderscore, artifactId);
 					})
 					.findAny()
 					.ifPresent(artifact -> {
 						toExclude.add(artifact);
 					});
-			;
 		});
+
+		Set<String> toExcludeExpandScala = toExclude.stream().flatMap(a -> {
+			if (a.endsWith("_2.10") || a.endsWith("_2.11") || a.endsWith("_2.12")) {
+				String prefix = a.substring(0, a.length() - "_2.1N".length());
+				return Stream.of(prefix + "_2.10", prefix + "_2.11", prefix + "_2.12");
+			} else {
+				return Stream.of(a);
+			}
+		}).collect(Collectors.toCollection(TreeSet::new));
 
 		StringBuilder artifactSetBuilder = new StringBuilder();
 
-		artifactSetBuilder.append("<artifactSet>");
-		artifactSetBuilder.append(System.lineSeparator());
-		artifactSetBuilder.append("	<excludes>");
-		artifactSetBuilder.append(System.lineSeparator());
-		artifactSetBuilder.append(
-				"		<!-- excludes generated automatically with cormoran.pepper.spark.GenerateExcludesForSpark -->");
-		artifactSetBuilder.append(System.lineSeparator());
+		artifactSetBuilder.append("<artifactSet>")
+				.append(System.lineSeparator())
+				.append("	<excludes>")
+				.append(System.lineSeparator())
+				.append("		<!-- excludes generated automatically with cormoran.pepper.spark.GenerateExcludesForSpark -->")
+				.append(System.lineSeparator());
 
-		toExclude.forEach(oneToExclude -> {
-			artifactSetBuilder.append("		<exclude>");
-			artifactSetBuilder.append(oneToExclude);
-			artifactSetBuilder.append("</exclude>");
-			artifactSetBuilder.append(System.lineSeparator());
+		toExcludeExpandScala.forEach(oneToExclude -> {
+			artifactSetBuilder.append("		<exclude>")
+					.append(oneToExclude)
+					.append("</exclude>")
+					.append(System.lineSeparator());
 		});
 
-		artifactSetBuilder.append("	<excludes>");
-		artifactSetBuilder.append(System.lineSeparator());
-		artifactSetBuilder.append("</artifactSet>");
-		artifactSetBuilder.append(System.lineSeparator());
+		artifactSetBuilder.append("	<excludes>")
+				.append(System.lineSeparator())
+				.append("</artifactSet>")
+				.append(System.lineSeparator());
 		return artifactSetBuilder.toString();
+	}
+
+	private boolean filterArtifactId(String artifactInFileName, int indexOfUnderscore, String artifactId) {
+		if (indexOfUnderscore < 0) {
+			// In most cases, we get there
+			return artifactId.endsWith(":" + artifactInFileName);
+		} else if (artifactId.indexOf('_') < 0) {
+			// We have a '_' in file name, but not in current artifact
+			return artifactId.endsWith(":" + artifactInFileName);
+		}
+
+		String groupId = artifactId.substring(0, artifactId.indexOf(':'));
+
+		// org.apache.spark:spark-core_2.12
+		// com.fasterxml.jackson.module:jackson-module-scala_2.12
+		// org.scala-lang.modules:scala-xml_2.12
+		// com.twitter:chill_2.12
+		boolean isKnownGroupIdScala =
+				("org.apache.spark".equals(groupId) || "com.fasterxml.jackson.module".equals(groupId)
+						|| "org.scala-lang.modules".equals(groupId)
+						|| "com.twitter".equals(groupId)) && indexOfUnderscore >= 0;
+		if (isKnownGroupIdScala || artifactInFileName.endsWith("_2.10")
+				|| artifactInFileName.endsWith("_2.11")
+				|| artifactInFileName.endsWith("_2.12")
+				|| artifactInFileName.endsWith("_2.13")) {
+			// Replace 'org.apache.spark:spark-core_2.12' by 'org.apache.spark:spark-core' to handle
+			// different scala versions
+			String artifactFileNameWithoutScala = artifactInFileName.substring(0, indexOfUnderscore);
+			return artifactId.startsWith(groupId + ":" + artifactFileNameWithoutScala + "_");
+		}
+
+		// Last resort
+		return artifactId.endsWith(":" + artifactInFileName);
 	}
 }
