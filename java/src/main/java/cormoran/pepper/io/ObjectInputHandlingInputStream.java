@@ -123,47 +123,46 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 			CountDownLatch connectedCdl = new CountDownLatch(1);
 
 			LOGGER.debug("We received a {}. Initiating an aynchronous pumping", next.getClass());
-			inputStreamFiller.get()
-					.execute(() -> {
-						// PipedInputStream.read will throw if not connected: PipedOutputStream should be connected
-						// before
-						// leaving main thread
-						try (PipedOutputStream pos = new PipedOutputStream(pis)) {
-							// Indicate the pipe is connected
-							connectedCdl.countDown();
+			inputStreamFiller.get().execute(() -> {
+				// PipedInputStream.read will throw if not connected: PipedOutputStream should be connected
+				// before
+				// leaving main thread
+				try (PipedOutputStream pos = new PipedOutputStream(pis)) {
+					// Indicate the pipe is connected
+					connectedCdl.countDown();
 
-							LOGGER.debug("We start the aynchronous pumping");
-							long nbBytes = pumpBytes(next, pos);
-							LOGGER.debug("We succesfully pumped {} bytes", nbBytes);
+					LOGGER.debug("We start the aynchronous pumping");
+					long nbBytes = pumpBytes(next, pos);
+					LOGGER.debug("We succesfully pumped {} bytes", nbBytes);
 
-							// pipedOutputStreamIsOpen has to be set to false BEFORE PipedOutputStream is closed. Else,
-							// the
-							// PipedInputStream could be closed BEFORE pipedOutputStreamIsOpen is false, and next call
-							// to
-							// .readObject could arrive BEFORE pipedOutputStreamIsOpen is false
-							pipedOutputStreamIsOpen.set(false);
-						} catch (IOException | ClassNotFoundException | RuntimeException e) {
-							// TODO: document clearly the behavior on EOFException, which is the normal way of closing
-							// an
-							// ObjectInput
-							if (ouch.compareAndSet(null, e)) {
-								if (LOGGER.isTraceEnabled()) {
-									LOGGER.warn("Keep aside the exception", e);
-								} else {
-									// Something went wrong: add a small log early (i.e. without the full-stack as the
-									// full
-									// stack we be reported later)
-									LOGGER.warn("The bytes pumping failed: {}: {}", e.getClass(), e.getMessage());
-								}
-							} else {
-								throw new RuntimeException(
-										"We encountered a new exception while previous one has not been reported",
-										e);
-							}
-						} finally {
-							pipedOutputStreamIsOpen.set(false);
+					// pipedOutputStreamIsOpen has to be set to false BEFORE PipedOutputStream is closed. Else,
+					// the
+					// PipedInputStream could be closed BEFORE pipedOutputStreamIsOpen is false, and next call
+					// to
+					// .readObject could arrive BEFORE pipedOutputStreamIsOpen is false
+					pipedOutputStreamIsOpen.set(false);
+				} catch (IOException | ClassNotFoundException | RuntimeException e) {
+					// TODO: document clearly the behavior on EOFException, which is the normal way of closing
+					// an
+					// ObjectInput
+					if (ouch.compareAndSet(null, e)) {
+						if (LOGGER.isTraceEnabled()) {
+							LOGGER.warn("Keep aside the exception", e);
+						} else {
+							// Something went wrong: add a small log early (i.e. without the full-stack as the
+							// full
+							// stack we be reported later)
+							LOGGER.warn("The bytes pumping failed: {}: {}", e.getClass(), e.getMessage());
 						}
-					});
+					} else {
+						throw new RuntimeException(
+								"We encountered a new exception while previous one has not been reported",
+								e);
+					}
+				} finally {
+					pipedOutputStreamIsOpen.set(false);
+				}
+			});
 
 			try {
 				if (!connectedCdl.await(1, TimeUnit.MINUTES)) {

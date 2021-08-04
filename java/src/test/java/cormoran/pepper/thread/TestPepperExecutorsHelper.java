@@ -183,11 +183,10 @@ public class TestPepperExecutorsHelper {
 
 			// Split in block of size
 			// ApexExecutorsHelper.DEFAULT_SPLIT_TASK_SIZE
-			Iterator<? extends Runnable> runnables = PepperExecutorsHelper.partitions(iterable,
-					param -> {
-						// Not in stream: all have been materialized very soon
-						Assert.assertEquals(maxSize, materialized.size());
-					});
+			Iterator<? extends Runnable> runnables = PepperExecutorsHelper.partitions(iterable, param -> {
+				// Not in stream: all have been materialized very soon
+				Assert.assertEquals(maxSize, materialized.size());
+			});
 
 			// Preparing Runnable in a Collection DO materialize the whole
 			// initial iterator
