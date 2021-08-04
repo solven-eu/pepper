@@ -30,8 +30,9 @@ public class ITGenerateExcludesForSpark {
 		Path sparkLib = Paths.get(System.getenv("SPARK_HOME"), "jars");
 		Set<String> fileNames = Files.walk(sparkLib).map(p -> p.toFile().getName()).collect(Collectors.toSet());
 
-		String artifactSets = new GenerateExcludesForSpark()
-				.generatesExcludes(new ClassPathResource("/mvn_dependency_tree/mvn-dependency_tree.txt"), fileNames);
+		String artifactSets = new GenerateExcludesForSpark().generatesExcludes(
+				new ClassPathResource("/mvn_dependency_tree/scala2_11-spark_2_4-hadoop_2_10.txt"),
+				fileNames);
 
 		LOGGER.info("Generates excludes: {}{}", System.lineSeparator(), artifactSets);
 	}

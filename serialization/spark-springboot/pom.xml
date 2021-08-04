@@ -14,49 +14,159 @@
 		<jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.0</jacoco.branch.ratio>
 
-		<!-- Used to define the Xmx of JVM popped by surefire -->
-		<!-- Spark requires at least 512M -->
-		<!-- https://spark.apache.org/docs/latest/configuration.html#memory-management -->
-		<xmx>512M</xmx>
+		<scala.version>2.11</scala.version>
+		<!-- https://mvnrepository.com/artifact/org.scala-lang/scala-reflect -->
+		<scala-lang.version>2.11.12</scala-lang.version>
+
+		<!-- Most Spark distribution has this quite old Guava: as it easily leads -->
+		<!-- to conflicts, we make sure we compile locally with this library -->
+		<guava.version>14.0.1</guava.version>
+
+		<hadoop.version>2.10.1</hadoop.version>
+		<spark.version>2.4.8</spark.version>
+
+		<janino.version>3.0.8</janino.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<!-- https://stackoverflow.com/questions/42352091/spark-sql-fails-with-java-lang-noclassdeffounderror-org-codehaus-commons-compil -->
+				<groupId>org.codehaus.janino</groupId>
+				<artifactId>commons-compiler</artifactId>
+				<version>${janino.version}</version>
+			</dependency>
+			<dependency>
+				<!-- https://stackoverflow.com/questions/42352091/spark-sql-fails-with-java-lang-noclassdeffounderror-org-codehaus-commons-compil -->
+				<groupId>org.codehaus.janino</groupId>
+				<artifactId>janino</artifactId>
+				<version>${janino.version}</version>
+			</dependency>
+
+			<dependency>
+				<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
+
+			<dependency>
+				<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common -->
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-common</artifactId>
+				<version>${hadoop.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.spark</groupId>
+				<artifactId>spark-core_${scala.version}</artifactId>
+				<version>${spark.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.spark</groupId>
+				<artifactId>spark-hive_${scala.version}</artifactId>
+				<version>${spark.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-reflect</artifactId>
+				<version>${scala-lang.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-library</artifactId>
+				<version>${scala-lang.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scalap</artifactId>
+				<version>${scala-lang.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.github.cormoran-io.pepper</groupId>
-			<artifactId>pepper-spark</artifactId>
+			<artifactId>pepper-spark_${scala.version}</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-azure -->
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-azure</artifactId>
+			<!-- Oldest is 2.7.0 -->
+			<!-- Youngest is 3.3.1 -->
+			<version>${hadoop.version}</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<!-- By default, this has scope=test -->
-			<scope>compile</scope>
+			<!-- https://cloudarchitected.com/2019/04/accessing-azure-data-lake-storage-gen2-from-clients/ -->
+			<groupId>com.microsoft.azure</groupId>
+			<artifactId>adal4j</artifactId>
+			<version>1.6.3</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
-			<!-- Else 'java.lang.NoClassDefFoundError: org/apache/log4j/spi/Filter' -->
-			<!-- https://stackoverflow.com/questions/67751544/java-lang-noclassdeffounderror-org-apache-log4j-spi-filter-in-sparksubmit -->
-			<!-- http://www.slf4j.org/legacy.html#log4j-over-slf4j -->
-			<groupId>org.slf4j</groupId>
-			<artifactId>log4j-over-slf4j</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
 		</dependency>
-
 	</dependencies>
 
-	<!-- https://stackoverflow.com/questions/28458058/maven-shade-plugin-exclude-a-dependency-and-all-its-transitive-dependencies -->
 	<profiles>
+		<!-- https://stackoverflow.com/questions/43883325/scala-spark-version-compatibility -->
 		<profile>
-			<!-- In this profile, we switch Spark dependencies as provided, so they 
-				are not included in the shadedJar (without having to list transitive dependencies 
-				individually) -->
-			<id>spark</id>
+			<id>scala-2.11</id>
+			<properties>
+				<scala.version>2.11</scala.version>
+				<!-- https://mvnrepository.com/artifact/org.scala-lang/scala-reflect -->
+				<scala-lang.version>2.11.12</scala-lang.version>
+			</properties>
+		</profile>
+		<profile>
+			<id>scala-2.12</id>
+			<properties>
+				<scala.version>2.12</scala.version>
+				<!-- https://mvnrepository.com/artifact/org.scala-lang/scala-reflect -->
+				<scala-lang.version>2.12.14</scala-lang.version>
+			</properties>
+		</profile>
+
+		<!-- https://stackoverflow.com/questions/28458058/maven-shade-plugin-exclude-a-dependency-and-all-its-transitive-dependencies -->
+		<!-- In these profile, we switch Spark dependencies as provided, so they 
+			are not included in the shadedJar (without having to list transitive dependencies 
+			individually) -->
+		<profile>
+			<id>spark-2.4</id>
+			<properties>
+				<spark.version>2.4.8</spark.version>
+			</properties>
 			<dependencies>
+				<!-- In this profile, we switch Spark dependencies as provided, so they 
+					are not included in the shadedJar (without having to list transitive dependencies 
+					individually) -->
+				<dependency>
+					<groupId>org.apache.spark</groupId>
+					<artifactId>spark-core_${scala.version}</artifactId>
+					<version>${spark.version}</version>
+					<scope>provided</scope>
+				</dependency>
 				<dependency>
 					<groupId>org.apache.spark</groupId>
 					<artifactId>spark-sql_${scala.version}</artifactId>
@@ -64,6 +174,60 @@
 					<scope>provided</scope>
 				</dependency>
 			</dependencies>
+		</profile>
+		<profile>
+			<!-- https://stackoverflow.com/questions/43883325/scala-spark-version-compatibility -->
+			<id>spark-3.1</id>
+			<properties>
+				<!-- Spark3.1 requires Scala2.12+ -->
+				<!-- Pick Scala version through -Pscala-2.1X -->
+				<spark.version>3.1.2</spark.version>
+			</properties>
+			<dependencies>
+				<!-- In this profile, we switch Spark dependencies as provided, so they 
+					are not included in the shadedJar (without having to list transitive dependencies 
+					individually) -->
+				<dependency>
+					<groupId>org.apache.spark</groupId>
+					<artifactId>spark-core_${scala.version}</artifactId>
+					<version>${spark.version}</version>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.apache.spark</groupId>
+					<artifactId>spark-sql_${scala.version}</artifactId>
+					<version>${spark.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>hadoop-2.7</id>
+			<properties>
+				<hadoop.version>2.7.7</hadoop.version>
+			</properties>
+		</profile>
+		<profile>
+			<id>hadoop-2.10</id>
+			<properties>
+				<hadoop.version>2.10.1</hadoop.version>
+			</properties>
+		</profile>
+		<profile>
+			<id>hadoop-3.2</id>
+			<properties>
+				<guava.version>27.0-jre</guava.version>
+				<hadoop.version>3.2.2</hadoop.version>
+			</properties>
+		</profile>
+		<profile>
+			<id>hadoop-3.3</id>
+			<properties>
+				<guava.version>27.0-jre</guava.version>
+				<hadoop.version>3.3.1</hadoop.version>
+				<!-- <azure-hadoop.version>3.2.0</azure-hadoop.version> -->
+			</properties>
 		</profile>
 	</profiles>
 

@@ -105,3 +105,10 @@ Then you have to pull/build/tag the relevant image.
 If this fails due to SSL (e.g. in some very tight environment/proxy), you may want to add '--insecure-registry' to Minikube start:
 
     minikube start --insecure-registry registry-1.docker.io:443
+
+## Generate the list of artifacts to exclude:
+
+ 
+    mvn dependency:tree -Pscala-2.11,spark-2.4,hadoop-2.10
+
+    mvn dependency:tree -Pscala-2.12,spark-3.1,hadoop-3.2

@@ -28,7 +28,9 @@ public class GenerateExcludesForSpark {
 	 * Generates a full set of dependencies to exclude based on the jars provided by a Spark installation
 	 * 
 	 * @param dependencyTreeResource
+	 *            to be generated with 'mvn dependency:tree'
 	 * @param fileNames
+	 *            the fileNames in your Spark installation
 	 * @return
 	 * @throws IOException
 	 */
