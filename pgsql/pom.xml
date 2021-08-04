@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.github.cormoran-io.pepper</groupId>
 		<artifactId>pepper-parent</artifactId>
-		<version>2.1</version>
+		<version>2.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>pepper-pgsql</artifactId>
