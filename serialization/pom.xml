@@ -18,7 +18,7 @@
 		<parquet.version>1.12.0</parquet.version>
 
 		<!-- TODO: What is the diff between 2.9.X and 2.8.X? -->
-		<hadoop-common.version>3.3.0</hadoop-common.version>
+		<hadoop-common.version>3.3.1</hadoop-common.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
 		<arrow.version>5.0.0</arrow.version>
