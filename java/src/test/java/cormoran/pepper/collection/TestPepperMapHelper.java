@@ -81,36 +81,41 @@ public class TestPepperMapHelper {
 	public void testMissingKeyInMap() {
 		Map<String, ?> map = ImmutableMap.of("someKey", "v");
 
-		try {
-			PepperMapHelper.getRequiredString(map, "requiredKey");
-			Assert.fail("Should reject on missing");
-		} catch (RuntimeException e) {
-			LOGGER.trace("Arg", e);
-			Assert.assertTrue(e instanceof IllegalArgumentException);
-			// Ensure the present keys are logged
-			Assertions.assertThat(e.getMessage()).contains("someKey");
-		}
+		// Ensure the present keys are logged
+		Assertions.assertThatThrownBy(() -> PepperMapHelper.getRequiredString(map, "requiredKey"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("someKey");
 	}
 
 	@Test
-	public void testGetRequiredStringRecursive() {
+	public void testGetRequiredString_Recursive() {
 		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", "v"));
 
 		Assert.assertEquals("v", PepperMapHelper.getRequiredString(map, "k1", "k2"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testGetRequiredStringRecursive_NotString() {
+	public void testGetRequiredString_Recursive_NotString() {
 		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", OffsetDateTime.now()));
 
 		PepperMapHelper.getRequiredString(map, "k1", "k2");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testGetRequiredStringRecursive_NotIntermediateMap() {
+	public void testGetRequiredString_Recursive_NotIntermediateMap() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1");
 
 		PepperMapHelper.getRequiredString(map, "k1", "k2");
+	}
+
+	@Test
+	public void testGetRequiredString_Recursive_NotIntermediateMap_Deeper() {
+		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", ImmutableMap.of("k3", "v3")));
+
+		Assertions.assertThatThrownBy(() -> PepperMapHelper.getRequiredString(map, "k1", "k2", "notK3"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("k3")
+				.hasMessageNotContaining("k1");
 	}
 
 	@Test

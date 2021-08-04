@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
@@ -257,12 +258,13 @@ public class PepperMapHelper {
 			Object rawValue = currentMap.get(currentKey);
 			if (i == allKeys.size() - 1) {
 				if (rawValue == null) {
+					Set<?> keySet = currentMap.keySet();
 					if (currentMap.containsKey(currentKey)) {
 						throw new IllegalArgumentException(
-								"We miss '" + currentKey + "' (value is null) amongst available: " + map.keySet());
+								"We miss '" + currentKey + "' (value is null) amongst available: " + keySet);
 					} else {
 						throw new IllegalArgumentException(
-								"We miss '" + currentKey + "' (key not present) amongst available: " + map.keySet());
+								"We miss '" + currentKey + "' (key not present) amongst available: " + keySet);
 					}
 				}
 
