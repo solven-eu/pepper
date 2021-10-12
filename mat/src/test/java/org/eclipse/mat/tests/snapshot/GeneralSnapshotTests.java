@@ -205,10 +205,6 @@ public class GeneralSnapshotTests {
 		for (IClass cls : snapshot.getClasses()) {
 			long prev = -1;
 			for (int o : cls.getObjectIds()) {
-				if (o == 2035) {
-					System.out.println("AAA");
-				}
-
 				IObject obj;
 				try {
 					obj = snapshot.getObject(o);
