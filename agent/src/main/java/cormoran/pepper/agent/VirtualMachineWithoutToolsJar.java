@@ -120,6 +120,7 @@ public class VirtualMachineWithoutToolsJar {
 		return javaVendor.contains("Sun") || javaVendor.contains("Oracle")
 				|| javaVendor.contains("AdoptOpenJDK")
 				|| javaVendor.contains("Apple")
+				|| javaVendor.contains("Eclipse Foundation")
 				|| isJRockit();
 	}
 

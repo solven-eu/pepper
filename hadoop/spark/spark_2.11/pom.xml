@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.cormoran-io.pepper</groupId>
+		<artifactId>pepper-spark-parent</artifactId>
+		<version>2.2-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>pepper-spark_2.11</artifactId>
+	<packaging>jar</packaging>
+
+	<properties>
+		<jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
+		<jacoco.branch.ratio>0.0</jacoco.branch.ratio>
+
+		<scala.version>2.11</scala.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.github.cormoran-io.pepper</groupId>
+			<artifactId>pepper-spark</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.slf4j/log4j-over-slf4j -->
+		<dependency>
+			<!-- Spark rely on log4J, but we excluded it as a strong dependency: for 
+				tests, we rely on slf4j -->
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

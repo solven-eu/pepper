@@ -88,6 +88,7 @@ public class TestVirtualMachineWithoutToolsJar {
 	@Test
 	public void testIsJmapSupported() {
 		Assume.assumeFalse("TODO JDK12", TestInstrumentAgent.IS_JDK_12);
-		Assert.assertTrue(System.getProperty("java.vendor"), VirtualMachineWithoutToolsJar.isJmapSupported());
+		Assert.assertTrue("Java Vendor: " + System.getProperty("java.vendor"),
+				VirtualMachineWithoutToolsJar.isJmapSupported());
 	}
 }

@@ -1,0 +1,136 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.cormoran-io.pepper</groupId>
+		<artifactId>pepper-spark-parent</artifactId>
+		<version>2.2-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>spark-springboot</artifactId>
+	<packaging>jar</packaging>
+
+	<properties>
+		<jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
+		<jacoco.branch.ratio>0.0</jacoco.branch.ratio>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.github.cormoran-io.pepper</groupId>
+			<artifactId>pepper-spark_${scala.version}</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-azure -->
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-azure</artifactId>
+			<!-- Oldest is 2.7.0 -->
+			<!-- Youngest is 3.3.1 -->
+			<version>${hadoop.version}</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<!-- https://cloudarchitected.com/2019/04/accessing-azure-data-lake-storage-gen2-from-clients/ -->
+			<groupId>com.microsoft.azure</groupId>
+			<artifactId>adal4j</artifactId>
+			<version>1.6.3</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- https://stackoverflow.com/questions/58014541/spring-spark-conflicts-between-jars-dependencies -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<!-- We can not rely directly on spring-boot-maven-plugin -->
+						<!-- as it has its own structure, which prevents loading it from another -->
+						<!-- application ClassLoader, while it is exactly what's done by SparkSubmit -->
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<version>2.5.3</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<!-- <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope> -->
+					<createDependencyReducedPom>true</createDependencyReducedPom>
+
+					<!-- We ensure the fatJar is a separate jar, so that this module can 
+						be used as a standard dependency -->
+					<shadedArtifactAttached>true</shadedArtifactAttached>
+					<shadedClassifierName>exec</shadedClassifierName>
+
+					<artifactSet>
+						<excludes>
+							<!-- By default, Spark has a local LOG4J12 jar: instead of mutating 
+								the default Spark installation, we prefer show how to adjust our jar -->
+							<exclude>ch.qos.logback:*</exclude>
+						</excludes>
+					</artifactSet>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<!-- We remove signatures as, if they are valid for each dependency, 
+									they are not valid for the assembly jar -->
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+								<exclude>META-INF/*.RSA</exclude>
+							</excludes>
+						</filter>
+					</filters>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/spring.handlers</resource>
+								</transformer>
+								<transformer
+									implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">
+									<resource>META-INF/spring.factories</resource>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/spring.schemas</resource>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

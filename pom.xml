@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -20,7 +22,8 @@
 	<!-- mvn com.mycila:license-maven-plugin:format -->
 
 	<!-- Make a release -->
-	<!-- Do not -DskipTests, else it will skip javadoc which is mandatory for sonatype -->
+	<!-- Do not -DskipTests, else it will skip javadoc which is mandatory for 
+		sonatype -->
 	<!-- mvn release:clean release:prepare release:perform -Darguments="-Dmaven.test.skip" -->
 	<!-- mvn release:rollback -->
 
@@ -30,17 +33,23 @@
 	<!-- brew install gpg -->
 	<!-- gpg \-\-gen-key -->
 	<!-- gpg \-\-list-keys -->
-	<!-- gpg \-\-keyserver http://pool.sks-keyservers.net:11371 \-\-send-keys <key_id> -->
+	<!-- gpg \-\-keyserver http://pool.sks-keyservers.net:11371 \-\-send-keys 
+		<key_id> -->
 	<!-- You may encounter IPv6 issues: trick for ipv4 -->
-	<!-- gpg \-\-keyserver http://ipv4.pool.sks-keyservers.net:11371 \-\-send-keys <key_id> -->
-	<!-- Then, maven release process will use this key to sign the artifacts uploaded to Sonatype -->
+	<!-- gpg \-\-keyserver http://ipv4.pool.sks-keyservers.net:11371 \-\-send-keys 
+		<key_id> -->
+	<!-- Then, maven release process will use this key to sign the artifacts 
+		uploaded to Sonatype -->
 
 	<!-- In case of [ERROR] * No public key: Key with id: (<key_id>) -->
-	<!-- gpg \-\-keyserver https://HOST_TO_BE_CORRECTED:11371 \-\-send-keys <key_id> -->
+	<!-- gpg \-\-keyserver https://HOST_TO_BE_CORRECTED:11371 \-\-send-keys 
+		<key_id> -->
 
-	<!-- If everything fails, try opening https://pool.sks-keyservers.net in your browser for manual submission -->
+	<!-- If everything fails, try opening https://pool.sks-keyservers.net in 
+		your browser for manual submission -->
 	<!-- gpg \-\-armor \-\-export keyId -->
-	<!-- When searching the key manually, remember to add '0x' in front of the keys -->
+	<!-- When searching the key manually, remember to add '0x' in front of the 
+		keys -->
 	<!-- https://stackoverflow.com/questions/59380162/openpgpkeyserver-no-keys-found-after-submit-openpgp-public-key -->
 	<!-- http://pool.sks-keyservers.net/pks/lookup?search=0xCB6E7A4E9502E68A&fingerprint=on&op=index -->
 
@@ -160,7 +169,8 @@
 				</property>
 			</activation>
 			<properties>
-				<!-- CircleCI machines seems to have a lot of cores, which would led to too many forks given available memory -->
+				<!-- CircleCI machines seems to have a lot of cores, which would led 
+					to too many forks given available memory -->
 				<forkCount>1</forkCount>
 			</properties>
 		</profile>
@@ -191,6 +201,12 @@
 		<module>serialization</module>
 		<module>compression</module>
 
+		<!-- <module>spark</module> -->
+
+		<!-- Hadoop module, defining context for multiple modules (e.g. Spark, 
+			Parquet,..) -->
+		<module>hadoop</module>
+
 		<!-- Helps integration of a PostgreSQL database -->
 		<module>pgsql</module>
 
@@ -214,7 +230,8 @@
 				<scope>test</scope>
 			</dependency>
 
-			<!-- annotations from the Checker Framework: nullness, interning, locking, ... -->
+			<!-- annotations from the Checker Framework: nullness, interning, locking, 
+				... -->
 			<dependency>
 				<groupId>org.checkerframework</groupId>
 				<artifactId>checker-qual</artifactId>
@@ -259,7 +276,8 @@
 		</dependency>
 
 		<!-- Always added, to facilitate logging, as it is used by all modules -->
-		<!-- Do not add logback, as the library user may prefer another logging framework -->
+		<!-- Do not add logback, as the library user may prefer another logging 
+			framework -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -306,7 +324,8 @@
 							<artifactId>plexus-compiler-javac-errorprone</artifactId>
 							<version>2.8.8</version>
 						</dependency>
-						<!-- override plexus-compiler-javac-errorprone's dependency on Error Prone with the latest version -->
+						<!-- override plexus-compiler-javac-errorprone's dependency on Error 
+							Prone with the latest version -->
 						<dependency>
 							<groupId>com.google.errorprone</groupId>
 							<artifactId>error_prone_core</artifactId>
@@ -316,7 +335,8 @@
 				</plugin>
 
 				<!-- -Dtest=TestClassToFileMapped selects a single test class -->
-				<!-- -Dmaven.surefire.debug enables debug on Surefire plugin on port 5005 -->
+				<!-- -Dmaven.surefire.debug enables debug on Surefire plugin on port 
+					5005 -->
 				<!-- mvn -Dtest=TestClassToFileMapped -Dmaven.surefire.debug test -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -326,9 +346,11 @@
 						<!-- https://groups.google.com/forum/#!topic/jacoco/LzmCezW8VKA -->
 
 						<!-- -XX:+StartAttachListener is for http://comments.gmane.org/gmane.comp.java.openjdk.macosx-port.devel/6094 -->
-						<!-- -XX:-HeapDumpOnOutOfMemoryError because TestGCInspector will force an OOM -->
+						<!-- -XX:-HeapDumpOnOutOfMemoryError because TestGCInspector will force 
+							an OOM -->
 						<!-- -Djava.util.logging.config.file so that tests fallback on logback -->
-						<!-- -Dio.netty.tryReflectionSetAccessible=true for Netty in Arrow (https://github.com/apache/arrow/pull/4522) -->
+						<!-- -Dio.netty.tryReflectionSetAccessible=true for Netty in Arrow 
+							(https://github.com/apache/arrow/pull/4522) -->
 						<argLine><![CDATA[-ea -Xmx${xmx} -XX:+StartAttachListener -XX:-HeapDumpOnOutOfMemoryError -Djava.util.logging.config.file=logging.properties -Dio.netty.tryReflectionSetAccessible=true ${argLine}]]></argLine>
 
 						<!-- Alternative safer configuration for 1JVM per test -->
@@ -619,7 +641,8 @@
 				</dependencies>
 				<executions>
 					<execution>
-						<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
+						<!-- default phase is verify, which is after tests. We prefer to run 
+							static analysis before tests not to wait -->
 						<phase>compile</phase>
 						<goals>
 							<goal>check</goal>
@@ -654,7 +677,8 @@
 				<executions>
 					<execution>
 						<id>check</id>
-						<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
+						<!-- default phase is verify, which is after tests. We prefer to run 
+							static analysis before tests not to wait -->
 						<phase>validate</phase>
 						<configuration>
 							<configLocation>style/pepper.checkstyle.xml</configLocation>
@@ -663,7 +687,8 @@
 							<consoleOutput>true</consoleOutput>
 							<failsOnError>true</failsOnError>
 							<!-- Prevent [WARNING] Unable to locate Source XRef to link to - DISABLED -->
-							<!-- only with goal checkstyle-aggregate or checkstyle generating a report -->
+							<!-- only with goal checkstyle-aggregate or checkstyle generating 
+								a report -->
 							<!--<linkXRef>false</linkXRef> -->
 						</configuration>
 						<goals>
@@ -676,7 +701,8 @@
 	</build>
 
 	<scm>
-		<!-- Only developerConnection was not set in parent po;m as its own parent was not a SNAPSHOT -->
+		<!-- Only developerConnection was not set in parent po;m as its own parent 
+			was not a SNAPSHOT -->
 		<developerConnection>${scm.developerConnection}</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
