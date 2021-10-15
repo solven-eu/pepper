@@ -18,37 +18,21 @@ We map SPARK_HOME to our custom build:
 
     export SPARK_HOME=target/scala2.11-spark2.4-hadoop3.3
 
-This seems not useful anymore
-
-    //export PATH=${PATH}:${SPARK_HOME}/bin
-
 # Build the image
 
-export HTTP_PROXY=http://x119400:XXX@proxy-sgt.si.socgen:8080
-docker-image-tool.sh -r harbor.core.euw.gbis.sg-azure.com/dlhybrid/benoit -t ${imageTag} -f ./Dockerfile -b HTTP_PROXY=${HTTP_PROXY} build
-docker-image-tool.sh -r harbor.core.euw.gbis.sg-azure.com/dlhybrid/benoit -t ${imageTag} -f ./Dockerfile -b HTTP_PROXY=${HTTP_PROXY} push
-
-TODO WARNING
-
-This way of building a docker image will leak the secret to logs. One can follow the following best practise: 
-https://vsupalov.com/better-docker-build-secrets/#a-simpler-way
+docker-image-tool.sh -r registry.hub.docker.com/blacelle -t ${imageTag} -f ./Dockerfile build
+docker-image-tool.sh -r registry.hub.docker.com/blacelle -t ${imageTag} -f ./Dockerfile push
 
 ## Issues
-
-### Proxy configured to localhost
-
-> Could not connect to localhost:3128 (127.0.0.1)
-
-We should switch HTTP_PROXY from 'localhost:3128' to 'http://x119400:XXX@proxy-sgt.si.socgen:8080'
 
 ### Authentication issue when pushing the image
 
 > denied: requested access to the resource is denied
 
-You can authenticate Docker with 'docker login harbor.core.euw.gbis.sg-azure.com --username dlhybrid'
+You can authenticate Docker with 'docker login registry.hub.docker.com --username blacelle'
 
 ### Walk inside the image
 
 https://docs.docker.com/engine/reference/commandline/exec/
 
-docker run --name ubuntu_bash --rm -i -t harbor.core.euw.gbis.sg-azure.com/dlhybrid/benoit/spark:scala211-spark24-hadoop33-v2 bash
+docker run --name ubuntu_bash --rm -i -t registry.hub.docker.com/blacelle/spark:scala211-spark24-hadoop33-v2 bash

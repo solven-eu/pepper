@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -21,6 +20,7 @@
 		<!-- to conflicts, we make sure we compile locally with this library -->
 		<guava.version>14.0.1</guava.version>
 
+		<hadoop.shortVersion>2.10</hadoop.shortVersion>
 		<hadoop.version>2.10.1</hadoop.version>
 	</properties>
 
@@ -99,6 +99,7 @@
 			<id>hadoop-2.7</id>
 			<properties>
 				<guava.version>14.0.1</guava.version>
+				<hadoop.shortVersion>2.7</hadoop.shortVersion>
 				<hadoop.version>2.7.7</hadoop.version>
 			</properties>
 		</profile>
@@ -106,6 +107,7 @@
 			<id>hadoop-2.10</id>
 			<properties>
 				<guava.version>14.0.1</guava.version>
+				<hadoop.shortVersion>2.10</hadoop.shortVersion>
 				<hadoop.version>2.10.1</hadoop.version>
 			</properties>
 		</profile>
@@ -113,6 +115,7 @@
 			<id>hadoop-3.2</id>
 			<properties>
 				<guava.version>27.0-jre</guava.version>
+				<hadoop.shortVersion>3.2</hadoop.shortVersion>
 				<hadoop.version>3.2.2</hadoop.version>
 			</properties>
 		</profile>
@@ -120,6 +123,7 @@
 			<id>hadoop-3.3</id>
 			<properties>
 				<guava.version>27.0-jre</guava.version>
+				<hadoop.shortVersion>3.3</hadoop.shortVersion>
 				<hadoop.version>3.3.1</hadoop.version>
 			</properties>
 		</profile>

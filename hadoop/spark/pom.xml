@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -27,6 +26,7 @@
 	</modules>
 
 	<properties>
+		<scala.shortVersion>2.11</scala.shortVersion>
 		<scala.version>2.11</scala.version>
 		<!-- https://mvnrepository.com/artifact/org.scala-lang/scala-reflect -->
 		<scala-lang.version>2.11.12</scala-lang.version>
@@ -35,7 +35,7 @@
 		<!-- to conflicts, we make sure we compile locally with this library -->
 		<guava.version>14.0.1</guava.version>
 
-		<hadoop.version>2.10.1</hadoop.version>
+		<spark.shortVersion>2.4</spark.shortVersion>
 		<spark.version>2.4.8</spark.version>
 
 		<parquet.version>1.12.2</parquet.version>
@@ -74,8 +74,7 @@
 				<exclusions>
 					<exclusion>
 						<!-- Hive-exec is necessary to instantiate a SparkSession with HiveSupport -->
-						<!-- However, we may need a recent Hive-exec to enable recent Hadoop, 
-							to enable recent ABFSS features -->
+						<!-- However, we may need a recent Hive-exec to enable recent Hadoop, to enable recent ABFSS features -->
 						<!-- https://stackoverflow.com/questions/39444493/how-to-create-sparksession-with-hive-support-fails-with-hive-classes-are-not-f -->
 						<groupId>org.spark-project.hive</groupId>
 						<artifactId>hive-exec</artifactId>
@@ -83,8 +82,7 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<!-- We add hive-common manually as we rejected the hive-exec@Spark to 
-					enabler a more recent version -->
+				<!-- We add hive-common manually as we rejected the hive-exec@Spark to enabler a more recent version -->
 				<groupId>org.apache.hive</groupId>
 				<artifactId>hive-common</artifactId>
 				<version>3.1.2</version>
@@ -136,6 +134,7 @@
 		<profile>
 			<id>scala-2.11</id>
 			<properties>
+				<scala.shortVersion>2.11</scala.shortVersion>
 				<scala.version>2.11</scala.version>
 				<!-- https://mvnrepository.com/artifact/org.scala-lang/scala-reflect -->
 				<scala-lang.version>2.11.12</scala-lang.version>
@@ -144,6 +143,7 @@
 		<profile>
 			<id>scala-2.12</id>
 			<properties>
+				<scala.shortVersion>2.12</scala.shortVersion>
 				<scala.version>2.12</scala.version>
 				<!-- https://mvnrepository.com/artifact/org.scala-lang/scala-reflect -->
 				<scala-lang.version>2.12.14</scala-lang.version>
@@ -151,17 +151,16 @@
 		</profile>
 
 		<!-- https://stackoverflow.com/questions/28458058/maven-shade-plugin-exclude-a-dependency-and-all-its-transitive-dependencies -->
-		<!-- In these profile, we switch Spark dependencies as provided, so they 
-			are not included in the shadedJar (without having to list transitive dependencies 
+		<!-- In these profile, we switch Spark dependencies as provided, so they are not included in the shadedJar (without having to list transitive dependencies 
 			individually) -->
 		<profile>
 			<id>spark-2.4</id>
 			<properties>
+				<spark.shortVersion>2.4</spark.shortVersion>
 				<spark.version>2.4.8</spark.version>
 			</properties>
 			<dependencies>
-				<!-- In this profile, we switch Spark dependencies as provided, so they 
-					are not included in the shadedJar (without having to list transitive dependencies 
+				<!-- In this profile, we switch Spark dependencies as provided, so they are not included in the shadedJar (without having to list transitive dependencies 
 					individually) -->
 				<dependency>
 					<groupId>org.apache.spark</groupId>
@@ -183,11 +182,11 @@
 			<properties>
 				<!-- Spark3.1 requires Scala2.12+ -->
 				<!-- Pick Scala version through -Pscala-2.1X -->
+				<spark.shortVersion>3.1</spark.shortVersion>
 				<spark.version>3.1.2</spark.version>
 			</properties>
 			<dependencies>
-				<!-- In this profile, we switch Spark dependencies as provided, so they 
-					are not included in the shadedJar (without having to list transitive dependencies 
+				<!-- In this profile, we switch Spark dependencies as provided, so they are not included in the shadedJar (without having to list transitive dependencies 
 					individually) -->
 				<dependency>
 					<groupId>org.apache.spark</groupId>
