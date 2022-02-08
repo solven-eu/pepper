@@ -22,7 +22,7 @@
 		<!-- to conflicts, we make sure we compile locally with this library -->
 		<guava.version>14.0.1</guava.version>
 
-		<hadoop.version>2.10.1</hadoop.version>
+		<hadoop.version>3.3.1</hadoop.version>
 		<spark.version>2.4.8</spark.version>
 
 		<janino.version>3.0.8</janino.version>
