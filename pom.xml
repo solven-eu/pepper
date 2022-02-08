@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.github.cormoran-io.pepper</groupId>
 		<artifactId>pepper-metadata</artifactId>
-		<version>2.2</version>
+		<version>2.3-SNAPSHOT</version>
 		<relativePath>metadata</relativePath>
 	</parent>
 
@@ -701,6 +701,6 @@
 	<scm>
 		<!-- Only developerConnection was not set in parent pom as its own parent was not a SNAPSHOT -->
 		<developerConnection>${scm.developerConnection}</developerConnection>
-		<tag>pepper-core2.2</tag>
+		<tag>HEAD</tag>
 	</scm>
 </project>
