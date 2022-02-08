@@ -13,6 +13,9 @@
 	<properties>
 		<jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.0</jacoco.branch.ratio>
+		
+		<!-- This is a fatjar: very big, and pointless in m2-central -->
+		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
 
 	<dependencies>
