@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -15,6 +14,8 @@
 	<properties>
 		<jacoco.branch.ratio>0.07</jacoco.branch.ratio>
 		<jacoco.instruction.ratio>0.10</jacoco.instruction.ratio>
+
+		<parquet.version>1.12.2</parquet.version>
 	</properties>
 
 	<dependencies>
@@ -70,18 +71,22 @@
 		<dependency>
 			<groupId>org.apache.parquet</groupId>
 			<artifactId>parquet-hadoop</artifactId>
+			<version>${parquet.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.parquet</groupId>
 			<artifactId>parquet-common</artifactId>
+			<version>${parquet.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.parquet</groupId>
 			<artifactId>parquet-column</artifactId>
+			<version>${parquet.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.parquet</groupId>
 			<artifactId>parquet-avro</artifactId>
+			<version>${parquet.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-mapreduce-client-core -->
@@ -105,8 +110,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<!-- Provided not to impose its usage, but available when running Run*** 
-				classes -->
+			<!-- Provided not to impose its usage, but available when running Run*** classes -->
 			<scope>provided</scope>
 		</dependency>
 
@@ -117,8 +121,7 @@
 		</dependency>
 
 		<dependency>
-			<!-- We ensure this module does not provide log4j, however, tests will 
-				needs a Log4J implementation anyway -->
+			<!-- We ensure this module does not provide log4j, however, tests will needs a Log4J implementation anyway -->
 			<groupId>org.slf4j</groupId>
 			<artifactId>log4j-over-slf4j</artifactId>
 			<scope>test</scope>

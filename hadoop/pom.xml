@@ -12,6 +12,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>parquet</module>
 		<module>spark</module>
 	</modules>
 
