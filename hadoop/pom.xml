@@ -22,7 +22,7 @@
 		<guava.version>14.0.1</guava.version>
 
 		<hadoop.shortVersion>2.10</hadoop.shortVersion>
-		<hadoop.version>2.10.1</hadoop.version>
+		<hadoop.version>3.3.1</hadoop.version>
 	</properties>
 
 	<dependencyManagement>
