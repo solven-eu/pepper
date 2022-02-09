@@ -30,7 +30,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import cormoran.pepper.memory.IPepperMemoryConstants;
+import eu.solven.pepper.memory.IPepperMemoryConstants;
 import eu.solven.pepper.primitives.ConstantBitsIntArray;
 
 public class TestCompressedIntArray_Memory {

@@ -53,12 +53,12 @@ import org.roaringbitmap.longlong.Roaring64NavigableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cormoran.pepper.buffer.CloseableCompositeIntBuffer;
-import cormoran.pepper.buffer.CloseableIntBuffer;
-import cormoran.pepper.buffer.IIntBufferWrapper;
-import cormoran.pepper.buffer.PepperBufferHelper;
-import cormoran.pepper.logging.PepperLogHelper;
-import cormoran.pepper.memory.IPepperMemoryConstants;
+import eu.solven.pepper.buffer.CloseableCompositeIntBuffer;
+import eu.solven.pepper.buffer.CloseableIntBuffer;
+import eu.solven.pepper.buffer.IIntBufferWrapper;
+import eu.solven.pepper.buffer.PepperBufferHelper;
+import eu.solven.pepper.logging.PepperLogHelper;
+import eu.solven.pepper.memory.IPepperMemoryConstants;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 

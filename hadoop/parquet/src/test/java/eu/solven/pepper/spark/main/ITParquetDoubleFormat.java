@@ -54,9 +54,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
 
-import cormoran.pepper.io.PepperFileHelper;
-import cormoran.pepper.logging.PepperLogHelper;
-import cormoran.pepper.memory.IPepperMemoryConstants;
+import eu.solven.pepper.avro.AvroSchemaHelper;
+import eu.solven.pepper.io.PepperFileHelper;
+import eu.solven.pepper.logging.PepperLogHelper;
+import eu.solven.pepper.memory.IPepperMemoryConstants;
 import eu.solven.pepper.spark.TestReadWrite;
 
 /**
@@ -128,8 +129,8 @@ public class ITParquetDoubleFormat {
 					Random r = new Random(0);
 					testOriginalToListDouble(() -> "RANDOM_BIG_DOUBLE - " + format.get(),
 							() -> IntStream.range(0, NB_DOUBLES)
-									.mapToDouble(i -> r.nextDouble()
-											* (r.nextBoolean() ? r.nextLong() : 1D / (double) r.nextLong()))
+									.mapToDouble(
+											i -> r.nextDouble() * (r.nextBoolean() ? r.nextLong() : 1D / r.nextLong()))
 									.toArray(),
 							config,
 							schemaAsMap);

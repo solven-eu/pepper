@@ -35,8 +35,8 @@ import org.apache.avro.generic.GenericRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cormoran.pepper.io.PepperFileHelper;
 import eu.solven.pepper.avro.IBinaryToAvroStream;
+import eu.solven.pepper.io.PepperFileHelper;
 
 /**
  * Automatic transformation of a Parquet InputStream to a Stream of objects. It requires to write the {@link File} first

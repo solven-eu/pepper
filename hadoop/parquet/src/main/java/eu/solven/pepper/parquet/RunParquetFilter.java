@@ -32,7 +32,7 @@ import org.apache.avro.generic.GenericRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cormoran.pepper.io.PepperFileHelper;
+import eu.solven.pepper.io.PepperFileHelper;
 
 /**
  * This will log a parquet file into the console

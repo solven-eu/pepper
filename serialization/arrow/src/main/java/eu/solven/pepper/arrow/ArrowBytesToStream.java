@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.io.ByteStreams;
 
-import cormoran.pepper.io.IBinaryToStream;
+import eu.solven.pepper.io.IBinaryToStream;
 
 /**
  * Helps converting an InputStream to a Stream of {@link GenericRecord}

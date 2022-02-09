@@ -57,7 +57,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Doubles;
 
-import cormoran.pepper.io.PepperSerializationHelper;
+import eu.solven.pepper.io.PepperSerializationHelper;
 import scala.collection.JavaConverters;
 import scala.collection.mutable.WrappedArray;
 import scala.compat.java8.JFunction;

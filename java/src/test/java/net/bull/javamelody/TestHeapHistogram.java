@@ -25,9 +25,9 @@ package net.bull.javamelody;
 import org.junit.Assert;
 import org.junit.Test;
 
-import cormoran.pepper.agent.VirtualMachineWithoutToolsJar;
-import cormoran.pepper.memory.histogram.HeapHistogram;
-import cormoran.pepper.memory.histogram.IHeapHistogram;
+import eu.solven.pepper.agent.VirtualMachineWithoutToolsJar;
+import eu.solven.pepper.memory.histogram.HeapHistogram;
+import eu.solven.pepper.memory.histogram.IHeapHistogram;
 
 public class TestHeapHistogram {
 	@Test

@@ -37,7 +37,7 @@ import org.apache.avro.generic.IndexedRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cormoran.pepper.io.PepperByteStreamHelper;
+import eu.solven.pepper.io.PepperByteStreamHelper;
 
 /**
  * Helps working with Avro GenericRecords and java8 {@link Stream}

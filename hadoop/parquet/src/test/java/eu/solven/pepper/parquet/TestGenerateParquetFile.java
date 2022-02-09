@@ -40,8 +40,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 
-import cormoran.pepper.io.PepperFileHelper;
+import eu.solven.pepper.avro.AvroSchemaHelper;
 import eu.solven.pepper.avro.AvroTranscodingHelper;
+import eu.solven.pepper.io.PepperFileHelper;
 
 public class TestGenerateParquetFile {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestGenerateParquetFile.class);

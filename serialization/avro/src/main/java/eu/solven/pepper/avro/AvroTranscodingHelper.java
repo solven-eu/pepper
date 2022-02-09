@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
 
-import cormoran.pepper.io.PepperSerializationHelper;
+import eu.solven.pepper.io.PepperSerializationHelper;
 
 /**
  * Helps converting avro records to standard Java objects

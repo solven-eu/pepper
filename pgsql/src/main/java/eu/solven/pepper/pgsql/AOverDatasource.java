@@ -41,7 +41,7 @@ import org.jooq.impl.DefaultExecuteListenerProvider;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import cormoran.pepper.time.PepperDateHelper;
+import eu.solven.pepper.time.PepperDateHelper;
 
 /**
  * Helps building classes depending over a {@link DataSource}.

@@ -24,7 +24,7 @@ package eu.solven.pepper.avro;
 
 import org.apache.avro.generic.GenericRecord;
 
-import cormoran.pepper.io.IBinaryToStream;
+import eu.solven.pepper.io.IBinaryToStream;
 
 /**
  * Specialization of {@link IBinaryToStream} for Avro {@link GenericRecord}

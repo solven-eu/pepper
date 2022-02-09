@@ -45,8 +45,8 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-import cormoran.pepper.io.PepperSerializationHelper;
-import cormoran.pepper.logging.PepperLogHelper;
+import eu.solven.pepper.io.PepperSerializationHelper;
+import eu.solven.pepper.logging.PepperLogHelper;
 
 /**
  * Various utilities related to Avro schema

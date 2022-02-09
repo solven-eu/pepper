@@ -43,8 +43,8 @@ import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cormoran.pepper.primitive.Jdk9CharSequenceParsers;
-import cormoran.pepper.primitive.PepperParserHelper;
+import eu.solven.pepper.primitive.Jdk9CharSequenceParsers;
+import eu.solven.pepper.primitive.PepperParserHelper;
 
 /**
  * Default implementation for {@link IZeroCopyCSVParser}

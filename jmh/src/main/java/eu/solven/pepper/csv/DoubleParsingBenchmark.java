@@ -31,7 +31,7 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import cormoran.pepper.primitive.PepperParserHelper;
+import eu.solven.pepper.primitive.PepperParserHelper;
 import javolution.text.TypeFormat;
 
 /**

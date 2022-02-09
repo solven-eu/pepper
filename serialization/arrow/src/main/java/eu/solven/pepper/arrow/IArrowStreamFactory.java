@@ -38,7 +38,7 @@ import org.apache.arrow.vector.types.pojo.Schema;
 
 import com.google.common.annotations.Beta;
 
-import cormoran.pepper.io.PepperURLHelper;
+import eu.solven.pepper.io.PepperURLHelper;
 
 /**
  * This interface enables write and reading of GenericRecord from/to bytes. We work with {@link URI} and not
