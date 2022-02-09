@@ -39,7 +39,7 @@ public class TestNoOpRunnable {
 
 		Assert.assertTrue(noOpRunnable instanceof Serializable);
 
-		Assert.assertEquals("rO0ABXNyACJjb3Jtb3Jhbi5wZXBwZXIubGFtZGEuTm9PcFJ1bm5hYmxlyv5gVq2UgTgCAAB4cA==",
+		Assert.assertEquals("rO0ABXNyACNldS5zb2x2ZW4ucGVwcGVyLmxhbWRhLk5vT3BSdW5uYWJsZcr+YFatlIE4AgAAeHA=",
 				PepperSerializationHelper.toString(noOpRunnable));
 	}
 }
