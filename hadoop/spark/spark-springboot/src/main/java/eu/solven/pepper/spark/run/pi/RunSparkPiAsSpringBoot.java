@@ -8,8 +8,6 @@ import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-import eu.solven.pepper.spark.run.pi.RunSparkPi;
-
 /**
  * Dummy SpringBoot application wrapping dummy Spark compute operation
  * 
