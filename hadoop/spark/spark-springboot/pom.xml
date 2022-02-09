@@ -50,7 +50,7 @@
 			<!-- https://cloudarchitected.com/2019/04/accessing-azure-data-lake-storage-gen2-from-clients/ -->
 			<groupId>com.microsoft.azure</groupId>
 			<artifactId>adal4j</artifactId>
-			<version>1.6.3</version>
+			<version>1.6.7</version>
 			<optional>true</optional>
 		</dependency>
 
