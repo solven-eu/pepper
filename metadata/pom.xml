@@ -10,7 +10,7 @@
 		<relativePath />
 	</parent>
 
-	<groupId>com.github.solven-eu.pepper</groupId>
+	<groupId>io.github.solven-eu.pepper</groupId>
 	<artifactId>pepper-metadata</artifactId>
 	<version>3.0-SNAPSHOT</version>
 
