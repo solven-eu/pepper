@@ -51,6 +51,7 @@
 	<!-- https://stackoverflow.com/questions/59380162/openpgpkeyserver-no-keys-found-after-submit-openpgp-public-key -->
 	<!-- http://pool.sks-keyservers.net/pks/lookup?search=0xCB6E7A4E9502E68A&fingerprint=on&op=index -->
 
+	<!-- DEPRECATED -->
 	<!-- Deployment -->
 	<!-- mvn deploy -PSonatype -Dmaven.test.skip -->
 	<!-- Release in https://oss.sonatype.org -->
