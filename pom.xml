@@ -578,7 +578,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<tagNameFormat>pepper@{project.version}</tagNameFormat>
+					<tagNameFormat>pepper-@{project.version}</tagNameFormat>
 
 					<!-- http://central.sonatype.org/pages/apache-maven.html -->
 					<!-- Sonatype profile is defined in pepper-metadata -->
