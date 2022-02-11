@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-metadata</artifactId>
-		<version>3.0</version>
+		<version>3.1-SNAPSHOT</version>
 		<relativePath>metadata</relativePath>
 	</parent>
 
@@ -702,6 +702,6 @@
 	<scm>
 		<!-- Only developerConnection was not set in parent pom as its own parent was not a SNAPSHOT -->
 		<developerConnection>${scm.developerConnection}</developerConnection>
-		<tag>pepper-3.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 </project>
