@@ -2,9 +2,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.github.cormoran-io.pepper</groupId>
+		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-parent</artifactId>
-		<version>2.2-SNAPSHOT</version>
+		<version>3.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>pepper-mat</artifactId>
@@ -32,17 +32,17 @@
 		<dependency>
 			<groupId>com.ibm.icu</groupId>
 			<artifactId>icu4j</artifactId>
-			<version>69.1</version>
+			<version>70.1</version>
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.cormoran-io.pepper</groupId>
+			<groupId>io.github.solven-eu.pepper</groupId>
 			<artifactId>pepper</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.cormoran-io.pepper</groupId>
+			<groupId>io.github.solven-eu.pepper</groupId>
 			<artifactId>pepper-primitives</artifactId>
 			<version>${project.version}</version>
 		</dependency>

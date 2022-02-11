@@ -1,12 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.github.cormoran-io.pepper</groupId>
+		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-spark-parent</artifactId>
-		<version>2.2-SNAPSHOT</version>
+		<version>3.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>pepper-spark</artifactId>
@@ -24,7 +22,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.github.cormoran-io.pepper</groupId>
+			<groupId>io.github.solven-eu.pepper</groupId>
 			<artifactId>pepper</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -63,7 +61,7 @@
 		<dependency>
 			<groupId>org.scala-lang.modules</groupId>
 			<artifactId>scala-java8-compat_${scala.version}</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.2</version>
 		</dependency>
 
 		<dependency>
@@ -72,7 +70,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.cormoran-io.pepper</groupId>
+			<groupId>io.github.solven-eu.pepper</groupId>
 			<artifactId>pepper-avro</artifactId>
 			<version>${project.version}</version>
 			<!-- IAvroStreamFactory -->
@@ -80,7 +78,7 @@
 		</dependency>
 		<dependency>
 			<!-- Use PepperHadoopHelper -->
-			<groupId>com.github.cormoran-io.pepper</groupId>
+			<groupId>io.github.solven-eu.pepper</groupId>
 			<artifactId>pepper-parquet</artifactId>
 			<version>${project.version}</version>
 			<!-- <scope>test</scope> -->

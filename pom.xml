@@ -1,12 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.github.cormoran-io.pepper</groupId>
+		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-metadata</artifactId>
-		<version>2.2-SNAPSHOT</version>
+		<version>3.1-SNAPSHOT</version>
 		<relativePath>metadata</relativePath>
 	</parent>
 
@@ -53,27 +51,28 @@
 	<!-- https://stackoverflow.com/questions/59380162/openpgpkeyserver-no-keys-found-after-submit-openpgp-public-key -->
 	<!-- http://pool.sks-keyservers.net/pks/lookup?search=0xCB6E7A4E9502E68A&fingerprint=on&op=index -->
 
+	<!-- DEPRECATED -->
 	<!-- Deployment -->
 	<!-- mvn deploy -PSonatype -Dmaven.test.skip -->
-	<!-- Release in https://oss.sonatype.org -->
+	<!-- Release in https://s01.oss.sonatype.org/ -->
 	<!-- Jira ticket: https://issues.sonatype.org/browse/OSSRH-10350 -->
 	<!-- Needs 2 hours to appear in http://search.maven.org/ -->
 
 	<properties>
 		<!-- https://github.com/google/guava/releases -->
-		<guava.version>30.1.1-jre</guava.version>
+		<guava.version>31.0.1-jre</guava.version>
 
 		<!-- https://mvnrepository.com/artifact/org.jooq/jool -->
 		<jool.version>0.9.14</jool.version>
 
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
-		<errorprone.version>2.8.1</errorprone.version>
+		<errorprone.version>2.11.0</errorprone.version>
 
 		<awaitility.version>4.0.3</awaitility.version>
 		<findbugs.version>3.0.5</findbugs.version>
-		<equals.verifier.version>3.7</equals.verifier.version>
-		<checker.quals.version>3.17.0</checker.quals.version>
+		<equals.verifier.version>3.9</equals.verifier.version>
+		<checker.quals.version>3.21.2</checker.quals.version>
 
 		<!-- newer version than spring-boot-dependencies, for JDK11 -->
 		<mockito.version>3.2.4</mockito.version>
@@ -82,12 +81,12 @@
 		<maven-pmd-plugin.version>3.14.0</maven-pmd-plugin.version>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.pmd/pmd -->
 		<!-- Issue with 6.27, probably due to mvn plugin -->
-		<pmd.version>6.37.0</pmd.version>
+		<pmd.version>6.42.0</pmd.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
 		<maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
 		<!-- https://mvnrepository.com/artifact/com.puppycrawl.tools/checkstyle -->
-		<checkstyle.version>8.45</checkstyle.version>
+		<checkstyle.version>9.3</checkstyle.version>
 
 		<jacoco.instruction.ratio>0.70</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
@@ -322,7 +321,7 @@
 						<dependency>
 							<groupId>org.codehaus.plexus</groupId>
 							<artifactId>plexus-compiler-javac-errorprone</artifactId>
-							<version>2.8.8</version>
+							<version>2.10.0</version>
 						</dependency>
 						<!-- override plexus-compiler-javac-errorprone's dependency on Error 
 							Prone with the latest version -->
@@ -522,13 +521,13 @@
 			<plugin>
 				<groupId>net.revelc.code.formatter</groupId>
 				<artifactId>formatter-maven-plugin</artifactId>
-				<version>2.16.0</version>
+				<version>2.17.1</version>
 				<configuration>
 					<configFile>eclipse/eclipse_java_code_formatter.xml</configFile>
 				</configuration>
 				<dependencies>
 					<dependency>
-						<groupId>com.github.cormoran-io.pepper</groupId>
+						<groupId>io.github.solven-eu.pepper</groupId>
 						<artifactId>pepper-static</artifactId>
 						<version>${project.version}</version>
 						<scope>runtime</scope>
@@ -579,7 +578,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<tagNameFormat>pepper-core@{project.version}</tagNameFormat>
+					<tagNameFormat>pepper-@{project.version}</tagNameFormat>
 
 					<!-- http://central.sonatype.org/pages/apache-maven.html -->
 					<!-- Sonatype profile is defined in pepper-metadata -->
@@ -627,7 +626,7 @@
 				</configuration>
 				<dependencies>
 					<dependency>
-						<groupId>com.github.cormoran-io.pepper</groupId>
+						<groupId>io.github.solven-eu.pepper</groupId>
 						<artifactId>pepper-static</artifactId>
 						<version>${project.version}</version>
 						<scope>runtime</scope>
@@ -659,7 +658,7 @@
 				<dependencies>
 					<dependency>
 						<!-- This dependency holds the default configuration -->
-						<groupId>com.github.cormoran-io.pepper</groupId>
+						<groupId>io.github.solven-eu.pepper</groupId>
 						<artifactId>pepper-static</artifactId>
 						<version>${project.version}</version>
 						<scope>runtime</scope>

@@ -2,18 +2,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.cormoran-io.pepper</groupId>
+        <groupId>io.github.solven-eu.pepper</groupId>
         <artifactId>pepper-compression</artifactId>
-        <version>2.2-SNAPSHOT</version>
+        <version>3.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>pepper-primitives</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <roaringbitmap.version>0.9.15</roaringbitmap.version>
+        <roaringbitmap.version>0.9.23</roaringbitmap.version>
         <fastpfor.version>0.1.12</fastpfor.version>
-        <fastutil.version>8.5.4</fastutil.version>
+        <fastutil.version>8.5.8</fastutil.version>
 
         <!-- TODO -->
         <jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
@@ -22,7 +22,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.cormoran-io.pepper</groupId>
+            <groupId>io.github.solven-eu.pepper</groupId>
             <artifactId>pepper</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -2,9 +2,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.github.cormoran-io.pepper</groupId>
+		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-serialization</artifactId>
-		<version>2.2-SNAPSHOT</version>
+		<version>3.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>pepper-avro</artifactId>
@@ -18,7 +18,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.github.cormoran-io.pepper</groupId>
+			<groupId>io.github.solven-eu.pepper</groupId>
 			<artifactId>pepper</artifactId>
 			<version>${project.version}</version>
 		</dependency>

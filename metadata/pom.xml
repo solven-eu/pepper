@@ -5,14 +5,14 @@
 		<!-- Import dependency management from Spring Boot -->
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>2.5.4</version>
+		<version>2.6.3</version>
 		<!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
 		<relativePath />
 	</parent>
 
-	<groupId>com.github.cormoran-io.pepper</groupId>
+	<groupId>io.github.solven-eu.pepper</groupId>
 	<artifactId>pepper-metadata</artifactId>
-	<version>2.2-SNAPSHOT</version>
+	<version>3.1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
     
@@ -48,11 +48,11 @@
 			<distributionManagement>
 				<snapshotRepository>
 					<id>ossrh</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+					<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
 				</snapshotRepository>
 				<repository>
 					<id>ossrh</id>
-					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+					<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 				</repository>
 			</distributionManagement>
 
@@ -78,7 +78,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>3.2.0</version>
+						<version>3.3.2</version>
 						<configuration>
 							<!-- http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html -->
 							<additionalparam>-Xdoclint:none</additionalparam>
@@ -103,7 +103,7 @@
 						<extensions>true</extensions>
 						<configuration>
 							<serverId>ossrh</serverId>
-							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 						</configuration>
 					</plugin>
@@ -147,7 +147,7 @@
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-jar-plugin</artifactId>
-							<version>3.2.0</version>
+							<version>3.2.2</version>
 							<dependencies>
 								<dependency>
 									<groupId>org.codehaus.plexus</groupId>

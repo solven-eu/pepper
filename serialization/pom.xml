@@ -1,19 +1,17 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.github.cormoran-io.pepper</groupId>
+		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-parent</artifactId>
-		<version>2.2-SNAPSHOT</version>
+		<version>3.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>pepper-serialization</artifactId>
 	<packaging>pom</packaging>
 
 	<properties>
-		<avro.version>1.10.2</avro.version>
+		<avro.version>1.11.0</avro.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
 		<arrow.version>0.17.1</arrow.version>
@@ -29,7 +27,7 @@
 		<!-- <guava.version>31.0.1-jre</guava.version> -->
 
 		<!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
-		<arrow.version>5.0.0</arrow.version>
+		<arrow.version>7.0.0</arrow.version>
 	</properties>
 
 	<modules>
