@@ -54,7 +54,7 @@
 	<!-- DEPRECATED -->
 	<!-- Deployment -->
 	<!-- mvn deploy -PSonatype -Dmaven.test.skip -->
-	<!-- Release in https://oss.sonatype.org -->
+	<!-- Release in https://s01.oss.sonatype.org/ -->
 	<!-- Jira ticket: https://issues.sonatype.org/browse/OSSRH-10350 -->
 	<!-- Needs 2 hours to appear in http://search.maven.org/ -->
 
