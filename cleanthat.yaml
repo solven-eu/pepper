@@ -32,7 +32,7 @@ languages:
       static_after: false
   - engine: "eclipse_formatter"
     parameters:
-      url: "classpath:/eclipse/eclipse-java-google-style.xml"
+      url: "code:/static/src/main/resources/eclipse/eclipse_java_code_formatter.xml"
 - language: "json"
   language_version: "0"
   source_code:

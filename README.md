@@ -72,3 +72,8 @@ https://www.gnu.org/software/gdb/
 - (gdb) detach
 - (gdb) quit
 - jmap -dump:format=b,file=jvm.hprof /usr/bin/java /tmp/jvm.core
+
+# Upgrade from 2.X to 3.X
+
+Change groupId from `<groupId>com.github.cormoran-io.pepper</groupId>` to `<groupId>io.github.solven-eu.pepper</groupId>`
+Change imported package from `import cormoran.pepper.X` to `import eu.solven.pepper.X`
