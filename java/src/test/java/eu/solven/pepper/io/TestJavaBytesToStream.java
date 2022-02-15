@@ -34,9 +34,6 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
-import eu.solven.pepper.io.JavaBytesToStream;
-import eu.solven.pepper.io.PepperSerializationHelper;
-
 public class TestJavaBytesToStream {
 	@Test
 	public void test() throws IOException {

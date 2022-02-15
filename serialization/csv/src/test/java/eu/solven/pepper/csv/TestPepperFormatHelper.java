@@ -27,8 +27,6 @@ import org.junit.Test;
 
 import com.google.common.base.CharMatcher;
 
-import eu.solven.pepper.csv.CsvFormatHelper;
-
 public class TestPepperFormatHelper {
 	@Test
 	public void testGuessSeparator_empty() {

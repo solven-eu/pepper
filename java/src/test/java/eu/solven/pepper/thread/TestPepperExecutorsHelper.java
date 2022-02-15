@@ -39,8 +39,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
-import eu.solven.pepper.thread.PepperExecutorsHelper;
-
 public class TestPepperExecutorsHelper {
 	@Test
 	public void testNewExecutorService() {

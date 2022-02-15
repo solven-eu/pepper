@@ -34,8 +34,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import eu.solven.pepper.io.PepperFileHelper;
-
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = TestPepperFileHelperInSpringContext.class)
 public class TestPepperFileHelperInSpringContext {

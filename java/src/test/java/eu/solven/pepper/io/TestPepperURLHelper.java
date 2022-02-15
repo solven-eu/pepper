@@ -28,9 +28,6 @@ import java.net.URL;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.io.PepperHostDescriptor;
-import eu.solven.pepper.io.PepperURLHelper;
-
 public class TestPepperURLHelper {
 	@Test
 	public void testEqualsURL() throws MalformedURLException {

@@ -11,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
-import eu.solven.pepper.spark.shade.GenerateExcludesForSpark;
-
 /**
  * Helps generating the artifacSet excludes clause, given a local Spark installation
  * 

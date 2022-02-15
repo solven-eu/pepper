@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import eu.solven.pepper.logging.PepperLogHelper;
 import eu.solven.pepper.memory.PepperMemoryHelper;
-import eu.solven.pepper.primitives.ConstantBitsIntArray;
 
 public class TestCompressedIntArray {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestCompressedIntArray.class);

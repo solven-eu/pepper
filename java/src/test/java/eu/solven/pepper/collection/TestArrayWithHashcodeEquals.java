@@ -25,8 +25,6 @@ package eu.solven.pepper.collection;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.collection.ArrayWithHashcodeEquals;
-
 public class TestArrayWithHashcodeEquals {
 	@Test
 	public void testHashCodeEquals() {

@@ -25,8 +25,6 @@ package eu.solven.pepper.jvm;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.jvm.PepperMathHelper;
-
 public class TestPepperMathHelper {
 
 	@Test

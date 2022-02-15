@@ -31,9 +31,6 @@ import org.mockito.Mockito;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
 
-import eu.solven.pepper.metrics.TaskEndEvent;
-import eu.solven.pepper.metrics.TaskStartEvent;
-
 public class TestTaskStartEvent {
 
 	@After

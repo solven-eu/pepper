@@ -34,9 +34,6 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-import eu.solven.pepper.avro.AvroSchemaHelper;
-import eu.solven.pepper.avro.AvroStreamFactory;
-import eu.solven.pepper.avro.AvroStreamHelper;
 import eu.solven.pepper.io.PepperFileHelper;
 
 public class TestWriteLargeAvro {

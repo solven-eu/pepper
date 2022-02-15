@@ -30,8 +30,6 @@ import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
-import eu.solven.pepper.eventbus.PepperEventBusHelper;
-
 public class TestPepperEventBusHelper {
 
 	@Test

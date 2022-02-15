@@ -43,9 +43,6 @@ import org.slf4j.LoggerFactory;
 import com.google.monitoring.runtime.instrumentation.AllocationRecorder;
 import com.google.monitoring.runtime.instrumentation.Sampler;
 
-import eu.solven.pepper.csv.IZeroCopyConsumer;
-import eu.solven.pepper.csv.ZeroCopyCSVParser;
-import eu.solven.pepper.csv.ZeroCopyConsumers;
 import eu.solven.pepper.jvm.PepperForOracleJVM;
 import eu.solven.pepper.logging.PepperLogHelper;
 import eu.solven.pepper.memory.IPepperMemoryConstants;

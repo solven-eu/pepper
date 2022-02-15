@@ -31,9 +31,6 @@ import org.junit.Test;
 
 import com.google.common.io.Files;
 
-import eu.solven.pepper.io.PepperFileHelper;
-import eu.solven.pepper.io.PepperGzipHelper;
-
 public class TestPepperGzipHelper {
 	@Test
 	public void test_ctor() {

@@ -30,8 +30,6 @@ import java.util.stream.IntStream;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.primitive.PepperParserHelper;
-
 // https://github.com/javolution/javolution/blob/master/src/test/java/org/javolution/text/TypeFormatTest.java
 public class PepperParserHelperTest {
 

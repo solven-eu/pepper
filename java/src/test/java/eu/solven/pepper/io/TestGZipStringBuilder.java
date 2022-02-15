@@ -25,8 +25,6 @@ package eu.solven.pepper.io;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.io.GZipStringBuilder;
-
 public class TestGZipStringBuilder {
 	@Test
 	public void testAppend() {

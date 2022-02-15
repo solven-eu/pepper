@@ -27,9 +27,6 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.io.ByteArrayMarker;
-import eu.solven.pepper.io.PepperSerializationHelper;
-
 public class TestByteArrayMarker {
 	@Test
 	public void testSerialization() throws IOException, ClassNotFoundException {

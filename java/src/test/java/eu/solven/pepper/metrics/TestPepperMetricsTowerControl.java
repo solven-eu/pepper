@@ -40,10 +40,6 @@ import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.eventbus.EventBus;
 
-import eu.solven.pepper.metrics.AutoCloseableTaskStartEvent;
-import eu.solven.pepper.metrics.PepperActiveTasksMonitor;
-import eu.solven.pepper.metrics.TaskEndEvent;
-import eu.solven.pepper.metrics.TaskStartEvent;
 import eu.solven.pepper.thread.PepperExecutorsHelper;
 import eu.solven.pepper.thread.PepperThreadDumper;
 

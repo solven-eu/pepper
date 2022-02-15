@@ -31,8 +31,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.thread.PepperThreadDumper;
-
 public class TestPepperThreadDumper {
 	protected final PepperThreadDumper td = new PepperThreadDumper(ManagementFactory.getThreadMXBean());
 

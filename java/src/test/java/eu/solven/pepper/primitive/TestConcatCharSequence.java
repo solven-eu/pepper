@@ -25,8 +25,6 @@ package eu.solven.pepper.primitive;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.primitive.ConcatCharSequence;
-
 public class TestConcatCharSequence {
 	@Test
 	public void testConcatCharSequence_subSequence() {

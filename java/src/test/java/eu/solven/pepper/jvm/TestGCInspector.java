@@ -48,7 +48,6 @@ import com.google.common.collect.ImmutableMap;
 
 import eu.solven.pepper.agent.VirtualMachineWithoutToolsJar;
 import eu.solven.pepper.io.PepperFileHelper;
-import eu.solven.pepper.jvm.GCInspector;
 import eu.solven.pepper.memory.IPepperMemoryConstants;
 import eu.solven.pepper.thread.IThreadDumper;
 import eu.solven.pepper.unittest.ILogDisabler;

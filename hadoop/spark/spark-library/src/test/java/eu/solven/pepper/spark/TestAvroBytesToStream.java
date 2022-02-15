@@ -58,7 +58,6 @@ import com.google.common.primitives.Doubles;
 
 import eu.solven.pepper.avro.AvroBytesToStream;
 import eu.solven.pepper.avro.AvroTranscodingHelper;
-import eu.solven.pepper.spark.PepperSparkHelper;
 
 public class TestAvroBytesToStream {
 	// https://github.com/FasterXML/jackson-dataformats-binary/blob/master/avro/src/test/java/com/fasterxml/jackson/dataformat/avro/MapTest.java

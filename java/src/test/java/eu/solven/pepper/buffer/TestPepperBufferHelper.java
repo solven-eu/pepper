@@ -30,9 +30,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.solven.pepper.buffer.CloseableCompositeIntBuffer;
-import eu.solven.pepper.buffer.CloseableIntBuffer;
-import eu.solven.pepper.buffer.PepperBufferHelper;
 import eu.solven.pepper.memory.IPepperMemoryConstants;
 
 public class TestPepperBufferHelper {

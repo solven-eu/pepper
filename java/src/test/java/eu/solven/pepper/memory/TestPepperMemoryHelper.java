@@ -29,9 +29,6 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.solven.pepper.memory.IPepperMemoryConstants;
-import eu.solven.pepper.memory.PepperMemoryHelper;
-
 public class TestPepperMemoryHelper {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestPepperMemoryHelper.class);

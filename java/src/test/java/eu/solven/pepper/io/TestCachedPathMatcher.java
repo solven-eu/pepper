@@ -31,8 +31,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import eu.solven.pepper.io.CachedPathMatcher;
-
 public class TestCachedPathMatcher {
 	@Test
 	public void testCache() {

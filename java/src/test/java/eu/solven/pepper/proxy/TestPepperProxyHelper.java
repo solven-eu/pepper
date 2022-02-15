@@ -6,8 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.env.MockEnvironment;
 
-import eu.solven.pepper.proxy.PepperProxyHelper;
-
 public class TestPepperProxyHelper {
 	final MockEnvironment env = new MockEnvironment();
 

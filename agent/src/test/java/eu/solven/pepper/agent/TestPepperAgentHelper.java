@@ -25,8 +25,6 @@ package eu.solven.pepper.agent;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.agent.PepperAgentHelper;
-
 public class TestPepperAgentHelper {
 
 	@Test

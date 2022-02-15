@@ -51,9 +51,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 
-import eu.solven.pepper.avro.AvroSchemaHelper;
-import eu.solven.pepper.avro.AvroStreamHelper;
-import eu.solven.pepper.avro.AvroTranscodingHelper;
 import eu.solven.pepper.thread.PepperExecutorsHelper;
 
 public class TestAvroStreamHelper {

@@ -31,7 +31,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.solven.pepper.memory.IPepperMemoryConstants;
-import eu.solven.pepper.primitives.ConstantBitsIntArray;
 
 public class TestCompressedIntArray_Memory {
 	@Test

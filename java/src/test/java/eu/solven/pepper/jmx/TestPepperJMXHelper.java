@@ -48,7 +48,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import eu.solven.pepper.io.PepperFileHelper;
-import eu.solven.pepper.jmx.PepperJMXHelper;
 
 public class TestPepperJMXHelper {
 

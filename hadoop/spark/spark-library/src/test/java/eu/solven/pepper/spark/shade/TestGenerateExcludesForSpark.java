@@ -9,8 +9,6 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.google.common.collect.ImmutableSet;
 
-import eu.solven.pepper.spark.shade.GenerateExcludesForSpark;
-
 public class TestGenerateExcludesForSpark {
 	final String sparkFile211 = "spark-core_2.11-3.1.2.jar";
 	final String sparkFile212 = "spark-core_2.12-3.1.2.jar";

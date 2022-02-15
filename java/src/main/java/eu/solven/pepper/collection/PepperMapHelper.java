@@ -129,6 +129,9 @@ public class PepperMapHelper {
 				return null;
 			} else if (value instanceof Map<?, ?>) {
 				value = ((Map<?, ?>) value).get(key);
+			} else if (key instanceof Number && value instanceof List<?>) {
+				List<?> valueAsList = (List<?>) value;
+				value = valueAsList.get(((Number) key).intValue());
 			} else {
 				throw new IllegalArgumentException("Can not process keys " + allKeys
 						+ " on Map: "
@@ -252,12 +255,39 @@ public class PepperMapHelper {
 	}
 
 	private static <T> T digForValue(final Map<?, ?> map, List<Object> allKeys, BiFunction<Object, Object, T> toValue) {
-		Map<?, ?> currentMap = map;
+		if (allKeys.isEmpty()) {
+			return (T) map;
+		}
+
+		// Map<?, ?> currentMap = map;
+		// We'll have a specific logic when processing the last key
+		int deepestKeyIndex = allKeys.size() - 1;
+
+		Object currentHolder = map;
 		for (int i = 0; i < allKeys.size(); i++) {
-			Object currentKey = allKeys.get(i);
-			Object rawValue = currentMap.get(currentKey);
-			if (i == allKeys.size() - 1) {
-				if (rawValue == null) {
+			final Object currentKey = allKeys.get(i);
+			final Object rawValue;
+
+			if (currentKey instanceof Number && currentHolder instanceof List<?>) {
+				List<?> holderAsList = (List<?>) currentHolder;
+				int currentKeyAsInt = ((Number) currentKey).intValue();
+
+				int listSize = holderAsList.size();
+				if (currentKeyAsInt < 0 || currentKeyAsInt >= listSize) {
+					throw new IllegalArgumentException(
+							"Invalid index=" + PepperLogHelper.getObjectAndClass(currentKeyAsInt)
+									+ " over list of size="
+									+ listSize);
+				}
+
+				rawValue = holderAsList.get(currentKeyAsInt);
+			} else {
+				rawValue = ((Map<?, ?>) currentHolder).get(currentKey);
+			}
+
+			if (rawValue == null) {
+				if (currentHolder instanceof Map<?, ?>) {
+					Map<?, ?> currentMap = (Map<?, ?>) currentHolder;
 					Set<?> keySet = currentMap.keySet();
 					if (currentMap.containsKey(currentKey)) {
 						throw new IllegalArgumentException(
@@ -266,14 +296,20 @@ public class PepperMapHelper {
 						throw new IllegalArgumentException(
 								"We miss '" + currentKey + "' (key not present) amongst available: " + keySet);
 					}
+				} else if (currentHolder instanceof List<?>) {
+					throw new IllegalArgumentException(
+							"Value in list at index=" + PepperLogHelper.getObjectAndClass(currentKey) + " is null");
 				}
+			}
 
+			if (i == deepestKeyIndex) {
+				// We are processed the last key
 				return toValue.apply(currentKey, rawValue);
-			} else if (rawValue instanceof Map<?, ?>) {
-				currentMap = (Map<?, ?>) rawValue;
+			} else if (rawValue instanceof Map<?, ?> || rawValue instanceof List<?>) {
+				currentHolder = rawValue;
 			} else {
 				throw new IllegalArgumentException(
-						"We miss '" + currentKey + "' as Map amongst available: " + currentMap.keySet());
+						"Not managed intermediate type: " + PepperLogHelper.getObjectAndClass(rawValue));
 			}
 		}
 
@@ -288,7 +324,7 @@ public class PepperMapHelper {
 		return keys;
 	}
 
-	public static Number getRequiredNumber(Map<?, ?> map, String mainKey, String... subKeys) {
+	public static Number getRequiredNumber(Map<?, ?> map, Object mainKey, Object... subKeys) {
 		List<Object> allKeys = checkNullMap(map, mainKey, subKeys);
 
 		return digForValue(map, allKeys, (currentKey, rawValue) -> {
@@ -297,6 +333,20 @@ public class PepperMapHelper {
 			} else {
 				// Do not throw the value which might be a personal value
 				throw new IllegalArgumentException("Not a number (" + rawValue
+						.getClass() + ") for " + allKeys + ". Deepest Map<?,?> keys: " + map.keySet());
+			}
+		});
+	}
+
+	public static boolean getRequiredBoolean(Map<?, ?> map, Object mainKey, Object... subKeys) {
+		List<Object> allKeys = checkNullMap(map, mainKey, subKeys);
+
+		return digForValue(map, allKeys, (currentKey, rawValue) -> {
+			if (rawValue instanceof Boolean) {
+				return (Boolean) rawValue;
+			} else {
+				// Do not throw the value which might be a personal value
+				throw new IllegalArgumentException("Not a boolean (" + rawValue
 						.getClass() + ") for " + allKeys + ". Deepest Map<?,?> keys: " + map.keySet());
 			}
 		});

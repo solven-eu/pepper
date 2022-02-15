@@ -25,8 +25,6 @@ package eu.solven.pepper.primitive;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.primitive.UnsafeSubSequence;
-
 public class TestUnsafeSubSequence {
 	@Test
 	public void testShiftedSubSequence() {

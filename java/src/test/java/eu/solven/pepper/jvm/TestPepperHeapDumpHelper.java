@@ -6,8 +6,6 @@ import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.jvm.PepperHeapDumpHelper;
-
 public class TestPepperHeapDumpHelper {
 	@Test
 	public void testGetHeapDumpPath_notConfigured() {

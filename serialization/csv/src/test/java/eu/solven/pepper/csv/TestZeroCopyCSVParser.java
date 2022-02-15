@@ -35,10 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.primitives.Ints;
 
-import eu.solven.pepper.csv.IZeroCopyIntConsumer;
-import eu.solven.pepper.csv.IZeroCopyLongConsumer;
-import eu.solven.pepper.csv.ZeroCopyCSVParser;
-
 public class TestZeroCopyCSVParser {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestZeroCopyCSVParser.class);
 

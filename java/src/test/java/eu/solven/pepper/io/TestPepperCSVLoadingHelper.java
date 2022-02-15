@@ -35,8 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
-import eu.solven.pepper.io.PepperFileHelper;
-
 /**
  * 
  * @author Benoit Lacelle

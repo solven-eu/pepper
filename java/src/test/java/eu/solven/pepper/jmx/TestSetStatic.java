@@ -32,8 +32,6 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import eu.solven.pepper.jmx.SetStaticMBean;
-
 public class TestSetStatic {
 	public static String STRING_STATIC = "-";
 	public static LocalDate LOCALDATE_STATIC = LocalDate.now();

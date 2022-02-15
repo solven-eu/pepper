@@ -4,8 +4,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-import eu.solven.pepper.unittest.PepperTestHelper;
-
 public class TestPepperTestHelper {
 	@Test
 	public void testAssumeInternet() {

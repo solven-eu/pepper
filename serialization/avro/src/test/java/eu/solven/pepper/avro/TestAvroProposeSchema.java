@@ -31,9 +31,6 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-import eu.solven.pepper.avro.AvroSchemaHelper;
-import eu.solven.pepper.avro.IPepperSchemaConstants;
-
 public class TestAvroProposeSchema implements IPepperSchemaConstants {
 	@Test
 	public void testProposeSchema_Double() {

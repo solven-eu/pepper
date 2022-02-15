@@ -40,9 +40,6 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 
-import eu.solven.pepper.io.ObjectInputHandlingInputStream;
-import eu.solven.pepper.io.PepperObjectInputHelper;
-import eu.solven.pepper.io.PepperSerializationHelper;
 import eu.solven.pepper.memory.IPepperMemoryConstants;
 import eu.solven.pepper.thread.PepperExecutorsHelper;
 

@@ -33,7 +33,6 @@ import org.junit.Test;
 
 import eu.solven.pepper.agent.PepperAgentHelper;
 import eu.solven.pepper.memory.IPepperMemoryConstants;
-import eu.solven.pepper.util.PepperProcessHelper;
 
 public class TestPepperProcessHelper {
 	@Test

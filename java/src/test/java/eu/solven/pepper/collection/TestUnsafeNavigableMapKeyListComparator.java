@@ -25,8 +25,6 @@ package eu.solven.pepper.collection;
 import java.util.Comparator;
 import java.util.NavigableMap;
 
-import eu.solven.pepper.collection.UnsafeNavigableMapListValueComparator;
-
 public class TestUnsafeNavigableMapKeyListComparator extends TestNavigableMapKeyListComparable {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

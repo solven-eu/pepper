@@ -8,8 +8,6 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.SetMultimap;
 
-import eu.solven.pepper.primitive.CormoranBitPacking;
-
 public class TestCormoranBitPacking {
 	SetMultimap<Integer, Integer> pairsToTry = ImmutableSetMultimap.<Integer, Integer>builder()
 			.put(0, 0)

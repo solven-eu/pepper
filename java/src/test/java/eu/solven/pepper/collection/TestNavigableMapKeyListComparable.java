@@ -31,8 +31,6 @@ import java.util.TreeMap;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.collection.NavigableMapListValueComparator;
-
 public class TestNavigableMapKeyListComparable {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

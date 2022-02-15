@@ -32,8 +32,6 @@ import java.nio.file.Path;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.io.PepperFileHelper;
-
 public class TestPepperFileHelper {
 	@Test
 	public void testCreateTempPath() throws IOException {

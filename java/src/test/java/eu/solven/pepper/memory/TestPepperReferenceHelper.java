@@ -37,9 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import eu.solven.pepper.io.PepperURLHelper;
 import eu.solven.pepper.logging.PepperLogHelper;
-import eu.solven.pepper.memory.PepperMemoryHelper;
-import eu.solven.pepper.memory.PepperReferenceHelper;
-import eu.solven.pepper.memory.PepperReferenceInternalizer;
 
 public class TestPepperReferenceHelper {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestPepperReferenceHelper.class);

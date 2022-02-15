@@ -28,8 +28,6 @@ import java.util.TreeMap;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.collection.NavigableMapComparator;
-
 public class TestNavigableMapComparator {
 	@Test
 	public void testComparator() {

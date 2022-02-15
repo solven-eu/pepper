@@ -34,17 +34,13 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
 
-import eu.solven.pepper.collection.PepperMapHelper;
-
 public class TestPepperMapHelper {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TestPepperMapHelper.class);
+	final LocalDate now = LocalDate.now();
 
 	@Test
 	public void testMergeOnNullValue() {
@@ -289,7 +285,6 @@ public class TestPepperMapHelper {
 	@Test
 	public void testImbricatedMap_Deeper_DifferentTypes() {
 		// Check keys can be of any-type
-		LocalDate now = LocalDate.now();
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		Assert.assertEquals(ImmutableMap.of(123, ImmutableMap.of("key", ImmutableMap.of(now, "value"))), map);
@@ -297,7 +292,6 @@ public class TestPepperMapHelper {
 
 	@Test
 	public void testGetOptionalAs() {
-		LocalDate now = LocalDate.now();
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		Assert.assertEquals(Optional.of("value"), PepperMapHelper.getOptionalAs(map, 123, "key", now));
@@ -308,7 +302,6 @@ public class TestPepperMapHelper {
 
 	@Test
 	public void testGetRequiredAs() {
-		LocalDate now = LocalDate.now();
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		Assert.assertEquals("value", PepperMapHelper.getRequiredAs(map, 123, "key", now));
@@ -319,7 +312,6 @@ public class TestPepperMapHelper {
 
 	@Test
 	public void testGetOptionalAs_missing() {
-		LocalDate now = LocalDate.now();
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key2")).isEmpty();
@@ -328,7 +320,6 @@ public class TestPepperMapHelper {
 
 	@Test(expected = IllegalStateException.class)
 	public void testGetRequiredAs_missing_depth2() {
-		LocalDate now = LocalDate.now();
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		PepperMapHelper.getRequiredAs(map, 123, "key2");
@@ -336,10 +327,74 @@ public class TestPepperMapHelper {
 
 	@Test(expected = IllegalStateException.class)
 	public void testGetRequiredAs_missing_depth1() {
-		LocalDate now = LocalDate.now();
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		PepperMapHelper.getRequiredAs(map, 124);
+	}
+
+	@Test
+	public void testGetRequiredBoolean_true() {
+		// Check keys can be of any-type
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(Boolean.TRUE, 123, "key", now);
+
+		Assertions.assertThat(PepperMapHelper.<Object>getAs(map, 123, "key", now)).isEqualTo(Boolean.TRUE);
+		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(Boolean.TRUE);
+		Assertions.assertThat(PepperMapHelper.getRequiredBoolean(map, 123, "key", now)).isEqualTo(Boolean.TRUE);
+	}
+
+	@Test
+	public void testGetRequiredBoolean_false() {
+		// Check keys can be of any-type
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(Boolean.FALSE, 123, "key", now);
+		Assertions.assertThat(PepperMapHelper.<Object>getAs(map, 123, "key", now)).isEqualTo(Boolean.FALSE);
+		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(Boolean.FALSE);
+		Assertions.assertThat(PepperMapHelper.getRequiredBoolean(map, 123, "key", now)).isEqualTo(Boolean.FALSE);
+	}
+
+	@Test
+	public void testGetRequiredNumber_int() {
+		// Check keys can be of any-type
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(456, 123, "key", now);
+
+		Assertions.assertThat(PepperMapHelper.<Object>getAs(map, 123, "key", now)).isEqualTo(456);
+		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(456);
+		Assertions.assertThat(PepperMapHelper.getRequiredNumber(map, 123, "key", now)).isEqualTo(456);
+	}
+
+	@Test
+	public void testGetRequiredNumber_float() {
+		// Check keys can be of any-type
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(123.456F, 123, "key", now);
+		Assertions.assertThat(PepperMapHelper.<Object>getAs(map, 123, "key", now)).isEqualTo(123.456F);
+		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(123.456F);
+		Assertions.assertThat(PepperMapHelper.getRequiredNumber(map, 123, "key", now)).isEqualTo(123.456F);
+	}
+
+	@Test
+	public void testGetFromList_number() {
+		Map<String, Object> root = new LinkedHashMap<>();
+
+		root.put("k", Arrays.asList("someString", PepperMapHelper.imbricatedMap(123.456F, 123, "key", now)));
+
+		// Check keys can be of any-type
+		Assertions.assertThat(PepperMapHelper.<Object>getAs(root, "k", 1, 123, "key", now)).isEqualTo(123.456F);
+		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(root, "k", 1, 123, "key", now)).isEqualTo(123.456F);
+		Assertions.assertThat(PepperMapHelper.getRequiredNumber(root, "k", 1, 123, "key", now)).isEqualTo(123.456F);
+	}
+
+	@Test
+	public void testGetFromList_string() {
+		Map<String, Object> root = new LinkedHashMap<>();
+
+		root.put("k", Arrays.asList("someString", PepperMapHelper.imbricatedMap("deepString", 123, "key", now)));
+
+		// Check keys can be of any-type
+		Assertions.assertThat(PepperMapHelper.<Object>getAs(root, "k", 1, 123, "key", now)).isEqualTo("deepString");
+		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(root, "k", 1, 123, "key", now))
+				.isEqualTo("deepString");
+		Assertions.assertThat(PepperMapHelper.getRequiredString(root, "k", 1, 123, "key", now)).isEqualTo("deepString");
+		Assertions.assertThat(PepperMapHelper.getOptionalString(root, "k", 1, 123, "key", now).get())
+				.isEqualTo("deepString");
 	}
 
 }

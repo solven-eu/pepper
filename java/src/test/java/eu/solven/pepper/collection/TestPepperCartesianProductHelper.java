@@ -39,8 +39,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-import eu.solven.pepper.collection.CartesianProductHelper;
-
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class TestPepperCartesianProductHelper {
 	public static final String A = "keyA";
