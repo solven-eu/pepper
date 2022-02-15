@@ -99,7 +99,9 @@
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
 						<!-- https://mvnrepository.com/artifact/org.sonatype.plugins/nexus-staging-maven-plugin -->
-						<version>1.6.10</version>
+						<!-- https://issues.sonatype.org/browse/NEXUS-31214 -->
+						<!-- 1.6.10 is broken (and 1.6.9 looks ill anyway) -->
+						<version>1.6.8</version>
 						<extensions>true</extensions>
 						<configuration>
 							<serverId>ossrh</serverId>
