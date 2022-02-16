@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-metadata</artifactId>
-		<version>3.1-SNAPSHOT</version>
+		<version>3.1</version>
 		<relativePath>../metadata</relativePath>
 	</parent>
 
