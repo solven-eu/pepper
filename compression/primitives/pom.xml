@@ -23,7 +23,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.solven-eu.pepper</groupId>
-            <artifactId>pepper</artifactId>
+            <artifactId>pepper-with-agent</artifactId>
             <version>${project.version}</version>
         </dependency>
 

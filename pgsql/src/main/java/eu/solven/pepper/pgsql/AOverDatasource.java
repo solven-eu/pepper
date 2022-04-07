@@ -40,6 +40,7 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.impl.DefaultExecuteListenerProvider;
+import org.jooq.tools.jdbc.JDBCUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +124,12 @@ public abstract class AOverDatasource<T extends org.jooq.Table<?>> {
 	}
 
 	protected DSLContext makeDslContext(Connection connection) {
-		Configuration configuration = new DefaultConfiguration().set(connection);
+		Configuration configuration = new DefaultConfiguration();
+
+		configuration.set(connection);
+		// As in org.jooq.impl.DSL.using(Connection)
+		configuration.set(JDBCUtils.dialect(connection));
+
 		configuration.set(new DefaultExecuteListenerProvider(new PepperPgsqlSlowQueryListener()));
 
 		return DSL.using(configuration);

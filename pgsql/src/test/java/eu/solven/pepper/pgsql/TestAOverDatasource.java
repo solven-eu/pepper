@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import org.assertj.core.api.Assertions;
 import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -35,5 +36,6 @@ public class TestAOverDatasource {
 		DSLContext dslContext = dataSource.makeDslContext(connectionSupplier.get());
 
 		Assertions.assertThat(dslContext.configuration().executeListenerProviders()).hasSize(1);
+		Assertions.assertThat(dslContext.configuration().dialect()).isEqualTo(SQLDialect.DEFAULT);
 	}
 }

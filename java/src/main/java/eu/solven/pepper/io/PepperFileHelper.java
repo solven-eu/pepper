@@ -160,19 +160,21 @@ public class PepperFileHelper {
 			destDir.mkdirs();
 
 			while (enumEntries.hasMoreElements()) {
-				JarEntry file = enumEntries.nextElement();
-				Path diskPath = targetPath.resolve(file.getName());
-				if (file.isDirectory()) {
+				JarEntry jarEntry = enumEntries.nextElement();
+				Path diskPath = targetPath.resolve(jarEntry.getName());
+				if (jarEntry.isDirectory()) {
 					// if its a directory, create it
-					if (!diskPath.toFile().mkdir()) {
-						throw new IllegalStateException("Failed creating " + file);
+					File diskPathAsFile = diskPath.toFile();
+					if (!diskPathAsFile.isDirectory() && !diskPathAsFile.mkdir()) {
+						throw new IllegalStateException(
+								"Failed creating " + jarEntry + " (file=" + diskPathAsFile.getCanonicalPath() + ")");
 					}
 				} else {
 					// We may receive files without their parent directories
 					diskPath.getParent().toFile().mkdirs();
 
 					// Copy the file content to disk
-					try (java.io.InputStream is = jar.getInputStream(file)) {
+					try (java.io.InputStream is = jar.getInputStream(jarEntry)) {
 						Files.copy(is, diskPath);
 					}
 				}

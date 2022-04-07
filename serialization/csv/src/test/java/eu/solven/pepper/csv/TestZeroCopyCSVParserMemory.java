@@ -46,7 +46,7 @@ import com.google.monitoring.runtime.instrumentation.Sampler;
 import eu.solven.pepper.jvm.PepperForOracleJVM;
 import eu.solven.pepper.logging.PepperLogHelper;
 import eu.solven.pepper.memory.IPepperMemoryConstants;
-import eu.solven.pepper.memory.PepperMemoryHelper;
+import eu.solven.pepper.memory.PepperFootprintHelper;
 import eu.solven.pepper.primitive.PepperParserHelper;
 
 @Ignore("Broken: TODO")
@@ -173,7 +173,7 @@ public class TestZeroCopyCSVParserMemory {
 		LOGGER.info("Memory usage for {} ints: {} (String is {})",
 				largeProblem,
 				PepperLogHelper.humanBytes(memoryDiff),
-				PepperLogHelper.humanBytes(PepperMemoryHelper.getStringMemory(oneColumnOfInts)));
+				PepperLogHelper.humanBytes(PepperFootprintHelper.getStringMemory(oneColumnOfInts)));
 
 		// Check the total allocation for this large problem is very low
 		Assertions.assertThat(Math.abs(memoryDiff - 121 * IPepperMemoryConstants.KB))
@@ -211,7 +211,7 @@ public class TestZeroCopyCSVParserMemory {
 		LOGGER.info("Memory usage for {} longs: {} (String is {})",
 				largeProblem,
 				PepperLogHelper.humanBytes(memoryDiff),
-				PepperLogHelper.humanBytes(PepperMemoryHelper.getStringMemory(oneColumnOfLongs)));
+				PepperLogHelper.humanBytes(PepperFootprintHelper.getStringMemory(oneColumnOfLongs)));
 
 		// Check the total allocation for this large problem is very low
 		Assertions.assertThat(Math.abs(memoryDiff - 11 * IPepperMemoryConstants.KB))
@@ -243,7 +243,7 @@ public class TestZeroCopyCSVParserMemory {
 		LOGGER.info("Memory usage for {} doubles: {} (String is {})",
 				largeProblem,
 				PepperLogHelper.humanBytes(memoryDiff),
-				PepperLogHelper.humanBytes(PepperMemoryHelper.getStringMemory(oneColumnOfDoubles)));
+				PepperLogHelper.humanBytes(PepperFootprintHelper.getStringMemory(oneColumnOfDoubles)));
 
 		// Check the total allocation for this large problem is very low
 		Assertions.assertThat(Math.abs(memoryDiff - 43 * IPepperMemoryConstants.KB))

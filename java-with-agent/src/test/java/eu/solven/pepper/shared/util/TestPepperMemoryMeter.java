@@ -36,7 +36,7 @@ import com.google.common.collect.ImmutableMap;
 
 import eu.solven.pepper.agent.InstrumentationAgent;
 import eu.solven.pepper.agent.VirtualMachineWithoutToolsJar;
-import eu.solven.pepper.memory.PepperMemoryHelper;
+import eu.solven.pepper.memory.PepperFootprintHelper;
 
 public class TestPepperMemoryMeter {
 
@@ -50,23 +50,23 @@ public class TestPepperMemoryMeter {
 	public void testStringWeight() {
 		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			// Lower in JDK9: good!
-			Assert.assertEquals(48, PepperMemoryHelper.deepSize("Youpi"));
+			Assert.assertEquals(48, PepperFootprintHelper.deepSize("Youpi"));
 		} else {
-			Assert.assertEquals(56, PepperMemoryHelper.deepSize("Youpi"));
+			Assert.assertEquals(56, PepperFootprintHelper.deepSize("Youpi"));
 		}
 
 		if (false) {
 			// Adding a single char add 2 bytes. As the JVM packes by block of 8 bytes, it may not be enough to grow the
 			// estimated size
-			Assert.assertTrue(PepperMemoryHelper.deepSize("Youpi") < PepperMemoryHelper.deepSize("Youpi+"));
+			Assert.assertTrue(PepperFootprintHelper.deepSize("Youpi") < PepperFootprintHelper.deepSize("Youpi+"));
 		}
 		// Adding 4 chars leads to adding 8 bytes: the actual JVM size is increased
-		Assert.assertTrue(PepperMemoryHelper.deepSize("Youpi") < PepperMemoryHelper.deepSize("Youpi1234"));
+		Assert.assertTrue(PepperFootprintHelper.deepSize("Youpi") < PepperFootprintHelper.deepSize("Youpi1234"));
 	}
 
 	@Test
 	public void testImmutableMapWeight() {
-		Assertions.assertThat(PepperMemoryHelper.deepSize(ImmutableMap.of("key", "Value"))).isBetween(100L, 250L);
+		Assertions.assertThat(PepperFootprintHelper.deepSize(ImmutableMap.of("key", "Value"))).isBetween(100L, 250L);
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class TestPepperMemoryMeter {
 		Map<String, Object> recursiveMap = new HashMap<>();
 		recursiveMap.put("myself", recursiveMap);
 
-		long deepSize = PepperMemoryHelper.deepSize(recursiveMap);
+		long deepSize = PepperFootprintHelper.deepSize(recursiveMap);
 		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			// Lower in JDK9: good!
 			Assert.assertEquals(208, deepSize);
@@ -87,7 +87,7 @@ public class TestPepperMemoryMeter {
 		Map<String, Object> withoutRecursivity = new HashMap<>();
 		withoutRecursivity.put("myself", null);
 
-		long notdeepSize = PepperMemoryHelper.deepSize(withoutRecursivity);
+		long notdeepSize = PepperFootprintHelper.deepSize(withoutRecursivity);
 		Assert.assertEquals(notdeepSize, deepSize);
 	}
 
@@ -95,13 +95,13 @@ public class TestPepperMemoryMeter {
 	public void testArrayWeight() {
 		Object[] array = new Object[2];
 
-		long sizeEmpty = PepperMemoryHelper.deepSize(array);
+		long sizeEmpty = PepperFootprintHelper.deepSize(array);
 		Assert.assertEquals(24, sizeEmpty);
 
 		array[0] = LocalDate.now();
 		array[1] = LocalDate.now();
 
-		long sizeFull = PepperMemoryHelper.deepSize(array);
+		long sizeFull = PepperFootprintHelper.deepSize(array);
 
 		// We have different memory consumptions depending on the env/jdk/run
 		// With JodaTime, the reported memory was bigger. It seems strange

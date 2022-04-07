@@ -173,12 +173,15 @@
 	<modules>
 		<!-- static resources like the Checkstyle sheet -->
 		<module>static</module>
+		
+		<!-- Holds the java-agent enabling Instrumentation -->
+		<module>agent</module>
 
 		<!-- The java-core code -->
 		<module>java</module>
-
-		<!-- Holds the java-agent enabling Instrumentation -->
-		<module>agent</module>
+		
+		<!-- The java-core code relying on pepper-agent -->
+		<module>java-with-agent</module>
 
 		<!-- This project metadata, holding for instance deployment resources -->
 		<module>metadata</module>

@@ -130,22 +130,4 @@ public interface IPepperJVMConstants {
 	interface IPepperJITAnalysis {
 
 	}
-
-	/**
-	 * -DdefaultChunkSize=131072
-	 * 
-	 * -DbufferAllocatorClass=com.qfs.buf.impl.HeapBufferAllocator
-	 * -DchunkAllocatorClass=com.qfs.chunk.buffer.impl.HeapBufferChunkAllocator
-	 * -DchunkAllocatorClass=com.qfs.chunk.direct.impl.DirectChunkAllocator
-	 * -DchunkAllocatorClass=com.qfs.chunk.direct.impl.MmapDirectChunkAllocator
-	 * -DchunkAllocatorClass=com.qfs.chunk.direct.allocator.impl.SlabMemoryAllocator
-	 * 
-	 * JGroups does not work with IPv6 -Djava.net.preferIPv4Stack=true
-	 * 
-	 * @author Benoit Lacelle
-	 *
-	 */
-	interface IPepperActivePivot {
-
-	}
 }

@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.solven.pepper.logging.PepperLogHelper;
-import eu.solven.pepper.memory.PepperMemoryHelper;
+import eu.solven.pepper.memory.PepperFootprintHelper;
 
 public class TestCompressedIntArray {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestCompressedIntArray.class);
@@ -42,9 +42,9 @@ public class TestCompressedIntArray {
 		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size));
 
 		LOGGER.info("testGrowingBy1 CompressedSize: {}",
-				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
+				PepperLogHelper.humanBytes(PepperFootprintHelper.deepSize(array)));
 		LOGGER.info("testGrowingBy1 RawSize: {}",
-				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
+				PepperLogHelper.humanBytes(PepperFootprintHelper.deepSize(IntStream.range(0, size).toArray())));
 	}
 
 	@Test
@@ -54,9 +54,9 @@ public class TestCompressedIntArray {
 		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size).map(i -> i % 16));
 
 		LOGGER.info("testManyVerySmall CompressedSize: {}",
-				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
+				PepperLogHelper.humanBytes(PepperFootprintHelper.deepSize(array)));
 		LOGGER.info("testManyVerySmall RawSize: {}",
-				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
+				PepperLogHelper.humanBytes(PepperFootprintHelper.deepSize(IntStream.range(0, size).toArray())));
 	}
 
 	@Test
@@ -65,9 +65,10 @@ public class TestCompressedIntArray {
 
 		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size).map(i -> i % 1024));
 
-		LOGGER.info("testManySmall CompressedSize: {}", PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
+		LOGGER.info("testManySmall CompressedSize: {}",
+				PepperLogHelper.humanBytes(PepperFootprintHelper.deepSize(array)));
 		LOGGER.info("testManySmall RawSize: {}",
-				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
+				PepperLogHelper.humanBytes(PepperFootprintHelper.deepSize(IntStream.range(0, size).toArray())));
 	}
 
 	@Test
@@ -77,9 +78,10 @@ public class TestCompressedIntArray {
 
 		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size).map(i -> r.nextInt()));
 
-		LOGGER.info("testManySmall CompressedSize: {}", PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(array)));
+		LOGGER.info("testManySmall CompressedSize: {}",
+				PepperLogHelper.humanBytes(PepperFootprintHelper.deepSize(array)));
 		LOGGER.info("testManySmall RawSize: {}",
-				PepperLogHelper.humanBytes(PepperMemoryHelper.deepSize(IntStream.range(0, size).toArray())));
+				PepperLogHelper.humanBytes(PepperFootprintHelper.deepSize(IntStream.range(0, size).toArray())));
 	}
 
 }

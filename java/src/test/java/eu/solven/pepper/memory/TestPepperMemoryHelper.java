@@ -22,10 +22,8 @@
  */
 package eu.solven.pepper.memory;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,17 +34,6 @@ public class TestPepperMemoryHelper {
 	@Test
 	public void testCtor() {
 		Assert.assertNotNull(new PepperMemoryHelper());
-	}
-
-	@Test
-	public void testIntArrayWeight() {
-		Assert.assertEquals(56, PepperMemoryHelper.getObjectArrayMemory(new int[9]));
-	}
-
-	@SuppressWarnings("deprecation")
-	@Test
-	public void testDouble() {
-		Assert.assertEquals(24, PepperMemoryHelper.getDoubleMemory());
 	}
 
 	@Test
@@ -117,22 +104,5 @@ public class TestPepperMemoryHelper {
 		Assert.assertEquals("1K206B", PepperMemoryHelper.memoryAsString(1230));
 		Assert.assertEquals("1M177K", PepperMemoryHelper.memoryAsString(1230000));
 		Assert.assertEquals("1G149M", PepperMemoryHelper.memoryAsString(1230000000));
-	}
-
-	@Test
-	public void testStringMemory() {
-		long memory = PepperMemoryHelper.getStringMemory("Youpi");
-		Assert.assertEquals(48, memory);
-	}
-
-	@Test
-	public void testStringMemory_huge() {
-		CharSequence existingRef = Mockito.mock(CharSequence.class);
-
-		// Consider a very large String
-		Mockito.when(existingRef.length()).thenReturn(Integer.MAX_VALUE);
-
-		long memory = PepperMemoryHelper.getStringMemory(existingRef);
-		Assertions.assertThat(memory).isGreaterThan(Integer.MAX_VALUE + 1L);
 	}
 }

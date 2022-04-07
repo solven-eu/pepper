@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 
-import eu.solven.pepper.agent.PepperAgentHelper;
 import eu.solven.pepper.memory.IPepperMemoryConstants;
 
 public class TestPepperProcessHelper {
@@ -138,17 +137,5 @@ public class TestPepperProcessHelper {
 		OptionalLong nbBytes = PepperProcessHelper.extractMemory(PepperProcessHelper.OS_MARKER_WINDOWS,
 				new ByteArrayInputStream(macMemoryOutput.getBytes()));
 		Assert.assertFalse(nbBytes.isPresent());
-	}
-
-	/**
-	 * Enable to check the behavior on any system
-	 * 
-	 * @throws IOException
-	 */
-	@Test
-	public void testMemoryOnCurrentSystem() throws IOException {
-		long currentProcessPID = Long.parseLong(PepperAgentHelper.getPIDForAgent());
-		long nbBytes = PepperProcessHelper.getProcessResidentMemory(currentProcessPID).getAsLong();
-		Assert.assertTrue(nbBytes > 0);
 	}
 }

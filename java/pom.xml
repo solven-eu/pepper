@@ -39,13 +39,6 @@
 			<artifactId>guava</artifactId>
 		</dependency>
 
-		<!-- TODO Remove this dependency, as pepper should not depends on pepper-agent for security reasons -->
-		<dependency>
-			<groupId>io.github.solven-eu.pepper</groupId>
-			<artifactId>pepper-agent</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
 		<dependency>
 			<!-- Prevent javadoc complaining. Kept as optional, just like Guava -->
 			<groupId>com.google.code.findbugs</groupId>
@@ -84,10 +77,7 @@
 				<configuration>
 					<excludes>
 						<!-- LoggingMethodCallAnnotationMBeanExporter is a bunch of exception catching. Add * to hold anonymous classes -->
-						<exclude>cormoran/pepper/server/monitoring/spring/LoggingMethodCallAnnotationMBeanExporter*</exclude>
-
-						<!-- pepperCSVReader is just an incubator project -->
-						<exclude>cormoran/pepper/shared/csv/reader/*</exclude>
+						<exclude>eu/solven/pepper/server/monitoring/spring/LoggingMethodCallAnnotationMBeanExporter*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

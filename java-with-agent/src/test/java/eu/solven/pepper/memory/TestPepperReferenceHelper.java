@@ -176,11 +176,11 @@ public class TestPepperReferenceHelper {
 		List<String> beforeIntern =
 				IntStream.range(0, 1000).map(i -> i % 3).mapToObj(i -> "String_" + i).collect(Collectors.toList());
 
-		long sizeBefore = PepperMemoryHelper.deepSize(beforeIntern);
+		long sizeBefore = PepperFootprintHelper.deepSize(beforeIntern);
 
 		pepperReferenceInternalizer.internalize(beforeIntern);
 
-		long sizeAfter = PepperMemoryHelper.deepSize(beforeIntern);
+		long sizeAfter = PepperFootprintHelper.deepSize(beforeIntern);
 
 		LOGGER.info("Size Before: {}, Size after: {}",
 				PepperLogHelper.humanBytes(sizeBefore),
@@ -194,11 +194,11 @@ public class TestPepperReferenceHelper {
 		URL secondUrl = PepperURLHelper.toHttpURL("https://youpi.com/go?arg#ici");
 
 		List<URL> asList = Arrays.asList(firstUrl, secondUrl);
-		long sizeBefore = PepperMemoryHelper.deepSize(asList);
+		long sizeBefore = PepperFootprintHelper.deepSize(asList);
 
 		pepperReferenceInternalizer.internalize(asList);
 
-		long sizeAfter = PepperMemoryHelper.deepSize(asList);
+		long sizeAfter = PepperFootprintHelper.deepSize(asList);
 
 		LOGGER.info("Size Before: {}, Size after: {}",
 				PepperLogHelper.humanBytes(sizeBefore),
