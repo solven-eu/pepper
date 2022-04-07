@@ -41,7 +41,7 @@ public class PepperPgsqlSlowQueryListener extends DefaultExecuteListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AOverDatasource.class);
 
-	private static final long LOG_SECONDS = 5;
+	private static final long LOG_WARN_SECONDS = 5;
 
 	private StopWatch watch;
 
@@ -55,8 +55,20 @@ public class PepperPgsqlSlowQueryListener extends DefaultExecuteListener {
 	public void executeEnd(ExecuteContext ctx) {
 		super.executeEnd(ctx);
 		long nanoDuration = watch.split();
-		if (nanoDuration > TimeUnit.NANOSECONDS.toSeconds(LOG_SECONDS)) {
-			LOGGER.warn("jOOQ Meta executed a slow query. {}", ctx.query());
+		onQueryEnd(ctx, nanoDuration);
+	}
+
+	protected void onQueryEnd(ExecuteContext ctx, long nanoDuration) {
+		if (isSlow(nanoDuration)) {
+			onSlowQuery(ctx);
 		}
+	}
+
+	protected boolean isSlow(long nanoDuration) {
+		return nanoDuration > TimeUnit.NANOSECONDS.toSeconds(LOG_WARN_SECONDS);
+	}
+
+	protected void onSlowQuery(ExecuteContext ctx) {
+		LOGGER.warn("jOOQ Meta executed a slow query. {}", ctx.query());
 	}
 }

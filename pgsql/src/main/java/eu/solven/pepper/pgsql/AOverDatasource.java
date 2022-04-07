@@ -26,6 +26,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -38,9 +40,12 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.impl.DefaultExecuteListenerProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import eu.solven.pepper.logging.PepperLogHelper;
 import eu.solven.pepper.time.PepperDateHelper;
 
 /**
@@ -51,6 +56,8 @@ import eu.solven.pepper.time.PepperDateHelper;
  * @author Benoit Lacelle
  */
 public abstract class AOverDatasource<T extends org.jooq.Table<?>> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AOverDatasource.class);
+
 	@VisibleForTesting
 	protected final AtomicLong nbWarnings = new AtomicLong();
 	@VisibleForTesting
@@ -92,12 +99,22 @@ public abstract class AOverDatasource<T extends org.jooq.Table<?>> {
 
 	protected <R> R onDSLContext(Function<DSLContext, R> contextConsumer,
 			Function<SQLException, RuntimeException> exceptionTranslator) {
-
+		OffsetDateTime start = now();
 		try (Connection connection = datasource.get()) {
+			onConnection(start, connection);
 			DSLContext context = makeDslContext(connection);
 			return contextConsumer.apply(context);
 		} catch (SQLException e) {
 			throw exceptionTranslator.apply(e);
+		}
+	}
+
+	protected void onConnection(OffsetDateTime start, Connection connection) {
+		OffsetDateTime end = now();
+		long durationMs = start.until(end, ChronoUnit.MILLIS);
+
+		if (durationMs > TimeUnit.MINUTES.toMillis(1)) {
+			LOGGER.warn("It took {} to open a Connection", PepperLogHelper.humanDuration(durationMs));
 		}
 	}
 
@@ -109,6 +126,6 @@ public abstract class AOverDatasource<T extends org.jooq.Table<?>> {
 		Configuration configuration = new DefaultConfiguration().set(connection);
 		configuration.set(new DefaultExecuteListenerProvider(new PepperPgsqlSlowQueryListener()));
 
-		return DSL.using(connection);
+		return DSL.using(configuration);
 	}
 }
