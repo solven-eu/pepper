@@ -47,6 +47,16 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<dependency>
+			<!-- Used by PepperJsonHelper -->
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<!--Jackson as many different versions, not 100% compatible -->
+			<!-- Hence, Pepper should not provide Jackson by default -->
+			<optional>true</optional>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>

@@ -197,7 +197,7 @@
 
 		<module>serialization</module>
 		<module>compression</module>
-
+		
 		<!-- <module>spark</module> -->
 
 		<!-- Hadoop module, defining context for multiple modules (e.g. Spark, Parquet,..) -->
