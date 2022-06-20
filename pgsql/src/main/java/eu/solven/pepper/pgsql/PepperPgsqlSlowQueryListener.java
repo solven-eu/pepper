@@ -30,6 +30,8 @@ import org.jooq.tools.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.solven.pepper.logging.PepperLogHelper;
+
 /**
  * Helps logging slow PGSQL queries
  * 
@@ -60,15 +62,17 @@ public class PepperPgsqlSlowQueryListener extends DefaultExecuteListener {
 
 	protected void onQueryEnd(ExecuteContext ctx, long nanoDuration) {
 		if (isSlow(nanoDuration)) {
-			onSlowQuery(ctx);
+			onSlowQuery(ctx, nanoDuration);
 		}
 	}
-
+	
 	protected boolean isSlow(long nanoDuration) {
-		return nanoDuration > TimeUnit.NANOSECONDS.toSeconds(LOG_WARN_SECONDS);
+		return nanoDuration > TimeUnit.SECONDS.toNanos(LOG_WARN_SECONDS);
 	}
 
-	protected void onSlowQuery(ExecuteContext ctx) {
-		LOGGER.warn("jOOQ Meta executed a slow query. {}", ctx.query());
+	protected void onSlowQuery(ExecuteContext ctx, long nanoDuration) {
+		LOGGER.warn("jOOQ Meta executed a slow ({}) query. {}",
+				PepperLogHelper.humanDuration(nanoDuration, TimeUnit.NANOSECONDS),
+				ctx.query());
 	}
 }
