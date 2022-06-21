@@ -558,7 +558,7 @@
 				<!-- http://code.revelc.net/impsort-maven-plugin/ -->
 				<groupId>net.revelc.code</groupId>
 				<artifactId>impsort-maven-plugin</artifactId>
-				<version>1.6.2</version>
+				<version>1.7.0</version>
 				<configuration>
 					<!-- Eclipse default -->
 					<groups>java.,javax.,org.,com.</groups>
