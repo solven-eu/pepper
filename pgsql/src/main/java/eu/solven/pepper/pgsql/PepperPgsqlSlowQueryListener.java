@@ -65,7 +65,7 @@ public class PepperPgsqlSlowQueryListener extends DefaultExecuteListener {
 			onSlowQuery(ctx, nanoDuration);
 		}
 	}
-	
+
 	protected boolean isSlow(long nanoDuration) {
 		return nanoDuration > TimeUnit.SECONDS.toNanos(LOG_WARN_SECONDS);
 	}
