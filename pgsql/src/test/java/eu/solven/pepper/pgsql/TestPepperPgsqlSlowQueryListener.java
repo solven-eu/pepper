@@ -11,6 +11,7 @@ public class TestPepperPgsqlSlowQueryListener {
 	@Test
 	public void testFastIsNotWarn() {
 		Assertions.assertThat(listener.isSlow(100)).isFalse();
+		Assertions.assertThat(listener.isSlow(TimeUnit.MINUTES.toNanos(1))).isTrue();
 	}
 
 	@Test

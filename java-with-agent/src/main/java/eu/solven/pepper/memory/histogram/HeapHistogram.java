@@ -212,10 +212,12 @@ public class HeapHistogram implements IHeapHistogram, Serializable {
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
-		}).or("Heap Histogram is not available");
+		}).or("Heap Dump is not available");
 
 		if (output.startsWith("Heap dump file created")) {
-			LOGGER.info("Heap-Dump seems to have been successfully generated in {}", file);
+			LOGGER.info("Heap-Dump has been successfully generated in {}", file);
+		} else {
+			LOGGER.warn("Heap-Dump has not been generated");
 		}
 
 		return output;

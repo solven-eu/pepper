@@ -3,7 +3,7 @@ Various Java utilities
 
 [![Build Status](https://travis-ci.org/cormoran-io/pepper.svg?branch=master)](https://travis-ci.org/cormoran-io/pepper)
 [![Coverage Status](https://coveralls.io/repos/github/cormoran-io/pepper/badge.svg?branch=master)](https://coveralls.io/github/cormoran-io/pepper?branch=master)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.cormoran-io.pepper/pepper/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.cormoran-io.pepper/pepper)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.solven-eu.pepper/pepper/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.solven-eu.pepper/pepper/badge.svg)
 [![Quality Gate](https://sonarqube.com/api/badges/gate?key=com.github.cormoran-io.pepper:pepper)](https://sonarqube.com/dashboard/index/com.github.cormoran-io.pepper:pepper)
 [![Technical debt ratio](https://sonarqube.com/api/badges/measure?key=com.github.cormoran-io.pepper:pepper&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard/index/com.github.cormoran-io.pepper:pepper)
 [![javadoc.io](https://javadoc-emblem.rhcloud.com/doc/com.github.cormoran-io.pepper/pepper/badge.svg)](http://www.javadoc.io/doc/com.github.cormoran-io.pepper/pepper)
@@ -11,6 +11,18 @@ Various Java utilities
 [![Forks](https://img.shields.io/github/forks/cormoran-io/pepper.svg)](https://github.com/cormoran-io/pepper/network)
 [![Stars](https://img.shields.io/github/stars/cormoran-io/pepper.svg)](https://github.com/cormoran-io/pepper/stargazers)
 [![MIT License](http://img.shields.io/badge/license-ASL-blue.svg)](https://github.com/cormoran-io/pepper/blob/master/LICENSE)
+
+# Maven
+
+Add pepper as dependency to your project through:
+
+
+		<dependency>
+			<groupId>io.github.solven-eu.pepper</groupId>
+			<artifactId>pepper</artifactId>
+			<version>${pepper.version}</version>
+		</dependency>
+
 
 # pepper-java
 

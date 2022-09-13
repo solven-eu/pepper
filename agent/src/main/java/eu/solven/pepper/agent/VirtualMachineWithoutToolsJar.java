@@ -81,6 +81,7 @@ public class VirtualMachineWithoutToolsJar {
 	public static final boolean IS_JDK_11 = "11".equals(System.getProperty(ENV_JAVA_SPECIFICATION_VERSION));
 
 	public static final boolean IS_JDK_9_OR_LATER = isJdk9OrLater();
+	public static final boolean IS_VIRTUAL_MACHINE_ELIGIBLE = !isJdk9OrLater() || isAllowAttachSelf();
 
 	protected VirtualMachineWithoutToolsJar() {
 		// hidden
@@ -107,6 +108,13 @@ public class VirtualMachineWithoutToolsJar {
 			LOGGER.trace("Not 9 or later", e);
 			return false;
 		}
+	}
+
+	// https://stackoverflow.com/questions/56787777/virtualmachine-attachpid-fails-with-java-io-ioexception-can-not-attach-to-cur
+	private static boolean isAllowAttachSelf() {
+		String allowAttachSelf = System.getProperty("jdk.attach.allowAttachSelf");
+
+		return "true".equals(allowAttachSelf);
 	}
 
 	/**
@@ -137,10 +145,16 @@ public class VirtualMachineWithoutToolsJar {
 		} catch (Throwable e) {
 			if (REPORTED_ERRORS_FOR_VM.add(e.getClass())) {
 				// First encounter of this error
-				LOGGER.warn("Issue while loading VirtualMachine", e);
+				LOGGER.warn("Issue while loading VirtualMachine. java.vendor={} java.spec={}",
+						getJavaVendor(),
+						getJavaSpecification(),
+						e);
 			} else {
 				// This error has already been reported
-				LOGGER.trace("Issue while loading VirtualMachine", e);
+				LOGGER.trace("Issue while loading VirtualMachine. java.vendor={} java.spec={}",
+						getJavaVendor(),
+						getJavaSpecification(),
+						e);
 			}
 			return Optional.absent();
 		}
@@ -194,12 +208,11 @@ public class VirtualMachineWithoutToolsJar {
 					JVM_VIRTUAL_MACHINE.set(attachMethod.invoke(null, pid));
 				} finally {
 					if (JVM_VIRTUAL_MACHINE.get() == null) {
-						if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
-							LOGGER.warn(
-									"Failure attaching VirtualMachine. You may add '-Djdk.attach.allowAttachSelf=true'");
-						} else {
-							LOGGER.warn("Failure attaching VirtualMachine");
-						}
+						LOGGER.warn(
+								"Issue while loading VirtualMachine. java.vendor={} java.spec={} '-Djdk.attach.allowAttachSelf=true'={}",
+								getJavaVendor(),
+								getJavaSpecification(),
+								isAllowAttachSelf());
 						WILL_NOT_WORK.set(true);
 					} else {
 						LOGGER.trace("VirtualMachine has been loaded: {}. Available methods: {}",
@@ -261,9 +274,18 @@ public class VirtualMachineWithoutToolsJar {
 	 * @return The output histogram as produced by 'jmap -histo'
 	 */
 	public static Optional<InputStream> heapHisto() {
-		return heapHisto(true);
+		// We follow the default behavior: all objects in heap (even those dead)
+		boolean allObjectsElseLive = true;
+		return heapHisto(allObjectsElseLive);
 	}
 
+	/**
+	 * 
+	 * @param allObjectsElseLive
+	 *            if true, we return all objects in the heap, else only the live objects (which requires the equivalent
+	 *            of a full-GC)
+	 * @return An {@link java.util.Optional} {@link InputStream} of the heapHistogram
+	 */
 	public static Optional<InputStream> heapHisto(final boolean allObjectsElseLive) {
 		Optional<InputStream> asInputStream = getJvmVirtualMachine().transform(new Function<Object, InputStream>() {
 
@@ -280,10 +302,6 @@ public class VirtualMachineWithoutToolsJar {
 			}
 
 		});
-
-		if (!asInputStream.isPresent()) {
-			LOGGER.warn("'heapHisto' seems not available. Java-version: {}", getJavaVendor());
-		}
 
 		return asInputStream;
 	}
@@ -315,12 +333,6 @@ public class VirtualMachineWithoutToolsJar {
 			}
 
 		});
-
-		if (!asInputStream.isPresent()) {
-			LOGGER.warn("'dumpHeap' seems not available. Java-version: {} - {}",
-					getJavaVendor(),
-					getJavaSpecification());
-		}
 
 		return asInputStream;
 	}

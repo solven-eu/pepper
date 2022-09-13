@@ -158,14 +158,13 @@ public class TestGCInspector implements IPepperMemoryConstants {
 			asList = Splitter.on("\n").splitToList(gcInspector.getHeapHistogram());
 		}
 
-		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
-			LOGGER.error("Arg on JDK9: {}", asList);
-			Assert.assertEquals(1, asList.size());
-		} else {
+		if (VirtualMachineWithoutToolsJar.IS_VIRTUAL_MACHINE_ELIGIBLE) {
 			// Check we have many rows
-			Assert.assertTrue(asList.size() > 5);
+			Assertions.assertThat(asList).hasSizeGreaterThan(5);
+		} else {
+			LOGGER.warn("heap.histo with java9+ requires '-Djdk.attach.allowAttachSelf=true'");
+			Assertions.assertThat(asList).hasSize(1).contains("Heap Histogram is not available");
 		}
-
 	}
 
 	@Test
@@ -176,13 +175,13 @@ public class TestGCInspector implements IPepperMemoryConstants {
 
 		String outputMsg = gcInspector.saveHeapDump(heapFile);
 
-		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
-			Assertions.assertThat(outputMsg).startsWith("Heap Histogram is not available");
-		} else {
+		if (VirtualMachineWithoutToolsJar.IS_VIRTUAL_MACHINE_ELIGIBLE) {
 			Assertions.assertThat(outputMsg).startsWith("Heap dump file created");
 
 			// Check we have written data
 			Assert.assertTrue(heapFile.toFile().length() > 0);
+		} else {
+			Assertions.assertThat(outputMsg).startsWith("Heap Dump is not available");
 		}
 	}
 
