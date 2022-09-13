@@ -22,7 +22,7 @@ public class PseudoReference extends NamedReference {
 
 	/**
 	 * Create a PseudoReference
-	 * 
+	 *
 	 * @param snapshot
 	 *            the dump
 	 * @param address

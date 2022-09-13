@@ -27,7 +27,7 @@ import org.eclipse.mat.util.VoidProgressListener;
 /**
  * Implementation of a Java object representing a java.lang.ClassLoader object. As well as standard object information
  * it contains information about the class loader and summary details about classes loaded by this class loader.
- * 
+ *
  * @noextend
  */
 public class ClassLoaderImpl extends InstanceImpl implements IClassLoader {
@@ -39,7 +39,7 @@ public class ClassLoaderImpl extends InstanceImpl implements IClassLoader {
 
 	/**
 	 * Constructs a class loader object.
-	 * 
+	 *
 	 * @param objectId
 	 *            the object id
 	 * @param address
@@ -104,7 +104,7 @@ public class ClassLoaderImpl extends InstanceImpl implements IClassLoader {
 
 	/**
 	 * Gets the classes defined by a given loader
-	 * 
+	 *
 	 * @param dump
 	 *            the snapshot
 	 * @param classLoaderId
@@ -123,7 +123,7 @@ public class ClassLoaderImpl extends InstanceImpl implements IClassLoader {
 
 	/**
 	 * Calculates the retained size of all classes and instances of the class loaded by a class loader.
-	 * 
+	 *
 	 * @param dump
 	 *            the snapshot
 	 * @param classLoaderId

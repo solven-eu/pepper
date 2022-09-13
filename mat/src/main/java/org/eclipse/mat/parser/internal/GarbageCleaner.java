@@ -656,7 +656,7 @@ import org.eclipse.mat.util.SilentProgressListener;
 	 * Decide on next root to choose. A sophisticated version would convert the object graph to a DAG of strongly
 	 * connected components and choose an example member from each (currently unreached) source strongly connected
 	 * component. This version is not minimal but covers the object graph.
-	 * 
+	 *
 	 * @param ii
 	 *            candidate root
 	 * @param pass

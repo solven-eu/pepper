@@ -12,7 +12,7 @@
 
 	<groupId>io.github.solven-eu.pepper</groupId>
 	<artifactId>pepper-metadata</artifactId>
-	<version>4.1</version>
+	<version>4.2-SNAPSHOT</version>
 
     <packaging>pom</packaging>
     
@@ -33,9 +33,9 @@
 
 		<compiler.targetVersion>1.8</compiler.targetVersion>
 
-		<scm.developerConnection>scm:git:ssh://git@github.com/cormoran-io/pepper-core.git</scm.developerConnection>
-		<scm.connection>scm:git:ssh://github.com/cormoran-io/pepper-core.git</scm.connection>
-		<scm.url>https://github.com/cormoran-io/pepper-core</scm.url>
+		<scm.developerConnection>scm:git:ssh://git@github.com/solven-eu/pepper.git</scm.developerConnection>
+		<scm.connection>scm:git:ssh://github.com/solven-eu/pepper.git</scm.connection>
+		<scm.url>https://github.com/solven-eu/pepper</scm.url>
 	</properties>
 
 	<profiles>
@@ -224,6 +224,6 @@
 		<!-- Do not add developperConnection as parent is not a SNAPSHOT -->
 		<connection>${scm.connection}</connection>
 		<url>${scm.url}</url>
-		<tag>pepper-4.1</tag>
+		<tag>HEAD</tag>
 	</scm>
 </project>

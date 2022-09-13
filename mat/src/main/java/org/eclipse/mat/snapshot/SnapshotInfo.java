@@ -39,7 +39,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Construct a snapshot info.
-	 * 
+	 *
 	 * @param path
 	 *            path from where the snapshot was acquired
 	 * @param jvmInfo
@@ -111,7 +111,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Get extra information about the snapshot
-	 * 
+	 *
 	 * @param name
 	 *            keep_unreachable_objects - {@link Type} hprof.version
 	 *            org.eclipse.mat.snapshot.UnreachableObjectsHistogram $heapFormat
@@ -123,7 +123,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Store extra information about the snapshot
-	 * 
+	 *
 	 * @param name
 	 * @param value
 	 *            keep_unreachable_objects - mark as {@link Type} hprof.version
@@ -136,7 +136,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Get the absolute path of the heap dump file.
-	 * 
+	 *
 	 * @return absolute path of the heap dump file.
 	 */
 	public String getPath() {
@@ -145,7 +145,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Get the common prefix used to name all additional (e.g. index) files. The prefix includes the directory path.
-	 * 
+	 *
 	 * @return common prefix used to name additional files
 	 */
 	public String getPrefix() {
@@ -154,7 +154,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Get version of the JVM from which it was acquired.
-	 * 
+	 *
 	 * @return version of the JVM from which it was acquired
 	 */
 	public String getJvmInfo() {
@@ -163,7 +163,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Get size of the internal identifiers in the heap dump, i.e. 32 or 64 bit, in bytes.
-	 * 
+	 *
 	 * @return size of the internal identifiers in the heap dump, i.e. 32 or 64 bit
 	 */
 	public int getIdentifierSize() {
@@ -172,7 +172,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Get date when the snapshot was acquired/parsed.
-	 * 
+	 *
 	 * @return creation date, or <code>null</code> if the creation date is not known
 	 */
 	public Date getCreationDate() {
@@ -181,7 +181,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Get number of Java objects found in the snapshot.
-	 * 
+	 *
 	 * @return number of Java objects found in the snapshot
 	 */
 	public int getNumberOfObjects() {
@@ -190,7 +190,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Get number of GC roots found in the snapshot.
-	 * 
+	 *
 	 * @return number of GC roots found in the snapshot
 	 */
 	public int getNumberOfGCRoots() {
@@ -199,7 +199,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Get number of Java Classes found in the snapshot.
-	 * 
+	 *
 	 * @return number of Java Classes found in the snapshot
 	 */
 	public int getNumberOfClasses() {
@@ -208,7 +208,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Get number of ClassLoaders found in the snapshot
-	 * 
+	 *
 	 * @return number of ClassLoaders found in the snapshot
 	 */
 	public int getNumberOfClassLoaders() {
@@ -217,7 +217,7 @@ public class SnapshotInfo implements Serializable {
 
 	/**
 	 * Get number of bytes used in the heap (the allocated memory may be higher)
-	 * 
+	 *
 	 * @return number of bytes used in the heap (the allocated memory may be higher)
 	 */
 	public long getUsedHeapSize() {

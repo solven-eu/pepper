@@ -15,15 +15,15 @@ import org.eclipse.mat.snapshot.ISnapshot;
 
 /**
  * Using this interface an implementor can provide additional information to a HPROF snapshot
- * 
+ *
  * See the documentation on the org.eclipse.mat.hprof.enhancer extension point
- * 
+ *
  */
 public interface IRuntimeEnhancer {
 
 	/**
 	 * Returns addon information of certain type if such information is attached to the HPROF snapshot
-	 * 
+	 *
 	 * @param <A>
 	 *            The type of the additional information
 	 * @param snapshot

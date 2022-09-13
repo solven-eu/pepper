@@ -51,9 +51,9 @@ import eu.solven.pepper.time.PepperDateHelper;
 
 /**
  * Helps building classes depending over a {@link DataSource}.
- * 
+ *
  * @param <T>
- * 
+ *
  * @author Benoit Lacelle
  */
 public abstract class AOverDatasource<T extends org.jooq.Table<?>> {

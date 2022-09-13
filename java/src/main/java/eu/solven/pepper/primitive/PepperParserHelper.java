@@ -27,7 +27,7 @@ import com.google.common.base.CharMatcher;
 /**
  * Try to provide faster primitive faster than FLoat.parseFLoat and Double.parseDouble, even if these method are
  * intrisic methods.
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -60,7 +60,7 @@ public class PepperParserHelper {
 	/**
 	 * Parses a double from a CharSequence. Performance compared to intrinsic java method varies a lot: between 20%
 	 * faster to 100% faster depending on the input values. The trick is to use Long.parseLong, which is extremely fast.
-	 * 
+	 *
 	 * @param s
 	 *            The string.
 	 * @return The double value.

@@ -97,7 +97,7 @@ public class TestSnapshots {
 
 	/**
 	 * Get a snapshot from a dump
-	 * 
+	 *
 	 * @param name
 	 *            Name or names of dump, separated by semicolon
 	 * @param options

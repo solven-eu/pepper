@@ -27,20 +27,20 @@ import java.util.NavigableMap;
 
 /**
  * Interface for technical metrics
- * 
+ *
  * @author Benoit Lacelle
  *
  */
 public interface IActiveTasksMonitor {
 
 	/**
-	 * 
+	 *
 	 * @return the frequency at which we would report for long-running active tasks
 	 */
 	int getLongRunningCheckSeconds();
 
 	/**
-	 * 
+	 *
 	 * @param longRunningCheckSeconds
 	 *            the frequency at which we would report for long-running active tasks
 	 */

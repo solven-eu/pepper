@@ -34,7 +34,7 @@ import eu.solven.pepper.logging.PepperLogHelper;
 
 /**
  * Helps logging slow PGSQL queries
- * 
+ *
  * @author Benoit Lacelle
  *
  */

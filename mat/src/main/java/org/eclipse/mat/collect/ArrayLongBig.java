@@ -33,7 +33,7 @@ public final class ArrayLongBig {
 
 	/**
 	 * Add long to <code>LongArray</code>.
-	 * 
+	 *
 	 * @param element
 	 *            long which should be added
 	 */
@@ -47,7 +47,7 @@ public final class ArrayLongBig {
 
 	/**
 	 * Add long[] to <code>LongArray</code>.
-	 * 
+	 *
 	 * @param elements
 	 *            long[] which should be added
 	 */
@@ -70,7 +70,7 @@ public final class ArrayLongBig {
 
 	/**
 	 * Get long at index from <code>LongArray</code>.
-	 * 
+	 *
 	 * @param index
 	 *            index of long which should be returned
 	 * @return long at index
@@ -85,7 +85,7 @@ public final class ArrayLongBig {
 
 	/**
 	 * Get length of <code>LongArray</code>.
-	 * 
+	 *
 	 * @return length of <code>LongArray</code>
 	 */
 	public final int length() {
@@ -94,7 +94,7 @@ public final class ArrayLongBig {
 
 	/**
 	 * Get memory consumption of <code>LongArray</code>.
-	 * 
+	 *
 	 * @return memory consumption of <code>LongArray</code>
 	 */
 	public final long consumption() {
@@ -104,7 +104,7 @@ public final class ArrayLongBig {
 	/**
 	 * Convert <code>LongArray</code> to long[]. This operation is the only one where the internal data is copied. It is
 	 * directly copied to the long[] which is returned, so don't call this method more than once when done.
-	 * 
+	 *
 	 * @return long[] representing the <code>LongArray</code>
 	 */
 	public final long[] toArray() {

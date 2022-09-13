@@ -430,7 +430,7 @@ public abstract class IndexWriter {
 
 	/**
 	 * Store sizes of objects by compressing the size to a 32-bit int.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	public static class SizeIndexCollectorUncompressed extends IntIndexCollectorUncompressed {
@@ -445,7 +445,7 @@ public abstract class IndexWriter {
 		 * approximately 0x18 + 0x8 * 0x7fffffff = 0x400000010 bytes, too big for an int. Expanding the array size array
 		 * to longs could be overkill. Instead we do some simple compression - values 0 - 0x7fffffff convert as now, int
 		 * values 0x80000000 to 0xffffffff convert to <code>(n &amp; 0x7fffffffL)*8 + 0x80000000L</code>.
-		 * 
+		 *
 		 * @param y
 		 *            the long value in the range -1 to 0x7fffffff, 0x80000000L to 0x400000000L
 		 * @return the compressed value as an int
@@ -465,7 +465,7 @@ public abstract class IndexWriter {
 
 		/**
 		 * Expand the result of the compression
-		 * 
+		 *
 		 * @param x
 		 *            the compressed value
 		 * @return the expanded value as a long in the range -1 to 0x7fffffff, 0x80000000L to 0x400000000L

@@ -30,7 +30,7 @@ import eu.solven.pepper.memory.IPepperMemoryConstants;
 
 /**
  * Interface for GC activity monitoring
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -48,7 +48,7 @@ public interface IGCInspector extends IPepperMemoryConstants {
 	/**
 	 * Save a heap-dump in given map. It is comparable to jmap
 	 * (http://docs.oracle.com/javase/7/docs/technotes/tools/share/jmap.html)
-	 * 
+	 *
 	 * @param path
 	 * @return the output of the command
 	 * @throws IOException
@@ -56,7 +56,7 @@ public interface IGCInspector extends IPepperMemoryConstants {
 	String saveHeapDump(Path path) throws IOException;
 
 	/**
-	 * 
+	 *
 	 * @param withoutMonitors
 	 *            by default withoutMonitors=true in JConsole MBean for faster access to fasfter method
 	 * @return a formatted thread-dump

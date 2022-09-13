@@ -223,12 +223,12 @@ public class MultiplePathsFromGCRootsComputerImpl implements IMultiplePathsFromG
 
 	/*
 	 * Returns the shortest path to an object, using the stored parent of every needed object calculated during a BFS
-	 * 
+	 *
 	 * @param int objectId the object to which a path should be calculated
-	 * 
+	 *
 	 * @param int[] parent an array, result of a BSF, which keeps a parent[i] is the parent of the object with index i,
 	 * as calculated during the BFS
-	 * 
+	 *
 	 * @return int[] the shortest path from a GC root. The object of interest is at index 0, the GC root at index
 	 * length-1
 	 */

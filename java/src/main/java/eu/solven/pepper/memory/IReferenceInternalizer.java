@@ -25,7 +25,7 @@ package eu.solven.pepper.memory;
 /**
  * Helps replacing reference to equals objects by a single reference. This would help other objects to be
  * garbage-collected.
- * 
+ *
  * @author Benoit Lacelle
  *
  */

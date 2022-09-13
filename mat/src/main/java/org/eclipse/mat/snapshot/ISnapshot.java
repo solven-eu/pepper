@@ -40,7 +40,7 @@ import org.eclipse.mat.util.IProgressListener;
  * {@link org.eclipse.mat.collect.ArrayInt} and {@link org.eclipse.mat.collect.ArrayLong} for large lists of ints or
  * longs, {@link org.eclipse.mat.collect.SetInt} and {@link org.eclipse.mat.collect.SetLong} for large sets of ints or
  * longs.
- * 
+ *
  * @noimplement
  */
 public interface ISnapshot {
@@ -49,7 +49,7 @@ public interface ISnapshot {
 	 * Get info object describing the snapshot.
 	 * <p>
 	 * Performance: Fast - in memory.
-	 * 
+	 *
 	 * @return info object describing the snapshot
 	 */
 	SnapshotInfo getSnapshotInfo();
@@ -61,7 +61,7 @@ public interface ISnapshot {
 	 * thread stack frame.
 	 * <p>
 	 * Performance: Fast - in memory.
-	 * 
+	 *
 	 * @return int[] containing the objectIds of all GC roots
 	 * @throws SnapshotException
 	 */
@@ -74,7 +74,7 @@ public interface ISnapshot {
 	 * loader, fields, inheritance relationships and most importantly to all of its objects found in the heap.
 	 * <p>
 	 * Performance: Fast - in memory.
-	 * 
+	 *
 	 * @return collection of all classes
 	 * @throws SnapshotException
 	 */
@@ -89,7 +89,7 @@ public interface ISnapshot {
 	 * loader is unique, not the name alone.
 	 * <p>
 	 * Performance: Fast - in memory.
-	 * 
+	 *
 	 * @param name
 	 *            name for the class
 	 * @param includeSubClasses
@@ -106,7 +106,7 @@ public interface ISnapshot {
 	 * This method returns you all classes with a name matching the regular expression pattern.
 	 * <p>
 	 * Performance: Fast - in memory, but needs iteration over all classes.
-	 * 
+	 *
 	 * @param namePattern
 	 *            name pattern for the class (regular expression)
 	 * @param includeSubClasses
@@ -124,7 +124,7 @@ public interface ISnapshot {
 	 * along with the memory consumption.
 	 * <p>
 	 * Performance: Fast - in memory.
-	 * 
+	 *
 	 * @param progressListener
 	 *            progress listener informing about the current state of execution
 	 * @return histogram
@@ -139,7 +139,7 @@ public interface ISnapshot {
 	 * objects along with the memory consumption.
 	 * <p>
 	 * Performance: Fast to medium - on index (object id -&gt; class id); depending on the number of objects.
-	 * 
+	 *
 	 * @param objectIds
 	 *            object ids for which the histogram should be computed
 	 * @param progressListener
@@ -155,7 +155,7 @@ public interface ISnapshot {
 	 * This is the inverse of {@link #getOutboundReferentIds(int)}.
 	 * <p>
 	 * Performance: Relatively fast - single index operation.
-	 * 
+	 *
 	 * @param objectId
 	 *            object which is referenced
 	 * @return objects referencing the given object
@@ -180,7 +180,7 @@ public interface ISnapshot {
 	 * This is the inverse of {@link #getInboundRefererIds(int)}.
 	 * <p>
 	 * Performance: Relatively fast - single index operation.
-	 * 
+	 *
 	 * @param objectId
 	 *            object which is referencing
 	 * @return objects referenced by the given object
@@ -197,7 +197,7 @@ public interface ISnapshot {
 	 * This is the inverse of {@link #getOutboundReferentIds(int[], IProgressListener)}.
 	 * <p>
 	 * Performance: Fast to slow - on index; depending on the number of objects and the references.
-	 * 
+	 *
 	 * @param objectIds
 	 *            objects which are referenced
 	 * @param progressListener
@@ -215,7 +215,7 @@ public interface ISnapshot {
 	 * of {@link #getInboundRefererIds(int[], IProgressListener)}.
 	 * <p>
 	 * Performance: Fast to slow - on index; depending on the number of objects and the references.
-	 * 
+	 *
 	 * @param objectIds
 	 *            objects which are referencing
 	 * @param progressListener
@@ -234,7 +234,7 @@ public interface ISnapshot {
 	 * objects hold references to objects of the class or class loader of interest.
 	 * <p>
 	 * Performance: Fast to slow - on index; depending on the number and length of GC root paths.
-	 * 
+	 *
 	 * @param objectId
 	 *            object for which the GC root paths should be determined
 	 * @param excludeMap
@@ -251,7 +251,7 @@ public interface ISnapshot {
 	/**
 	 * Returns an IMultiplePathsFromGCRootsComputer object, which can be used to calculate the shortest path from the GC
 	 * roots to each of objects in the specified object set.
-	 * 
+	 *
 	 * @param objectIds
 	 *            the IDs of the objects for which a shortest path has to be calculated
 	 * @param excludeMap
@@ -273,7 +273,7 @@ public interface ISnapshot {
 	 * collected.
 	 * <p>
 	 * Performance: Usually extremely slow - on index; depending on the number of objects and the references (deep).
-	 * 
+	 *
 	 * @param objectIds
 	 *            objects on which the retained set should be determined
 	 * @param progressListener
@@ -291,7 +291,7 @@ public interface ISnapshot {
 	 * given objects would be nulled.
 	 * <p>
 	 * Performance: Usually extremely slow - on index; depending on the number of objects and the references (deep).
-	 * 
+	 *
 	 * @param objectIds
 	 *            objects on which the retained set should be determined
 	 * @param fieldNames
@@ -311,7 +311,7 @@ public interface ISnapshot {
 	 * given objects would be nulled.
 	 * <p>
 	 * Performance: Usually extremely slow - on index; depending on the number of objects and the references (deep).
-	 * 
+	 *
 	 * @param objectIds
 	 *            objects on which the retained set should be determined
 	 * @param excludedReferences
@@ -337,7 +337,7 @@ public interface ISnapshot {
 	 * big ones). One can use the getRetainedSet() method afterwards to get the correct retained set.
 	 * <p>
 	 * Performance: Usually fast - for smaller sets this method is much faster than getRetainedSet
-	 * 
+	 *
 	 * @param objectIds
 	 *            objects on which the minimum retained set should be determined
 	 * @param progressListener
@@ -350,7 +350,7 @@ public interface ISnapshot {
 	/**
 	 * Calculate the minimum retained size for the given objects. Works much faster than getting the min. retained set
 	 * by getMinRetainedSet() and calculating the size of the min. retained set.
-	 * 
+	 *
 	 * @param objectIds
 	 *            objects on which the minimum retained set should be determined
 	 * @param listener
@@ -364,7 +364,7 @@ public interface ISnapshot {
 	 * Get objects the given object directly dominates, i.e. the objects which are life-time dependent on the given
 	 * object (not recursively, so just the directly dependent objects), i.e. the objects which would get collected as
 	 * garbage if the given object would be gone from the heap.
-	 * 
+	 *
 	 * @param objectId
 	 *            object for which the directly dominated objects should be returned
 	 * @return objects the given object directly dominates
@@ -376,7 +376,7 @@ public interface ISnapshot {
 	 * Get object which directly dominates the given object, i.e. the object which controls the life-time of the given
 	 * object (not recursively, so just the directly controlling object), i.e. the object which would cause the given
 	 * object to be collected as garbage if it would be gone from the heap.
-	 * 
+	 *
 	 * @param objectId
 	 *            object for which the directly dominated objects should be returned
 	 * @return Object id of the dominator. -1 if the object is dominated by the root of the dominator tree.
@@ -392,7 +392,7 @@ public interface ISnapshot {
 	 * be checked against the exclude pattern. If it matches the pattern, the dominator of this dominator will be taken
 	 * and checked, and so on ... until a dominator not matching the pattern is found or the dominator tree root is
 	 * reached.
-	 * 
+	 *
 	 * @param objectIds
 	 *            the objects for which we want the dominator summary (e.g. all objects of a given class)
 	 * @param excludePattern
@@ -412,7 +412,7 @@ public interface ISnapshot {
 	 * (int[]), such that no object from the return list is parent of another object in the returned list. I.e. from a
 	 * list of objects this method will return only the ones which are independent on one another. It is then correct to
 	 * sum the retained sizes of the returned objects.
-	 * 
+	 *
 	 * @param objectIds
 	 *            the objects for which the top-ancestors in the Dominator tree have to be found
 	 * @param listener
@@ -426,7 +426,7 @@ public interface ISnapshot {
 	 * Get object abstracting the real Java Object from the heap dump identified by the given id.
 	 * <p>
 	 * Performance: Relatively fast - single index operation.
-	 * 
+	 *
 	 * @param objectId
 	 *            id of object you want a convenient object abstraction for
 	 * @return object abstracting the real Java Object from the heap dump identified by the given id
@@ -441,7 +441,7 @@ public interface ISnapshot {
 	 * is a java local variable)
 	 * <p>
 	 * Performance: Fast - in memory.
-	 * 
+	 *
 	 * @param objectId
 	 *            id of object you want the GC root info for
 	 * @return null if this object is no GC root or GCRootInfo[] if it is
@@ -454,7 +454,7 @@ public interface ISnapshot {
 	 * given id.
 	 * <p>
 	 * Performance: Relatively fast - single index operation.
-	 * 
+	 *
 	 * @param objectId
 	 *            id of object you want the convenient class abstraction for
 	 * @return object abstracting the real Java Class this object was an instance of in the heap dump identified by the
@@ -469,7 +469,7 @@ public interface ISnapshot {
 	 * <p>
 	 * Performance: Usually fast - in memory for non-array objects and single index operation for array objects.
 	 * </p>
-	 * 
+	 *
 	 * @param objectId
 	 *            id of object for which you want the heap size for
 	 * @return heap size for the given object.
@@ -483,7 +483,7 @@ public interface ISnapshot {
 	 * <p>
 	 * Performance: Relatively fast - using this method to calculate the total size of a set of objects is much faster
 	 * than iterating over the ids and calling getHeapSize for each single object
-	 * 
+	 *
 	 * @param objectIds
 	 *            ids of the objects for which you want the heap size for
 	 * @return total heap size for the given object set
@@ -499,7 +499,7 @@ public interface ISnapshot {
 	 * itself.
 	 * <p>
 	 * Performance: Relatively fast - single index operation.
-	 * 
+	 *
 	 * @param objectId
 	 *            id of object for which you want the retained heap size for
 	 * @return retained heap size for the given object or 0 if no dominator tree was calculated
@@ -540,7 +540,7 @@ public interface ISnapshot {
 	 * object was stored).
 	 * <p>
 	 * Performance: Fast - in memory.
-	 * 
+	 *
 	 * @param objectId
 	 *            id of object you want the address for
 	 * @return object address
@@ -553,7 +553,7 @@ public interface ISnapshot {
 	 * during parsing).
 	 * <p>
 	 * Performance: Fast - binary search in memory.
-	 * 
+	 *
 	 * @param objectAddress
 	 *            address of object you want the id for
 	 * @return object id
@@ -575,7 +575,7 @@ public interface ISnapshot {
 	 * <p>
 	 * For example, from the supplied snapshot implementation {@link org.eclipse.mat.parser.internal.SnapshotImpl} the
 	 * extra information is obtained via {@link org.eclipse.mat.parser.IObjectReader#getAddon(Class)}.
-	 * 
+	 *
 	 * @return SnapshotAddons - extended information, e.g. perm info, OoM stack trace info, JVM arguments, etc.
 	 * @throws SnapshotException
 	 */
@@ -585,7 +585,7 @@ public interface ISnapshot {
 	 * Get a the stack trace information for a given thread object, if thread stack information is available in this
 	 * snapshot.
 	 * <p>
-	 * 
+	 *
 	 * @return IThreadStack - an object representing the call stack of the thread. Returns null if no info is available
 	 *         for the object, or no stack info is available at all
 	 * @throws SnapshotException

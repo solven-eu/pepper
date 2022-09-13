@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Some basic utilities for Hadoop
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -42,7 +42,7 @@ public class PepperHadoopHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return true if we already have the property env "hadoop.home.dir", or we succeed finding a good value for it
 	 */
 	public static boolean isHadoopReady() {

@@ -107,7 +107,7 @@ public final class ClassSpecificNameResolverRegistry {
 
 	/**
 	 * Register class specific name resolver.
-	 * 
+	 *
 	 * @param className
 	 *            class name for which the class specific name resolver should be used
 	 * @param resolver
@@ -121,7 +121,7 @@ public final class ClassSpecificNameResolverRegistry {
 
 	/**
 	 * Resolve name of the given snapshot object or return null if it can't be resolved.
-	 * 
+	 *
 	 * @param object
 	 *            snapshot object for which the name should be resolved
 	 * @return name of the given snapshot object or null if it can't be resolved

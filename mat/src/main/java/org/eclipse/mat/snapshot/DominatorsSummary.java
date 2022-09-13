@@ -22,7 +22,7 @@ import org.eclipse.mat.snapshot.model.IObject;
 /**
  * This class holds the data of a dominators summary (see ISnapshot.getDominatorsOf()). For a given list of objects the
  * summary contains the dominators of the single objects grouped by class or by class loader.#
- * 
+ *
  * @noinstantiate
  */
 public final class DominatorsSummary {
@@ -58,7 +58,7 @@ public final class DominatorsSummary {
 
 	/**
 	 * Get the dominators summary grouped by classes
-	 * 
+	 *
 	 * @return ClassDominatorRecord[] the array of ClassDominatorRecords
 	 */
 	public ClassDominatorRecord[] getClassDominatorRecords() {
@@ -67,7 +67,7 @@ public final class DominatorsSummary {
 
 	/**
 	 * Get the dominators summary grouped by class loaders
-	 * 
+	 *
 	 * @return ClassloaderDominatorRecord[] the array of ClassloaderDominatorRecords
 	 */
 	public ClassloaderDominatorRecord[] getClassloaderDominatorRecords() {
@@ -226,7 +226,7 @@ public final class DominatorsSummary {
 
 		/**
 		 * Set the name of the class of this record
-		 * 
+		 *
 		 * @param className
 		 */
 		public void setClassName(String className) {
@@ -292,7 +292,7 @@ public final class DominatorsSummary {
 
 		/**
 		 * Get the number of dominators
-		 * 
+		 *
 		 * @return the number of dominators
 		 */
 		public int getDominatorCount() {
@@ -308,7 +308,7 @@ public final class DominatorsSummary {
 
 		/**
 		 * set the id of the classloader of the dominators
-		 * 
+		 *
 		 * @param classloaderId
 		 */
 		public void setClassloaderId(int classloaderId) {
@@ -317,7 +317,7 @@ public final class DominatorsSummary {
 
 		/**
 		 * Add a dominated object to the record
-		 * 
+		 *
 		 * @param objectId
 		 */
 		public boolean addDominated(int objectId) {
@@ -347,7 +347,7 @@ public final class DominatorsSummary {
 
 		/**
 		 * Get the dominated objects
-		 * 
+		 *
 		 * @return int[] - an array with the ids of all dominated objects
 		 */
 		public int[] getDominated() {
@@ -356,7 +356,7 @@ public final class DominatorsSummary {
 
 		/**
 		 * Get the dominator objects
-		 * 
+		 *
 		 * @return int[] - an array with the ids of the dominators
 		 */
 		public int[] getDominators() {
@@ -365,7 +365,7 @@ public final class DominatorsSummary {
 
 		/**
 		 * Get the DominatorsSummary to which this record belongs.
-		 * 
+		 *
 		 * @return this records's DominatorsSummery
 		 */
 		public DominatorsSummary getSummary() {

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is used to transmit a dummy object over the wire, typically to maintain an open connection
- * 
+ *
  * @author Benoit Lacelle
  *
  */

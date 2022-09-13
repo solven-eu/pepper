@@ -46,7 +46,7 @@ import scala.Tuple2;
 /**
  * A procedure demonstrating how one can join efficiently 2 tables, with a logic so that some enrichment columns holding
  * a metrics are filled only one.
- * 
+ *
  * @author Benoit Lacelle
  *
  */

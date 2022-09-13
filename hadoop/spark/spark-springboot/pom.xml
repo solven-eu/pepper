@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-spark-parent</artifactId>
-		<version>4.1</version>
+		<version>4.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>spark-springboot</artifactId>
@@ -16,6 +16,9 @@
 		
 		<!-- This is a fatjar: very big, and pointless in m2-central -->
 		<maven.deploy.skip>true</maven.deploy.skip>
+		<!-- The equivalent property for nexus-staging-maven-plugin -->
+		<!-- https://github.com/sonatype/nexus-maven-plugins/blob/main/staging/maven-plugin/README.md -->
+		<skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
 	</properties>
 
 	<dependencies>

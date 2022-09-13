@@ -28,14 +28,14 @@ import java.util.stream.Stream;
 
 /**
  * Wraps how to convert binary data to a Stream of Map
- * 
+ *
  * @author Benoit Lacelle
  *
  */
 public interface IBinaryToStream<T> {
 
 	/**
-	 * 
+	 *
 	 * @param inputStream
 	 * @return
 	 * @throws IOException

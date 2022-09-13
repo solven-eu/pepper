@@ -24,7 +24,7 @@ package eu.solven.pepper.jvm;
 
 /**
  * Helpers related to math and numbers
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -37,7 +37,7 @@ public class PepperMathHelper {
 	/**
 	 * This method is useful to understand the precision available through floats. It may be used to analyze a flow of
 	 * doubles to check if float-precision would be sufficient
-	 * 
+	 *
 	 * @param input
 	 *            any Float
 	 * @return the smallest float strictly bigger the the input

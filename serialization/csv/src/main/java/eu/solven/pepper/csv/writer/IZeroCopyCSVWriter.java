@@ -28,9 +28,9 @@ import java.util.stream.Stream;
 
 /**
  * This interface wraps the logic of writing rows to a {@link Closeable} resource
- * 
+ *
  * @author Benoit Lacelle
- * 
+ *
  */
 public interface IZeroCopyCSVWriter extends AutoCloseable, ToLongFunction<Stream<?>> {
 	// We prefer implementations to return RuntimeExceptions

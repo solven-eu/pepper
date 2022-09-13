@@ -41,7 +41,7 @@ import eu.solven.pepper.logging.PepperLogHelper;
 
 /**
  * Various helpers for Map
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -85,7 +85,7 @@ public class PepperMapHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param first
 	 *            the first Map to resolve
 	 * @param second
@@ -103,7 +103,7 @@ public class PepperMapHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param <T>
 	 * @param body
 	 * @param firstKey
@@ -148,7 +148,7 @@ public class PepperMapHelper {
 
 	/**
 	 * This helps building deeply nested Maps. It is especially useful for unit-tests.
-	 * 
+	 *
 	 * @param value
 	 *            attached to the deepest key
 	 * @param firstKey
@@ -363,7 +363,7 @@ public class PepperMapHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param <T>
 	 *            the type of the keys
 	 * @param mapToHide

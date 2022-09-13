@@ -54,7 +54,7 @@ import eu.solven.pepper.io.PepperSerializationHelper;
 
 /**
  * Helps converting avro records to standard Java objects
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -252,7 +252,7 @@ public class AvroTranscodingHelper {
 	/**
 	 * Used to detect if a field holds a single number, would it be through a Union with NULL, or a record with a single
 	 * number field
-	 * 
+	 *
 	 * @param singleField
 	 * @return
 	 */
@@ -267,7 +267,7 @@ public class AvroTranscodingHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param schema
 	 *            the schema of the whole record, not only given value
 	 * @param value
@@ -306,7 +306,7 @@ public class AvroTranscodingHelper {
 	/**
 	 * This method helps transcoding an Avro IndexedRecord to a standard java Map. It may induce a performance penalty,
 	 * typically by converting by default all Utf8 to a String
-	 * 
+	 *
 	 * @param indexedRecord
 	 *            an Avro IndexedRecord
 	 * @param exampleTypes
@@ -341,7 +341,7 @@ public class AvroTranscodingHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param exampleTypes
 	 * @return a {@link Function} enabling transcoding in a {@link Stream}
 	 */

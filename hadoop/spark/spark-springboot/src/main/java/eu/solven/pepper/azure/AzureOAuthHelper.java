@@ -16,7 +16,7 @@ import com.microsoft.aad.adal4j.DeviceCode;
 
 /**
  * Helps authenticating in Azure
- * 
+ *
  * @author Benoit Lacelle
  *
  */

@@ -33,7 +33,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 /**
  * This class is useful when one want to consider a generic List of Object as key in a hashed structure.
- * 
+ *
  * @author Benoit Lacelle
  *
  */

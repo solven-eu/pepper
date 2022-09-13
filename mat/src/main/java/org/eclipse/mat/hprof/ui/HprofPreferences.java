@@ -23,7 +23,7 @@ public class HprofPreferences {
 	/**
 	 * Return the currently selected preference for strictness. This first checks the preference store, and then checks
 	 * for any -D$(STRICTNESS)=true command line arguments.
-	 * 
+	 *
 	 * @return Current strictness preference or reflection of command line setting.
 	 */
 	public static HprofStrictness getCurrentStrictness() {
@@ -65,7 +65,7 @@ public class HprofPreferences {
 
 		/**
 		 * Enumeration value with a preference key.
-		 * 
+		 *
 		 * @param name
 		 *            The preference key.
 		 */
@@ -83,7 +83,7 @@ public class HprofPreferences {
 
 		/**
 		 * Given a stored preference value, return the enumeration value, or otherwise the default strictness.
-		 * 
+		 *
 		 * @param value
 		 *            The preference value.
 		 * @return Given a stored preference value, return the enumeration value, or otherwise the default strictness.

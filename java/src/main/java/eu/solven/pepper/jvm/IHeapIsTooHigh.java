@@ -25,7 +25,7 @@ package eu.solven.pepper.jvm;
 /**
  * Abstract the information defining when we run out of heap. It is typically used by enquiing mechanism to stop
  * accepting data if the heap is too high
- * 
+ *
  * @author Benoit Lacelle
  *
  */

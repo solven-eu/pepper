@@ -26,7 +26,7 @@ import com.google.common.primitives.Ints;
 
 /**
  * Provides some constants relatively to memory footprint in a JVM
- * 
+ *
  * @author Benoit Lacelle
  *
  */

@@ -30,7 +30,7 @@ import java.util.Objects;
 /**
  * A List implementation, improving performance when List are used as a Map key, or when one need to extract only a
  * subset of indexes from an input array
- * 
+ *
  * @author Benoit Lacelle
  *
  * @param <T>

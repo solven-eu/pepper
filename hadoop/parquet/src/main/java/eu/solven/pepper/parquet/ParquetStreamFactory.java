@@ -58,7 +58,7 @@ import eu.solven.pepper.avro.IGenericRecordConsumer;
 
 /**
  * Enable converting a Parquet file to a Stream of Map
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -99,7 +99,7 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param rawInputStream
 	 *            a stream of bytes associated to a Parquet file. It is sub-optimal as Parquet require a
 	 *            SeekableInputStream (i.e. an InputStream with RandomAccess). We will then copy the file in local FS

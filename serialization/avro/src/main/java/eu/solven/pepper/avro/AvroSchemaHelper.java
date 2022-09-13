@@ -50,7 +50,7 @@ import eu.solven.pepper.logging.PepperLogHelper;
 
 /**
  * Various utilities related to Avro schema
- * 
+ *
  * @author Benoit Lacelle
  *
  */

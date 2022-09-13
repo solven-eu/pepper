@@ -203,7 +203,7 @@ public class ObjectMarker {
 
 	/**
 	 * A stack accessible by multiple threads
-	 * 
+	 *
 	 * @author ajohnson
 	 *
 	 */
@@ -243,7 +243,7 @@ public class ObjectMarker {
 		 * Calculate the number of ticks worked. The total ticks is just the initial stack size However, more items can
 		 * be pushed later, so we calculate the items processed since last time, the total to do, and the remaining
 		 * ticks. Must have the lock on this stack.
-		 * 
+		 *
 		 * @return new ticks worked
 		 */
 		int worked() {
@@ -268,7 +268,7 @@ public class ObjectMarker {
 		/**
 		 * When the stack is empty wait for another thread to put something back onto the stack. Must have lock on this
 		 * stack.
-		 * 
+		 *
 		 * @return object id -1 if all threads are waiting, so everything is done
 		 */
 		int waitAndPop() {
@@ -301,7 +301,7 @@ public class ObjectMarker {
 		/**
 		 * Push an item onto the stack if another thread is waiting for something to be added and there aren't already
 		 * enough items on the stack for all the waiting threads.
-		 * 
+		 *
 		 * @param z
 		 * @return true if the item has been pushed false if the item has not been pushed and should be dealt with by
 		 *         the current thread
@@ -615,7 +615,7 @@ public class ObjectMarker {
 
 		/**
 		 * Is the objectId in range for the local stack?
-		 * 
+		 *
 		 * @param val
 		 * @return
 		 */
@@ -625,7 +625,7 @@ public class ObjectMarker {
 
 		/**
 		 * Select a suitable base for the local stack. This is 1/4 range below and 3/4 range around the candidate item.
-		 * 
+		 *
 		 * @param v
 		 * @return
 		 */

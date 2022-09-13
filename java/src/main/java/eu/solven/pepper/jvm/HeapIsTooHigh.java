@@ -38,7 +38,7 @@ import com.google.common.math.LongMath;
 /**
  * This component enables switching some special mode when the memory is too high: cancel old queries, stop enqueuing in
  * transaction wrapper,...
- * 
+ *
  * @author Benoit Lacelle
  *
  */

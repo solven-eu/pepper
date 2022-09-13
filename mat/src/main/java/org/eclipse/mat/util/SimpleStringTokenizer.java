@@ -24,7 +24,7 @@ public final class SimpleStringTokenizer implements Iterable<String> {
 
 	/**
 	 * Gets the different part of a string which are separated by the delimiter.
-	 * 
+	 *
 	 * @param subject
 	 * @param delim
 	 */
@@ -74,7 +74,7 @@ public final class SimpleStringTokenizer implements Iterable<String> {
 
 	/**
 	 * Splits the string at the delimiter character.
-	 * 
+	 *
 	 * @param subject
 	 * @param delim
 	 * @return the string split at the delimiter

@@ -12,7 +12,7 @@ import java.util.Locale;
 
 /**
  * Demonstrate default Charset-related details.
- * 
+ *
  * @author Benoit Lacelle
  */
 // https://dzone.com/articles/java-may-use-utf-8-as-its-default-charset

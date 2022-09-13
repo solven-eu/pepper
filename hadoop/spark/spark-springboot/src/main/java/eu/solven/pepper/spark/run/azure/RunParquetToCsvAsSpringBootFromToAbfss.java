@@ -22,11 +22,11 @@ import org.springframework.core.env.Environment;
 
 /**
  * Dummy SpringBoot application interacting with ABFSS
- * 
+ *
  * Parquet files can be viewed with:
- * 
+ *
  * https://github.com/mukunku/ParquetViewer/releases
- * 
+ *
  * @author Benoit Lacelle
  *
  */

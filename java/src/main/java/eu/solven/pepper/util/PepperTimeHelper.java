@@ -37,7 +37,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Some utility methods relative to time, typically for pretty-printing of performance
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -60,7 +60,7 @@ public class PepperTimeHelper {
 	/**
 	 * This class enables logging of outlier detection, typically when a small operation takes more time than usual, or
 	 * a result size is bigger
-	 * 
+	 *
 	 * @return true if maxTiming has been updated
 	 */
 	public static boolean updateOutlierDetectorStatistics(AtomicLong nb,
@@ -102,7 +102,7 @@ public class PepperTimeHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param localDateTime
 	 * @return the number of milliseconds since 1970
 	 */

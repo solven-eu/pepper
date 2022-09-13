@@ -42,7 +42,7 @@ import com.google.common.util.concurrent.AtomicLongMap;
 
 /**
  * Various utilities related to references
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -103,7 +103,7 @@ public class PepperReferenceHelper {
 	/**
 	 * This method will replace fields of given object with reference used by other objects. It is typically useful to
 	 * POJO which, except the spaceKey, have low cardinality. It also handles Object arrays (Object[])
-	 * 
+	 *
 	 * @param data
 	 */
 	public static void internalizeFields(Object data) {
@@ -128,7 +128,7 @@ public class PepperReferenceHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param field
 	 * @param object
 	 */
@@ -260,7 +260,7 @@ public class PepperReferenceHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param item
 	 * @return the input item after having internalized its fields
 	 */

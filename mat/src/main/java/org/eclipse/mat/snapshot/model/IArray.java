@@ -12,7 +12,7 @@ package org.eclipse.mat.snapshot.model;
 
 /**
  * Interface for an array object in the heap dump.
- * 
+ *
  * @noimplement
  */
 public interface IArray extends IObject {

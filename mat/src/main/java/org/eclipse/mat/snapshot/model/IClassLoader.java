@@ -17,13 +17,13 @@ import org.eclipse.mat.util.IProgressListener;
 
 /**
  * An interface for class loader.
- * 
+ *
  * @noimplement
  */
 public interface IClassLoader extends IInstance {
 	/**
 	 * Returns the retained size of all objects and classes loaded by this class loader.
-	 * 
+	 *
 	 * @param calculateIfNotAvailable
 	 *            if false only return a cached version of the size
 	 * @param calculateMinRetainedSize

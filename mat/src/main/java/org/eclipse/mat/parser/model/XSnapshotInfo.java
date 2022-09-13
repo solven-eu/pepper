@@ -28,7 +28,7 @@ public final class XSnapshotInfo extends SnapshotInfo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param prefix
 	 * @see #getPrefix()
 	 */
@@ -37,7 +37,7 @@ public final class XSnapshotInfo extends SnapshotInfo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param path
 	 * @see #getPath()
 	 */
@@ -46,7 +46,7 @@ public final class XSnapshotInfo extends SnapshotInfo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param creationDate
 	 * @see #getCreationDate()
 	 */
@@ -55,7 +55,7 @@ public final class XSnapshotInfo extends SnapshotInfo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param identifierSize
 	 * @see #getIdentifierSize()
 	 */
@@ -64,7 +64,7 @@ public final class XSnapshotInfo extends SnapshotInfo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param jvmInfo
 	 * @see #getJvmInfo()
 	 */
@@ -73,7 +73,7 @@ public final class XSnapshotInfo extends SnapshotInfo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param numberOfClasses
 	 * @see #getNumberOfClasses()
 	 */
@@ -82,7 +82,7 @@ public final class XSnapshotInfo extends SnapshotInfo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param numberOfClassLoaders
 	 * @see #getNumberOfClassLoaders()
 	 */
@@ -91,7 +91,7 @@ public final class XSnapshotInfo extends SnapshotInfo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param numberOfGCRoots
 	 * @see #getNumberOfGCRoots()
 	 */
@@ -100,7 +100,7 @@ public final class XSnapshotInfo extends SnapshotInfo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param numberOfObjects
 	 * @see #getNumberOfObjects()
 	 */
@@ -109,7 +109,7 @@ public final class XSnapshotInfo extends SnapshotInfo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param usedHeapSize
 	 * @see #getUsedHeapSize()
 	 */

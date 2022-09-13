@@ -45,7 +45,7 @@ import com.google.common.io.Files;
 
 /**
  * Various utilities for GZip
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -60,7 +60,7 @@ public class PepperGzipHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param bytes
 	 * @return true if this byte array seems to hold a gzip compressed message
 	 */
@@ -72,7 +72,7 @@ public class PepperGzipHelper {
 
 	/**
 	 * This is able to handle byte arrays, would it hold the compressed String, or just plain data
-	 * 
+	 *
 	 * @param bytes
 	 * @return the deflated String
 	 * @throws IOException
@@ -119,7 +119,7 @@ public class PepperGzipHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param folder
 	 *            a file-system folder were to read files and folders
 	 * @param zipFilePath
@@ -158,7 +158,7 @@ public class PepperGzipHelper {
 
 	/**
 	 * Gzip enable compressing a single file
-	 * 
+	 *
 	 * @param inputPath
 	 * @param zipFilePath
 	 * @throws IOException

@@ -23,7 +23,7 @@ public class FieldDescriptor implements Serializable {
 
 	/**
 	 * Create a field for a class - just contains the field name and type, not the value
-	 * 
+	 *
 	 * @param name
 	 *            field name
 	 * @param type
@@ -36,7 +36,7 @@ public class FieldDescriptor implements Serializable {
 
 	/**
 	 * Gets the field name
-	 * 
+	 *
 	 * @return the actual field name
 	 */
 	public String getName() {
@@ -45,7 +45,7 @@ public class FieldDescriptor implements Serializable {
 
 	/**
 	 * Gets the type as a number.
-	 * 
+	 *
 	 * @return as {@link IObject.Type}
 	 */
 	public int getType() {
@@ -54,7 +54,7 @@ public class FieldDescriptor implements Serializable {
 
 	/**
 	 * Sets the name of the field. Normally the name should not be changed.
-	 * 
+	 *
 	 * @param name
 	 *            the name of the field.
 	 * @noreference
@@ -65,7 +65,7 @@ public class FieldDescriptor implements Serializable {
 
 	/**
 	 * Sets the type of the field. Normally the type should not be changed.
-	 * 
+	 *
 	 * @param type
 	 *            the type of the field as {@link IObject.Type}
 	 * @noreference
@@ -76,7 +76,7 @@ public class FieldDescriptor implements Serializable {
 
 	/**
 	 * Returns the type of the field. Used for example by the object inspector pane.
-	 * 
+	 *
 	 * @return ref byte short int long boolean char float double
 	 */
 	public String getVerboseSignature() {

@@ -22,7 +22,7 @@ public final class Field extends FieldDescriptor implements Serializable {
 
 	/**
 	 * Create a representation of member variable
-	 * 
+	 *
 	 * @param name
 	 *            the name of the field
 	 * @param type
@@ -39,7 +39,7 @@ public final class Field extends FieldDescriptor implements Serializable {
 
 	/**
 	 * Gets the value of the field.
-	 * 
+	 *
 	 * @return ObjectReference - for an object field Byte - for a byte field Short - for a short field Integer - for an
 	 *         int field Long - for a long field Boolean - for a boolean field Char - for a char field Float - for a
 	 *         float field Double - for a double field
@@ -51,7 +51,7 @@ public final class Field extends FieldDescriptor implements Serializable {
 	/**
 	 * Set the value of the field. Normally the value should not be changed. Currently this is used after deserializing
 	 * static fields to change the object reference to one having a link to the current snapshot.
-	 * 
+	 *
 	 * @param object
 	 *            ObjectReference - for an object field Byte - for a byte field Short - for a short field Integer - for
 	 *            an int field Long - for a long field Boolean - for a boolean field Char - for a char field Float - for
@@ -63,7 +63,7 @@ public final class Field extends FieldDescriptor implements Serializable {
 
 	/**
 	 * A readable representation of the field. Do not rely on the format of the result.
-	 * 
+	 *
 	 * @return a description of this field.
 	 */
 	@Override

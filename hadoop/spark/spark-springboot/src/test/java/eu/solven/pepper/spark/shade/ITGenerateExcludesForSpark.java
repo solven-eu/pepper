@@ -13,7 +13,7 @@ import org.springframework.core.io.ClassPathResource;
 
 /**
  * Helps generating the artifacSet excludes clause, given a local Spark installation
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -22,7 +22,7 @@ public class ITGenerateExcludesForSpark {
 
 	/**
 	 * Generate as artifactSet excludes based on local SPARK_HOME installation
-	 * 
+	 *
 	 * @param args
 	 * @throws IOException
 	 */

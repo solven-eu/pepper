@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Help management of hacked classes. Such classes should be very rare, but sometimes, it appears necessary or much
  * simpler than alternatives
- * 
+ *
  * @author Benoit Lacelle
  *
  */

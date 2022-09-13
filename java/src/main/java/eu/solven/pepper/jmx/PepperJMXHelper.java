@@ -53,7 +53,7 @@ import eu.solven.pepper.stream.PepperStreamHelper;
 
 /**
  * Various utility methods specific to JMX
- * 
+ *
  * @author Benoit Lacelle
  *
  */

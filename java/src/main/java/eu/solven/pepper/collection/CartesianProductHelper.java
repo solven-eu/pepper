@@ -55,7 +55,7 @@ import com.google.common.math.LongMath;
 
 /**
  * Helpers related to cartesian products. It is typically used to compute covering cartesian products
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -464,7 +464,7 @@ public class CartesianProductHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param templates
 	 *            the List of templates which has to be multiplied together (e.g. the first set would express (FR, USA)
 	 *            and the second Set (Today, Yesterday). We want all combinations, leading at the end to

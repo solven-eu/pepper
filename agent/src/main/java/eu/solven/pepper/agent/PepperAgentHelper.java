@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Utilities to help working with java agents
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -44,7 +44,7 @@ public class PepperAgentHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the PID of current process
 	 * @see org.springframework.boot.loader.tools.AgentAttacher.attach(File)
 	 */

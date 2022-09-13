@@ -52,9 +52,9 @@ import eu.solven.pepper.thread.CurrentThreadStack;
 /**
  * A {@link StartMetricEvent} can be used to stats the duration of some events. Typically posted into an
  * {@link EventBus}
- * 
+ *
  * @author Benoit Lacelle
- * 
+ *
  */
 public class TaskStartEvent implements ITaskActivityEvent {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TaskStartEvent.class);
@@ -235,7 +235,7 @@ public class TaskStartEvent implements ITaskActivityEvent {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param endMetricEvent
 	 * @return true if we successfully registered an EndMetricEvent. Typically fails if already ended
 	 */

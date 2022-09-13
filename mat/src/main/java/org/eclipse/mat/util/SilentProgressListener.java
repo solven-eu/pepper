@@ -12,7 +12,7 @@ package org.eclipse.mat.util;
 
 /**
  * A progress listener that does very little, but passes on the essentials to the delegate.
- * 
+ *
  * @since 0.8
  */
 public class SilentProgressListener implements IProgressListener {

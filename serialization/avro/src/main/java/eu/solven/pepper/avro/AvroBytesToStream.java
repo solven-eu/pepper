@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Helps converting an InputStream to a Stream of {@link GenericRecord}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

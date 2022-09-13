@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * Enable caching of regex resolution against a Path. It is especially useful when a directory with many files is
  * checked very regularly. It also facilitates logs by requiring an explicit .toString. MOst PathMatcher implementation
  * (even on regex of glob) have no .toString
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -80,7 +80,7 @@ public class CachedPathMatcher implements PathMatcher {
 
 	/**
 	 * Regular is more powerful but also more complex than glob syntax
-	 * 
+	 *
 	 * @param regex
 	 *            For instance: '.*\.java' to match any file ending with '.java'
 	 * @return a {@link CachedPathMatcher} with a nice .toString with given regex matcher
@@ -92,7 +92,7 @@ public class CachedPathMatcher implements PathMatcher {
 
 	/**
 	 * Glob is simpler but less powerful than regex.
-	 * 
+	 *
 	 * @param glob
 	 *            For instance: '*.java' to match any file ending with '.java'
 	 * @return a {@link CachedPathMatcher} with a nice .toString with given regex syntax
@@ -103,7 +103,7 @@ public class CachedPathMatcher implements PathMatcher {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param fileRegex
 	 * @return a PathMatcher which accept a file in order directory, but constraining the filename with input regex
 	 */

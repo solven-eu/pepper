@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Provides heap histogram, including the number of instance per class and the memory associated to each instance
- * 
+ *
  * @author Benoit Lacelle
  *
  */

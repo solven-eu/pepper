@@ -33,7 +33,7 @@ import com.google.common.base.Optional;
 
 /**
  * Introspect org.ehcache.sizeof.impl.AgentLoader to retrieve a reference to Instrumentation
- * 
+ *
  * @author Benoit Lacelle
  *
  */

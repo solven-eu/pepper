@@ -30,7 +30,7 @@ public interface IIndexReader {
 
 	/**
 	 * Index from object id to size, stored compressed as an int.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	interface IOne2SizeIndex extends IOne2OneIndex {
@@ -65,7 +65,7 @@ public interface IIndexReader {
 
 	/**
 	 * Size of the index
-	 * 
+	 *
 	 * @return number of entries
 	 */
 	int size();
@@ -73,14 +73,14 @@ public interface IIndexReader {
 	/**
 	 * Clear the caches. Used when the indexes are not current in use and the memory needs to be reclaimed such as when
 	 * building the dominator tree.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	void unload() throws IOException;
 
 	/**
 	 * Close the backing file.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	void close() throws IOException;

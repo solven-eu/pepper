@@ -16,14 +16,14 @@ package org.eclipse.mat.collect;
 public interface IteratorInt {
 	/**
 	 * Is there a next entry?
-	 * 
+	 *
 	 * @return true if next entry available
 	 */
 	boolean hasNext();
 
 	/**
 	 * Get the next entry.
-	 * 
+	 *
 	 * @return the entry
 	 */
 	int next();

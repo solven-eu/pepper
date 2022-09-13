@@ -30,7 +30,7 @@ import org.eclipse.mat.snapshot.model.ThreadToLocalReference;
 
 /**
  * Implementation of a plain Java object. This includes field information.
- * 
+ *
  * @noextend
  */
 public class InstanceImpl extends AbstractObjectImpl implements IInstance {
@@ -41,7 +41,7 @@ public class InstanceImpl extends AbstractObjectImpl implements IInstance {
 
 	/**
 	 * Construct a representation of plain java object in the snapshot.
-	 * 
+	 *
 	 * @param objectId
 	 *            the object id
 	 * @param address
@@ -103,7 +103,7 @@ public class InstanceImpl extends AbstractObjectImpl implements IInstance {
 
 	/**
 	 * Set the fields of this instance. The order should match the order of {@link #getFields()}.
-	 * 
+	 *
 	 * @return a list of fields
 	 */
 	protected void setFields(List<Field> fields) {

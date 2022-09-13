@@ -41,7 +41,7 @@ import eu.solven.pepper.io.PepperFileHelper;
 /**
  * Automatic transformation of a Parquet InputStream to a Stream of objects. It requires to write the {@link File} first
  * on the file-system
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -52,7 +52,7 @@ public class ParquetBytesToStream implements IBinaryToAvroStream {
 
 	/**
 	 * By default, the InputStream is flushed to a temporary file which will be deleted with the JVM
-	 * 
+	 *
 	 * @see File.deleteOnExit
 	 */
 	public ParquetBytesToStream() {

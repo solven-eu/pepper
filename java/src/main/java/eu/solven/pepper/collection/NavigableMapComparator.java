@@ -33,9 +33,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A {@link Comparator} which compare first the keyset, then the values
- * 
+ *
  * @author Benoit Lacelle
- * 
+ *
  */
 public class NavigableMapComparator implements Comparator<NavigableMap<String, String>>, Serializable {
 	// http://findbugs.sourceforge.net/bugDescriptions.html#SE_COMPARATOR_SHOULD_BE_SERIALIZABLE

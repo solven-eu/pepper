@@ -26,7 +26,7 @@ import java.util.function.DoubleConsumer;
 
 /**
  * Interface for double column consumer for {@link ZeroCopyCSVParser}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

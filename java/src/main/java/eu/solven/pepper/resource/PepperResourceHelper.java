@@ -40,7 +40,7 @@ import com.google.common.io.ByteStreams;
 
 /**
  * Helpers for Unit-tests
- * 
+ *
  * @author Benoit Lacelle
  *
  */

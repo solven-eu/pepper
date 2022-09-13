@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Wraps multiple {@link IntList} in a single concatenated {@link IntList}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

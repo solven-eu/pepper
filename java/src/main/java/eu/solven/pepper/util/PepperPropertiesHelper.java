@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods for Properties
- * 
+ *
  * @author Benoit Lacelle
  *
  */

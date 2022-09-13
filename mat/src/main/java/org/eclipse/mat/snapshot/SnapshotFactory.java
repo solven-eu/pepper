@@ -27,13 +27,13 @@ public final class SnapshotFactory {
 	/**
 	 * Describes the snapshot factory implementation. Implemented in the parser plugin. Implementations of this
 	 * interface need to be registered using the <code>org.eclipse.mat.api.factory</code> extension point.
-	 * 
+	 *
 	 * @noimplement
 	 */
 	public interface Implementation {
 		/**
 		 * Opens a snapshot
-		 * 
+		 *
 		 * @param file
 		 *            the dump file
 		 * @param arguments
@@ -48,14 +48,14 @@ public final class SnapshotFactory {
 
 		/**
 		 * Free resources when the snapshot is no longer needed.
-		 * 
+		 *
 		 * @param snapshot
 		 */
 		void dispose(ISnapshot snapshot);
 
 		/**
 		 * Show which parsers the factory handles
-		 * 
+		 *
 		 * @return a list of snapshot types
 		 */
 		List<SnapshotFormat> getSupportedFormats();
@@ -65,7 +65,7 @@ public final class SnapshotFactory {
 
 	/**
 	 * Create a snapshot Object from a file representation of a snapshot.
-	 * 
+	 *
 	 * @param file
 	 *            file from which the snapshot will be constructed (type will be derived from the file name extension)
 	 * @param listener
@@ -79,7 +79,7 @@ public final class SnapshotFactory {
 
 	/**
 	 * Create a snapshot Object from a file representation of a snapshot.
-	 * 
+	 *
 	 * @param file
 	 *            file from which the snapshot will be constructed (type will be derived from the file name extension)
 	 * @param arguments
@@ -100,7 +100,7 @@ public final class SnapshotFactory {
 	 * Please call this method prior to dropping the last reference to the snapshot as this method ensures the proper
 	 * return of all resources (e.g. main memory, file and socket handles...) when the last user has disposed it through
 	 * the snapshot factory. After calling this method the snapshot can't be used anymore.
-	 * 
+	 *
 	 * @param snapshot
 	 *            snapshot which should be disposed
 	 */
@@ -110,7 +110,7 @@ public final class SnapshotFactory {
 
 	/**
 	 * Get the types of the parsers.
-	 * 
+	 *
 	 * @return list of formats that the parsers can understand
 	 */
 	public static List<SnapshotFormat> getSupportedFormats() {

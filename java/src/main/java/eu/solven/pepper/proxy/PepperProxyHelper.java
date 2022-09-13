@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 
 /**
  * This class enables filling -Dhttp.proxy and related JVM variables from standard Environment variables
- * 
+ *
  * @author Benoit Lacelle
  * @see java.net.Proxy
  * @see java.net.Authenticator

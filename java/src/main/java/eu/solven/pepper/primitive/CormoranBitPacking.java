@@ -2,7 +2,7 @@ package eu.solven.pepper.primitive;
 
 /**
  * Helper methods related to bit-packing, typically to pack 2 integers into a single long
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -14,7 +14,7 @@ public class CormoranBitPacking {
 
 	/**
 	 * Standard way of packing 2 integers in a long
-	 * 
+	 *
 	 * @param left
 	 * @param right
 	 * @return
@@ -26,7 +26,7 @@ public class CormoranBitPacking {
 
 	/**
 	 * Standard way of unpacking the first integer from long
-	 * 
+	 *
 	 * @param pack
 	 * @return
 	 */
@@ -37,7 +37,7 @@ public class CormoranBitPacking {
 
 	/**
 	 * Standard way of unpacking the second integer from long
-	 * 
+	 *
 	 * @param pack
 	 * @return
 	 */
@@ -49,7 +49,7 @@ public class CormoranBitPacking {
 	/**
 	 * Ordered way of packing 2 integers in a long, i.e. we produce two positive integers if the packed long is positive
 	 * and below Long.MAX_VALUE / 2
-	 * 
+	 *
 	 * @param left
 	 * @param right
 	 * @return
@@ -63,7 +63,7 @@ public class CormoranBitPacking {
 	/**
 	 * Ordered way of unpacking the first integer from long, i.e. we produce two positive integers if the packed long is
 	 * positive and below Long.MAX_VALUE / 2
-	 * 
+	 *
 	 * @param pack
 	 * @return
 	 */
@@ -75,7 +75,7 @@ public class CormoranBitPacking {
 	/**
 	 * Ordered way of unpacking the second integer from long, i.e. we produce two positive integers if the packed long
 	 * is positive and below Long.MAX_VALUE / 2
-	 * 
+	 *
 	 * @param pack
 	 * @return
 	 */

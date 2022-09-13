@@ -26,14 +26,14 @@ import java.util.List;
 
 /**
  * Helps managing {@link TaskStartEvent} and {@link TaskEndEvent}
- * 
+ *
  * @author Benoit Lacelle
  *
  */
 public interface ITaskActivityEvent {
 
 	/**
-	 * 
+	 *
 	 * @return the object marked as source of this event
 	 */
 	Object getSource();

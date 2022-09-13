@@ -42,7 +42,7 @@ import eu.solven.pepper.agent.InstrumentationAgent;
 
 /**
  * This class helps reference-sharing
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -84,7 +84,7 @@ public class PepperFootprintHelper implements IPepperMemoryConstants {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param object
 	 *            the object to analyze
 	 * @return the number of bytes consumed by given objects, taking in account the references objects
@@ -99,7 +99,7 @@ public class PepperFootprintHelper implements IPepperMemoryConstants {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param object
 	 * @param identityPredicate
 	 *            a predicate returning true if it is the first encounter of given object. It may return false even if
@@ -150,7 +150,7 @@ public class PepperFootprintHelper implements IPepperMemoryConstants {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param instrumentation
 	 *            an {@link Instrumentation} able to provide the memory weight of given object
 	 * @param identities

@@ -43,7 +43,7 @@ import eu.solven.pepper.memory.PepperMemoryHelper;
 
 /**
  * Various helpers for Process launched through a ProcessBuilder
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -89,7 +89,7 @@ public class PepperProcessHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param pid
 	 *            the PID of the process to consider
 	 * @return the number of bytes in the resident memory of given process

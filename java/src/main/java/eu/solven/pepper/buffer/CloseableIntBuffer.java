@@ -33,7 +33,7 @@ import com.google.common.annotations.Beta;
 
 /**
  * Wrap a {@link MappedByteBuffer} or an {@link IntBuffer} into {@link AutoCloseable}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

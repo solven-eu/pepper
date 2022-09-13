@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Helpers for Unit-tests
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -28,7 +28,7 @@ public class PepperTestHelper {
 	/**
 	 * This will check internet (global) is available by checking the connectivity to a global resource expected to be
 	 * always UP (e.g. google.com)
-	 * 
+	 *
 	 * @return true if the internet is available
 	 */
 	public static boolean assumeInternetIsAvailable() {
@@ -122,7 +122,7 @@ public class PepperTestHelper {
 
 	/**
 	 * Enables using a try-with statement in order to deactivate logs for a given section of code.
-	 * 
+	 *
 	 * @param clazz
 	 * @return
 	 */

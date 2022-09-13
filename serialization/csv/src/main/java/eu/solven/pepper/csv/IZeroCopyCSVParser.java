@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * The interface for any ZeroCopyCSVParser
- * 
+ *
  * @author Benoit Lacelle
  *
  */

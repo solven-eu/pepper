@@ -40,7 +40,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 /**
  * Extends {@link MBeanExporter} to add logging when a remote call failed. Else, the exception is forwarded to the
  * client, which may not render the exception correctly (e.g. the JConsole does not show the whole stacktrace)
- * 
+ *
  * @author Benoit Lacelle
  */
 // http://docs.spring.io/autorepo/docs/spring/3.2.x/spring-framework-reference/html/jmx.html

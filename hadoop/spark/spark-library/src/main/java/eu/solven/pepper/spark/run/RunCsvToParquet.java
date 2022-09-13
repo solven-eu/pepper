@@ -43,7 +43,7 @@ import eu.solven.pepper.parquet.ParquetStreamFactory;
 
 /**
  * A procedure to convert a CSV file into a Parquet file
- * 
+ *
  * @author Benoit Lacelle
  *
  */

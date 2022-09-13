@@ -30,7 +30,7 @@ public class ArrayIntCompressed {
 
 	/**
 	 * Create <code>IntArrayCompressed</code> from bytes formerly got from {@link #toByteArray()}.
-	 * 
+	 *
 	 * @param bytes
 	 *            bytes formerly got from {@link #toByteArray()}
 	 */
@@ -44,7 +44,7 @@ public class ArrayIntCompressed {
 	/**
 	 * Create <code>IntArrayCompressed</code> from number of ints to be stored, the number of leading and trailing clear
 	 * bits. Everything else is stored in the internal data structure.
-	 * 
+	 *
 	 * @param size
 	 *            number of ints to be stored
 	 * @param leadingClearBits
@@ -59,7 +59,7 @@ public class ArrayIntCompressed {
 
 	/**
 	 * Create <code>IntArrayCompressed</code> from ints representing the data to be stored in compressed form.
-	 * 
+	 *
 	 * @param ints
 	 *            ints representing the data to be stored in compressed form
 	 */
@@ -71,7 +71,7 @@ public class ArrayIntCompressed {
 	/**
 	 * Create <code>IntArrayCompressed</code> from ints representing the data to be stored in compressed form (from
 	 * offset to offset+length).
-	 * 
+	 *
 	 * @param ints
 	 *            ints representing the data to be stored in compressed form
 	 * @param offset
@@ -123,7 +123,7 @@ public class ArrayIntCompressed {
 
 	/**
 	 * Set value at the given index.
-	 * 
+	 *
 	 * @param index
 	 *            index at which the value should be set
 	 * @param value
@@ -150,7 +150,7 @@ public class ArrayIntCompressed {
 
 	/**
 	 * Get value from the given index.
-	 * 
+	 *
 	 * @param index
 	 *            index at which the value should be set
 	 * @return value found at the given index
@@ -179,7 +179,7 @@ public class ArrayIntCompressed {
 	/**
 	 * Get bytes representing the internal data structure with which an <code>IntArrayCompressed</code> can be
 	 * reconstructed.
-	 * 
+	 *
 	 * @return bytes representing the internal data structure with which an <code>IntArrayCompressed</code> can be
 	 *         reconstructed
 	 */

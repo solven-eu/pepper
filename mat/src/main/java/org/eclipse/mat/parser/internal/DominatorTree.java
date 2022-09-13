@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    SAP AG - initial API and implementation
- *    IBM Corporation - allow larger resize of arrays 
+ *    IBM Corporation - allow larger resize of arrays
  *******************************************************************************/
 package org.eclipse.mat.parser.internal;
 

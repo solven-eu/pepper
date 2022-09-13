@@ -50,7 +50,7 @@ import com.google.common.io.ByteStreams;
 
 /**
  * Various utility methods related to files
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -68,8 +68,8 @@ public class PepperFileHelper {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param resource
 	 *            a resource to be made available as a Path
 	 * @return the path to the input resource if already on disk, else a tmp file where the resource content has been
@@ -101,7 +101,7 @@ public class PepperFileHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param path
 	 *            a path like '/folder/file' in folder in a folder in the classpath
 	 * @return
@@ -117,7 +117,7 @@ public class PepperFileHelper {
 
 	/**
 	 * Enable creating a tmp path to a not-existing file.
-	 * 
+	 *
 	 * @return a path to a non-existing but unique temporary file
 	 * @throws IOException
 	 */
@@ -203,7 +203,7 @@ public class PepperFileHelper {
 	/**
 	 * It may be unclear how a path should be provided: a relative path './folder/file', an absolute file '/root/file'
 	 * or some Spring syntax ('file:/root/file' or 'classpath:folder/file'). This method handles all these formats
-	 * 
+	 *
 	 * @param resourceLoader
 	 * @param pathToFileOrFolder
 	 * @return a fully resolved Path

@@ -45,7 +45,7 @@ public class IndexManager {
 		/**
 		 * Retained size cache. Retained size cache for a class: class+all instances. Retained size cache for a class
 		 * loader: loader+all classes+all instances.
-		 * 
+		 *
 		 * @since 1.2
 		 */
 		I2RETAINED("i2sv2", RetainedSizeCache.class);

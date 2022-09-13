@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * An {@link TaskEndEvent} should be published to clese a previous {@link TaskStartEvent}
- * 
+ *
  * @author Benoit Lacelle
- * 
+ *
  */
 public class TaskEndEvent implements ITaskActivityEvent {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TaskEndEvent.class);
@@ -43,7 +43,7 @@ public class TaskEndEvent implements ITaskActivityEvent {
 
 	/**
 	 * Generally called by EndMetricEvent.post
-	 * 
+	 *
 	 * @param startEvent
 	 */
 	protected TaskEndEvent(TaskStartEvent startEvent) {
@@ -74,7 +74,7 @@ public class TaskEndEvent implements ITaskActivityEvent {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param start
 	 * @return a new EndMetricEvent instance. We try to attach it as end event for StartMetricEvent, which would fail if
 	 *         another EndEvent has already been attached

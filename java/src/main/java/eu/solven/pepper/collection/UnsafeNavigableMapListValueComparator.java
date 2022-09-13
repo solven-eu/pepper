@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This {@link Comparator} enable the comparison of {@link NavigableMap}
- * 
+ *
  * @author Benoit Lacelle
- * 
+ *
  */
 public class UnsafeNavigableMapListValueComparator
 		implements Comparator<NavigableMap<?, ? extends List<?>>>, Serializable {

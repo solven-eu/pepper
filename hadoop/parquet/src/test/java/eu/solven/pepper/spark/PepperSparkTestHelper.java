@@ -29,7 +29,7 @@ import org.junit.Assume;
 
 /**
  * Help writing tests for Spark procedure
- * 
+ *
  * @author Benoit Lacelle
  *
  */

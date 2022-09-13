@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A {@link RejectedExecutionHandler} which enables waiting for a given timeout before rejecting tasks if queue is full
- * 
+ *
  * @author Benoit Lacelle
  *
  */

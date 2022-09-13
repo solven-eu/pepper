@@ -30,7 +30,7 @@ import com.google.common.base.Strings;
 
 /**
  * Wraps details to identify a network host
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -80,7 +80,7 @@ public class PepperHostDescriptor {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return true if the host is a valid hostname. For instance, a host is not valid if it holds more less than 3
 	 *         characters
 	 */
@@ -131,7 +131,7 @@ public class PepperHostDescriptor {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the space domain. Given 'http://www.corman.io/youpi', it would return 'cormoran.io'
 	 */
 	public Optional<String> getHostSpace() {

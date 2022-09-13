@@ -26,7 +26,7 @@ public class ArrayLongCompressed {
 
 	/**
 	 * Create <code>LongArrayCompressed</code> from bytes formerly got from {@link #toByteArray()}.
-	 * 
+	 *
 	 * @param bytes
 	 *            bytes formerly got from {@link #toByteArray()}
 	 */
@@ -40,7 +40,7 @@ public class ArrayLongCompressed {
 	/**
 	 * Create <code>LongArrayCompressed</code> from number of longs to be stored, the number of leading and trailing
 	 * clear bits. Everything else is stored in the internal data structure.
-	 * 
+	 *
 	 * @param size
 	 *            number of longs to be stored
 	 * @param leadingClearBits
@@ -55,7 +55,7 @@ public class ArrayLongCompressed {
 
 	/**
 	 * Create <code>LongArrayCompressed</code> from longs representing the data to be stored in compressed form.
-	 * 
+	 *
 	 * @param longs
 	 *            longs representing the data to be stored in compressed form
 	 */
@@ -67,7 +67,7 @@ public class ArrayLongCompressed {
 	/**
 	 * Create <code>LongArrayCompressed</code> from longs representing the data to be stored in compressed form (from
 	 * offset to offset+length).
-	 * 
+	 *
 	 * @param longs
 	 *            longs representing the data to be stored in compressed form
 	 * @param offset
@@ -109,7 +109,7 @@ public class ArrayLongCompressed {
 
 	/**
 	 * Set value at the given index.
-	 * 
+	 *
 	 * @param index
 	 *            index at which the value should be set
 	 * @param value
@@ -134,7 +134,7 @@ public class ArrayLongCompressed {
 
 	/**
 	 * Get value from the given index.
-	 * 
+	 *
 	 * @param index
 	 *            index at which the value should be set
 	 * @return value found at the given index
@@ -163,7 +163,7 @@ public class ArrayLongCompressed {
 	/**
 	 * Get bytes representing the internal data structure with which an <code>LongArrayCompressed</code> can be
 	 * reconstructed.
-	 * 
+	 *
 	 * @return bytes representing the internal data structure with which an <code>LongArrayCompressed</code> can be
 	 *         reconstructed
 	 */

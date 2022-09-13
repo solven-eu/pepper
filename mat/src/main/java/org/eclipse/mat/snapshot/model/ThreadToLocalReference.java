@@ -23,7 +23,7 @@ public class ThreadToLocalReference extends PseudoReference {
 
 	/**
 	 * Create a thread to local reference
-	 * 
+	 *
 	 * @param snapshot
 	 *            the snapshot
 	 * @param address
@@ -47,7 +47,7 @@ public class ThreadToLocalReference extends PseudoReference {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.mat.snapshot.model.ObjectReference#getObjectId()
 	 */
 	@Override
@@ -57,7 +57,7 @@ public class ThreadToLocalReference extends PseudoReference {
 
 	/**
 	 * The description of the thread root information Not currently used, so might be removed.
-	 * 
+	 *
 	 * @return an array of GC information for the local reference
 	 */
 	public GCRootInfo[] getGcRootInfo() {

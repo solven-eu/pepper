@@ -25,14 +25,14 @@ public final class HashMapObjectLong<E> implements Serializable {
 	public interface Entry<E> {
 		/**
 		 * Get the key.
-		 * 
+		 *
 		 * @return the key
 		 */
 		E getKey();
 
 		/**
 		 * Get the corresponding value.
-		 * 
+		 *
 		 * @return the value
 		 */
 		long getValue();
@@ -67,7 +67,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * Create a map of given size
-	 * 
+	 *
 	 * @param initialCapacity
 	 */
 	public HashMapObjectLong(int initialCapacity) {
@@ -76,7 +76,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * Add a mapping
-	 * 
+	 *
 	 * @param key
 	 *            the key
 	 * @param value
@@ -108,7 +108,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * Remove an mapping from the map
-	 * 
+	 *
 	 * @param key
 	 *            the key to remove
 	 * @return true if entry was found
@@ -146,7 +146,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * find if key is present in map
-	 * 
+	 *
 	 * @param key
 	 *            the key
 	 * @return true if the key was found
@@ -164,7 +164,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * Retrieve the value corresponding to the key
-	 * 
+	 *
 	 * @param key
 	 *            the key
 	 * @return the value
@@ -185,7 +185,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * Get all the used keys. Consider using {@link #getAllKeys(Object[])} for better type safety
-	 * 
+	 *
 	 * @return an array of the used keys
 	 */
 	public Object[] getAllKeys() {
@@ -200,7 +200,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * Get all the used keys.
-	 * 
+	 *
 	 * @return an array of the used keys
 	 */
 	@SuppressWarnings("unchecked")
@@ -221,7 +221,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * The number of mappings
-	 * 
+	 *
 	 * @return the size of the map
 	 */
 	public int size() {
@@ -230,7 +230,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * Is the map empty
-	 * 
+	 *
 	 * @return true if no current mappings
 	 */
 	public boolean isEmpty() {
@@ -247,7 +247,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * Get a way of iterating over the keys
-	 * 
+	 *
 	 * @return an iterator over the keys
 	 */
 	public Iterator<E> keys() {
@@ -281,7 +281,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * Get a way of iterating over the values.
-	 * 
+	 *
 	 * @return an iterator over the values
 	 */
 	public IteratorLong values() {
@@ -309,7 +309,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 
 	/**
 	 * Iterate over all the map entries
-	 * 
+	 *
 	 * @return the iterator over the entries
 	 */
 	public Iterator<Entry<E>> entries() {
@@ -354,7 +354,7 @@ public final class HashMapObjectLong<E> implements Serializable {
 	/**
 	 * Get all the values corresponding to the used keys. Duplicate values are possible if they correspond to different
 	 * keys.
-	 * 
+	 *
 	 * @return an array of the used values
 	 */
 	public long[] getAllValues() {

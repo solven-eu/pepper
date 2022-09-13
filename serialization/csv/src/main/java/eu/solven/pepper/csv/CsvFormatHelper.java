@@ -30,7 +30,7 @@ import com.google.common.base.CharMatcher;
 
 /**
  * Some helpers for CSV files,typically to help inferring the CSV format
- * 
+ *
  * @author Benoit Lacelle
  *
  */

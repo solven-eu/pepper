@@ -29,7 +29,7 @@ import com.google.common.base.Strings;
 
 /**
  * Various helpers for {@link Optional}
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -40,7 +40,7 @@ public class PepperOptionalHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param string
 	 * @return an Optional empty if the string is null or empty
 	 */
@@ -53,7 +53,7 @@ public class PepperOptionalHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param string
 	 * @return an Optional empty if the string is null or empty
 	 */

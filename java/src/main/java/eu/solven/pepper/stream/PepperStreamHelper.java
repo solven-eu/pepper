@@ -51,7 +51,7 @@ import com.google.common.collect.Streams;
 
 /**
  * Various helpers for Java8 {@link Stream}
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -81,7 +81,7 @@ public class PepperStreamHelper {
 
 	/**
 	 * Justfor the sake of the example
-	 * 
+	 *
 	 * @param list
 	 * @param predicate
 	 * @return
@@ -100,7 +100,7 @@ public class PepperStreamHelper {
 
 	/**
 	 * Enable consuming a stream by blocks of given size
-	 * 
+	 *
 	 * @param stream
 	 *            the stream to process
 	 * @param consumer
@@ -246,7 +246,7 @@ public class PepperStreamHelper {
 
 	/**
 	 * Prevent the requirement for a diamond
-	 * 
+	 *
 	 * @return an empty Stream
 	 */
 	@Deprecated
@@ -261,9 +261,9 @@ public class PepperStreamHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * http://stackoverflow.com/questions/31004899/java-8-collectors-tomap-sortedmap
-	 * 
+	 *
 	 * @param keyMapper
 	 * @param valueMapper
 	 * @param mapSupplier
@@ -277,7 +277,7 @@ public class PepperStreamHelper {
 
 	/**
 	 * persons.stream().filter(distinctByKey(p -> p.getName());
-	 * 
+	 *
 	 * @param keyExtractor
 	 * @return a Predicate to be used in Stream.filter It will behaves like having a distinct on given property
 	 */

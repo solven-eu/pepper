@@ -38,7 +38,7 @@ import com.google.common.collect.ImmutableSet;
  * not same Strings, this class enables replacing of the 2 references by the other. It then enables a lower heap (as the
  * 'other' String may have become GC-collectable) and possibly better performances (as some .equals operation may
  * shortcut by first checking reference comparison (i.e. '=='))
- * 
+ *
  * @author Benoit Lacelle
  *
  */

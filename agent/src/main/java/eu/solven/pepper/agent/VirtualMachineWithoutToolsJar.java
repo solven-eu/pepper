@@ -47,11 +47,11 @@ import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider.Accessor;
 /**
  * Gives access to the VirtualMachine object. It may not be available if tools.jar is not made available. Tools.jar is
  * made available by ensuringf JAVA_HOME targets a jdk
- * 
+ *
  * @see <a href=
  *      "http://java.sun.com/javase/6/docs/jdk/api/attach/spec/com/sun/tools/attach/VirtualMachine.html#attach(java.lang.String)"
  *      >VirtualMachine</a>
- * 
+ *
  * @author Benoit Lacelle
  */
 // https://github.com/javamelody/javamelody/blob/master/javamelody-core/src/main/java/net/bull/javamelody/VirtualMachine.java
@@ -237,7 +237,7 @@ public class VirtualMachineWithoutToolsJar {
 
 	/**
 	 * Soft access to com.sun.tools.attach.VirtualMachine, as it may not be available in the classpath
-	 * 
+	 *
 	 * @return if available, the Class of the VirtualMachine object
 	 */
 	public static synchronized Optional<? extends Class<?>> findVirtualMachineClass() {
@@ -259,7 +259,7 @@ public class VirtualMachineWithoutToolsJar {
 
 	/**
 	 * Force detaching the VirtualMachine object
-	 * 
+	 *
 	 * @throws SecurityException
 	 * @throws NoSuchMethodException
 	 * @throws InvocationTargetException
@@ -280,7 +280,7 @@ public class VirtualMachineWithoutToolsJar {
 	/**
 	 * Dump an histogram of the objects in the heap. This could refers Object which are electable for GC, but not GCed
 	 * yet
-	 * 
+	 *
 	 * @return The output histogram as produced by 'jmap -histo'
 	 */
 	public static Optional<InputStream> heapHisto() {
@@ -290,7 +290,7 @@ public class VirtualMachineWithoutToolsJar {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param allObjectsElseLive
 	 *            if true, we return all objects in the heap, else only the live objects (which requires the equivalent
 	 *            of a full-GC)
@@ -317,7 +317,7 @@ public class VirtualMachineWithoutToolsJar {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param allObjectsElseLive
 	 * @return if true, use "-all" option, else use "-live" but beware it will trigger a full GC
 	 */
@@ -348,7 +348,7 @@ public class VirtualMachineWithoutToolsJar {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param allObjectsElseLive
 	 *            if true, one want jmap to export all objects available in the JVM. If false, jmap shall keep only live
 	 *            object, which will require a full GC

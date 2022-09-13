@@ -31,7 +31,7 @@ import com.google.common.annotations.Beta;
 
 /**
  * Holds all call to methods/fields not in the Java spec but present in the Oracle jvm
- * 
+ *
  * @author Benoit Lacelle
  *
  */

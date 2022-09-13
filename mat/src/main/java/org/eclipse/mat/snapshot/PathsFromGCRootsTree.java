@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 /**
  * This class holds the paths from one single object to its GC roots.
- * 
+ *
  * @noinstantiate
  */
 public final class PathsFromGCRootsTree {
@@ -32,7 +32,7 @@ public final class PathsFromGCRootsTree {
 
 	/**
 	 * Get object being the root for this tree.
-	 * 
+	 *
 	 * @return object being the root for this tree
 	 */
 	public int getOwnId() {
@@ -41,7 +41,7 @@ public final class PathsFromGCRootsTree {
 
 	/**
 	 * Get referencing objects.
-	 * 
+	 *
 	 * @return referencing objects
 	 */
 	public int[] getObjectIds() {
@@ -50,7 +50,7 @@ public final class PathsFromGCRootsTree {
 
 	/**
 	 * Get sub tree for a referencing object.
-	 * 
+	 *
 	 * @param objId
 	 *            referencing object from which on the sub tree is requested
 	 * @return sub tree for a referencing object

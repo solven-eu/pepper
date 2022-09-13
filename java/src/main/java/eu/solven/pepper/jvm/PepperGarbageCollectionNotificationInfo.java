@@ -31,7 +31,7 @@ import com.sun.management.GarbageCollectionNotificationInfo;
 
 /**
  * Wrap the usage of GarbageCollectionNotificationInfo which is restricted API
- * 
+ *
  * @author Benoit Lacelle
  *
  */

@@ -28,7 +28,7 @@ import com.google.common.base.MoreObjects;
 
 /**
  * Holder for BASIC authentication
- * 
+ *
  * @author Benoit Lacelle
  *
  */

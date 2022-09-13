@@ -21,7 +21,7 @@ import org.eclipse.mat.SnapshotException;
 public final class PrettyPrinter {
 	/**
 	 * Convert a <code>java.lang.String</code> object into a String.
-	 * 
+	 *
 	 * @param stringObject
 	 *            the String object in the dump
 	 * @param limit
@@ -95,7 +95,7 @@ public final class PrettyPrinter {
 
 	/**
 	 * Convert a <code>char[]</code> object into a String. Unprintable characters are returned as \\unnnn values
-	 * 
+	 *
 	 * @param charArray
 	 * @param offset
 	 *            where to start
@@ -140,7 +140,7 @@ public final class PrettyPrinter {
 	/**
 	 * Convert a <code>byte[]</code> object into a String. Values are ISO8859_1 Unprintable characters are returned as
 	 * \\unnnn values
-	 * 
+	 *
 	 * @param byteArray
 	 * @param offset
 	 *            where to start
@@ -185,7 +185,7 @@ public final class PrettyPrinter {
 	/**
 	 * Convert a <code>byte[]</code> object into a String. Values are UTF-16, low byte, high byte. Unprintable
 	 * characters are returned as \\unnnn values
-	 * 
+	 *
 	 * @param byteArray
 	 * @param offset
 	 *            where to start

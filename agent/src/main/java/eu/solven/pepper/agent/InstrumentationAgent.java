@@ -37,12 +37,12 @@ import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider.Accessor;
 
 /**
  * The entry point for the instrumentation agent.
- * 
+ *
  * Either the premain method is called by adding the JVM arg -javaagent. Or one could call the
  * {@link InstrumentationAgent#getInstrumentation()} method. Anyway, tools.jar will have to be present at Runtime
- * 
+ *
  * @author Benoit Lacelle
- * 
+ *
  */
 @SuppressWarnings("PMD.AvoidSynchronizedAtMethodLevel")
 public class InstrumentationAgent {
@@ -63,7 +63,7 @@ public class InstrumentationAgent {
 	 * It may not be available for many reasons (tools.jar no in the class path, or "Failed to attach to VM and load the
 	 * agent: class java.lang.UnsatisfiedLinkError: Native Library /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libattach.so
 	 * already loaded in another classloader")
-	 * 
+	 *
 	 * @return an {@link Instrumentation} instance as instantiated by the JVM itself.
 	 */
 	// Rely on Guava Optional to enable compatibility with JDK6

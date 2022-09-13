@@ -29,7 +29,7 @@ import java.util.Objects;
 //https://github.com/netroby/jdk9-dev/blob/master/jdk/src/java.base/share/classes/java/lang/Short.java
 /**
  * Backport from JDK9 .parse(CharSequence)
- * 
+ *
  * @author Benoit Lacelle
  *
  */

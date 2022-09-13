@@ -59,7 +59,7 @@ public class TestGCInspector implements IPepperMemoryConstants {
 
 	/**
 	 * Test by monitoring an application doing stress-full memory allocation
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test

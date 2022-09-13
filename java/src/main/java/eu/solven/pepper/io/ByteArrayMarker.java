@@ -27,7 +27,7 @@ import java.io.Serializable;
 /**
  * Enable to mark an ObjectOutputStream than what is following is a byte[]. This way, it would be streamed, instead of
  * materialize in memory
- * 
+ *
  * @author Benoit Lacelle
  *
  */

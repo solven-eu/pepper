@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This will log a parquet file into the console
- * 
+ *
  * @author Benoit Lacelle
  *
  */

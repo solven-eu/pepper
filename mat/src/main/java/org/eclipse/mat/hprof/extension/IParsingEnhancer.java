@@ -19,7 +19,7 @@ import org.eclipse.mat.snapshot.SnapshotInfo;
  * This interface provides the possibility to perform some actions and add information the a parsed snapshot, just after
  * the parsing of an HPROF file is done. Thus if there is a file separate from the HPROF file which provides additional
  * information, an implementor of this interface can attach this additional information to the snapshot
- * 
+ *
  * See the documentation on the org.eclipse.mat.hprof.enhancer extension point
  */
 public interface IParsingEnhancer {
@@ -27,10 +27,10 @@ public interface IParsingEnhancer {
 	/**
 	 * The method within the process of initially parsing a heap dump, just after the snapshot and SnapshotInfo objects
 	 * have been created.
-	 * 
+	 *
 	 * @param snapshotInfo
 	 *            the SnapshotInfo objects for the snapshot being parsed
-	 * 
+	 *
 	 * @throws SnapshotException
 	 * @throws IOException
 	 */

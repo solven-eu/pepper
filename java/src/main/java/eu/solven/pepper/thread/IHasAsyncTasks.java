@@ -28,7 +28,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 /**
  * Some abstraction for data-structures doing asynchronous processes. Useful to collect them all and wait for the end of
  * all asynchronous processes.
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -42,7 +42,7 @@ public interface IHasAsyncTasks {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return true if we have some pending tasks, maybe not already started
 	 */
 	@ManagedAttribute
@@ -54,7 +54,7 @@ public interface IHasAsyncTasks {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return true if this bean is active, synchronously or asynchronously
 	 */
 	@ManagedAttribute

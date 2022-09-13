@@ -48,7 +48,7 @@ import eu.solven.pepper.thread.PepperExecutorsHelper;
 /**
  * Decorate an ObjectInput by adding the ability to read InputStream. These InputStream should have been written with
  * ApexObjectStreamHelper
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -68,7 +68,7 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 
 	/**
 	 * Build a ObjectInputHandlingInputStream with an asynchronous single-thread executor handling inputStream reading
-	 * 
+	 *
 	 * @param decorated
 	 */
 	public ObjectInputHandlingInputStream(ObjectInput decorated) {
@@ -254,7 +254,7 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 	/**
 	 * We throw the pending exception, but swallow in case it is an EOFException, which typically marks a normal end of
 	 * ObjectInputStream
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	protected void rethrowExceptionExceptEOF() throws IOException {

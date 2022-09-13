@@ -64,7 +64,7 @@ import scala.compat.java8.JFunction;
 
 /**
  * Some basic utilities for Spark
- * 
+ *
  * @author Benoit Lacelle
  *
  */

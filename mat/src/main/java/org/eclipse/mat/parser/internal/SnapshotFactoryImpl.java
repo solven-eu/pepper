@@ -231,7 +231,7 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 
 	/**
 	 * Check that indices look valid
-	 * 
+	 *
 	 * @param listener
 	 */
 	private void validateIndices(PreliminaryIndexImpl pidx, IProgressListener listener) {
@@ -474,7 +474,7 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 
 	/**
 	 * Convert an address to a 0x hex number
-	 * 
+	 *
 	 * @param address
 	 * @return A string representing the address
 	 */
@@ -484,7 +484,7 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 
 	/**
 	 * Describe the class of the object at the given index
-	 * 
+	 *
 	 * @param newObjId
 	 * @return a class description
 	 */

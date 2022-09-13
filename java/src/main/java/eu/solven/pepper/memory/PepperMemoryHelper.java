@@ -29,7 +29,7 @@ import com.google.common.base.CharMatcher;
 
 /**
  * This class helps reference-sharing
- * 
+ *
  * @author Benoit Lacelle
  *
  */

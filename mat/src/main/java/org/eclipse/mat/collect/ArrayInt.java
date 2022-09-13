@@ -31,7 +31,7 @@ public final class ArrayInt {
 
 	/**
 	 * Create a list of given size
-	 * 
+	 *
 	 * @param initialCapacity
 	 */
 	public ArrayInt(int initialCapacity) {
@@ -41,7 +41,7 @@ public final class ArrayInt {
 
 	/**
 	 * append one more entry
-	 * 
+	 *
 	 * @param element
 	 *            the int to add to the end
 	 */
@@ -52,7 +52,7 @@ public final class ArrayInt {
 
 	/**
 	 * append a group of entries
-	 * 
+	 *
 	 * @param elements
 	 */
 	public void addAll(int[] elements) {
@@ -63,7 +63,7 @@ public final class ArrayInt {
 
 	/**
 	 * append all of another
-	 * 
+	 *
 	 * @param template
 	 */
 	public void addAll(ArrayInt template) {
@@ -74,7 +74,7 @@ public final class ArrayInt {
 
 	/**
 	 * modify one particular entry
-	 * 
+	 *
 	 * @param index
 	 * @param element
 	 * @return the previous value
@@ -90,7 +90,7 @@ public final class ArrayInt {
 
 	/**
 	 * retrieve one entry
-	 * 
+	 *
 	 * @param index
 	 * @return the entry
 	 */
@@ -102,7 +102,7 @@ public final class ArrayInt {
 
 	/**
 	 * get the number of used entries
-	 * 
+	 *
 	 * @return the number of entries
 	 */
 	public int size() {
@@ -111,7 +111,7 @@ public final class ArrayInt {
 
 	/**
 	 * convert to an array
-	 * 
+	 *
 	 * @return a copy of the entries
 	 */
 	public int[] toArray() {
@@ -122,7 +122,7 @@ public final class ArrayInt {
 
 	/**
 	 * is the list empty
-	 * 
+	 *
 	 * @return true if empty
 	 */
 	public boolean isEmpty() {
@@ -131,7 +131,7 @@ public final class ArrayInt {
 
 	/**
 	 * get an iterator to go through the list
-	 * 
+	 *
 	 * @return the iterator
 	 */
 	public IteratorInt iterator() {
@@ -159,7 +159,7 @@ public final class ArrayInt {
 
 	/**
 	 * get the last entry to be written. Must be at least one entry.
-	 * 
+	 *
 	 * @return the last element
 	 * @since 1.0
 	 */
@@ -169,7 +169,7 @@ public final class ArrayInt {
 
 	/**
 	 * get the first entry to be written. Must be at least one entry.
-	 * 
+	 *
 	 * @return the first element
 	 * @since 1.0
 	 */

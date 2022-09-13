@@ -24,7 +24,7 @@ package eu.solven.pepper.thread;
 
 /**
  * Interface for classes knowing how to dump threads
- * 
+ *
  * @author Benoit Lacelle
  *
  */

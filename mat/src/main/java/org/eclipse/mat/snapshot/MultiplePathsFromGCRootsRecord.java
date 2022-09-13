@@ -46,7 +46,7 @@ public class MultiplePathsFromGCRootsRecord {
 
 	/**
 	 * A constructor to create the record
-	 * 
+	 *
 	 * @param objectId
 	 *            - the ID of the object which is common for all the paths
 	 * @param level
@@ -65,7 +65,7 @@ public class MultiplePathsFromGCRootsRecord {
 	 * Returns the next level of the paths. For all paths going through this object the next objects in the paths are
 	 * taken and grouped again (i.e. the lenght of the returned array will be equal to the number of different objects
 	 * at the next depth level of the paths). The direction is from the GC roots to the objects
-	 * 
+	 *
 	 * @return MultiplePathsFromGCRootsRecord[] Each record in the result represents again paths going through one and
 	 *         the same object
 	 */
@@ -90,7 +90,7 @@ public class MultiplePathsFromGCRootsRecord {
 
 	/**
 	 * This method is used only when the record is built. Adds one path to the set of paths
-	 * 
+	 *
 	 * @param path
 	 */
 	public void addPath(int[] path) {
@@ -99,7 +99,7 @@ public class MultiplePathsFromGCRootsRecord {
 
 	/**
 	 * Get all the paths going through the object (getObjectId())
-	 * 
+	 *
 	 * @return List&lt;int[]&gt; each element in the list is an int[] representing a path
 	 */
 	public List<int[]> getPaths() {
@@ -129,7 +129,7 @@ public class MultiplePathsFromGCRootsRecord {
 
 	/**
 	 * Get the "end" objects for each path. This is equal to getting all the paths and looking at their element [0]
-	 * 
+	 *
 	 * @return - an array with all the objects at the end of the paths
 	 */
 	public int[] getReferencedObjects() {
@@ -145,7 +145,7 @@ public class MultiplePathsFromGCRootsRecord {
 
 	/**
 	 * Get the total net heap size of all referenced objects (see getReferencedObjects())
-	 * 
+	 *
 	 * @return - the total heap size of all referenced objects
 	 * @throws SnapshotException
 	 */

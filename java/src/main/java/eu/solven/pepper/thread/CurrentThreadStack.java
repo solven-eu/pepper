@@ -24,15 +24,15 @@ package eu.solven.pepper.thread;
 
 /**
  * Producing a Throwable is the fastest way to retrieve current thread stack.
- * 
+ *
  * 'new Exception().getStackTrace()' is much faster than 'Thread.currentThread().getStackTrace()'
  * http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6375302
- * 
+ *
  * We use a name which does not refer to Exception as this is NOT an exception. it should be used to produce logs
  * referring to current thread stack.
- * 
+ *
  * We extends {@link Throwable} as we do no expect to use this for rethrowing
- * 
+ *
  * @author Benoit Lacelle
  *
  */

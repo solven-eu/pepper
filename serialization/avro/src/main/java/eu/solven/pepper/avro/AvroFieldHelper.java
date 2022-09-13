@@ -30,7 +30,7 @@ import org.apache.avro.generic.GenericData;
 
 /**
  * Helps converting avro records to standard Java objects
- * 
+ *
  * @author Benoit Lacelle
  * @deprecated content have been dispatched in other classes
  */

@@ -28,7 +28,7 @@ import java.util.concurrent.ForkJoinWorkerThread;
 
 /**
  * Enable naming of ForkJoinPool threads
- * 
+ *
  * @author Benoit Lacelle
  *
  * @see <a

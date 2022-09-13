@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Port of org.apache.commons.lang3.SystemUtils.OS_NAME_WINDOWS_PREFIX
- * 
+ *
  * @author Benoit Lacelle
  *
  */

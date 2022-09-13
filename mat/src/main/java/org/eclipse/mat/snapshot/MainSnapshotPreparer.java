@@ -35,7 +35,7 @@ import eu.solven.pepper.jvm.GCInspector;
 /**
  * Typically used to parse a heap-dump. While trying to diminish the heap of mat: -XX:+HeapDumpOnOutOfMemoryError
  * -XX:HeapDumpPath=/disk2/dumps
- * 
+ *
  * @author Benoit Lacelle
  *
  */

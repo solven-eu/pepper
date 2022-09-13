@@ -33,7 +33,7 @@ import com.google.common.annotations.Beta;
 
 /**
  * {@link AutoCloseable} onto {@link IIntBufferWrapper}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

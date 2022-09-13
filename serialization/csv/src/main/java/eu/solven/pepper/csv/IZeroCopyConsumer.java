@@ -24,7 +24,7 @@ package eu.solven.pepper.csv;
 
 /**
  * Interface for column consumer for {@link ZeroCopyCSVParser}
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -38,7 +38,7 @@ public interface IZeroCopyConsumer {
 	/**
 	 * Called-back when the parser encounter invalid chars given current column (e.g. chars not parseable as an Integer
 	 * when this is an IntPredicate)
-	 * 
+	 *
 	 * @param charSequence
 	 *            the charSequence would can not be consumed
 	 */

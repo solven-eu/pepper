@@ -15,7 +15,7 @@ import java.util.EnumSet;
 
 /**
  * Enumeration of known JDK collection versions
- * 
+ *
  * @since 1.6
  */
 public enum JdkVersion {

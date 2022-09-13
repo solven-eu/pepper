@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Interface for a plain vanilla object instance in the heap dump.
- * 
+ *
  * @noimplement
  */
 public interface IInstance extends IObject {

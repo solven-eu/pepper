@@ -46,7 +46,7 @@ import eu.solven.pepper.memory.IPepperMemoryConstants;
 /**
  * Helpers related to Buffers. Typically enable quick and easy allocating of a ByteBuffer over a blank memory mapped
  * file
- * 
+ *
  * @author Benoit Lacelle
  *
  */

@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 /**
  * Interface for String column consumer for {@link ZeroCopyCSVParser}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

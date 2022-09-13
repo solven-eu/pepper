@@ -30,7 +30,7 @@ import com.google.common.collect.ImmutableList;
 
 /**
  * Some constants used when converting various Schema (Avro, Parquet, Arrow, ...) to an example Map
- * 
+ *
  * @author Benoit Lacelle
  *
  */

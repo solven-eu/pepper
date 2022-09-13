@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 /**
  * Help usage of StartMetricEvent with try-finally blocks
- * 
+ *
  * @author Benoit Lacelle
  *
  */

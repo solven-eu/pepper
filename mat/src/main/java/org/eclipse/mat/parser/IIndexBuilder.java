@@ -22,7 +22,7 @@ import org.eclipse.mat.util.IProgressListener;
 public interface IIndexBuilder {
 	/**
 	 * initialize with file and prefix (needed for naming conventions)
-	 * 
+	 *
 	 * @param file
 	 *            the dump file
 	 * @param prefix
@@ -34,7 +34,7 @@ public interface IIndexBuilder {
 
 	/**
 	 * pass1 and pass2 parsing
-	 * 
+	 *
 	 * @param index
 	 * @param listener
 	 *            for progress and error reporting
@@ -45,7 +45,7 @@ public interface IIndexBuilder {
 
 	/**
 	 * Memory Analyzer has discard unreachable objects, so the parser may need to known the discarded objects
-	 * 
+	 *
 	 * @param purgedMapping
 	 *            mapping from old id to new id, -1 indicates object has been discarded
 	 * @param listener

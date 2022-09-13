@@ -31,7 +31,7 @@ public final class ArrayLong {
 
 	/**
 	 * Create a list of given size
-	 * 
+	 *
 	 * @param initialCapacity
 	 */
 	public ArrayLong(int initialCapacity) {
@@ -41,7 +41,7 @@ public final class ArrayLong {
 
 	/**
 	 * Create a list based on a supplied array
-	 * 
+	 *
 	 * @param initialValues
 	 *            a copy is taken of this array
 	 */
@@ -53,7 +53,7 @@ public final class ArrayLong {
 
 	/**
 	 * Create a list based on an existing ArrayInt, of size of the template
-	 * 
+	 *
 	 * @param template
 	 *            a copy is taken of these values
 	 */
@@ -65,7 +65,7 @@ public final class ArrayLong {
 
 	/**
 	 * append one more entry
-	 * 
+	 *
 	 * @param element
 	 *            the int to add to the end
 	 */
@@ -76,7 +76,7 @@ public final class ArrayLong {
 
 	/**
 	 * append a group of entries
-	 * 
+	 *
 	 * @param elements
 	 */
 	public void addAll(long[] elements) {
@@ -87,7 +87,7 @@ public final class ArrayLong {
 
 	/**
 	 * append all of another
-	 * 
+	 *
 	 * @param template
 	 */
 	public void addAll(ArrayLong template) {
@@ -98,7 +98,7 @@ public final class ArrayLong {
 
 	/**
 	 * modify one particular entry
-	 * 
+	 *
 	 * @param index
 	 * @param element
 	 * @return the previous value
@@ -114,7 +114,7 @@ public final class ArrayLong {
 
 	/**
 	 * retrieve one entry
-	 * 
+	 *
 	 * @param index
 	 * @return the entry
 	 */
@@ -126,7 +126,7 @@ public final class ArrayLong {
 
 	/**
 	 * get the number of used entries
-	 * 
+	 *
 	 * @return the number of entries
 	 */
 	public int size() {
@@ -135,7 +135,7 @@ public final class ArrayLong {
 
 	/**
 	 * convert to an array
-	 * 
+	 *
 	 * @return a copy of the entries
 	 */
 	public long[] toArray() {
@@ -146,7 +146,7 @@ public final class ArrayLong {
 
 	/**
 	 * is the list empty
-	 * 
+	 *
 	 * @return true if empty
 	 */
 	public boolean isEmpty() {
@@ -155,7 +155,7 @@ public final class ArrayLong {
 
 	/**
 	 * get an iterator to go through the list
-	 * 
+	 *
 	 * @return the iterator
 	 */
 	public IteratorLong iterator() {
@@ -183,7 +183,7 @@ public final class ArrayLong {
 
 	/**
 	 * get the last entry to be written. Must be at least one entry.
-	 * 
+	 *
 	 * @return the last element
 	 */
 	public long lastElement() {
@@ -192,7 +192,7 @@ public final class ArrayLong {
 
 	/**
 	 * get the first entry to be written. Must be at least one entry.
-	 * 
+	 *
 	 * @return the first element
 	 */
 	public long firstElement() {

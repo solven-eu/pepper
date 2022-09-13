@@ -29,7 +29,7 @@ import com.google.common.eventbus.EventBus;
 
 /**
  * Helps working with an EventBus
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -40,7 +40,7 @@ public class PepperEventBusHelper {
 
 	/**
 	 * One may want not to depends on Guava EventBus: it could then rely on a Object consumer
-	 * 
+	 *
 	 * @param eventBus
 	 * @return
 	 */

@@ -35,7 +35,7 @@ import com.google.common.primitives.Ints;
 
 /**
  * Helps to build {@link IZeroCopyConsumer} instances
- * 
+ *
  * @author Benoit Lacelle
  *
  */

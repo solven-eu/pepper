@@ -38,9 +38,9 @@ public abstract class IndexReader {
 
 	/**
 	 * An int to int index reader.
-	 * 
+	 *
 	 * Disk file structure:
-	 * 
+	 *
 	 * <pre>
 	 * Page 0: ArrayIntCompressed
 	 * Page 1: ArrayIntCompressed
@@ -54,7 +54,7 @@ public abstract class IndexReader {
 	 * page size (4)
 	 * total size (4)
 	 * </pre>
-	 * 
+	 *
 	 * Experimental for version 1.2: The disk format has been enhanced to allow more than 2^31 entries by using the page
 	 * n+1 start pointer to find the start of the page offsets, and so the number of pages, and the size field is then
 	 * negative and used to measure the number of entries on the last page (from 1 to page size). This is experimental
@@ -252,7 +252,7 @@ public abstract class IndexReader {
 	/**
 	 * Creates a index reader for array sizes, presuming the sizes are stored as ints and get expanded in the reverse of
 	 * the compression.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	public static class SizeIndexReader implements IIndexReader.IOne2SizeIndex {
@@ -260,7 +260,7 @@ public abstract class IndexReader {
 
 		/**
 		 * Constructor used when reopening a dump
-		 * 
+		 *
 		 * @param indexFile
 		 * @throws IOException
 		 */
@@ -270,7 +270,7 @@ public abstract class IndexReader {
 
 		/**
 		 * Construct a size index reader based on a int index holding the compressed data
-		 * 
+		 *
 		 * @param idx
 		 */
 		public SizeIndexReader(IIndexReader.IOne2OneIndex idx) {
@@ -519,9 +519,9 @@ public abstract class IndexReader {
 
 	/**
 	 * Creates a int to long index reader
-	 * 
+	 *
 	 * Disk file structure:
-	 * 
+	 *
 	 * <pre>
 	 * Page 0: ArrayLongCompressed
 	 * Page 1: ArrayLongCompressed

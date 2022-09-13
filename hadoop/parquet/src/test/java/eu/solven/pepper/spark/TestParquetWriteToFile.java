@@ -44,7 +44,7 @@ import eu.solven.pepper.parquet.ParquetStreamFactory;
 
 /**
  * We demonstrate how to write a subset of rows from a parquet files
- * 
+ *
  * @author Benoit Lacelle
  *
  */

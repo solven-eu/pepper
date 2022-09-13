@@ -42,7 +42,7 @@ public final class SetLong implements Serializable {
 
 	/**
 	 * Create a set of given size
-	 * 
+	 *
 	 * @param initialCapacity
 	 */
 	public SetLong(int initialCapacity) {
@@ -51,7 +51,7 @@ public final class SetLong implements Serializable {
 
 	/**
 	 * Add a value to the set
-	 * 
+	 *
 	 * @param key
 	 *            the value to add
 	 * @return return true if added
@@ -77,7 +77,7 @@ public final class SetLong implements Serializable {
 
 	/**
 	 * Remove a value from the set
-	 * 
+	 *
 	 * @param key
 	 *            the value to add
 	 * @return return true if removed
@@ -111,7 +111,7 @@ public final class SetLong implements Serializable {
 
 	/**
 	 * Find a value from the set
-	 * 
+	 *
 	 * @param key
 	 *            the value to find
 	 * @return return true if found
@@ -129,7 +129,7 @@ public final class SetLong implements Serializable {
 
 	/**
 	 * get the number of used entries
-	 * 
+	 *
 	 * @return the number of entries
 	 */
 	public int size() {
@@ -138,7 +138,7 @@ public final class SetLong implements Serializable {
 
 	/**
 	 * is the set empty
-	 * 
+	 *
 	 * @return true if empty
 	 */
 	public boolean isEmpty() {
@@ -155,7 +155,7 @@ public final class SetLong implements Serializable {
 
 	/**
 	 * get an iterator to go through the set
-	 * 
+	 *
 	 * @return the iterator
 	 */
 	public IteratorLong iterator() {
@@ -183,7 +183,7 @@ public final class SetLong implements Serializable {
 
 	/**
 	 * convert to an array
-	 * 
+	 *
 	 * @return a copy of the entries
 	 */
 	public long[] toArray() {

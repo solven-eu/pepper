@@ -27,7 +27,7 @@ public class ArrayUtils {
 	 * A radix sort performs better on the numeric data we sort, but requires additional storage to perform the sorting.
 	 * Therefore only the not-very-large parts produced by a quick sort are sorted with radix sort. An insertion sort is
 	 * used to sort the smallest arrays, where the the overhead of the radix sort is also bigger
-	 * 
+	 *
 	 * @param keys
 	 *            the keys for sorting
 	 * @param values
@@ -46,7 +46,7 @@ public class ArrayUtils {
 	 * A radix sort performs better on the numeric data we sort, but requires additional storage to perform the sorting.
 	 * Therefore only the not-very-large parts produced by a quick sort are sorted with radix sort. An insertion sort is
 	 * used to sort the smallest arrays, where the the overhead of the radix sort is also bigger
-	 * 
+	 *
 	 * @param keys
 	 *            the keys for sorting
 	 * @param values
@@ -68,7 +68,7 @@ public class ArrayUtils {
 	 * <p>
 	 * This version of the method allows the temporarily needed arrays for the radix sort to be provided externally -
 	 * tempa and tempb. This saves unnecessary array creation and cleanup
-	 * 
+	 *
 	 * @param keys
 	 *            the keys for sorting
 	 * @param values
@@ -91,7 +91,7 @@ public class ArrayUtils {
 	 * A radix sort performs better on the numeric data we sort, but requires additional storage to perform the sorting.
 	 * Therefore only the not-very-large parts produced by a quick sort are sorted with radix sort. An insertion sort is
 	 * used to sort the smallest arrays, where the the overhead of the radix sort is also bigger
-	 * 
+	 *
 	 * @param keys
 	 *            the keys for sorting
 	 * @param values
@@ -216,7 +216,7 @@ public class ArrayUtils {
 
 	/**
 	 * Semi-random index for pivot. Used if median of 3 isn't working well.
-	 * 
+	 *
 	 * @param left
 	 * @param right
 	 * @return
@@ -228,7 +228,7 @@ public class ArrayUtils {
 
 	/**
 	 * Was the choice of split point successful?
-	 * 
+	 *
 	 * @param sizeLeft
 	 * @param sizeRight
 	 * @return

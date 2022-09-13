@@ -63,7 +63,7 @@ import eu.solven.pepper.io.IBinaryToStream;
 
 /**
  * Helps converting an InputStream to a Stream of {@link GenericRecord}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

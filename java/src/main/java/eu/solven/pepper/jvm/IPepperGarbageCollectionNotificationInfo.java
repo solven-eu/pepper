@@ -27,7 +27,7 @@ import java.util.Map;
 
 /**
  * Wraps the not-specified but much useful information in com.sun.management.GarbageCollectionNotificationInfo
- * 
+ *
  * @author Benoit Lacelle
  *
  */

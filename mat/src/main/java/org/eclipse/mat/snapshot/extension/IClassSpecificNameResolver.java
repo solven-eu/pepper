@@ -23,7 +23,7 @@ import org.eclipse.mat.snapshot.model.IObject;
 public interface IClassSpecificNameResolver {
 	/**
 	 * Resolve the name for snapshot object.
-	 * 
+	 *
 	 * @param object
 	 *            object for which the name should be resolved
 	 * @return name for snapshot object

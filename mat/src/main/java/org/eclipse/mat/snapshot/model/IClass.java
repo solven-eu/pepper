@@ -18,7 +18,7 @@ import org.eclipse.mat.util.IProgressListener;
 
 /**
  * Interface for a class instance in the heap dump.
- * 
+ *
  * @noimplement
  */
 public interface IClass extends IObject {
@@ -65,7 +65,7 @@ public interface IClass extends IObject {
 
 	/**
 	 * Returns the heap size of one instance of this class. Not valid if this class represents an array.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	long getHeapSizePerInstance();
@@ -105,7 +105,7 @@ public interface IClass extends IObject {
 	/**
 	 * Does this class extend a class of the supplied name? With multiple class loaders the supplied name might not be
 	 * the class you were intending to find.
-	 * 
+	 *
 	 * @param className
 	 * @return true if it does extend
 	 * @throws SnapshotException

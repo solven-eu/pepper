@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * Dummy SpringBoot application wrapping dummy Spark compute operation
- * 
+ *
  * @author Benoit Lacelle
  *
  */

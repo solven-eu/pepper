@@ -39,7 +39,7 @@ import com.google.common.base.Strings;
 
 /**
  * Various utilities related to URL
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -53,7 +53,7 @@ public class PepperURLHelper {
 	/**
 	 * URL.equals can be slow and not return the expected result as it will relies on the resolution on the host given
 	 * current JVM network configuration. One may prefer to rely on the actual String comparison
-	 * 
+	 *
 	 * @param left
 	 * @param right
 	 * @return
@@ -71,7 +71,7 @@ public class PepperURLHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param asString
 	 * @return an URL associated to given String, adding the protocol "http://" by default
 	 */
@@ -127,7 +127,7 @@ public class PepperURLHelper {
 
 	/**
 	 * Create a new absolute URL, from a provided existing absolute URL and a relative URL component.
-	 * 
+	 *
 	 * @param baseUrl
 	 *            the existing absolute base URL
 	 * @param relUrl
@@ -154,7 +154,7 @@ public class PepperURLHelper {
 
 	/**
 	 * Create a new absolute URL, from a provided existing absolute URL and a relative URL component.
-	 * 
+	 *
 	 * @param base
 	 *            the existing absolute base URL
 	 * @param relUrl

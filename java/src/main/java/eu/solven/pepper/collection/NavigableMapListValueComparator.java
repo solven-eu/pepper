@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A {@link Comparator} for {@link NavigableMap} representing a location coordinate
- * 
+ *
  * @author Benoit Lacelle
  *
  */

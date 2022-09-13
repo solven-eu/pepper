@@ -4,7 +4,7 @@ import java.nio.IntBuffer;
 
 /**
  * Wraps an {@link IntBuffer}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

@@ -221,7 +221,7 @@ import org.slf4j.LoggerFactory;
 	 * overflowed and will be useless and throw off the rest of the processing. There's no good way to tell the overflow
 	 * has occurred but if the strictness preference has been set to permissive, we can check the most common case of a
 	 * heap dump record that should run to the end of the file.
-	 * 
+	 *
 	 * @param fileSize
 	 *            The total file size.
 	 * @param curPos

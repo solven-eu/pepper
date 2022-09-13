@@ -37,7 +37,7 @@ import javolution.text.TypeFormat;
 /**
  * If Exception in thread "main" java.lang.RuntimeException: ERROR: Unable to find the resource:
  * /META-INF/BenchmarkList, "mvn clean install" or "Run as/Maven generate-sources"
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -55,7 +55,7 @@ public class DoubleParsingBenchmark {
 
 	/**
 	 * Holds the parsers
-	 * 
+	 *
 	 * @author Benoit Lacelle
 	 *
 	 */
@@ -160,7 +160,7 @@ public class DoubleParsingBenchmark {
 
 	/**
 	 * Enable running the JMH test in a plain JVM, in order to collect Jit data for JitWatch
-	 * 
+	 *
 	 * @author Benoit Lacelle
 	 *
 	 */

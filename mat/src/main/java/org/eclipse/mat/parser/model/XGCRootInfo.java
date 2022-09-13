@@ -21,7 +21,7 @@ public final class XGCRootInfo extends GCRootInfo {
 
 	/**
 	 * Create a record of one GC root.
-	 * 
+	 *
 	 * @param objectAddress
 	 *            the object being retained
 	 * @param contextAddress
@@ -44,7 +44,7 @@ public final class XGCRootInfo extends GCRootInfo {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param objectId
 	 * @see #getContextId()
 	 */

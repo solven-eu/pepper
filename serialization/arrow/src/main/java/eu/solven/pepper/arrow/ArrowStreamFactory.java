@@ -57,7 +57,7 @@ import eu.solven.pepper.stream.PepperStreamHelper;
 
 /**
  * Default implementation for {@link IArrowStreamFactory}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

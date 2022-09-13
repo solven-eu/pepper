@@ -36,7 +36,7 @@ public final class ArrayIntBig implements Serializable {
 
 	/**
 	 * Add int to <code>IntArray</code>.
-	 * 
+	 *
 	 * @param element
 	 *            int which should be added
 	 */
@@ -50,7 +50,7 @@ public final class ArrayIntBig implements Serializable {
 
 	/**
 	 * Add int[] to <code>IntArray</code>.
-	 * 
+	 *
 	 * @param elements
 	 *            int[] which should be added
 	 */
@@ -73,7 +73,7 @@ public final class ArrayIntBig implements Serializable {
 
 	/**
 	 * Get int at index from <code>IntArray</code>.
-	 * 
+	 *
 	 * @param index
 	 *            index of int which should be returned
 	 * @return int at index
@@ -88,7 +88,7 @@ public final class ArrayIntBig implements Serializable {
 
 	/**
 	 * Get length of <code>IntArray</code>.
-	 * 
+	 *
 	 * @return length of <code>IntArray</code>
 	 */
 	public final int length() {
@@ -97,7 +97,7 @@ public final class ArrayIntBig implements Serializable {
 
 	/**
 	 * Returns <tt>true</tt> if this list contains no elements.
-	 * 
+	 *
 	 * @return <tt>true</tt> if this list contains no elements.
 	 */
 	public boolean isEmpty() {
@@ -106,7 +106,7 @@ public final class ArrayIntBig implements Serializable {
 
 	/**
 	 * Get memory consumption of <code>IntArray</code>.
-	 * 
+	 *
 	 * @return memory consumption of <code>IntArray</code>
 	 */
 	public final long consumption() {
@@ -116,7 +116,7 @@ public final class ArrayIntBig implements Serializable {
 	/**
 	 * Convert <code>IntArray</code> to int[]. This operation is the only one where the internal data is copied. It is
 	 * directly copied to the int[] which is returned, so don't call this method more than once when done.
-	 * 
+	 *
 	 * @return int[] representing the <code>IntArray</code>
 	 */
 	public final int[] toArray() {

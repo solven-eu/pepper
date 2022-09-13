@@ -41,7 +41,7 @@ import eu.solven.pepper.io.PepperByteStreamHelper;
 
 /**
  * Helps working with Avro GenericRecords and java8 {@link Stream}
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -80,7 +80,7 @@ public class AvroStreamHelper {
 
 	/**
 	 * This is useful for tests, as it enable retrieving the avro binary through an InputStream
-	 * 
+	 *
 	 * @param rowsToWrite
 	 *            the stream of {@link GenericRecord} to write
 	 * @param executor
@@ -98,7 +98,7 @@ public class AvroStreamHelper {
 	/**
 	 * The {@link OutputStream} should be pumped asynchronously, else this call may lock when OutputStream buffer is
 	 * filled. Beware the pumping should be triggered BEFORE running this command
-	 * 
+	 *
 	 * @param rowsToWrite
 	 * @param outputStream
 	 * @throws IOException

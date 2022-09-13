@@ -44,7 +44,7 @@ import eu.solven.pepper.io.PepperSerializationHelper;
 
 /**
  * Histogramme mémoire.
- * 
+ *
  * @author Emeric Vernat
  */
 // TODO: restrict to 95% of the Heap
@@ -200,7 +200,7 @@ public class HeapHistogram implements IHeapHistogram, Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param file
 	 * @return the number of written bytes
 	 * @throws Exception

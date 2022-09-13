@@ -16,7 +16,7 @@ import org.eclipse.mat.util.MessageUtil;
 
 /**
  * A simple queue of ints
- * 
+ *
  * @since 0.8
  */
 public class QueueInt {
@@ -28,7 +28,7 @@ public class QueueInt {
 
 	/**
 	 * Create a queue of specified initial capacity. The queue can grow if required.
-	 * 
+	 *
 	 * @param capacity
 	 *            the initial capacity
 	 */
@@ -39,7 +39,7 @@ public class QueueInt {
 
 	/**
 	 * Retrieve the next element from the queue.
-	 * 
+	 *
 	 * @return the next element
 	 */
 	public final int get() {
@@ -58,7 +58,7 @@ public class QueueInt {
 
 	/**
 	 * The number of elements available for retrieval.
-	 * 
+	 *
 	 * @return the size
 	 */
 	public final int size() {
@@ -67,7 +67,7 @@ public class QueueInt {
 
 	/**
 	 * Add an element to the back of the queue.
-	 * 
+	 *
 	 * @param x
 	 *            the element to add
 	 */

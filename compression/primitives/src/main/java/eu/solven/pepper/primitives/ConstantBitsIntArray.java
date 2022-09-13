@@ -7,7 +7,7 @@ import com.google.common.primitives.Ints;
 /**
  * This will detect bits not changing once in input int[], in order to store the constant mask and bit-pack the other
  * bits
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -167,7 +167,7 @@ public class ConstantBitsIntArray implements IReadableIntArray {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the size of this array, saturated to Integer.MAX_VALUE
 	 */
 	public int size() {

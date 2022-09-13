@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A {@link IAvroStreamFactory} producing Avro binary data
- * 
+ *
  * @author Benoit Lacelle
  *
  */

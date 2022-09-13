@@ -7,12 +7,12 @@ import org.junit.Test;
 
 import eu.solven.pepper.agent.PepperAgentHelper;
 
-// see TestPepperProcessHelper 
+// see TestPepperProcessHelper
 public class TestWithAgentPepperProcessHelper {
 
 	/**
 	 * Enable to check the behavior on any system
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test

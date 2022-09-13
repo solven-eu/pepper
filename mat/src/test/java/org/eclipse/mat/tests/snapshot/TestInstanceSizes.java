@@ -76,7 +76,7 @@ public class TestInstanceSizes {
 
 	/**
 	 * Convert jmap histogram class name to MAT name See {@link org.eclipse.mat.hprof.Pass1Parser}.
-	 * 
+	 *
 	 * @param className
 	 * @return
 	 */

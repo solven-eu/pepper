@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for Date.
- * 
+ *
  * @author Benoit Lacelle
  */
 public final class PepperDateHelper {
@@ -27,9 +27,9 @@ public final class PepperDateHelper {
 
 	/**
 	 * Enables to programmatically change current ZoneId.
-	 * 
+	 *
 	 * It overloads the value set by -Duser.timezone (e.g. '-Duser.timezone=Pacific/Fiji')
-	 * 
+	 *
 	 * @param zoneId
 	 */
 	public static void setZoneId(ZoneId zoneId) {

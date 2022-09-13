@@ -41,7 +41,7 @@ import eu.solven.pepper.memory.IPepperMemoryConstants;
 
 /**
  * A StringBuilder-like structure gzipping pending data
- * 
+ *
  * @author Benoit Lacelle
  *
  */

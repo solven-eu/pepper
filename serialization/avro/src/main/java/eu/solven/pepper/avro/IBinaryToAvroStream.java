@@ -28,7 +28,7 @@ import eu.solven.pepper.io.IBinaryToStream;
 
 /**
  * Specialization of {@link IBinaryToStream} for Avro {@link GenericRecord}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

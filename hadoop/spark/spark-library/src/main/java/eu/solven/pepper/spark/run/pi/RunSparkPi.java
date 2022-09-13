@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A dummy compute application based on Spark
- * 
+ *
  * @author X119400
  *
  */

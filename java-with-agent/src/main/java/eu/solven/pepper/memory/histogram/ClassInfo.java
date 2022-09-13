@@ -32,7 +32,7 @@ import eu.solven.pepper.memory.IPepperMemoryConstants;
 
 /**
  * Histogramme mémoire.
- * 
+ *
  * @author Emeric Vernat
  */
 public class ClassInfo implements Serializable {

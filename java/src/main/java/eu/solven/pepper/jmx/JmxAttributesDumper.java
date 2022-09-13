@@ -55,9 +55,9 @@ import com.google.common.base.Strings;
 
 /**
  * Connects remotely to a JMX server and dumps all the available information
- * 
+ *
  * @author Benoit Lacelle
- * 
+ *
  */
 public class JmxAttributesDumper {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(JmxAttributesDumper.class);

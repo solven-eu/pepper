@@ -13,7 +13,7 @@ package org.eclipse.mat.util;
 /**
  * Empty implementation of {@link IProgressListener} which is frequently used throughout the snapshot API in ISnapshot
  * to get feedback for long running operations. This implementation does nothing.
- * 
+ *
  * @see IProgressListener
  */
 public class VoidProgressListener implements IProgressListener {
@@ -21,7 +21,7 @@ public class VoidProgressListener implements IProgressListener {
 
 	/**
 	 * Does nothing.
-	 * 
+	 *
 	 * @see IProgressListener#beginTask(String, int)
 	 */
 	@Override
@@ -30,7 +30,7 @@ public class VoidProgressListener implements IProgressListener {
 
 	/**
 	 * Does nothing.
-	 * 
+	 *
 	 * @see IProgressListener#done()
 	 */
 	@Override
@@ -39,7 +39,7 @@ public class VoidProgressListener implements IProgressListener {
 
 	/**
 	 * Gets the cancel state.
-	 * 
+	 *
 	 * @see IProgressListener#isCanceled()
 	 */
 	@Override
@@ -49,7 +49,7 @@ public class VoidProgressListener implements IProgressListener {
 
 	/**
 	 * Sets the cancel state.
-	 * 
+	 *
 	 * @see IProgressListener#setCanceled(boolean)
 	 */
 	@Override
@@ -59,7 +59,7 @@ public class VoidProgressListener implements IProgressListener {
 
 	/**
 	 * Does nothing.
-	 * 
+	 *
 	 * @see IProgressListener#subTask(String)
 	 */
 	@Override
@@ -68,7 +68,7 @@ public class VoidProgressListener implements IProgressListener {
 
 	/**
 	 * Does nothing.
-	 * 
+	 *
 	 * @see IProgressListener#worked(int)
 	 */
 	@Override
@@ -77,7 +77,7 @@ public class VoidProgressListener implements IProgressListener {
 
 	/**
 	 * Does nothing
-	 * 
+	 *
 	 * @see IProgressListener#sendUserMessage(Severity, String, Throwable)
 	 */
 	@Override

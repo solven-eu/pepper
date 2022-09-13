@@ -48,7 +48,7 @@ import eu.solven.pepper.primitive.PepperParserHelper;
 
 /**
  * Default implementation for {@link IZeroCopyCSVParser}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

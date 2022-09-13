@@ -50,7 +50,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * A convenience class for getting a thread dump. See com.codahale.metrics.jvm.ThreadDump
- * 
+ *
  * @author Benoit Lacelle
  */
 @ManagedResource
@@ -62,7 +62,7 @@ public class PepperThreadDumper implements IThreadDumper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param threadMXBean
 	 *            typically ManagementFactory.getThreadMXBean()
 	 */
@@ -72,7 +72,7 @@ public class PepperThreadDumper implements IThreadDumper {
 
 	/**
 	 * Dumps all of the threads' current information to an output stream.
-	 * 
+	 *
 	 * @param out
 	 *            an output stream
 	 * @throws IOException
@@ -136,7 +136,7 @@ public class PepperThreadDumper implements IThreadDumper {
 
 	/**
 	 * Used in smartThreadDump to prevent printing the example footer if it is empty
-	 * 
+	 *
 	 * @param t
 	 * @return true if the footer is not empty
 	 */

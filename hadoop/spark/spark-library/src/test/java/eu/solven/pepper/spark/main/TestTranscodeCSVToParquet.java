@@ -45,7 +45,7 @@ import eu.solven.pepper.spark.run.RunCsvToParquet;
 
 /**
  * Split Parquet files from HDFS and transcode columns in a Spark job
- * 
+ *
  * @author Benoit Lacelle
  */
 public class TestTranscodeCSVToParquet {

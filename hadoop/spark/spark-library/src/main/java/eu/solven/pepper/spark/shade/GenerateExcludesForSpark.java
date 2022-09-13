@@ -17,7 +17,7 @@ import com.google.common.io.ByteStreams;
 
 /**
  * Helps generating the artifacSet excludes clause, given a local Spark installation
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -26,7 +26,7 @@ public class GenerateExcludesForSpark {
 
 	/**
 	 * Generates a full set of dependencies to exclude based on the jars provided by a Spark installation
-	 * 
+	 *
 	 * @param dependencyTreeResource
 	 *            to be generated with 'mvn dependency:tree'
 	 * @param fileNames

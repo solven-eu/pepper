@@ -62,7 +62,7 @@ import eu.solven.pepper.spark.TestReadWrite;
 
 /**
  * Compare the footprint of different ways to hold double arrays in Parquet
- * 
+ *
  * @author Benoit Lacelle
  *
  */

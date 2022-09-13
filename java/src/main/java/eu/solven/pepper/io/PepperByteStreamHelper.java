@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Various utilities related to InputStreaml and {@link OutputStream}
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -50,7 +50,7 @@ public class PepperByteStreamHelper {
 
 	/**
 	 * This is useful for tests, as it enable retrieving the avro binary through an InputStream
-	 * 
+	 *
 	 * @param outputStreamConsumer
 	 * @param executor
 	 *            an Async {@link Executor} supplier. It MUST not be synchronous else the underlying PipedInputStream
@@ -98,7 +98,7 @@ public class PepperByteStreamHelper {
 	/**
 	 * On asynchronous exceptions, we prefer not to log the whole stack as we should report the exception later: we then
 	 * expect not to duplicate stack in logs
-	 * 
+	 *
 	 * @param throwable
 	 * @param e
 	 */

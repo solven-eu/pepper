@@ -60,9 +60,9 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  * Provides some helpers like named {@link ExecutorService}, easy splitting of tasks
- * 
+ *
  * @author Benoit Lacelle
- * 
+ *
  */
 public class PepperExecutorsHelper {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperExecutorsHelper.class);
@@ -101,7 +101,7 @@ public class PepperExecutorsHelper {
 
 	/**
 	 * The number of seconds a Thread is kept alive before being closed if not used
-	 * 
+	 *
 	 * @see ThreadPoolExecutor
 	 */
 	public static final int CORE_KEEP_ALIVE_IN_SECONDS = 60;
@@ -164,9 +164,9 @@ public class PepperExecutorsHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the default number of threads is equal to the number of available processors
-	 * 
+	 *
 	 * @see Runtime#availableProcessors()
 	 */
 	public static int getDefaultNbThreads() {
@@ -200,7 +200,7 @@ public class PepperExecutorsHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param threadNamePrefix
 	 * @param queueCapacity
 	 *            thr capacity of the queue holding pending runnable
@@ -292,7 +292,7 @@ public class PepperExecutorsHelper {
 
 	/**
 	 * Softer generic signature
-	 * 
+	 *
 	 * @see ExecutorService#invokeAll(Collection)
 	 */
 	// guaranteed by ListeningExecutorService#invokeAll contract
@@ -320,7 +320,7 @@ public class PepperExecutorsHelper {
 
 	/**
 	 * Softer generic signature
-	 * 
+	 *
 	 * @see ExecutorService#invokeAll(Collection, long, TimeUnit)
 	 */
 	// guaranteed by ListeningExecutorService#invokeAll contract
@@ -340,7 +340,7 @@ public class PepperExecutorsHelper {
 	 * Same as ExecutorService#invokeAll(Collection, long, TimeUnit) but for {@link Runnable}. We do not return a
 	 * {@link Collection} of {@link Future} as if one of the task fails, the whole compution is cancelled. And there is
 	 * not timeout mechanism
-	 * 
+	 *
 	 * @see ExecutorService#invokeAll(Collection, long, TimeUnit)
 	 * @see Executor#execute(Runnable)
 	 */
@@ -351,7 +351,7 @@ public class PepperExecutorsHelper {
 
 	/**
 	 * Same as ExecutorService#invokeAll(Collection, long, TimeUnit) but for {@link Runnable}
-	 * 
+	 *
 	 * @see ExecutorService#invokeAll(Collection, long, TimeUnit)
 	 */
 	public static List<? extends ListenableFuture<?>> invokeAllRunnable(Collection<? extends Runnable> tasks,

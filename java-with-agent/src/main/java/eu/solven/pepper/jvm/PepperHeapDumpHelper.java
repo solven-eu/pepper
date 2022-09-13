@@ -7,7 +7,7 @@ import java.util.Optional;
 
 /**
  * Various helpers related to heap-dumps
- * 
+ *
  * @author blacelle
  * @see HeapHprofBinWriter
  */
@@ -17,19 +17,19 @@ public class PepperHeapDumpHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * Enable HeapDump on OutOfMemoryError
-	 * 
+	 *
 	 * -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/disk2/dumps
-	 * 
+	 *
 	 * jmap <pid>
-	 * 
+	 *
 	 * jmap -histo <pid>
-	 * 
+	 *
 	 * jmap -histo -F <pid> > some.file
-	 * 
+	 *
 	 * jmap -dump:format=b,file=<filename> <pid> -J-Dsun.tools.attach.attachTimeout=<milliseconds>
-	 * 
+	 *
 	 * @author Benoit Lacelle
 	 *
 	 */

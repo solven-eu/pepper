@@ -14,7 +14,7 @@ import org.eclipse.mat.snapshot.model.IArray;
 
 /**
  * The general implementation of any Java array object (primitive array, object array).
- * 
+ *
  * @noextend
  */
 public abstract class AbstractArrayImpl extends AbstractObjectImpl implements IArray {
@@ -26,7 +26,7 @@ public abstract class AbstractArrayImpl extends AbstractObjectImpl implements IA
 
 	/**
 	 * Construct a general object, called from subclass.
-	 * 
+	 *
 	 * @param objectId
 	 *            the index of the object
 	 * @param address
@@ -43,7 +43,7 @@ public abstract class AbstractArrayImpl extends AbstractObjectImpl implements IA
 
 	/**
 	 * Gets the cached information about the contents of the array.
-	 * 
+	 *
 	 * @return the cached data (parser specific).
 	 */
 	public Object getInfo() {
@@ -64,7 +64,7 @@ public abstract class AbstractArrayImpl extends AbstractObjectImpl implements IA
 
 	/**
 	 * Sets the length in elements.
-	 * 
+	 *
 	 * @param i
 	 *            the new length
 	 */

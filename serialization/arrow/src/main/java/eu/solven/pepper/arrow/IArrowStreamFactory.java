@@ -43,7 +43,7 @@ import eu.solven.pepper.io.PepperURLHelper;
 /**
  * This interface enables write and reading of GenericRecord from/to bytes. We work with {@link URI} and not
  * {@link InputStream} as some implementation may not produce/require an actual stream of b ytes like parquet.
- * 
+ *
  * @author Benoit Lacelle
  *
  */

@@ -26,7 +26,7 @@ import java.util.function.IntConsumer;
 
 /**
  * Interface for integer column consumer for {@link ZeroCopyCSVParser}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

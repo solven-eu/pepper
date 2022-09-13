@@ -33,7 +33,7 @@ public class RetainedSizeCache implements IIndexReader {
 
 	/**
 	 * File is expected to exist, and is read in the new format.
-	 * 
+	 *
 	 * @param f
 	 */
 	public RetainedSizeCache(File f) {
@@ -43,7 +43,7 @@ public class RetainedSizeCache implements IIndexReader {
 
 	/**
 	 * Reads file i2sv2.index in new format, or file i2s.index in the old format, or creates an empty map.
-	 * 
+	 *
 	 * @param snapshotInfo
 	 */
 	public RetainedSizeCache(XSnapshotInfo snapshotInfo) {

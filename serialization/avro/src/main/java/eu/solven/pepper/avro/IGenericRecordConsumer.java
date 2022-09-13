@@ -29,7 +29,7 @@ import org.apache.avro.generic.GenericRecord;
 
 /**
  * A {@link GenericRecord} {@link Consumer} which is also {@link AutoCloseable}
- * 
+ *
  * @author Benoit Lacelle
  *
  */

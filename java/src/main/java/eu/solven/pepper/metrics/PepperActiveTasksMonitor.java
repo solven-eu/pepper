@@ -65,9 +65,9 @@ import eu.solven.pepper.util.PepperTimeHelper;
 /**
  * This class centralized events which should end being available in the JConsole, to provide details about number of
  * events, size of events, active events
- * 
+ *
  * @author Benoit Lacelle
- * 
+ *
  */
 @ManagedResource
 public class PepperActiveTasksMonitor implements IActiveTasksMonitor, InitializingBean {
@@ -99,8 +99,8 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 	private static final int FACTOR_FOR_OLD = 2;
 	/**
 	 * Frequency at which we consider a task is lasting too long.
-	 * 
-	 * 
+	 *
+	 *
 	 * This is multiplied with longRunningCheckSeconds. Above this time, a task is regularly logged as info
 	 */
 	protected int factorForOld = FACTOR_FOR_OLD;
@@ -316,7 +316,7 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 
 	/**
 	 * It also starts a Timer
-	 * 
+	 *
 	 * @param startEvent
 	 */
 	@Subscribe
@@ -402,7 +402,7 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 	}
 
 	/**
-	 * 
+	 *
 	 * @return a {@link Map} from the start date of the currently running operation, to the name of the operation
 	 */
 	@ManagedAttribute
@@ -433,7 +433,7 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 
 	/**
 	 * In some cases, we may have ghosts active tasks. One can invalidate them manually through this method
-	 * 
+	 *
 	 * @param nameOrStar
 	 *            the full name of the activeTask to invalidate. If '*', we cancel all monitor-tasks
 	 * @return true if we succeeded removing this entry
@@ -463,7 +463,7 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 
 	/**
 	 * This ThreadDump tends to be faster as by default, it does not collect monitors
-	 * 
+	 *
 	 * @param withoutMonitors
 	 *            if true (default JConsole behavior),it skips monitors and synchronizers which is much faster and
 	 *            prevent freezing the JVM

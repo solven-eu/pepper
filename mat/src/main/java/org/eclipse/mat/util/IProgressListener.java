@@ -50,7 +50,7 @@ public interface IProgressListener {
 
 	/**
 	 * Notifies that the main task is beginning. This must only be called once on a given progress monitor instance.
-	 * 
+	 *
 	 * @param name
 	 *            the name (or description) of the main task
 	 * @param totalWork
@@ -69,7 +69,7 @@ public interface IProgressListener {
 	/**
 	 * Returns whether cancelation of current operation has been requested. Long-running operations should poll to see
 	 * if cancelation has been requested.
-	 * 
+	 *
 	 * @return <code>true</code> if cancellation has been requested, and <code>false</code> otherwise
 	 * @see #setCanceled(boolean)
 	 */
@@ -77,7 +77,7 @@ public interface IProgressListener {
 
 	/**
 	 * Sets the cancel state to the given value.
-	 * 
+	 *
 	 * @param value
 	 *            <code>true</code> indicates that cancelation has been requested (but not necessarily acknowledged);
 	 *            <code>false</code> clears this flag
@@ -88,7 +88,7 @@ public interface IProgressListener {
 	/**
 	 * Notifies that a subtask of the main task is beginning. Subtasks are optional; the main task might not have
 	 * subtasks.
-	 * 
+	 *
 	 * @param name
 	 *            the name (or description) of the subtask
 	 */
@@ -97,7 +97,7 @@ public interface IProgressListener {
 	/**
 	 * Notifies that a given number of work unit of the main task has been completed. Note that this amount represents
 	 * an installment, as opposed to a cumulative amount of work done to date.
-	 * 
+	 *
 	 * @param work
 	 *            the number of work units just completed
 	 */
@@ -124,7 +124,7 @@ public interface IProgressListener {
 
 	/**
 	 * Sends a message to the user.
-	 * 
+	 *
 	 * @param severity
 	 *            Severity as defined in {@link Severity}
 	 * @param message

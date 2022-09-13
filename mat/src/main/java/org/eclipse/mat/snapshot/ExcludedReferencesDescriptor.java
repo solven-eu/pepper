@@ -25,7 +25,7 @@ public final class ExcludedReferencesDescriptor {
 	/**
 	 * Constructor based on objects and fields. Excluded reference if the reference is from one of these objects going
 	 * through the named fields.
-	 * 
+	 *
 	 * @param objectIds
 	 *            don't go through these objects
 	 * @param fields
@@ -43,7 +43,7 @@ public final class ExcludedReferencesDescriptor {
 
 	/**
 	 * The excluded fields
-	 * 
+	 *
 	 * @return a set of field names
 	 */
 	public Set<String> getFields() {
@@ -52,7 +52,7 @@ public final class ExcludedReferencesDescriptor {
 
 	/**
 	 * See if this object is excluded.
-	 * 
+	 *
 	 * @param objectId
 	 * @return true if excluded
 	 */
@@ -62,7 +62,7 @@ public final class ExcludedReferencesDescriptor {
 
 	/**
 	 * All the excluded object ids.
-	 * 
+	 *
 	 * @return an array of object ids.
 	 */
 	public int[] getObjectIds() {

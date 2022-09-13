@@ -46,9 +46,9 @@ import eu.solven.pepper.io.PepperSerializationHelper;
 
 /**
  * This MBean enables the modification of primitive static variables, like DEBUG modes
- * 
+ *
  * @author Benoit Lacelle
- * 
+ *
  */
 @ManagedResource
 public class SetStaticMBean {
@@ -221,7 +221,7 @@ public class SetStaticMBean {
 
 	/**
 	 * We expect this method not to throw because of an invalid class, invalid type, etc
-	 * 
+	 *
 	 * @param fieldType
 	 * @param constructorArgClass
 	 * @param argument

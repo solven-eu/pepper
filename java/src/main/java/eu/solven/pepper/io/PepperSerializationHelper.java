@@ -75,7 +75,7 @@ import eu.solven.pepper.jmx.SetStaticMBean;
 
 /**
  * Various utility method related to Serialization, as conversion from/to String to/from Collections and Map
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -156,7 +156,7 @@ public class PepperSerializationHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param asString
 	 *            a String with the form key1=value1,key2=value2
 	 * @return a {@link Map}
@@ -274,7 +274,7 @@ public class PepperSerializationHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param charSequence
 	 * @return an Object is transcoding succeeded, else the original String
 	 */
@@ -307,7 +307,7 @@ public class PepperSerializationHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param clazz
 	 *            this the {@link Class} of the object instantiated by this method
 	 * @param asString
@@ -371,7 +371,7 @@ public class PepperSerializationHelper {
 
 	/**
 	 * Easy way to append a single CSV row in a file
-	 * 
+	 *
 	 * @param file
 	 * @param row
 	 * @throws IOException
@@ -476,7 +476,7 @@ public class PepperSerializationHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param inputStream
 	 *            the inputStream which which bytes have to be read. It will NOT be closed
 	 * @param charset

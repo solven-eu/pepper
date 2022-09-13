@@ -24,7 +24,7 @@ import org.eclipse.mat.snapshot.model.PseudoReference;
 
 /**
  * Implementation of a primitive array of type byte[], short[], int[], long[], boolean, char[], float[], double[].
- * 
+ *
  * @noextend
  */
 public class PrimitiveArrayImpl extends AbstractArrayImpl implements IPrimitiveArray {
@@ -34,7 +34,7 @@ public class PrimitiveArrayImpl extends AbstractArrayImpl implements IPrimitiveA
 
 	/**
 	 * Constructs a primitive array
-	 * 
+	 *
 	 * @param objectId
 	 *            the id of the array
 	 * @param address
@@ -124,7 +124,7 @@ public class PrimitiveArrayImpl extends AbstractArrayImpl implements IPrimitiveA
 
 	/**
 	 * Calculates the size of a primitive array
-	 * 
+	 *
 	 * @param clazz
 	 *            the type
 	 * @param length

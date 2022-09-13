@@ -27,7 +27,7 @@ import java.util.Comparator;
 
 /**
  * Histogramme mémoire.
- * 
+ *
  * @author Emeric Vernat
  */
 public class ClassInfoComparator implements Comparator<ClassInfo>, Serializable {

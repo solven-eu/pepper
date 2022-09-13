@@ -35,7 +35,7 @@ import com.google.common.io.ByteStreams;
 
 /**
  * Convert an {@link InputStream} to a {@link Stream} of objects
- * 
+ *
  * @author Benoit Lacelle
  */
 public class JavaBytesToStream implements IBinaryToStream<Object> {

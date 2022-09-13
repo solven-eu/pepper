@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Not thread-safe, Mutable, no .hashcode/.equals subsequence, but does not allocate any memory
- * 
+ *
  * @author Benoit Lacelle
  *
  */

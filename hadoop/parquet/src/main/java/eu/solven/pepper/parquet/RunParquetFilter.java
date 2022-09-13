@@ -36,7 +36,7 @@ import eu.solven.pepper.io.PepperFileHelper;
 
 /**
  * This will log a parquet file into the console
- * 
+ *
  * @author Benoit Lacelle
  *
  */

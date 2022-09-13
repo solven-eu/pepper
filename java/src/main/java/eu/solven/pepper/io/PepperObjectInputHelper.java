@@ -37,7 +37,7 @@ import eu.solven.pepper.memory.IPepperMemoryConstants;
 
 /**
  * Various helpers related to ObjectInput
- * 
+ *
  * @author Benoit Lacelle
  *
  */
@@ -54,7 +54,7 @@ public class PepperObjectInputHelper {
 
 	/**
 	 * Default chunk size is 1024
-	 * 
+	 *
 	 * @param inputStream
 	 * @param objectOutput
 	 * @return the number of transmitted bytes, as reading from the InputStream
@@ -66,7 +66,7 @@ public class PepperObjectInputHelper {
 
 	/**
 	 * Default chunk size is 1024
-	 * 
+	 *
 	 * @param objectOutput
 	 *            the ObjectOutput were the data from the inputStream are written. These bytes are send through a stream
 	 *            of ByteArrayMarker
@@ -112,7 +112,7 @@ public class PepperObjectInputHelper {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param objectInput
 	 * @return an ObjectInput which may return InputStream on .readObject
 	 */
