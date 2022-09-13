@@ -192,6 +192,16 @@ public class VirtualMachineWithoutToolsJar {
 			MalformedURLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		if (WILL_NOT_WORK.get()) {
 			return Optional.absent();
+		} else if (!IS_VIRTUAL_MACHINE_ELIGIBLE) {
+			// We do not even try loading the VirtualMachine if it is not eligible (jdk9+ and lack of explicit property)
+			LOGGER.warn(
+					"VirtualMachine is not eligible. java.vendor={} java.spec={} '-Djdk.attach.allowAttachSelf=true'={}",
+					getJavaVendor(),
+					getJavaSpecification(),
+					isAllowAttachSelf());
+			WILL_NOT_WORK.set(true);
+
+			return Optional.absent();
 		}
 
 		// https://github.com/openjdk-mirror/jdk7u-jdk/blob/master/src/share/classes/sun/tools/attach/HotSpotVirtualMachine.java
