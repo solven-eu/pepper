@@ -20,7 +20,7 @@
 		<!-- Enable wider compatibility -->
 		<compiler.targetVersion>1.6</compiler.targetVersion>
 
-		<sizeof.version>0.4.0</sizeof.version>
+		<sizeof.version>0.4.3</sizeof.version>
 
 		<!-- https://github.com/google/guava/wiki/Compatibility -->
 		<!-- Guava for JDK6 drops at 28.1-jre -->
