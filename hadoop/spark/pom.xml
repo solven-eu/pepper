@@ -37,7 +37,7 @@
 		<spark.shortVersion>2.4</spark.shortVersion>
 		<spark.version>2.4.8</spark.version>
 
-		<parquet.version>1.12.2</parquet.version>
+		<parquet.version>1.12.3</parquet.version>
 
 		<!-- 3.1.2 leads to org.codehaus.janino.InternalCompilerException -->
 		<!-- <version>3.1.2</version> -->
