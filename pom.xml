@@ -53,6 +53,8 @@
 
 	<properties>
 		<!-- https://github.com/google/guava/releases -->
+		<!-- https://github.com/google/guava/wiki/Compatibility -->
+		<!-- Guava for JDK6 drops at 28.1-jre -->
 		<guava.version>31.1-jre</guava.version>
 
 		<!-- https://mvnrepository.com/artifact/org.jooq/jool -->

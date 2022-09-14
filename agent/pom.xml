@@ -13,17 +13,13 @@
 
 	<properties>
 		<!-- There is barely no code, leading most branches to be rare edge cases, which are tough to be unit-tested -->
-		<jacoco.instruction.ratio>0.40</jacoco.instruction.ratio>
+		<jacoco.instruction.ratio>0.36</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.25</jacoco.branch.ratio>
 
 		<!-- Enable wider compatibility -->
 		<compiler.targetVersion>1.6</compiler.targetVersion>
 
 		<sizeof.version>0.4.3</sizeof.version>
-
-		<!-- https://github.com/google/guava/wiki/Compatibility -->
-		<!-- Guava for JDK6 drops at 28.1-jre -->
-		<guava.version>31.1-jre</guava.version>
 	</properties>
 
 	<profiles>
@@ -58,7 +54,6 @@
 			<!-- Enables Optional and keeping JDK6 -->
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>${guava.version}</version>
 		</dependency>
 
 		<dependency>
