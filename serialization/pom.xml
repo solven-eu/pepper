@@ -27,7 +27,7 @@
 		<!-- <guava.version>31.0.1-jre</guava.version> -->
 
 		<!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
-		<arrow.version>7.0.0</arrow.version>
+		<arrow.version>9.0.0</arrow.version>
 	</properties>
 
 	<modules>
