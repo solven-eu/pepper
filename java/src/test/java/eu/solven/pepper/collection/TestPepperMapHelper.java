@@ -337,7 +337,7 @@ public class TestPepperMapHelper {
 		// Check keys can be of any-type
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(Boolean.TRUE, 123, "key", now);
 
-		Assertions.assertThat(PepperMapHelper.<Object>getAs(map, 123, "key", now)).isEqualTo(Boolean.TRUE);
+		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now)).isPresent().contains(Boolean.TRUE);
 		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(Boolean.TRUE);
 		Assertions.assertThat(PepperMapHelper.getRequiredBoolean(map, 123, "key", now)).isEqualTo(Boolean.TRUE);
 	}
@@ -346,7 +346,7 @@ public class TestPepperMapHelper {
 	public void testGetRequiredBoolean_false() {
 		// Check keys can be of any-type
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(Boolean.FALSE, 123, "key", now);
-		Assertions.assertThat(PepperMapHelper.<Object>getAs(map, 123, "key", now)).isEqualTo(Boolean.FALSE);
+		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now)).isPresent().contains(Boolean.FALSE);
 		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(Boolean.FALSE);
 		Assertions.assertThat(PepperMapHelper.getRequiredBoolean(map, 123, "key", now)).isEqualTo(Boolean.FALSE);
 	}
@@ -356,7 +356,7 @@ public class TestPepperMapHelper {
 		// Check keys can be of any-type
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(456, 123, "key", now);
 
-		Assertions.assertThat(PepperMapHelper.<Object>getAs(map, 123, "key", now)).isEqualTo(456);
+		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now)).isPresent().contains(456);
 		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(456);
 		Assertions.assertThat(PepperMapHelper.getRequiredNumber(map, 123, "key", now)).isEqualTo(456);
 	}
@@ -365,7 +365,7 @@ public class TestPepperMapHelper {
 	public void testGetRequiredNumber_float() {
 		// Check keys can be of any-type
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(123.456F, 123, "key", now);
-		Assertions.assertThat(PepperMapHelper.<Object>getAs(map, 123, "key", now)).isEqualTo(123.456F);
+		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now)).isPresent().contains(123.456F);
 		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(123.456F);
 		Assertions.assertThat(PepperMapHelper.getRequiredNumber(map, 123, "key", now)).isEqualTo(123.456F);
 	}
@@ -377,7 +377,9 @@ public class TestPepperMapHelper {
 		root.put("k", Arrays.asList("someString", PepperMapHelper.imbricatedMap(123.456F, 123, "key", now)));
 
 		// Check keys can be of any-type
-		Assertions.assertThat(PepperMapHelper.<Object>getAs(root, "k", 1, 123, "key", now)).isEqualTo(123.456F);
+		Assertions.assertThat(PepperMapHelper.getOptionalAs(root, "k", 1, 123, "key", now))
+				.isPresent()
+				.contains(123.456F);
 		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(root, "k", 1, 123, "key", now)).isEqualTo(123.456F);
 		Assertions.assertThat(PepperMapHelper.getRequiredNumber(root, "k", 1, 123, "key", now)).isEqualTo(123.456F);
 	}
@@ -389,12 +391,24 @@ public class TestPepperMapHelper {
 		root.put("k", Arrays.asList("someString", PepperMapHelper.imbricatedMap("deepString", 123, "key", now)));
 
 		// Check keys can be of any-type
-		Assertions.assertThat(PepperMapHelper.<Object>getAs(root, "k", 1, 123, "key", now)).isEqualTo("deepString");
+		Assertions.assertThat(PepperMapHelper.getOptionalAs(root, "k", 1, 123, "key", now))
+				.isPresent()
+				.contains("deepString");
 		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(root, "k", 1, 123, "key", now))
 				.isEqualTo("deepString");
 		Assertions.assertThat(PepperMapHelper.getRequiredString(root, "k", 1, 123, "key", now)).isEqualTo("deepString");
 		Assertions.assertThat(PepperMapHelper.getOptionalString(root, "k", 1, 123, "key", now).get())
 				.isEqualTo("deepString");
+	}
+
+	@Test
+	public void testGetFromList_OutOfRange() {
+		Map<String, Object> root = new LinkedHashMap<>();
+
+		root.put("k", Arrays.asList("someString", PepperMapHelper.imbricatedMap("deepString", 123, "key", now)));
+
+		// Check keys can be of any-type
+		Assertions.assertThat(PepperMapHelper.getOptionalAs(root, "k", 3)).isEmpty();
 	}
 
 }

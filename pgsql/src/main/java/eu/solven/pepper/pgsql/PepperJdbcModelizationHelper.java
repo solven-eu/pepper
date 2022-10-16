@@ -105,6 +105,7 @@ public class PepperJdbcModelizationHelper {
 			// 'VARCHAR_IGNORECASE' does not exist in PostgreSQL
 			return "VARCHAR";
 		} else {
+			// BEWARE this would fail in H2 with Mode=PostgreSQL
 			return "VARCHAR_IGNORECASE";
 		}
 	}

@@ -28,7 +28,6 @@
 			<!-- org.apache.hadoop.fs.Path -->
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-common</artifactId>
-			<version>${hadoop.version}</version>
 			<exclusions>
 				<!-- Hadoop-commons brings a ton of unexpected dependencies -->
 				<exclusion>
@@ -93,7 +92,6 @@
 			<!-- HadoopReadOptions -->
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-mapreduce-client-core</artifactId>
-			<version>${hadoop.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>log4j</groupId>

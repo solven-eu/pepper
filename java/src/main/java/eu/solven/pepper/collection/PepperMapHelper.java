@@ -116,26 +116,25 @@ public class PepperMapHelper {
 	@Deprecated(
 	// since = "Prefer .getOptionalAs or .getRequiredAs"
 	)
-	public static <T> T getAs(Object body, Object firstKey, Object... moreKeys) {
-		if (body == null) {
-			return null;
-		}
+	private static <T> T rawGetAs(Object mapOrList, List<?> keys) {
+		Object value = mapOrList;
 
-		Object value = body;
-
-		List<Object> allKeys = Lists.asList(firstKey, moreKeys);
-		for (Object key : allKeys) {
+		for (Object key : keys) {
 			if (value == null) {
 				return null;
 			} else if (value instanceof Map<?, ?>) {
 				value = ((Map<?, ?>) value).get(key);
 			} else if (key instanceof Number && value instanceof List<?>) {
 				List<?> valueAsList = (List<?>) value;
-				value = valueAsList.get(((Number) key).intValue());
+				int indexAsInt = ((Number) key).intValue();
+				if (indexAsInt < 0 || indexAsInt >= valueAsList.size()) {
+					return null;
+				}
+				value = valueAsList.get(indexAsInt);
 			} else {
-				throw new IllegalArgumentException("Can not process keys " + allKeys
-						+ " on Map: "
-						+ body
+				throw new IllegalArgumentException("Can not process keys " + keys
+						+ " on mapOrList: "
+						+ mapOrList
 						+ " as value for key="
 						+ key
 						+ " is: "
@@ -170,8 +169,12 @@ public class PepperMapHelper {
 		return Collections.singletonMap(firstKey, subMap);
 	}
 
-	public static <T> Optional<T> getOptionalAs(Map<?, ?> map, Object firstKey, Object... moreKeys) {
-		T value = getAs(map, firstKey, moreKeys);
+	public static <T> Optional<T> getOptionalAs(Object mapOrList, Object firstKey, Object... moreKeys) {
+		return getOptionalAs(mapOrList, Lists.asList(firstKey, moreKeys));
+	}
+
+	public static <T> Optional<T> getOptionalAs(Object mapOrList, List<?> keys) {
+		T value = rawGetAs(mapOrList, keys);
 
 		if (value == null) {
 			return Optional.empty();
@@ -180,8 +183,8 @@ public class PepperMapHelper {
 		}
 	}
 
-	public static <T> T getRequiredAs(Map<?, ?> map, Object firstKey, Object... moreKeys) {
-		T value = getAs(map, firstKey, moreKeys);
+	public static <T> T getRequiredAs(Object mapOrList, Object firstKey, Object... moreKeys) {
+		T value = rawGetAs(mapOrList, Lists.asList(firstKey, moreKeys));
 
 		if (value == null) {
 			throw new IllegalStateException("keys=" + Lists.asList(firstKey, moreKeys) + " led to a 'null");
@@ -190,8 +193,12 @@ public class PepperMapHelper {
 		}
 	}
 
-	public static Optional<String> getOptionalString(Map<?, ?> map, Object firstKey, Object... moreKeys) {
-		Object value = getAs(map, firstKey, moreKeys);
+	public static Optional<String> getOptionalString(Object mapOrList, Object firstKey, Object... moreKeys) {
+		return getOptionalString(mapOrList, Lists.asList(firstKey, moreKeys));
+	}
+
+	public static Optional<String> getOptionalString(Object mapOrList, List<?> keys) {
+		Object value = rawGetAs(mapOrList, keys);
 
 		if (value == null) {
 			return Optional.empty();
@@ -203,9 +210,8 @@ public class PepperMapHelper {
 				return Optional.of(valueString);
 			}
 		} else {
-			throw new IllegalArgumentException("keys=" + Lists.asList(firstKey, moreKeys)
-					+ " led to not-a-string: "
-					+ PepperLogHelper.getObjectAndClass(value));
+			throw new IllegalArgumentException(
+					"keys=" + keys + " led to not-a-string: " + PepperLogHelper.getObjectAndClass(value));
 		}
 	}
 
@@ -219,51 +225,53 @@ public class PepperMapHelper {
 		return (String) value;
 	}
 
-	public static <S, T> Map<S, T> getRequiredMap(Map<?, ?> map, Object mainKey, Object... subKeys) {
-		List<Object> allKeys = checkNullMap(map, mainKey, subKeys);
+	public static <S, T> Map<S, T> getRequiredMap(Object mapOrList, Object mainKey, Object... subKeys) {
+		List<Object> allKeys = checkNullMap(mapOrList, mainKey, subKeys);
 
-		return digForValue(map, allKeys, (currentKey, rawValue) -> {
+		return digForValue(mapOrList, allKeys, (currentKey, rawValue) -> {
 			if (rawValue instanceof Map<?, ?>) {
 				return (Map<S, T>) rawValue;
 			} else {
-				// Do not throw the value which might be a personal value
-				throw new IllegalArgumentException("Not a Map<?,?> (" + rawValue
-						.getClass() + ") for " + allKeys + ". Deepest Map<?,?> keys: " + map.keySet());
+				throw new IllegalArgumentException("'" + currentKey
+						+ "' is attached to "
+						+ PepperLogHelper.getObjectAndClass(rawValue)
+						+ " which is not a Map");
 			}
 		});
 	}
 
-	public static String getRequiredString(final Map<?, ?> map, Object mainKey, Object... subKeys) {
-		List<Object> allKeys = checkNullMap(map, mainKey, subKeys);
+	public static String getRequiredString(final Object mapOrList, Object mainKey, Object... subKeys) {
+		List<Object> allKeys = checkNullMap(mapOrList, mainKey, subKeys);
 
-		return digForValue(map, allKeys, (currentKey, rawValue) -> {
+		return digForValue(mapOrList, allKeys, (currentKey, rawValue) -> {
 			if (rawValue instanceof String && Strings.isNullOrEmpty(rawValue.toString())) {
 				throw new IllegalArgumentException(
-						"We miss '" + currentKey + "' (empty string) amongst available: " + map.keySet());
+						"'" + currentKey + "' is attached to an (empty string). Was digging through" + allKeys);
 			}
 
 			return checkNonNullString(currentKey, rawValue);
 		});
 	}
 
-	public static <T> T getRequiredAs(final Map<?, ?> map, String mainKey, String... subKeys) {
-		List<Object> allKeys = checkNullMap(map, mainKey, subKeys);
+	public static <T> T getRequiredAs(final Object mapOrList, String mainKey, String... subKeys) {
+		List<Object> allKeys = checkNullMap(mapOrList, mainKey, subKeys);
 
-		return digForValue(map, allKeys, (currentKey, rawValue) -> {
+		return digForValue(mapOrList, allKeys, (currentKey, rawValue) -> {
 			return (T) rawValue;
 		});
 	}
 
-	private static <T> T digForValue(final Map<?, ?> map, List<Object> allKeys, BiFunction<Object, Object, T> toValue) {
+	private static <
+			T> T digForValue(final Object mapOrList, List<Object> allKeys, BiFunction<Object, Object, T> toValue) {
 		if (allKeys.isEmpty()) {
-			return (T) map;
+			return (T) mapOrList;
 		}
 
 		// Map<?, ?> currentMap = map;
 		// We'll have a specific logic when processing the last key
 		int deepestKeyIndex = allKeys.size() - 1;
 
-		Object currentHolder = map;
+		Object currentHolder = mapOrList;
 		for (int i = 0; i < allKeys.size(); i++) {
 			final Object currentKey = allKeys.get(i);
 			final Object rawValue;
@@ -316,10 +324,10 @@ public class PepperMapHelper {
 		throw new IllegalStateException("Would never happen");
 	}
 
-	private static List<Object> checkNullMap(Map<?, ?> map, Object mainKey, Object... subKeys) {
+	private static List<Object> checkNullMap(Object mapOrList, Object mainKey, Object... subKeys) {
 		List<Object> keys = Lists.asList(mainKey, subKeys);
-		if (map == null) {
-			throw new IllegalArgumentException("Input Map<?,?> is null while requiring keys=" + keys);
+		if (mapOrList == null) {
+			throw new IllegalArgumentException("Input mapOrList is null while requiring keys=" + keys);
 		}
 		return keys;
 	}
