@@ -29,6 +29,13 @@
 			<artifactId>pepper-agent</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.openjdk.jol/jol-core -->
+		<dependency>
+			<groupId>org.openjdk.jol</groupId>
+			<artifactId>jol-core</artifactId>
+			<version>0.16</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>

@@ -36,6 +36,8 @@
 		<!-- TODO Clear this exclusion -->
 		<exclude name="ConfusingTernary" />
 		<exclude name="CallSuperInConstructor" />
+		<!-- https://github.com/pmd/pmd/issues/411 -->
+		<exclude name="UnnecessaryFinalModifier" />
 	</rule>
 	<!-- https://pmd.github.io/latest/pmd_rules_java_codestyle.html#longvariable -->
 	<rule ref="category/java/codestyle.xml/LongVariable">

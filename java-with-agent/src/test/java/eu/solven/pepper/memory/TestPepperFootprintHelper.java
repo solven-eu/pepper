@@ -22,6 +22,10 @@
  */
 package eu.solven.pepper.memory;
 
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,5 +63,14 @@ public class TestPepperFootprintHelper {
 
 		long memory = PepperFootprintHelper.getStringMemory(existingRef);
 		Assertions.assertThat(memory).isGreaterThan(Integer.MAX_VALUE + 1L);
+	}
+
+	@Test
+	public void testConcurrentHashMap() {
+		Map<String, LocalDate> map = new ConcurrentHashMap<>();
+		map.put("k", LocalDate.now());
+
+		long memory = PepperFootprintHelper.deepSize(map);
+		Assertions.assertThat(memory).isEqualTo(248L);
 	}
 }

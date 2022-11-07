@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.LongAdder;
 import java.util.function.IntPredicate;
 
 import org.ehcache.sizeof.impl.ReflectionSizeOf;
+import org.openjdk.jol.info.GraphLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
@@ -90,10 +91,23 @@ public class PepperFootprintHelper implements IPepperMemoryConstants {
 	 * @return the number of bytes consumed by given objects, taking in account the references objects
 	 */
 	public static long deepSize(Object object) {
+		try {
+			return GraphLayout.parseInstance(object).totalSize();
+		} catch (RuntimeException e) {
+			LOGGER.warn("Issue with JOL over {}", object, e);
+			return -1;
+		}
+	}
+
+	// "We now rely on JOL"
+	@Deprecated
+	public static long legacyDeepSize(Object object) {
 		// http://stackoverflow.com/questions/1063068/how-does-the-jvm-ensure-that-system-identityhashcode-will-never-change
 		return deepSizeWithBloomFilter(object, Integer.MAX_VALUE / KB);
 	}
 
+	// "We now rely on JOL"
+	@Deprecated
 	public static long recursiveSize(Object object, IntPredicate identityPredicate) {
 		return deepSize(object, identityPredicate);
 	}
@@ -108,6 +122,8 @@ public class PepperFootprintHelper implements IPepperMemoryConstants {
 	 * @return Long.MAX_VALUE if the Instrumentation agent is not available. Else an estimation of the memory
 	 *         consumption.
 	 */
+	// "We now rely on JOL"
+	@Deprecated
 	public static long deepSize(Object object, IntPredicate identityPredicate) {
 		if (object == null) {
 			return 0L;
@@ -135,10 +151,12 @@ public class PepperFootprintHelper implements IPepperMemoryConstants {
 		return deepSizeWithBloomFilter(object, expectedObjectCardinality);
 	}
 
+	// "We now rely on JOL"
+	@Deprecated
 	public static long deepSizeWithBloomFilter(Object object, long expectedObjectCardinality) {
 		BloomFilter<Integer> identities = BloomFilter.create(Funnels.integerFunnel(), expectedObjectCardinality);
 
-		return recursiveSize(object, identities::put);
+		return deepSize(object, identities::put);
 	}
 
 	@Deprecated
@@ -182,10 +200,10 @@ public class PepperFootprintHelper implements IPepperMemoryConstants {
 				if (object instanceof Object[]) {
 					// For arrays, it would not work to iterate on its fields
 					Arrays.stream((Object[]) object)
-							.forEach(element -> recursiveSize(instrumentation, identities, totalSize, element));
+							.forEach(element -> deepSize(instrumentation, identities, totalSize, element));
 				} else {
 					ReflectionUtils.doWithFields(object.getClass(),
-							field -> recursiveSize(instrumentation, identities, totalSize, field.get(object)),
+							field -> deepSize(instrumentation, identities, totalSize, field.get(object)),
 							field -> {
 								if (Modifier.isStatic(field.getModifiers())) {
 									// Do not add static fields in memory graph
@@ -205,11 +223,14 @@ public class PepperFootprintHelper implements IPepperMemoryConstants {
 		}
 	}
 
+	// "We now rely on JOL"
 	@Deprecated
 	public static long getDoubleMemory() {
 		return REFLECTION_SIZE_OF.deepSizeOf(AUTOBOXED_ZERO);
 	}
 
+	// "We now rely on JOL"
+	@Deprecated
 	public static long getObjectArrayMemory(Object... asArray) {
 		if (asArray == null) {
 			return 0L;
@@ -222,6 +243,8 @@ public class PepperFootprintHelper implements IPepperMemoryConstants {
 		return footprint;
 	}
 
+	// "We now rely on JOL"
+	@Deprecated
 	public static long getObjectArrayMemory(Object asArray) {
 		if (asArray == null) {
 			return 0L;
