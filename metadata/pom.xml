@@ -12,7 +12,7 @@
 
 	<groupId>io.github.solven-eu.pepper</groupId>
 	<artifactId>pepper-metadata</artifactId>
-	<version>4.2</version>
+	<version>4.3-SNAPSHOT</version>
 
     <packaging>pom</packaging>
     
@@ -273,6 +273,6 @@
 		<!-- Do not add developperConnection as parent is not a SNAPSHOT -->
 		<connection>${scm.connection}</connection>
 		<url>${scm.url}</url>
-		<tag>pepper-4.2</tag>
+		<tag>HEAD</tag>
 	</scm>
 </project>
