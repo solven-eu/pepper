@@ -21,7 +21,7 @@
 
 	<!-- Make a release -->
 	<!-- Do not -DskipTests, else it will skip javadoc which is mandatory for sonatype -->
-	<!-- mvn release:clean release:prepare release:perform -Darguments="-Dmaven.test.skip" -->
+	<!-- mvn release:clean release:prepare release:perform -DskipStyle -T 8 -Darguments="-Dmaven.test.skip -DskipStyle -T 8" -->
 	<!-- mvn release:rollback -->
 
 	<!-- In case of 'gpg: signing failed: Timeout' -->
