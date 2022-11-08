@@ -18,7 +18,7 @@
 	<properties>
 		<!-- Most Spark distribution has this quite old Guava: as it easily leads -->
 		<!-- to conflicts, we make sure we compile locally with this library -->
-		<guava.version>14.0.1</guava.version>
+		<guava.version>31.1-jre</guava.version>
 
 		<hadoop.shortVersion>2.10</hadoop.shortVersion>
 		<hadoop.version>3.3.1</hadoop.version>
