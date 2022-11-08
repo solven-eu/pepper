@@ -193,6 +193,55 @@
 				</pluginManagement>
 			</build>
 		</profile>
+		
+		<!-- ./mvnw net.revelc.code.formatter:formatter-maven-plugin:format -->
+		<!-- ./mvnw net.revelc.code:impsort-maven-plugin:sort -->
+		<profile>
+			<!-- skip everything, test, quality, format,... -->
+			<!-- This profile is deprecated, and its usage should be replaced by -Pfast -->
+			<id>skipStyle</id>
+			<properties>
+				<!-- Code style -->
+				<checkstyle.skip>true</checkstyle.skip>
+				<pmd.skip>true</pmd.skip>
+				<cpd.skip>true</cpd.skip>
+				<spotbugs.skip>true</spotbugs.skip>
+				<maven.javadoc.skip>true</maven.javadoc.skip>
+				<license.skip>true</license.skip>
+				<formatter.skip>true</formatter.skip>
+				<impsort.skip>true</impsort.skip>
+				<cleanthat.skip>true</cleanthat.skip>
+				<skip.npm.style>true</skip.npm.style>
+
+				<!-- Dependency will be checked with style -->
+				<enforcer.skip>true</enforcer.skip>
+			</properties>
+		</profile>
+
+		<profile>
+			<!-- Used to recompile quickly only the core components -->
+			<id>fast</id>
+			<properties>
+				<!-- Code style -->
+				<checkstyle.skip>true</checkstyle.skip>
+				<pmd.skip>true</pmd.skip>
+				<cpd.skip>true</cpd.skip>
+				<spotbugs.skip>true</spotbugs.skip>
+				<maven.javadoc.skip>true</maven.javadoc.skip>
+				<license.skip>true</license.skip>
+				<formatter.skip>true</formatter.skip>
+				<impsort.skip>true</impsort.skip>
+				<cleanthat.skip>true</cleanthat.skip>
+				<skip.npm.style>true</skip.npm.style>
+
+				<!-- Dependency will be checked with style -->
+				<enforcer.skip>true</enforcer.skip>
+
+				<skipTests>true</skipTests>
+				<skipITs>true</skipITs>
+				<jacoco.skip>true</jacoco.skip>
+			</properties>
+		</profile>
 	</profiles>
 
 	<build>

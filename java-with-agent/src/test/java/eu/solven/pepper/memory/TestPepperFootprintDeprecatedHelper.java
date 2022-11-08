@@ -27,19 +27,50 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestPepperFootprintHelper {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(TestPepperFootprintHelper.class);
+public class TestPepperFootprintDeprecatedHelper {
+
+	protected static final Logger LOGGER = LoggerFactory.getLogger(TestPepperFootprintDeprecatedHelper.class);
+
+	@Test
+	public void testIntArrayWeight() {
+		Assert.assertEquals(56, PepperFootprintDeprecatedHelper.getObjectArrayMemory(new int[9]));
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testDouble() {
+		Assert.assertEquals(24, PepperFootprintDeprecatedHelper.getDoubleMemory());
+	}
+
+	@Test
+	public void testStringMemory() {
+		long memory = PepperFootprintDeprecatedHelper.getStringMemory("Youpi");
+		Assert.assertEquals(48, memory);
+	}
+
+	@Test
+	public void testStringMemory_huge() {
+		CharSequence existingRef = Mockito.mock(CharSequence.class);
+
+		// Consider a very large String
+		Mockito.when(existingRef.length()).thenReturn(Integer.MAX_VALUE);
+
+		long memory = PepperFootprintDeprecatedHelper.getStringMemory(existingRef);
+		Assertions.assertThat(memory).isGreaterThan(Integer.MAX_VALUE + 1L);
+	}
 
 	@Test
 	public void testConcurrentHashMap() {
 		Map<String, LocalDate> map = new ConcurrentHashMap<>();
 		map.put("k", LocalDate.now());
 
-		long memory = PepperFootprintHelper.deepSize(map);
+		long memory = PepperFootprintDeprecatedHelper.deepSize(map);
 		Assertions.assertThat(memory).isEqualTo(248L);
 	}
 }

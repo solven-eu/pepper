@@ -105,9 +105,8 @@ public class PepperMapHelper {
 	/**
 	 *
 	 * @param <T>
-	 * @param body
-	 * @param firstKey
-	 * @param moreKeys
+	 * @param mapOrList
+	 * @param keys
 	 * @return the object mapped from body (generally a {@link Map}) following the chain of keys. This returns null if
 	 *         the path leads to nothing. This fails if the path is invalid given the {@link Map} (e.g. path is 'k1.k2'
 	 *         while the {@link Map} is ('k1': 'v1'))

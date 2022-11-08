@@ -32,7 +32,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.management.InstanceNotFoundException;
 import javax.management.JMException;
+import javax.management.MalformedObjectNameException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
@@ -276,5 +278,31 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		Assertions.assertThat(GCInspector.getOptionalArgument(Arrays.asList("-Xss512k"), "-Xss512k"))
 				.isPresent()
 				.hasValue("");
+	}
+
+	@Test
+	public void testAppendDetailsAboutMove() throws MalformedObjectNameException, InstanceNotFoundException {
+		GCInspector gcInspector = new GCInspector(Mockito.mock(IThreadDumper.class));
+		gcInspector.afterPropertiesSet();
+
+		StringBuilder sb = new StringBuilder();
+		gcInspector.appendDetailsAboutMove(sb, 123, 456);
+
+		Assertions.assertThat(sb.toString())
+				.matches("=456B after allocating \\d{1,4}\\wB through all threads including \\d{1,4}\\wB from .+");
+	}
+
+	@Test
+	public void testAppendDetailsAboutMove_gcd() throws MalformedObjectNameException, InstanceNotFoundException {
+		GCInspector gcInspector = new GCInspector(Mockito.mock(IThreadDumper.class));
+		gcInspector.afterPropertiesSet();
+
+		StringBuilder sb = new StringBuilder();
+		// Negative to represent a GC operation
+		gcInspector.appendDetailsAboutMove(sb, -123, 456);
+
+		Assertions.assertThat(sb.toString())
+				.matches(
+						"=456B-123B garbage collected after allocating \\d{1,4}\\wB through all threads including \\d{1,4}\\wB from .+");
 	}
 }
