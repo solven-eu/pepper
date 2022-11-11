@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2010 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -131,6 +133,42 @@ public class ArrayUtils {
 		int tmpValue = values[a];
 		values[a] = values[b];
 		values[b] = tmpValue;
+	}
+
+	private static int median(int x[], int pos1, int pos2, int pos3) {
+		int v1 = x[pos1];
+		int v2 = x[pos2];
+		int v3 = x[pos3];
+
+		if (v1 < v2)
+			if (v2 <= v3)
+				return pos2;
+			else
+				return v1 < v3 ? pos3 : pos1;
+
+		/* else -> v1 > v2 */
+		if (v1 <= v3)
+			return pos1;
+		else
+			return v2 < v3 ? pos3 : pos2;
+	}
+
+	private static int median(long x[], int pos1, int pos2, int pos3) {
+		long v1 = x[pos1];
+		long v2 = x[pos2];
+		long v3 = x[pos3];
+
+		if (v1 < v2)
+			if (v2 <= v3)
+				return pos2;
+			else
+				return v1 < v3 ? pos3 : pos1;
+
+		/* else -> v1 > v2 */
+		if (v1 <= v3)
+			return pos1;
+		else
+			return v2 < v3 ? pos3 : pos2;
 	}
 
 	private static int[] split(int[] keys, int[] values, int left, int right) {
@@ -372,25 +410,21 @@ public class ArrayUtils {
 		int shiftBits = 8 * sortByte;
 		int srcEnd = srcOffset + length;
 
-		for (int i = srcOffset; i < srcEnd; i++) {
+		for (int i = srcOffset; i < srcEnd; i++)
 			count[((srcKeys[i] >> (shiftBits)) & 0xff)]++;
-		}
 
 		if (sortByte == 3) {
 			// Sign byte, so sort 128..255 0..127
 			/* index[128] = 0 */
-			for (int i = 129; i < 256; i++) {
+			for (int i = 129; i < 256; i++)
 				index[i] = index[i - 1] + count[i - 1];
-			}
 			index[0] = index[255] + count[255];
-			for (int i = 1; i < 128; i++) {
+			for (int i = 1; i < 128; i++)
 				index[i] = index[i - 1] + count[i - 1];
-			}
 		} else {
 			/* index[0] = 0 */
-			for (int i = 1; i < 256; i++) {
+			for (int i = 1; i < 256; i++)
 				index[i] = index[i - 1] + count[i - 1];
-			}
 		}
 
 		for (int i = srcOffset; i < srcEnd; i++) {
@@ -414,25 +448,21 @@ public class ArrayUtils {
 		int shiftBits = 8 * sortByte;
 		int srcEnd = srcOffset + length;
 
-		for (int i = srcOffset; i < srcEnd; i++) {
+		for (int i = srcOffset; i < srcEnd; i++)
 			count[(int) ((srcKeys[i] >> (shiftBits)) & 0xff)]++;
-		}
 
 		if (sortByte == 7) {
 			// Sign byte, so sort 127..0 255..128
 			/* index[127] = 0 */
-			for (int i = 126; i >= 0; i--) {
+			for (int i = 126; i >= 0; i--)
 				index[i] = index[i + 1] + count[i + 1];
-			}
 			index[255] = index[0] + count[0];
-			for (int i = 254; i >= 128; i--) {
+			for (int i = 254; i >= 128; i--)
 				index[i] = index[i + 1] + count[i + 1];
-			}
 		} else {
 			/* index[255] = 0 */
-			for (int i = 254; i >= 0; i--) {
+			for (int i = 254; i >= 0; i--)
 				index[i] = index[i + 1] + count[i + 1];
-			}
 		}
 
 		for (int i = srcOffset; i < srcEnd; i++) {

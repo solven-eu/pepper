@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2010 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -63,42 +65,34 @@ import org.eclipse.mat.parser.model.XSnapshotInfo;
 		this.snapshotInfo = snapshotInfo;
 	}
 
-	@Override
 	public XSnapshotInfo getSnapshotInfo() {
 		return snapshotInfo;
 	}
 
-	@Override
 	public void setClassesById(HashMapIntObject<ClassImpl> classesById) {
 		this.classesById = classesById;
 	}
 
-	@Override
 	public void setGcRoots(HashMapIntObject<List<XGCRootInfo>> gcRoots) {
 		this.gcRoots = gcRoots;
 	}
 
-	@Override
 	public void setThread2objects2roots(HashMapIntObject<HashMapIntObject<List<XGCRootInfo>>> thread2objects2roots) {
 		this.thread2objects2roots = thread2objects2roots;
 	}
 
-	@Override
 	public void setOutbound(IIndexReader.IOne2ManyIndex outbound) {
 		this.outbound = outbound;
 	}
 
-	@Override
 	public void setIdentifiers(IIndexReader.IOne2LongIndex identifiers) {
 		this.identifiers = identifiers;
 	}
 
-	@Override
 	public void setObject2classId(IIndexReader.IOne2OneIndex object2classId) {
 		this.object2classId = object2classId;
 	}
 
-	@Override
 	public void setArray2size(IIndexReader.IOne2SizeIndex array2size) {
 		this.array2size = array2size;
 	}

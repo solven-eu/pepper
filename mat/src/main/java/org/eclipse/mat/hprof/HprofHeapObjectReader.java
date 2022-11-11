@@ -1,12 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG.
+ * Copyright (c) 2008, 2021 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson (IBM Corporation) - additional properties
  *******************************************************************************/
 package org.eclipse.mat.hprof;
 
@@ -14,10 +17,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.mat.SnapshotException;
+import org.eclipse.mat.hprof.describer.Version;
 import org.eclipse.mat.hprof.extension.IRuntimeEnhancer;
 import org.eclipse.mat.hprof.ui.HprofPreferences;
 import org.eclipse.mat.parser.IObjectReader;
@@ -29,46 +32,43 @@ import org.eclipse.mat.parser.model.PrimitiveArrayImpl;
 import org.eclipse.mat.snapshot.ISnapshot;
 import org.eclipse.mat.snapshot.model.IObject;
 import org.eclipse.mat.snapshot.model.IPrimitiveArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HprofHeapObjectReader implements IObjectReader {
-
-	protected static final Logger LOGGER = LoggerFactory.getLogger(HprofHeapObjectReader.class);
-
-	public static final String VERSION_PROPERTY = "hprof.version";
+	public static final String VERSION_PROPERTY = "hprof.version"; //$NON-NLS-1$
+	public static final String HPROF_LENGTH_PROPERTY = "hprof.length"; //$NON-NLS-1$
+	public static final String HPROF_HEAP_START = "hprof.heap.start"; //$NON-NLS-1$
 
 	private ISnapshot snapshot;
 	private HprofRandomAccessParser hprofDump;
 	private IIndexReader.IOne2LongIndex o2hprof;
 	private List<IRuntimeEnhancer> enhancers;
 
-	@Override
 	public void open(ISnapshot snapshot) throws IOException {
 		this.snapshot = snapshot;
 
-		AbstractParser.Version version =
-				AbstractParser.Version.valueOf((String) snapshot.getSnapshotInfo().getProperty(VERSION_PROPERTY));
+		Version version = Version.valueOf((String) snapshot.getSnapshotInfo().getProperty(VERSION_PROPERTY));
 
 		HprofPreferences.HprofStrictness strictnessPreference = HprofPreferences.getCurrentStrictness();
+		Long olen = (Long) snapshot.getSnapshotInfo().getProperty(HPROF_LENGTH_PROPERTY);
+		long len = (olen != null) ? olen : -1;
 
 		this.hprofDump = new HprofRandomAccessParser(new File(snapshot.getSnapshotInfo().getPath()), //
+				snapshot.getSnapshotInfo().getPrefix(), //
 				version, //
 				snapshot.getSnapshotInfo().getIdentifierSize(),
+				len,
 				strictnessPreference);
 		this.o2hprof =
-				new IndexReader.LongIndexReader(new File(snapshot.getSnapshotInfo().getPrefix() + "o2hprof.index"));
+				new IndexReader.LongIndexReader(new File(snapshot.getSnapshotInfo().getPrefix() + "o2hprof.index")); //$NON-NLS-1$
 
 		this.enhancers = new ArrayList<IRuntimeEnhancer>();
-		// for (EnhancerRegistry.Enhancer enhancer : EnhancerRegistry.instance().delegates())
-		// {
-		// IRuntimeEnhancer runtime = enhancer.runtime();
-		// if (runtime != null)
-		// this.enhancers.add(runtime);
-		// }
+		for (EnhancerRegistry.Enhancer enhancer : EnhancerRegistry.instance().delegates()) {
+			IRuntimeEnhancer runtime = enhancer.runtime();
+			if (runtime != null)
+				this.enhancers.add(runtime);
+		}
 	}
 
-	@Override
 	public long[] readObjectArrayContent(ObjectArrayImpl array, int offset, int length)
 			throws IOException, SnapshotException {
 		Object info = array.getInfo();
@@ -95,7 +95,6 @@ public class HprofHeapObjectReader implements IObjectReader {
 		}
 	}
 
-	@Override
 	public Object readPrimitiveArrayContent(PrimitiveArrayImpl array, int offset, int length)
 			throws IOException, SnapshotException {
 		Object info = array.getInfo();
@@ -127,17 +126,18 @@ public class HprofHeapObjectReader implements IObjectReader {
 	}
 
 	private Object convert(PrimitiveArrayImpl array, byte[] content) {
-		if (array.getType() == IObject.Type.BYTE)
+		int type = array.getType();
+		if (type == IObject.Type.BYTE)
 			return content;
 
-		int elementSize = IPrimitiveArray.ELEMENT_SIZE[array.getType()];
+		int elementSize = IPrimitiveArray.ELEMENT_SIZE[type];
 		int length = content.length / elementSize;
 
-		Object answer = Array.newInstance(IPrimitiveArray.COMPONENT_TYPE[array.getType()], length);
+		Object answer = Array.newInstance(IPrimitiveArray.COMPONENT_TYPE[type], length);
 
 		int index = 0;
 		for (int ii = 0; ii < content.length; ii += elementSize) {
-			switch (array.getType()) {
+			switch (type) {
 			case IObject.Type.BOOLEAN:
 				Array.set(answer, index, content[ii] != 0);
 				break;
@@ -176,24 +176,9 @@ public class HprofHeapObjectReader implements IObjectReader {
 		return answer;
 	}
 
-	@Override
 	public IObject read(int objectId, ISnapshot snapshot) throws SnapshotException, IOException {
-		try {
-			long filePosition = o2hprof.get(objectId);
-			return hprofDump.read(objectId, filePosition, snapshot);
-		} catch (SnapshotException e) {
-			throw new SnapshotException(
-					"Issue on objectId=" + objectId
-							+ " snapshot="
-							+ snapshot.getSnapshotInfo().getPath()
-							+ " o2hprof="
-							+ o2hprof
-							+ " o2hprof.size()="
-							+ o2hprof.size()
-							+ " allIndexes="
-							+ Arrays.toString(o2hprof.getNext(0, o2hprof.size())),
-					e);
-		}
+		long filePosition = o2hprof.get(objectId);
+		return hprofDump.read(objectId, filePosition, snapshot, o2hprof);
 	}
 
 	/**
@@ -206,28 +191,28 @@ public class HprofHeapObjectReader implements IObjectReader {
 	 *            {@link IRuntimeEnhancer} extension to return extra data.
 	 * @return the extra data
 	 */
-	@Override
 	public <A> A getAddon(Class<A> addon) throws SnapshotException {
 		for (IRuntimeEnhancer enhancer : enhancers) {
 			A answer = enhancer.getAddon(snapshot, addon);
 			if (answer != null)
 				return answer;
 		}
+		if (addon.isAssignableFrom(HprofRandomAccessParser.ObjectAddressReference.class)) {
+			return addon.cast(
+					new HprofRandomAccessParser.ObjectAddressReference(snapshot, hprofDump, o2hprof, Long.MIN_VALUE));
+		}
 		return null;
 	}
 
-	@Override
 	public void close() throws IOException {
 		try {
 			hprofDump.close();
 		} catch (IOException ignore) {
-			LOGGER.trace("Ouch", ignore);
 		}
 
 		try {
 			o2hprof.close();
 		} catch (IOException ignore) {
-			LOGGER.trace("Ouch", ignore);
 		}
 	}
 
@@ -236,14 +221,14 @@ public class HprofHeapObjectReader implements IObjectReader {
 	// //////////////////////////////////////////////////////////////
 
 	private short readShort(byte[] data, int offset) {
-		int b1 = data[offset] & 0xff;
-		int b2 = data[offset + 1] & 0xff;
+		int b1 = (data[offset] & 0xff);
+		int b2 = (data[offset + 1] & 0xff);
 		return (short) ((b1 << 8) + b2);
 	}
 
 	private char readChar(byte[] data, int offset) {
-		int b1 = data[offset] & 0xff;
-		int b2 = data[offset + 1] & 0xff;
+		int b1 = (data[offset] & 0xff);
+		int b2 = (data[offset + 1] & 0xff);
 		return (char) ((b1 << 8) + b2);
 	}
 

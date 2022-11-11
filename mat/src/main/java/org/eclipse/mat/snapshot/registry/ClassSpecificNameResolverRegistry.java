@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2012 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -16,8 +18,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.mat.SnapshotException;
-import org.eclipse.mat.inspections.CommonNameResolver;
+import org.eclipse.mat.internal.MATPlugin;
 import org.eclipse.mat.internal.Messages;
 import org.eclipse.mat.snapshot.extension.IClassSpecificNameResolver;
 import org.eclipse.mat.snapshot.model.IClass;
@@ -35,13 +39,20 @@ public final class ClassSpecificNameResolverRegistry {
 	// //////////////////////////////////////////////////////////////
 
 	/** inner class because RegistryReader API not public */
-	private static class RegistryImpl {
+	private static class RegistryImpl extends SubjectRegistry<IClassSpecificNameResolver> {
 		// For registerResolver()
 		private Map<String, IClassSpecificNameResolver> resolvers;
 
 		public RegistryImpl() {
 			// For registerResolver()
 			resolvers = new HashMap<String, IClassSpecificNameResolver>();
+			init(MATPlugin.getDefault().getExtensionTracker(), MATPlugin.PLUGIN_ID + ".nameResolver"); //$NON-NLS-1$
+		}
+
+		@Override
+		protected IClassSpecificNameResolver doCreateDelegate(IConfigurationElement configElement)
+				throws CoreException {
+			return (IClassSpecificNameResolver) configElement.createExecutableExtension("impl"); //$NON-NLS-1$
 		}
 
 		private String doResolve(IObject object) {
@@ -75,15 +86,6 @@ public final class ClassSpecificNameResolverRegistry {
 										object.getTechnicalName()),
 								e);
 				return null;
-			}
-		}
-
-		private IClassSpecificNameResolver lookup(String name) {
-			// TODO We have deactivate the plugins mechanism
-			if (String.class.getName().equals(name)) {
-				return new CommonNameResolver.StringResolver();
-			} else {
-				throw new UnsupportedOperationException("Apex MAT: TODO");
 			}
 		}
 

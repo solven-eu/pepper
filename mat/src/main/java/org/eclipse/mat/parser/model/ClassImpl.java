@@ -1,13 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2016 SAP AG, IBM Corporation and others.
+ * Copyright (c) 2008, 2021 SAP AG, IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
  *    Andrew Johnson - documentation update
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
  *******************************************************************************/
 package org.eclipse.mat.parser.model;
 
@@ -18,6 +21,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import org.eclipse.mat.SnapshotException;
 import org.eclipse.mat.collect.ArrayInt;
@@ -40,6 +45,10 @@ import org.eclipse.mat.util.VoidProgressListener;
  */
 public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<ClassImpl> {
 	private static final long serialVersionUID = 22L;
+	private static final transient AtomicIntegerFieldUpdater<ClassImpl> instanceCountUpdater =
+			AtomicIntegerFieldUpdater.newUpdater(ClassImpl.class, "instanceCount"); //$NON-NLS-1$
+	private static final transient AtomicLongFieldUpdater<ClassImpl> totalSizeUpdater =
+			AtomicLongFieldUpdater.newUpdater(ClassImpl.class, "totalSize"); //$NON-NLS-1$
 
 	public static final String JAVA_LANG_CLASS = IClass.JAVA_LANG_CLASS;
 
@@ -52,8 +61,8 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 	protected FieldDescriptor[] fields;
 	protected int usedHeapSize;
 	protected int instanceSize;
-	protected int instanceCount;
-	protected long totalSize;
+	protected volatile int instanceCount;
+	protected volatile long totalSize;
 	protected boolean isArrayType;
 
 	private List<IClass> subClasses;
@@ -92,7 +101,7 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		this.instanceSize = -1;
 
 		this.totalSize = 0;
-		this.isArrayType = name.endsWith("[]");
+		this.isArrayType = name.endsWith("[]");//$NON-NLS-1$
 	}
 
 	/**
@@ -134,7 +143,6 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		this.classLoaderId = classLoaderIndex;
 	}
 
-	@Override
 	public int[] getObjectIds() throws UnsupportedOperationException, SnapshotException {
 		try {
 			return source.getIndexManager().c2objects().getObjectsOf(this.cacheEntry);
@@ -143,7 +151,6 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		}
 	}
 
-	@Override
 	public long getRetainedHeapSizeOfObjects(boolean calculateIfNotAvailable,
 			boolean approximation,
 			IProgressListener listener) throws SnapshotException {
@@ -158,7 +165,7 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		if (listener == null)
 			listener = new VoidProgressListener();
 
-		ArrayInt ids = new ArrayInt();
+		ArrayInt ids = new ArrayInt(1 + getNumberOfObjects());
 		ids.add(getObjectId());
 		ids.addAll(getObjectIds());
 
@@ -189,7 +196,6 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		return usedHeapSize;
 	}
 
-	@Override
 	public ArrayLong getReferences() {
 		ArrayLong answer = new ArrayLong(staticFields.length);
 
@@ -208,19 +214,18 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		return answer;
 	}
 
-	@Override
 	public List<NamedReference> getOutboundReferences() {
 		List<NamedReference> answer = new LinkedList<NamedReference>();
-		answer.add(new PseudoReference(source, classInstance.getObjectAddress(), "<class>"));
+		answer.add(new PseudoReference(source, classInstance.getObjectAddress(), "<class>"));//$NON-NLS-1$
 		if (superClassAddress != 0)
-			answer.add(new PseudoReference(source, superClassAddress, "<super>"));
-		answer.add(new PseudoReference(source, classLoaderAddress, "<classloader>"));
+			answer.add(new PseudoReference(source, superClassAddress, "<super>"));//$NON-NLS-1$
+		answer.add(new PseudoReference(source, classLoaderAddress, "<classloader>"));//$NON-NLS-1$
 
 		for (int ii = 0; ii < staticFields.length; ii++) {
 			if (staticFields[ii].getValue() instanceof ObjectReference) {
 				ObjectReference ref = (ObjectReference) staticFields[ii].getValue();
 				String fieldName = staticFields[ii].getName();
-				if (fieldName.startsWith("<"))
+				if (fieldName.startsWith("<")) //$NON-NLS-1$
 					answer.add(new PseudoReference(source, ref.getObjectAddress(), fieldName));
 				else
 					answer.add(new NamedReference(source, ref.getObjectAddress(), fieldName));
@@ -230,7 +235,6 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		return answer;
 	}
 
-	@Override
 	public long getClassLoaderAddress() {
 		return classLoaderAddress;
 	}
@@ -239,12 +243,10 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		this.classLoaderAddress = address;
 	}
 
-	@Override
 	public List<FieldDescriptor> getFieldDescriptors() {
 		return Arrays.asList(fields);
 	}
 
-	@Override
 	public int getNumberOfObjects() {
 		return instanceCount;
 	}
@@ -252,7 +254,6 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 	/**
 	 * @since 1.0
 	 */
-	@Override
 	public long getHeapSizePerInstance() {
 		return instanceSize;
 	}
@@ -264,7 +265,6 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		instanceSize = (int) Math.min(size, Integer.MAX_VALUE);
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}
@@ -273,7 +273,6 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		this.name = name;
 	}
 
-	@Override
 	public List<Field> getStaticFields() {
 		return Arrays.asList(staticFields);
 	}
@@ -282,17 +281,15 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		return superClassAddress;
 	}
 
-	@Override
 	public int getSuperClassId() {
 		return superClassId;
 	}
 
-	@Override
 	public ClassImpl getSuperClass() {
 		try {
 			return superClassAddress != 0 ? (ClassImpl) this.source.getObject(superClassId) : null;
 		} catch (SnapshotException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 
@@ -300,12 +297,10 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		return totalSize;
 	}
 
-	@Override
 	public boolean hasSuperClass() {
 		return this.superClassAddress != 0;
 	}
 
-	@Override
 	public int compareTo(ClassImpl other) {
 		final long myAddress = getObjectAddress();
 		final long otherAddress = other.getObjectAddress();
@@ -316,25 +311,28 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 	 * @since 1.0
 	 */
 	public void addInstance(long usedHeapSize) {
-		this.instanceCount++;
-		this.totalSize += usedHeapSize;
+		instanceCountUpdater.getAndAdd(this, 1);
+		totalSizeUpdater.getAndAdd(this, usedHeapSize);
 	}
 
 	/**
 	 * @since 1.0
 	 */
 	public void removeInstance(long heapSizePerInstance) {
-		this.instanceCount--;
-		this.totalSize -= heapSizePerInstance;
+		instanceCountUpdater.getAndAdd(this, -1);
+		totalSizeUpdater.getAndAdd(this, -heapSizePerInstance);
 	}
 
-	@Override
+	void removeInstanceBulk(int instanceCount, long heapSize) {
+		instanceCountUpdater.getAndAdd(this, -instanceCount);
+		totalSizeUpdater.getAndAdd(this, heapSize);
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<IClass> getSubclasses() {
 		return subClasses != null ? subClasses : Collections.EMPTY_LIST;
 	}
 
-	@Override
 	public List<IClass> getAllSubclasses() {
 		if (subClasses == null || subClasses.isEmpty())
 			return new ArrayList<IClass>();
@@ -348,20 +346,18 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 
 	@Override
 	protected StringBuffer appendFields(StringBuffer buf) {
-		return super.appendFields(buf).append(";name=").append(getName());
+		return super.appendFields(buf).append(";name=").append(getName());//$NON-NLS-1$
 	}
 
-	@Override
 	public boolean isArrayType() {
 		return isArrayType;
 	}
 
-	@Override
 	public String getTechnicalName() {
 		StringBuilder builder = new StringBuilder(256);
-		builder.append("class ");
+		builder.append("class ");//$NON-NLS-1$
 		builder.append(getName());
-		builder.append(" @ 0x");
+		builder.append(" @ 0x");//$NON-NLS-1$
 		builder.append(Long.toHexString(getObjectAddress()));
 		return builder.toString();
 	}
@@ -374,7 +370,6 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		return null;
 	}
 
-	@Override
 	public int getClassLoaderId() {
 		return classLoaderId;
 	}
@@ -396,7 +391,6 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		this.usedHeapSize = (int) Math.min(usedHeapSize, Integer.MAX_VALUE);
 	}
 
-	@Override
 	public boolean doesExtend(String className) throws SnapshotException {
 		if (className.equals(this.name))
 			return true;

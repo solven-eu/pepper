@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2009 SAP AG.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -18,7 +20,6 @@ import java.util.Comparator;
 public class ObjectComparators {
 	public static Comparator<IObject> getComparatorForTechnicalNameAscending() {
 		return new Comparator<IObject>() {
-			@Override
 			public int compare(IObject o1, IObject o2) {
 				return o1.getTechnicalName().compareTo(o2.getTechnicalName());
 			}
@@ -27,7 +28,6 @@ public class ObjectComparators {
 
 	public static Comparator<IObject> getComparatorForTechnicalNameDescending() {
 		return new Comparator<IObject>() {
-			@Override
 			public int compare(IObject o1, IObject o2) {
 				return o2.getTechnicalName().compareTo(o1.getTechnicalName());
 			}
@@ -37,7 +37,6 @@ public class ObjectComparators {
 	public static Comparator<IObject> getComparatorForClassSpecificNameAscending() {
 		return new Comparator<IObject>() {
 
-			@Override
 			public int compare(IObject o1, IObject o2) {
 				String name1 = o1.getClassSpecificName();
 				if (name1 == null)
@@ -53,7 +52,6 @@ public class ObjectComparators {
 
 	public static Comparator<IObject> getComparatorForClassSpecificNameDescending() {
 		return new Comparator<IObject>() {
-			@Override
 			public int compare(IObject o1, IObject o2) {
 				String name1 = o1.getClassSpecificName();
 				if (name1 == null)
@@ -69,7 +67,6 @@ public class ObjectComparators {
 
 	public static Comparator<IObject> getComparatorForUsedHeapSizeAscending() {
 		return new Comparator<IObject>() {
-			@Override
 			public int compare(IObject o1, IObject o2) {
 				if (o1.getUsedHeapSize() < o2.getUsedHeapSize())
 					return -1;
@@ -82,7 +79,6 @@ public class ObjectComparators {
 
 	public static Comparator<IObject> getComparatorForUsedHeapSizeDescending() {
 		return new Comparator<IObject>() {
-			@Override
 			public int compare(IObject o1, IObject o2) {
 				if (o1.getUsedHeapSize() < o2.getUsedHeapSize())
 					return 1;
@@ -95,7 +91,6 @@ public class ObjectComparators {
 
 	public static Comparator<IObject> getComparatorForRetainedHeapSizeAscending() {
 		return new Comparator<IObject>() {
-			@Override
 			public int compare(IObject o1, IObject o2) {
 				if (o1.getRetainedHeapSize() < o2.getRetainedHeapSize())
 					return -1;
@@ -108,7 +103,6 @@ public class ObjectComparators {
 
 	public static Comparator<IObject> getComparatorForRetainedHeapSizeDescending() {
 		return new Comparator<IObject>() {
-			@Override
 			public int compare(IObject o1, IObject o2) {
 				if (o1.getRetainedHeapSize() < o2.getRetainedHeapSize())
 					return 1;

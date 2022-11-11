@@ -1,12 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG.
+ * Copyright (c) 2008, 2018 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    IBM Corporation/Andrew Johnson - Javadoc updates
  *******************************************************************************/
 package org.eclipse.mat.util;
 
@@ -26,25 +29,24 @@ public final class SimpleStringTokenizer implements Iterable<String> {
 	 * Gets the different part of a string which are separated by the delimiter.
 	 *
 	 * @param subject
+	 *            the string
 	 * @param delim
+	 *            the character to split at
 	 */
 	public SimpleStringTokenizer(String subject, char delim) {
 		this.subject = subject;
 		this.delim = delim;
 	}
 
-	@Override
 	public Iterator<String> iterator() {
 		return new Iterator<String>() {
 			int position = 0;
 			int maxPosition = subject.length();
 
-			@Override
 			public boolean hasNext() {
 				return position < maxPosition;
 			}
 
-			@Override
 			public String next() {
 				if (position >= maxPosition)
 					throw new NoSuchElementException();
@@ -65,7 +67,6 @@ public final class SimpleStringTokenizer implements Iterable<String> {
 				return answer;
 			}
 
-			@Override
 			public void remove() {
 				throw new UnsupportedOperationException();
 			}
@@ -76,8 +77,10 @@ public final class SimpleStringTokenizer implements Iterable<String> {
 	 * Splits the string at the delimiter character.
 	 *
 	 * @param subject
+	 *            the string to split
 	 * @param delim
-	 * @return the string split at the delimiter
+	 *            the character to split at
+	 * @return the string split multiple times at the delimiter, trimmed of spaces
 	 */
 	public static String[] split(String subject, char delim) {
 		List<String> answer = new ArrayList<String>();

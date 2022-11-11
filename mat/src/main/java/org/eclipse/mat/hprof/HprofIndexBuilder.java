@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2013 SAP AG and IBM Corporation.
+ * Copyright (c) 2008, 2020 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -28,34 +30,26 @@ import org.eclipse.mat.parser.index.IndexWriter;
 import org.eclipse.mat.util.IProgressListener;
 import org.eclipse.mat.util.MessageUtil;
 import org.eclipse.mat.util.SimpleMonitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HprofIndexBuilder implements IIndexBuilder {
-
-	protected static final Logger LOGGER = LoggerFactory.getLogger(HprofIndexBuilder.class);
-
 	private File file;
 	private String prefix;
 	private IOne2LongIndex id2position;
 	private List<IParsingEnhancer> enhancers;
 
-	@Override
 	public void init(File file, String prefix) {
 		this.file = file;
 		this.prefix = prefix;
 
 		this.enhancers = new ArrayList<IParsingEnhancer>();
-		// for (EnhancerRegistry.Enhancer enhancer : EnhancerRegistry.instance().delegates())
-		// {
-		// IParsingEnhancer parsingEnhancer = enhancer.parser();
-		// if (parsingEnhancer != null)
-		// this.enhancers.add(parsingEnhancer);
-		// }
+		for (EnhancerRegistry.Enhancer enhancer : EnhancerRegistry.instance().delegates()) {
+			IParsingEnhancer parsingEnhancer = enhancer.parser();
+			if (parsingEnhancer != null)
+				this.enhancers.add(parsingEnhancer);
+		}
 
 	}
 
-	@Override
 	public void fill(IPreliminaryIndex preliminary, IProgressListener listener) throws SnapshotException, IOException {
 		HprofPreferences.HprofStrictness strictnessPreference = HprofPreferences.getCurrentStrictness();
 
@@ -66,19 +60,21 @@ public class HprofIndexBuilder implements IIndexBuilder {
 
 		IHprofParserHandler handler = new HprofParserHandlerImpl();
 		handler.beforePass1(preliminary.getSnapshotInfo());
+		long estimatedLength = CompressedRandomAccessFile.estimatedLength(file);
+		int pass1Work = (int) (CompressedRandomAccessFile.estimateWork(file) / 1000);
 
 		SimpleMonitor.Listener mon = (SimpleMonitor.Listener) monitor.nextMonitor();
 		mon.beginTask(MessageUtil.format(Messages.HprofIndexBuilder_Scanning, new Object[] { file.getAbsolutePath() }),
-				(int) (file.length() / 1000));
+				pass1Work);
 		Pass1Parser pass1 = new Pass1Parser(handler, mon, strictnessPreference);
-		Serializable id = preliminary.getSnapshotInfo().getProperty("$runtimeId");
+		Serializable id = preliminary.getSnapshotInfo().getProperty("$runtimeId"); //$NON-NLS-1$
 		String dumpNrToRead;
 		if (id instanceof String) {
 			dumpNrToRead = (String) id;
 		} else {
 			dumpNrToRead = pass1.determineDumpNumber();
 		}
-		pass1.read(file, dumpNrToRead);
+		pass1.read(file, prefix, dumpNrToRead, estimatedLength);
 
 		if (listener.isCanceled())
 			throw new IProgressListener.OperationCanceledException();
@@ -87,14 +83,31 @@ public class HprofIndexBuilder implements IIndexBuilder {
 
 		handler.beforePass2(listener);
 
+		long streamLength = pass1.streamLength();
+
 		mon = (SimpleMonitor.Listener) monitor.nextMonitor();
 		mon.beginTask(
 				MessageUtil.format(Messages.HprofIndexBuilder_ExtractingObjects,
 						new Object[] { file.getAbsolutePath() }),
-				(int) (file.length() / 1000));
+				(int) (streamLength / 1000));
 
-		Pass2Parser pass2 = new Pass2Parser(handler, mon, strictnessPreference);
-		pass2.read(file, dumpNrToRead);
+		/*
+		 * Estimate whether parallel processing of object arrays will cause an OutOfMemoryError.
+		 */
+		long biggestArrays = pass1.biggestArrays();
+		// Just a guess from experimentation with a dumps with 100x[200000] and 2x[20000000] arrays
+		long memestimate = biggestArrays * 24;
+		Runtime runtime = Runtime.getRuntime();
+		// This free memory calculation is very approximate - we do a GC to get a better estimate
+		long maxFree = runtime.maxMemory() - runtime.totalMemory() + runtime.freeMemory();
+		if (!(maxFree > memestimate)) {
+			runtime.gc();
+			maxFree = runtime.maxMemory() - runtime.totalMemory() + runtime.freeMemory();
+		}
+		boolean parallel = maxFree > memestimate;
+
+		Pass2Parser pass2 = new Pass2Parser(handler, mon, strictnessPreference, streamLength, parallel);
+		pass2.read(file, prefix, dumpNrToRead);
 
 		if (listener.isCanceled())
 			throw new IProgressListener.OperationCanceledException();
@@ -107,17 +120,16 @@ public class HprofIndexBuilder implements IIndexBuilder {
 		for (IParsingEnhancer enhancer : enhancers)
 			enhancer.onParsingCompleted(handler.getSnapshotInfo());
 
-		id2position = handler.fillIn(preliminary);
+		id2position = handler.fillIn(preliminary, listener);
 	}
 
-	@Override
 	public void clean(final int[] purgedMapping, IProgressListener listener) throws IOException {
 
 		// //////////////////////////////////////////////////////////////
 		// object 2 hprof position
 		// //////////////////////////////////////////////////////////////
 
-		File indexFile = new File(prefix + "o2hprof.index");
+		File indexFile = new File(prefix + "o2hprof.index"); //$NON-NLS-1$
 		listener.subTask(
 				MessageUtil.format(Messages.HprofIndexBuilder_Writing, new Object[] { indexFile.getAbsolutePath() }));
 		IOne2LongIndex newIndex =
@@ -126,20 +138,17 @@ public class HprofIndexBuilder implements IIndexBuilder {
 		try {
 			newIndex.close();
 		} catch (IOException ignore) {
-			LOGGER.trace("Ouch", ignore);
 		}
 
 		try {
 			id2position.close();
 		} catch (IOException ignore) {
-			LOGGER.trace("Ouch", ignore);
 		}
 
 		id2position.delete();
 		id2position = null;
 	}
 
-	@Override
 	public void cancel() {
 		if (id2position != null) {
 			try {
@@ -162,12 +171,10 @@ public class HprofIndexBuilder implements IIndexBuilder {
 			findNext();
 		}
 
-		@Override
 		public boolean hasNext() {
 			return nextIndex < purgedMapping.length;
 		}
 
-		@Override
 		public long next() {
 			long answer = id2position.get(nextIndex);
 			findNext();

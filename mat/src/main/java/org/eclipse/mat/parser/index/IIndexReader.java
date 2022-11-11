@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and others.
+ * Copyright (c) 2008, 2022 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -22,9 +24,35 @@ public interface IIndexReader {
 	/**
 	 * Index from object id to another int. For example, object id to type id.
 	 */
-	interface IOne2OneIndex extends IIndexReader {
+	public interface IOne2OneIndex extends IIndexReader {
+		/**
+		 * Look up an int in the underlying index
+		 *
+		 * @param index
+		 *            the int key
+		 * @return the int value
+		 */
 		int get(int index);
 
+		/**
+		 * Look up all the items from the index array and return the version in the index
+		 *
+		 * @param index
+		 *            an array of items to look up
+		 * @return an array of the result items
+		 */
+		int[] getAll(int index[]);
+
+		/**
+		 * Look up all the items from the index from index to index + length - 1 and return the result in the index for
+		 * each on
+		 *
+		 * @param index
+		 *            the start index
+		 * @param length
+		 *            the number of consecutive items to look up
+		 * @return an array of the result items
+		 */
 		int[] getNext(int index, int length);
 	}
 
@@ -33,18 +61,49 @@ public interface IIndexReader {
 	 *
 	 * @since 1.0
 	 */
-	interface IOne2SizeIndex extends IOne2OneIndex {
+	public interface IOne2SizeIndex extends IOne2OneIndex {
+		/**
+		 * Look up the size of an object
+		 *
+		 * @param index
+		 *            the object ID
+		 * @return size in bytes
+		 */
 		long getSize(int index);
 	}
 
 	/**
 	 * Index from object id to a long. For example, object id to object address or object id to retained size.
 	 */
-	interface IOne2LongIndex extends IIndexReader {
+	public interface IOne2LongIndex extends IIndexReader {
+		/**
+		 * Look up a long from an int in the index.
+		 *
+		 * @param index
+		 *            the key
+		 * @return the long
+		 */
 		long get(int index);
 
+		/**
+		 * Find the int corresponding to the long in the index value. The reverse of
+		 * {@link IIndexReader.IOne2LongIndex#get(int)}
+		 *
+		 * @param value
+		 *            the value to look up
+		 * @return the correspond int key in the index
+		 */
 		int reverse(long value);
 
+		/**
+		 * Look up long from an range of int keys in the index.
+		 *
+		 * @param index
+		 *            the starting point
+		 * @param length
+		 *            the number of items to look up
+		 * @return an array of longs corresponding to the input
+		 */
 		long[] getNext(int index, int length);
 	}
 
@@ -52,14 +111,28 @@ public interface IIndexReader {
 	 * Index from object id to several object ids. For example outbound references from an object or outbound dominated
 	 * ids.
 	 */
-	interface IOne2ManyIndex extends IIndexReader {
+	public interface IOne2ManyIndex extends IIndexReader {
+		/**
+		 * Get the object IDs corresponding to the input object ID
+		 *
+		 * @param index
+		 * @return an array holding the object IDs
+		 */
 		int[] get(int index);
 	}
 
 	/**
 	 * Index from object id to several object ids. For example inbound references from an object.
 	 */
-	interface IOne2ManyObjectsIndex extends IOne2ManyIndex {
+	public interface IOne2ManyObjectsIndex extends IOne2ManyIndex {
+		/**
+		 * Get the object IDs corresponding to the input key
+		 *
+		 * @param key
+		 * @return a list of object IDs corresponding to the key
+		 * @throws SnapshotException
+		 * @throws IOException
+		 */
 		int[] getObjectsOf(Serializable key) throws SnapshotException, IOException;
 	}
 

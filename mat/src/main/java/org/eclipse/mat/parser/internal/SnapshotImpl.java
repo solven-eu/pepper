@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2013 SAP AG and others.
+ * Copyright (c) 2008, 2021 SAP AG, IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -17,8 +19,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,6 +49,7 @@ import org.eclipse.mat.parser.index.IIndexReader.IOne2OneIndex;
 import org.eclipse.mat.parser.index.IIndexReader.IOne2SizeIndex;
 import org.eclipse.mat.parser.index.IndexManager;
 import org.eclipse.mat.parser.index.IndexManager.Index;
+import org.eclipse.mat.parser.internal.snapshot.HistogramBuilder;
 import org.eclipse.mat.parser.internal.snapshot.MultiplePathsFromGCRootsComputerImpl;
 import org.eclipse.mat.parser.internal.snapshot.ObjectCache;
 import org.eclipse.mat.parser.internal.snapshot.ObjectMarker;
@@ -57,60 +62,120 @@ import org.eclipse.mat.parser.model.AbstractObjectImpl;
 import org.eclipse.mat.parser.model.ClassImpl;
 import org.eclipse.mat.parser.model.ClassLoaderImpl;
 import org.eclipse.mat.parser.model.InstanceImpl;
+import org.eclipse.mat.parser.model.ObjectArrayImpl;
+import org.eclipse.mat.parser.model.PrimitiveArrayImpl;
+import org.eclipse.mat.parser.model.XClassHistogramRecord;
 import org.eclipse.mat.parser.model.XGCRootInfo;
 import org.eclipse.mat.parser.model.XSnapshotInfo;
 import org.eclipse.mat.snapshot.DominatorsSummary;
 import org.eclipse.mat.snapshot.DominatorsSummary.ClassDominatorRecord;
 import org.eclipse.mat.snapshot.ExcludedReferencesDescriptor;
+import org.eclipse.mat.snapshot.Histogram;
 import org.eclipse.mat.snapshot.IMultiplePathsFromGCRootsComputer;
 import org.eclipse.mat.snapshot.IPathsFromGCRootsComputer;
 import org.eclipse.mat.snapshot.ISnapshot;
 import org.eclipse.mat.snapshot.PathsFromGCRootsTree;
+import org.eclipse.mat.snapshot.UnreachableObjectsHistogram;
 import org.eclipse.mat.snapshot.model.GCRootInfo;
 import org.eclipse.mat.snapshot.model.IClass;
 import org.eclipse.mat.snapshot.model.IObject;
+import org.eclipse.mat.snapshot.model.IPrimitiveArray;
 import org.eclipse.mat.snapshot.model.IThreadStack;
 import org.eclipse.mat.snapshot.model.NamedReference;
 import org.eclipse.mat.util.IProgressListener;
 import org.eclipse.mat.util.IProgressListener.OperationCanceledException;
 import org.eclipse.mat.util.MessageUtil;
 import org.eclipse.mat.util.VoidProgressListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class SnapshotImpl implements ISnapshot {
-
-	protected static final Logger LOGGER = LoggerFactory.getLogger(SnapshotImpl.class);
 
 	// //////////////////////////////////////////////////////////////
 	// factory methods
 	// //////////////////////////////////////////////////////////////
 
-	private static final String VERSION = "MAT_01";
+	private static final String VERSION = "MAT_01";//$NON-NLS-1$
 
 	@SuppressWarnings("unchecked")
 	public static SnapshotImpl readFromFile(File file, String prefix, IProgressListener listener)
 			throws SnapshotException, IOException {
+		FileInputStream fis = null;
+
 		listener.beginTask(Messages.SnapshotImpl_ReopeningParsedHeapDumpFile, 9);
 
-		File indexFile = new File(prefix + "index");
-		try (FileInputStream fis = new FileInputStream(indexFile);
-				ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(fis));) {
+		try {
+			File indexFile = new File(prefix + "index"); //$NON-NLS-1$
+			fis = new FileInputStream(indexFile);
 			listener.worked(1);
+			/**
+			 * Classes deserialized: org.eclipse.mat.parser.model.XSnapshotInfo
+			 * org.eclipse.mat.parser.model.AbstractObjectImpl org.eclipse.mat.parser.model.XGCRootInfo
+			 * org.eclipse.mat.parser.model.ClassImpl [Lorg.eclipse.mat.parser.model.XGCRootInfo
+			 * org.eclipse.mat.parser.model.XGCRootInfo
+			 *
+			 * org.eclipse.mat.snapshot.SnapshotInfo org.eclipse.mat.snapshot.UnreachableObjectsHistogram
+			 *
+			 * org.eclipse.mat.snapshot.model.GCRootInfo org.eclipse.mat.snapshot.model.FieldDescriptor
+			 * org.eclipse.mat.snapshot.model.Field [Lorg.eclipse.mat.snapshot.model.FieldDescriptor
+			 * [Lorg.eclipse.mat.snapshot.model.Field org.eclipse.mat.snapshot.model.ObjectReference
+			 *
+			 * org.eclipse.mat.collect.HashMapIntObject org.eclipse.mat.collect.BitField
+			 *
+			 * java.util.ArrayList: java.util.Date java.util.HashMap
+			 *
+			 * java.lang.Boolean java.lang.Long java.lang.Number java.lang.Byte java.lang.Short java.lang.Character
+			 * java.lang.Double java.lang.Float [I
+			 *
+			 */
+			ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(fis)) {
+				@Override
+				protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+					// similar to system property jdk.serialFilter
+					String match =
+							"java.lang.*;java.util.*;org.eclipse.mat.parser.model.*;org.eclipse.mat.snapshot.*;org.eclipse.mat.snapshot.model.*;org.eclipse.mat.collect.*;!*"; //$NON-NLS-1$
+					String nm = desc.getName();
+					if (!nm.startsWith("[")) //$NON-NLS-1$
+					{
+						for (String pt : match.split(";")) //$NON-NLS-1$
+						{
+							boolean not = pt.startsWith("!"); //$NON-NLS-1$
+							if (not)
+								pt = pt.substring(1);
+							boolean m;
+							if (pt.endsWith(".**")) //$NON-NLS-1$
+								m = nm.startsWith(pt.substring(0, pt.length() - 2));
+							else if (pt.endsWith(".*")) //$NON-NLS-1$
+								m = nm.startsWith(pt.substring(0, pt.length() - 1))
+										&& !nm.substring(pt.length() - 1).contains("."); //$NON-NLS-1$
+							else if (pt.endsWith("*")) //$NON-NLS-1$
+								m = nm.startsWith(pt.substring(0, pt.length() - 1));
+							else
+								m = nm.equals(pt);
+							if (not && m)
+								throw new InvalidClassException(nm, match);
+							if (m)
+								break;
+						}
+					}
+					return super.resolveClass(desc);
+				}
+			};
 
 			String version = in.readUTF();
 			if (!VERSION.equals(version))
 				throw new IOException(MessageUtil.format(Messages.SnapshotImpl_Error_UnknownVersion, version));
 
 			String objectReaderUniqueIdentifier = in.readUTF();
-			Parser parser = ParserRegistry.lookupParser(objectReaderUniqueIdentifier);
+			Parser parser = ParserPlugin.getDefault().getParserRegistry().lookupParser(objectReaderUniqueIdentifier);
 			if (parser == null)
 				throw new IOException(Messages.SnapshotImpl_Error_ParserNotFound + objectReaderUniqueIdentifier);
 			listener.worked(1);
-			IObjectReader heapObjectReader = parser.createObjectReader();
+			IObjectReader heapObjectReader = parser.create(IObjectReader.class, ParserRegistry.OBJECT_READER);
+			if (heapObjectReader == null)
+				throw new SnapshotException(
+						MessageUtil.format(Messages.SnapshotFactoryImpl_Error_OpeningHeapDump, file));
 
 			XSnapshotInfo snapshotInfo = (XSnapshotInfo) in.readObject();
-			snapshotInfo.setProperty("$heapFormat", parser.getId());
+			snapshotInfo.setProperty("$heapFormat", parser.getId()); //$NON-NLS-1$
 			HashMapIntObject<ClassImpl> classCache = (HashMapIntObject<ClassImpl>) in.readObject();
 
 			if (listener.isCanceled())
@@ -143,18 +208,28 @@ public final class SnapshotImpl implements ISnapshot {
 			}
 
 			IndexManager indexManager = new IndexManager();
-			indexManager.init(prefix);
+			boolean done = false;
+			try {
+				indexManager.init(prefix);
 
-			SnapshotImpl ret = new SnapshotImpl(snapshotInfo,
-					heapObjectReader,
-					classCache,
-					roots,
-					rootsPerThread,
-					loaderLabels,
-					arrayObjects,
-					indexManager);
-			listener.worked(3);
-			return ret;
+				SnapshotImpl ret = new SnapshotImpl(snapshotInfo,
+						heapObjectReader,
+						classCache,
+						roots,
+						rootsPerThread,
+						loaderLabels,
+						arrayObjects,
+						indexManager);
+				listener.worked(3);
+				done = true;
+
+				return ret;
+			} finally {
+				if (!done) {
+					// Close files on error to allow delete
+					indexManager.close();
+				}
+			}
 		} catch (ClassNotFoundException e) {
 			IOException ioe = new IOException(e.getMessage());
 			ioe.initCause(e);
@@ -164,6 +239,8 @@ public final class SnapshotImpl implements ISnapshot {
 			ioe.initCause(e);
 			throw ioe;
 		} finally {
+			if (fis != null)
+				fis.close();
 			listener.done();
 		}
 	}
@@ -192,7 +269,7 @@ public final class SnapshotImpl implements ISnapshot {
 		ObjectOutputStream out = null;
 
 		try {
-			fos = new FileOutputStream(snapshotInfo.getPrefix() + "index");
+			fos = new FileOutputStream(snapshotInfo.getPrefix() + "index");//$NON-NLS-1$
 			out = new ObjectOutputStream(new BufferedOutputStream(fos));
 			out.writeUTF(VERSION);
 			out.writeUTF(objectReaderUniqueIdentifier);
@@ -291,9 +368,9 @@ public final class SnapshotImpl implements ISnapshot {
 
 		this.heapObjectReader.open(this);
 
-		// Object unreach = snapshotInfo.getProperty(UnreachableObjectsHistogram.class.getName());
-		// if (unreach instanceof UnreachableObjectsHistogram)
-		// ((UnreachableObjectsHistogram)unreach).setSnapshot(this);
+		Object unreach = snapshotInfo.getProperty(UnreachableObjectsHistogram.class.getName());
+		if (unreach instanceof UnreachableObjectsHistogram)
+			((UnreachableObjectsHistogram) unreach).setSnapshot(this);
 	}
 
 	private void calculateLoaderLabels() throws SnapshotException {
@@ -313,7 +390,7 @@ public final class SnapshotImpl implements ISnapshot {
 				continue;
 
 			if (classLoaderId == systemClassLoaderId) {
-				label = "<system class loader>";
+				label = "<system class loader>";//$NON-NLS-1$
 			} else {
 				IObject classLoader = getObject(classLoaderId);
 				label = classLoader.getClassSpecificName();
@@ -335,7 +412,7 @@ public final class SnapshotImpl implements ISnapshot {
 						continue;
 
 					if (classLoaderId == systemClassLoaderId) {
-						label = "<system class loader>";
+						label = "<system class loader>";//$NON-NLS-1$
 					} else {
 						IObject classLoader = getObject(classLoaderId);
 						label = classLoader.getClassSpecificName();
@@ -368,24 +445,20 @@ public final class SnapshotImpl implements ISnapshot {
 	// interface implementation
 	// //////////////////////////////////////////////////////////////
 
-	@Override
 	public XSnapshotInfo getSnapshotInfo() {
 		return snapshotInfo;
 	}
 
-	@Override
 	public int[] getGCRoots() throws SnapshotException {
 		return roots.getAllKeys();
 		// return Arrays.asList((GCRootInfo[]) roots.getAllValues(new
 		// GCRootInfo[roots.size()]));
 	}
 
-	@Override
 	public Collection<IClass> getClasses() throws SnapshotException {
 		return Arrays.asList(classCache.getAllValues(new IClass[classCache.size()]));
 	}
 
-	@Override
 	public Collection<IClass> getClassesByName(String name, boolean includeSubClasses) throws SnapshotException {
 		List<IClass> list = this.classCacheByName.get(name);
 		if (list == null)
@@ -402,7 +475,6 @@ public final class SnapshotImpl implements ISnapshot {
 		return answer;
 	}
 
-	@Override
 	public Collection<IClass> getClassesByName(Pattern namePattern, boolean includeSubClasses)
 			throws SnapshotException {
 		Set<IClass> result = new HashSet<IClass>();
@@ -419,70 +491,62 @@ public final class SnapshotImpl implements ISnapshot {
 		return result;
 	}
 
-	// public Histogram getHistogram(IProgressListener listener) throws SnapshotException
-	// {
-	// if (listener == null)
-	// listener = new VoidProgressListener();
-	//
-	// HistogramBuilder histogramBuilder = new HistogramBuilder(Messages.SnapshotImpl_Histogram);
-	//
-	// Object[] classes = classCache.getAllValues();
-	// for (int i = 0; i < classes.length; i++)
-	// {
-	// histogramBuilder.put(new XClassHistogramRecord((ClassImpl) classes[i]));
-	// }
-	//
-	// if (listener.isCanceled())
-	// throw new IProgressListener.OperationCanceledException();
-	//
-	// return histogramBuilder.toHistogram(this, true);
-	// }
+	public Histogram getHistogram(IProgressListener listener) throws SnapshotException {
+		if (listener == null)
+			listener = new VoidProgressListener();
 
-	// public Histogram getHistogram(int[] objectIds, IProgressListener progressMonitor) throws SnapshotException
-	// {
-	// if (progressMonitor == null)
-	// progressMonitor = new VoidProgressListener();
-	//
-	// HistogramBuilder histogramBuilder = new HistogramBuilder(Messages.SnapshotImpl_Histogram);
-	//
-	// progressMonitor.beginTask(Messages.SnapshotImpl_BuildingHistogram, objectIds.length >>> 8);
-	//
-	// // Arrays.sort(objectIds);
-	// // int[] classIds = indexManager.o2class().getAll(objectIds);
-	//
-	// IOne2OneIndex o2class = indexManager.o2class();
-	//
-	// int classId;
-	//
-	// for (int ii = 0; ii < objectIds.length; ii++)
-	// {
-	// classId = o2class.get(objectIds[ii]);
-	//
-	// histogramBuilder.add(classId, objectIds[ii], getHeapSize(objectIds[ii]));
-	//
-	// if ((ii & 0xff) == 0)
-	// {
-	// if (progressMonitor.isCanceled())
-	// return null;
-	// progressMonitor.worked(1);
-	// }
-	// }
-	//
-	// progressMonitor.done();
-	// return histogramBuilder.toHistogram(this, false);
-	// }
+		HistogramBuilder histogramBuilder = new HistogramBuilder(Messages.SnapshotImpl_Histogram);
 
-	@Override
+		Object[] classes = classCache.getAllValues();
+		for (int i = 0; i < classes.length; i++) {
+			histogramBuilder.put(new XClassHistogramRecord((ClassImpl) classes[i]));
+		}
+
+		if (listener.isCanceled())
+			throw new IProgressListener.OperationCanceledException();
+
+		return histogramBuilder.toHistogram(this, true);
+	}
+
+	public Histogram getHistogram(int[] objectIds, IProgressListener progressMonitor) throws SnapshotException {
+		if (progressMonitor == null)
+			progressMonitor = new VoidProgressListener();
+
+		HistogramBuilder histogramBuilder = new HistogramBuilder(Messages.SnapshotImpl_Histogram);
+
+		progressMonitor.beginTask(Messages.SnapshotImpl_BuildingHistogram, objectIds.length >>> 8);
+
+		// Arrays.sort(objectIds);
+		// int[] classIds = indexManager.o2class().getAll(objectIds);
+
+		IOne2OneIndex o2class = indexManager.o2class();
+
+		int classId;
+
+		for (int ii = 0; ii < objectIds.length; ii++) {
+			classId = o2class.get(objectIds[ii]);
+
+			histogramBuilder.add(classId, objectIds[ii], getHeapSize(objectIds[ii]));
+
+			if ((ii & 0xff) == 0) {
+				if (progressMonitor.isCanceled())
+					return null;
+				progressMonitor.worked(1);
+			}
+		}
+
+		progressMonitor.done();
+		return histogramBuilder.toHistogram(this, false);
+	}
+
 	public int[] getInboundRefererIds(int objectId) throws SnapshotException {
 		return indexManager.inbound().get(objectId);
 	}
 
-	@Override
 	public int[] getOutboundReferentIds(int objectId) throws SnapshotException {
 		return indexManager.outbound().get(objectId);
 	}
 
-	@Override
 	public int[] getInboundRefererIds(int[] objectIds, IProgressListener progressMonitor) throws SnapshotException {
 		if (progressMonitor == null)
 			progressMonitor = new VoidProgressListener();
@@ -514,7 +578,6 @@ public final class SnapshotImpl implements ISnapshot {
 		return endResult;
 	}
 
-	@Override
 	public int[] getOutboundReferentIds(int[] objectIds, IProgressListener progressMonitor) throws SnapshotException {
 		if (progressMonitor == null)
 			progressMonitor = new VoidProgressListener();
@@ -543,13 +606,11 @@ public final class SnapshotImpl implements ISnapshot {
 		return endResult;
 	}
 
-	@Override
 	public IPathsFromGCRootsComputer getPathsFromGCRoots(int objectId, Map<IClass, Set<String>> excludeList)
 			throws SnapshotException {
 		return new PathsFromGCRootsComputerImpl(objectId, excludeList);
 	}
 
-	@Override
 	public IMultiplePathsFromGCRootsComputer getMultiplePathsFromGCRoots(int[] objectIds,
 			Map<IClass, Set<String>> excludeList) throws SnapshotException {
 		return new MultiplePathsFromGCRootsComputerImpl(objectIds, excludeList, this);
@@ -666,7 +727,6 @@ public final class SnapshotImpl implements ISnapshot {
 		try {
 			marker.markMultiThreaded(availableProcessors);
 		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
 			throw new SnapshotException(e);
 		}
 
@@ -676,6 +736,8 @@ public final class SnapshotImpl implements ISnapshot {
 		for (int objId : objectIds) {
 			reachable[objId] = false;
 		}
+		// Clear to make space
+		objectIds = null;
 
 		/*
 		 * build the result in an IntArray - the exact number of marked is not known
@@ -688,11 +750,12 @@ public final class SnapshotImpl implements ISnapshot {
 				retained.add(i);
 			}
 		}
+		// Clear to make space
+		reachable = null;
 		return retained.toArray();
 
 	}
 
-	@Override
 	public int[] getRetainedSet(int[] objectIds, IProgressListener progressMonitor) throws SnapshotException {
 		int availableProcessors = Runtime.getRuntime().availableProcessors();
 		if (availableProcessors > 1) {
@@ -702,7 +765,6 @@ public final class SnapshotImpl implements ISnapshot {
 		}
 	}
 
-	@Override
 	public int[] getRetainedSet(int[] objectIds, String[] fieldNames, IProgressListener listener)
 			throws SnapshotException {
 		if (objectIds.length == 0) {
@@ -736,10 +798,11 @@ public final class SnapshotImpl implements ISnapshot {
 		return retained;
 	}
 
-	@Override
 	public int[] getRetainedSet(int[] objectIds,
 			ExcludedReferencesDescriptor[] excludedReferences,
 			IProgressListener progressMonitor) throws SnapshotException {
+		if (progressMonitor == null)
+			progressMonitor = new VoidProgressListener();
 		/*
 		 * first pass - mark starting from the GC roots, avoiding excludedReferences, until initial are reached. The
 		 * non-marked objects will be a common retained set from the excluded and initial objects
@@ -753,7 +816,7 @@ public final class SnapshotImpl implements ISnapshot {
 				firstPass,
 				getIndexManager().outbound,
 				IndexManager.Index.OUTBOUND.getFile(getSnapshotInfo().getPrefix()).length(),
-				new VoidProgressListener());
+				progressMonitor);
 		marker.markSingleThreaded(excludedReferences, this);
 
 		// un-mark initial - they have to go into the retained set
@@ -768,9 +831,11 @@ public final class SnapshotImpl implements ISnapshot {
 		System.arraycopy(firstPass, 0, secondPass, 0, firstPass.length);
 
 		ObjectMarker secondMarker =
-				new ObjectMarker(objectIds, secondPass, getIndexManager().outbound, new VoidProgressListener());
+				new ObjectMarker(objectIds, secondPass, getIndexManager().outbound, progressMonitor);
 		secondMarker.markSingleThreaded();
 
+		// Clear to make space
+		objectIds = null;
 		/*
 		 * Have to merge the results of the two markings here
 		 */
@@ -781,10 +846,12 @@ public final class SnapshotImpl implements ISnapshot {
 				retainedSet.add(i);
 			}
 		}
+		// Clear to make space
+		firstPass = null;
+		secondPass = null;
 		return retainedSet.toArray();
 	}
 
-	@Override
 	public long getMinRetainedSize(int[] objectIds, IProgressListener progressMonitor)
 			throws UnsupportedOperationException, SnapshotException {
 		if (objectIds.length == 1) {
@@ -806,7 +873,6 @@ public final class SnapshotImpl implements ISnapshot {
 		return result;
 	}
 
-	@Override
 	public int[] getMinRetainedSet(int[] objectIds, IProgressListener progressMonitor)
 			throws UnsupportedOperationException, SnapshotException {
 		if (objectIds.length == 1) {
@@ -922,12 +988,14 @@ public final class SnapshotImpl implements ISnapshot {
 				}
 			}
 		}
-
+		// Clear to make space
+		objectIds = null;
+		stack = null;
+		temp = null;
 		return retainedSet.toArray();
 
 	}
 
-	@Override
 	public int[] getTopAncestorsInDominatorTree(int[] objectIds, IProgressListener listener) throws SnapshotException {
 		// Used by the dominator_tree query to allow a missing dominator tree to be built
 		if (!isDominatorTreeCalculated() && listener != null && objectIds.length == 0)
@@ -1030,7 +1098,13 @@ public final class SnapshotImpl implements ISnapshot {
 				}
 			}
 		}
-
+		// Clear to make space
+		objectIds = null;
+		positiveCache.clear();
+		positiveCache = null;
+		negativeCache.clear();
+		negativeCache = null;
+		temp = null;
 		return result.toArray();
 
 	}
@@ -1053,7 +1127,7 @@ public final class SnapshotImpl implements ISnapshot {
 		/*
 		 * an array where all top-ancestors will be saved
 		 */
-		ArrayInt result = new ArrayInt();
+		ArrayIntBig result = new ArrayIntBig();
 
 		// used to temporarily keep the walked-through objects before we decide
 		// in which cache to store them
@@ -1121,7 +1195,11 @@ public final class SnapshotImpl implements ISnapshot {
 				}
 			}
 		}
-
+		// Clear to make space
+		objectIds = null;
+		positiveCache = null;
+		negativeCache = null;
+		temp = null;
 		return result.toArray();
 
 	}
@@ -1141,21 +1219,18 @@ public final class SnapshotImpl implements ISnapshot {
 		}
 	}
 
-	@Override
 	public int[] getImmediateDominatedIds(int objectId) throws SnapshotException {
 		if (!isDominatorTreeCalculated())
 			throw new SnapshotException(Messages.SnapshotImpl_Error_DomTreeNotAvailable);
 		return indexManager.dominated().get(objectId + 1);
 	}
 
-	@Override
 	public int getImmediateDominatorId(int objectId) throws SnapshotException {
 		if (!isDominatorTreeCalculated())
 			throw new SnapshotException(Messages.SnapshotImpl_Error_DomTreeNotAvailable);
 		return indexManager.dominator().get(objectId) - 2;
 	}
 
-	@Override
 	public DominatorsSummary getDominatorsOf(int[] objectIds,
 			Pattern excludePattern,
 			IProgressListener progressListener) throws SnapshotException {
@@ -1186,7 +1261,7 @@ public final class SnapshotImpl implements ISnapshot {
 			int dominatorId = dominatorIndex.get(objectId) - 2;
 			if (dominatorId == -1) {
 				clasz = null;
-				domClassName = "<ROOT>";
+				domClassName = "<ROOT>";//$NON-NLS-1$
 				domClassId = -1;
 			} else {
 				domClassId = o2classIndex.get(dominatorId);
@@ -1206,7 +1281,7 @@ public final class SnapshotImpl implements ISnapshot {
 						dominatorId = dominatorIndex.get(dominatorId) - 2;
 						if (dominatorId == -1) {
 							clasz = null;
-							domClassName = "<ROOT>";
+							domClassName = "<ROOT>";//$NON-NLS-1$
 							domClassId = -1;
 						} else {
 							domClassId = o2classIndex.get(dominatorId);
@@ -1260,7 +1335,6 @@ public final class SnapshotImpl implements ISnapshot {
 		return new DominatorsSummary(records, this);
 	}
 
-	@Override
 	public IObject getObject(int objectId) throws SnapshotException {
 		IObject answer = this.classCache.get(objectId);
 		if (answer != null)
@@ -1269,12 +1343,10 @@ public final class SnapshotImpl implements ISnapshot {
 		return this.objectCache.get(objectId);
 	}
 
-	@Override
 	public GCRootInfo[] getGCRootInfo(int objectId) throws SnapshotException {
 		return roots.get(objectId);
 	}
 
-	@Override
 	public IClass getClassOf(int objectId) throws SnapshotException {
 		if (isClass(objectId))
 			return getObject(objectId).getClazz();
@@ -1282,12 +1354,10 @@ public final class SnapshotImpl implements ISnapshot {
 			return (IClass) getObject(indexManager.o2class().get(objectId));
 	}
 
-	@Override
 	public long mapIdToAddress(int objectId) throws SnapshotException {
 		return indexManager.o2address().get(objectId);
 	}
 
-	@Override
 	public long getHeapSize(int objectId) throws SnapshotException {
 		if (arrayObjects.get(objectId)) {
 			return indexManager.a2size().getSize(objectId);
@@ -1306,7 +1376,6 @@ public final class SnapshotImpl implements ISnapshot {
 		}
 	}
 
-	@Override
 	public long getHeapSize(int[] objectIds) throws UnsupportedOperationException, SnapshotException {
 		long total = 0;
 		IOne2OneIndex o2class = indexManager.o2class();
@@ -1332,7 +1401,24 @@ public final class SnapshotImpl implements ISnapshot {
 		return total;
 	}
 
-	@Override
+	public void calculateMinRetainedHeapSizeForClasses(IProgressListener listener) throws SnapshotException {
+		listener.subTask(Messages.SnapshotImpl_CalculatingRetainedHeapSizeForClasses);
+
+		// too expensive to do accurate search
+		boolean approximate = true;
+		boolean calculate = true;
+
+		Iterator<ClassImpl> classes = classCache.values();
+		while (classes.hasNext()) {
+			if (listener.isCanceled()) {
+				break;
+			}
+
+			IClass theClass = classes.next();
+			theClass.getRetainedHeapSizeOfObjects(calculate, approximate, listener);
+		}
+	}
+
 	public long getRetainedHeapSize(int objectId) throws SnapshotException {
 		if (this.isDominatorTreeCalculated())
 			return indexManager.o2retained().get(objectId);
@@ -1340,8 +1426,15 @@ public final class SnapshotImpl implements ISnapshot {
 			return 0;
 	}
 
-	@Override
 	public boolean isArray(int objectId) {
+		// Add a useful error message - snapshotInfo.getNumberOfObjects
+		// isn't set early on
+		int nobjs = indexManager.idx.size();
+		if (objectId > nobjs || objectId < 0) {
+			SnapshotException e = new SnapshotException(
+					MessageUtil.format(Messages.SnapshotImpl_Error_ObjectNotFound, new Object[] { objectId }));
+			throw new IllegalArgumentException(e);
+		}
 		if (arrayObjects.get(objectId)) {
 			// Variable size, so see if actually an array
 			IClass clazz = classCache.get(indexManager.o2class().get(objectId));
@@ -1354,30 +1447,23 @@ public final class SnapshotImpl implements ISnapshot {
 		return false;
 	}
 
-	@Override
 	public boolean isClass(int objectId) {
 		return classCache.containsKey(objectId);
 	}
 
-	@Override
 	public boolean isGCRoot(int objectId) {
 		return roots.containsKey(objectId);
 	}
 
-	@Override
 	public int mapAddressToId(long objectAddress) throws SnapshotException {
 		int objectId = indexManager.o2address().reverse(objectAddress);
-		if (objectId < 0) {
-			LOGGER.error("Missing {} amongst all ids: {}",
-					objectAddress,
-					Arrays.toString(indexManager.o2address().getNext(0, indexManager.o2address().size())));
+		if (objectId < 0)
 			throw new SnapshotException(MessageUtil.format(Messages.SnapshotImpl_Error_ObjectNotFound,
-					new Object[] { "0x" + Long.toHexString(objectAddress) }));
-		}
+					new Object[] { "0x" //$NON-NLS-1$
+							+ Long.toHexString(objectAddress) }));
 		return objectId;
 	}
 
-	@Override
 	public void dispose() {
 		IOException error = null;
 
@@ -1397,6 +1483,14 @@ public final class SnapshotImpl implements ISnapshot {
 
 		if (error != null)
 			throw new RuntimeException(error);
+	}
+
+	/**
+	 * Tidy up and close files so indices could be deleted if required. Normally is disposed, but secondary snapshots
+	 * are not. Shouldn't really be needed as files should have finalizers, but deleting indices does not work.
+	 */
+	protected void finalize() {
+		dispose();
 	}
 
 	// //////////////////////////////////////////////////////////////
@@ -1421,7 +1515,6 @@ public final class SnapshotImpl implements ISnapshot {
 	}
 
 	/** performance improved check if the object is a class loader */
-	@Override
 	public boolean isClassLoader(int objectId) {
 		return loaderLabels.containsKey(objectId);
 	}
@@ -1516,7 +1609,8 @@ public final class SnapshotImpl implements ISnapshot {
 				stack.push(i);
 			}
 		}
-
+		// Clear to make space
+		stack = null;
 		return result.toArray();
 	}
 
@@ -1625,7 +1719,6 @@ public final class SnapshotImpl implements ISnapshot {
 			return true;
 		}
 
-		@Override
 		public int[] getNextShortestPath() throws SnapshotException {
 			switch (state) {
 			case 0: // INITIAL
@@ -1652,7 +1745,7 @@ public final class SnapshotImpl implements ISnapshot {
 			case 2: // PROCESSING GC ROOT
 			{
 				if (referringThreads == null) {
-					referringThreads = getReferringTreads(getGCRootInfo(foundPath[foundPath.length - 1]));
+					referringThreads = getReferringThreads(getGCRootInfo(foundPath[foundPath.length - 1]));
 					currentReferringThread = 0;
 					if (referringThreads.length == 0) {
 						// there were no threads found to refer to this GC
@@ -1707,7 +1800,7 @@ public final class SnapshotImpl implements ISnapshot {
 
 		}
 
-		private int[] getReferringTreads(GCRootInfo[] rootInfos) {
+		private int[] getReferringThreads(GCRootInfo[] rootInfos) {
 			SetInt threads = new SetInt();
 			for (GCRootInfo info : rootInfos) {
 				// add only threads different from the current GC root
@@ -1718,7 +1811,6 @@ public final class SnapshotImpl implements ISnapshot {
 			return threads.toArray();
 		}
 
-		@Override
 		public PathsFromGCRootsTree getTree(Collection<int[]> paths) {
 			PathsFromGCRootsTreeBuilder rootBuilder = new PathsFromGCRootsTreeBuilder(objectId);
 			for (int[] path : paths) {
@@ -1826,19 +1918,15 @@ public final class SnapshotImpl implements ISnapshot {
 	 *            the type of the data. For example, {@link UnreachableObjectsHistogram}.class
 	 * @return the extra data
 	 */
-	@Override
+	@SuppressWarnings("unchecked")
 	public <A> A getSnapshotAddons(Class<A> addon) throws SnapshotException {
-		// if (addon == UnreachableObjectsHistogram.class)
-		// {
-		// return (A) this.getSnapshotInfo().getProperty(UnreachableObjectsHistogram.class.getName());
-		// }
-		// else
-		// {
-		return heapObjectReader.getAddon(addon);
-		// }
+		if (addon == UnreachableObjectsHistogram.class) {
+			return (A) this.getSnapshotInfo().getProperty(UnreachableObjectsHistogram.class.getName());
+		} else {
+			return heapObjectReader.getAddon(addon);
+		}
 	}
 
-	@Override
 	public IThreadStack getThreadStack(int objectId) throws SnapshotException {
 		if (!parsedThreads) {
 			threadId2stack = ThreadStackHelper.loadThreadsData(this);
@@ -1869,7 +1957,17 @@ public final class SnapshotImpl implements ISnapshot {
 				IObject answer = null;
 				// check if the object is an array (no index needed)
 				if (snapshot.isArray(objectId)) {
-					answer = snapshot.heapObjectReader.read(objectId, snapshot);
+					// Lazy loading of array length
+					ClassImpl classImpl = (ClassImpl) snapshot.getObject(snapshot.indexManager.o2class().get(objectId));
+					for (int i = 0; i < IPrimitiveArray.TYPE.length; ++i) {
+						String an = IPrimitiveArray.TYPE[i];
+						if (classImpl.getName().equals(an)) {
+							answer = new PrimitiveArrayImpl(objectId, Long.MIN_VALUE, classImpl, -1, i);
+							break;
+						}
+					}
+					if (answer == null)
+						answer = new ObjectArrayImpl(objectId, Long.MIN_VALUE, classImpl, -1);
 				} else {
 					ClassImpl classImpl = (ClassImpl) snapshot.getObject(snapshot.indexManager.o2class().get(objectId));
 					if (snapshot.isClassLoader(objectId))
@@ -1883,8 +1981,6 @@ public final class SnapshotImpl implements ISnapshot {
 
 				return answer;
 
-			} catch (IOException e) {
-				throw new RuntimeException(e);
 			} catch (SnapshotException e) {
 				throw new RuntimeException(e);
 			}

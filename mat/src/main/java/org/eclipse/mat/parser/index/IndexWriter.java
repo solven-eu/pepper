@@ -1,13 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2014 SAP AG, IBM Corporation and others.
+ * Copyright (c) 2008, 2022 SAP AG, IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
  *    Andrew Johnson - enhancements for huge dumps
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
  *******************************************************************************/
 package org.eclipse.mat.parser.index;
 
@@ -19,17 +22,28 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.stream.IntStream;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.eclipse.mat.collect.ArrayInt;
 import org.eclipse.mat.collect.ArrayIntCompressed;
 import org.eclipse.mat.collect.ArrayLong;
+import org.eclipse.mat.collect.ArrayLongBig;
 import org.eclipse.mat.collect.ArrayLongCompressed;
 import org.eclipse.mat.collect.ArrayUtils;
 import org.eclipse.mat.collect.BitField;
@@ -47,102 +61,116 @@ import org.eclipse.mat.parser.io.BitInputStream;
 import org.eclipse.mat.parser.io.BitOutputStream;
 import org.eclipse.mat.util.IProgressListener;
 import org.eclipse.mat.util.MessageUtil;
-import org.roaringbitmap.FastRankRoaringBitmap;
-import org.roaringbitmap.longlong.LongIterator;
-import org.roaringbitmap.longlong.Roaring64NavigableMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import eu.solven.pepper.buffer.CloseableCompositeIntBuffer;
-import eu.solven.pepper.buffer.CloseableIntBuffer;
-import eu.solven.pepper.buffer.IIntBufferWrapper;
-import eu.solven.pepper.buffer.PepperBufferHelper;
-import eu.solven.pepper.logging.PepperLogHelper;
-import eu.solven.pepper.memory.IPepperMemoryConstants;
-import it.unimi.dsi.fastutil.longs.Long2IntMap;
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
-
+/**
+ * Base implementations to write index files.
+ */
 public abstract class IndexWriter {
-
-	protected static final Logger LOGGER = LoggerFactory.getLogger(IndexWriter.class);
-
+	/** Number of entries in a page of ints */
 	public static final int PAGE_SIZE_INT = 1000000;
+	/** Number of entries in a page of longs */
 	public static final int PAGE_SIZE_LONG = 500000;
-	// Set this to true to test more code paths with smaller indices
+	/** Set this to true to test more code paths with smaller indices */
 	private static final boolean TEST = false;
-	// How much to resize break points for large formats to make testing easier
+	/** How much to resize break points for large formats to make testing easier */
 	private static final int TESTSCALE = TEST ? 18 : 0;
-	// Switch point from plain size to encoded size for 1 to 1 index
+	/** Switch point from plain size to encoded size for 1 to 1 index */
 	private static final int FORMAT1_MAX_SIZE = Integer.MAX_VALUE >>> TESTSCALE;
-	// Switch point for using a long valued header index
+	/** Switch point for using a long valued header index */
 	private static final long MAX_OLD_HEADER_VALUE = 0xffffffffL >>> TESTSCALE;
-	// Switch point for inbound key to using longs
+	/** Switch point for inbound key to using longs */
 	private static final long INBOUND_MAX_KEY1 = Integer.MAX_VALUE >>> TESTSCALE;
 
+	/**
+	 * Used to write out a key for an index.
+	 */
 	public interface KeyWriter {
+		/**
+		 * Store the key in a file
+		 *
+		 * @param index
+		 *            the index
+		 * @param key
+		 *            the corresponding key to another index
+		 */
 		public void storeKey(int index, Serializable key);
-	}
-
-	public static interface Identifier extends IIndexReader.IOne2LongIndex {
-
-		void add(long objectAddress);
-
-		IteratorLong iterator();
-
-		void sort();
-
 	}
 
 	// //////////////////////////////////////////////////////////////
 	// integer based indices
 	// //////////////////////////////////////////////////////////////
-	public static class RawIdentifier implements Identifier {
+
+	/**
+	 * Used to collect the objects by address.
+	 */
+	public static class Identifier implements IIndexReader.IOne2LongIndex {
 		long[] identifiers;
 		int size;
+		ArrayLongBig collect;
 
-		@Override
+		/**
+		 * Add an object.
+		 *
+		 * @param id
+		 *            the object address
+		 */
 		public void add(long id) {
-			if (identifiers == null) {
-				identifiers = new long[10000];
-				size = 0;
+			if (collect == null)
+				collect = new ArrayLongBig();
+			// Avoid strange exceptions later
+			int s = collect.length();
+			long minCapacity = size + s + 1;
+			int newCapacity = Math.min((int) minCapacity, Integer.MAX_VALUE - 8);
+			if (newCapacity < minCapacity) {
+				throw new OutOfMemoryError(
+						MessageUtil.format(Messages.IndexWriter_Error_ArrayLength, minCapacity, newCapacity));
 			}
+			collect.add(id);
+		}
 
-			if (size + 1 > identifiers.length) {
-				int minCapacity = size + 1;
-				int newCapacity = newCapacity(identifiers.length, minCapacity);
+		/**
+		 * Sort the addresses of the objects in order. Also puts all of the added addresses into an array. Makes a
+		 * reverse lookup easier.
+		 */
+		public void sort() {
+			if (collect == null) {
+			} else if (identifiers == null) {
+				size = collect.length();
+				identifiers = collect.toArray();
+				collect = null;
+			} else {
+				int s = collect.length();
+				long minCapacity = size + s;
+				int newCapacity = Math.min((int) minCapacity, Integer.MAX_VALUE - 8);
 				if (newCapacity < minCapacity) {
 					// Avoid strange exceptions later
 					throw new OutOfMemoryError(
 							MessageUtil.format(Messages.IndexWriter_Error_ArrayLength, minCapacity, newCapacity));
 				}
 				identifiers = copyOf(identifiers, newCapacity);
+				for (int i = 0; i < s; ++i) {
+					identifiers[size + i] = collect.get(i);
+				}
+				size += s;
+				collect = null;
 			}
-
-			identifiers[size++] = id;
+			Arrays.parallelSort(identifiers, 0, size);
 		}
 
-		@Override
-		public void sort() {
-			Arrays.sort(identifiers, 0, size);
-		}
-
-		@Override
 		public int size() {
-			return size;
+			return size + (collect != null ? collect.length() : 0);
 		}
 
-		@Override
 		public long get(int index) {
-			if (index < 0 || index >= size)
-				throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size); //$NON-NLS-1$//$NON-NLS-2$
+			if (index < 0 || index >= size())
+				throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size()); //$NON-NLS-1$//$NON-NLS-2$
 
-			return identifiers[index];
+			return index < size || collect == null ? identifiers[index] : collect.get(index - size);
 		}
 
-		@Override
 		public int reverse(long val) {
 			int a, c;
-			for (a = 0, c = size; a < c;) {
+			for (a = 0, c = size(); a < c;) {
 				// Avoid overflow problems by using unsigned divide by 2
 				int b = (a + c) >>> 1;
 				long probeVal = get(b);
@@ -158,273 +186,97 @@ public abstract class IndexWriter {
 			return -1 - a;
 		}
 
-		@Override
+		/**
+		 * Iterate through the object addresses.
+		 *
+		 * @return the iterator
+		 */
 		public IteratorLong iterator() {
 			return new IteratorLong() {
 
 				int index = 0;
 
-				@Override
 				public boolean hasNext() {
-					return index < size;
+					return index < size();
 				}
 
-				@Override
 				public long next() {
-					return identifiers[index++];
+					return get(index++);
 				}
 
 			};
 		}
 
-		@Override
 		public long[] getNext(int index, int length) {
 			long answer[] = new long[length];
 			for (int ii = 0; ii < length; ii++)
-				answer[ii] = identifiers[index + ii];
+				answer[ii] = get(index + ii);
 			return answer;
 		}
 
-		@Override
 		public void close() throws IOException {
 		}
 
-		@Override
 		public void delete() {
 			identifiers = null;
+			collect = null;
 		}
 
-		@Override
 		public void unload() throws IOException {
 			throw new UnsupportedOperationException();
 		}
 	}
 
-	public static class RoaringIdentifier implements Identifier {
-		// Replace a long[] by this Bitmap
-		Roaring64NavigableMap identifiers;
-
-		RawIdentifier guarantee;
-
-		boolean addedAfterSort = false;
-		Long2IntMap reverseCache = new Long2IntOpenHashMap(10000);
-
-		{
-			reverseCache.defaultReturnValue(-1);
-		}
-
-		@Override
-		public void add(long id) {
-			addedAfterSort = true;
-
-			if (identifiers == null) {
-				identifiers = new Roaring64NavigableMap(true, () -> new FastRankRoaringBitmap());
-				if (Boolean.getBoolean("mat.assert")) {
-					guarantee = new RawIdentifier();
-				}
-			}
-
-			identifiers.addLong(id);
-
-			if (guarantee != null) {
-				guarantee.add(id);
-			}
-		}
-
-		@Override
-		public int size() {
-			long cardinality = identifiers.getLongCardinality();
-			if (guarantee != null) {
-				assert guarantee.size() == cardinality;
-			}
-
-			if (cardinality > Integer.MAX_VALUE) {
-				throw new IllegalStateException("Too many references: " + cardinality);
-			}
-
-			return (int) cardinality;
-		}
-
-		@Override
-		public long get(int index) {
-			long get = identifiers.select(index);
-			if (guarantee != null) {
-				assert guarantee.get(index) == get;
-			}
-			return get;
-		}
-
-		@Override
-		public int reverse(long val) {
-			int reverse = reverseCache.get(val);
-			if (reverse >= 0) {
-				return reverse;
-			}
-
-			long rank = identifiers.rankLong(val);
-
-			// Roaring rank is 1-based: if only a '0', its rank is 1, we select 'rank-1' hoping to find back 0
-			long selectBack = identifiers.select(rank - 1);
-
-			if (selectBack == val) {
-				long rank0Based = rank - 1;
-
-				if (guarantee != null) {
-					assert guarantee.reverse(val) == rank0Based;
-				}
-
-				int asInt = (int) rank0Based;
-				if (reverseCache.size() == 10000) {
-					// Prevent the ache for growing too big
-					reverseCache.clear();
-				}
-				reverseCache.put(val, asInt);
-
-				return asInt;
-			} else {
-				int minusNext = (int) (-1L - rank);
-
-				if (guarantee != null) {
-					assert guarantee.reverse(val) == minusNext;
-				}
-
-				return minusNext;
-			}
-		}
-
-		@Override
-		public IteratorLong iterator() {
-			if (identifiers == null) {
-				return new IteratorLong() {
-
-					@Override
-					public long next() {
-						throw new IllegalStateException("empty");
-					}
-
-					@Override
-					public boolean hasNext() {
-						return false;
-					}
-				};
-			}
-
-			LongIterator it = identifiers.getLongIterator();
-			IteratorLong guaranteIt;
-			if (guarantee != null) {
-				guaranteIt = guarantee.iterator();
-			} else {
-				guaranteIt = null;
-			}
-
-			return new IteratorLong() {
-
-				@Override
-				public boolean hasNext() {
-					boolean hasNext = it.hasNext();
-					if (guarantee != null) {
-						assert guaranteIt.hasNext() == hasNext;
-					}
-					return hasNext;
-				}
-
-				@Override
-				public long next() {
-					long next = it.next();
-					if (guarantee != null) {
-						assert guaranteIt.next() == next;
-					}
-					return next;
-				}
-
-			};
-
-		}
-
-		@Override
-		public long[] getNext(int index, int length) {
-			long answer[] = new long[length];
-			for (int ii = 0; ii < length; ii++) {
-				// TODO use Guava checked sum
-				answer[ii] = identifiers.select(index + ii);
-			}
-
-			if (guarantee != null) {
-				assert Arrays.equals(answer, guarantee.getNext(index, length));
-			}
-
-			return answer;
-		}
-
-		@Override
-		public void close() throws IOException {
-		}
-
-		@Override
-		public void delete() {
-			identifiers = null;
-			guarantee = null;
-		}
-
-		@Override
-		public void unload() throws IOException {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void sort() {
-			long bytesBefore = identifiers.serializedSizeInBytes();
-			identifiers.runOptimize();
-			long bytesAfter = identifiers.serializedSizeInBytes();
-
-			Object before = PepperLogHelper.humanBytes(bytesBefore);
-			Object after = PepperLogHelper.humanBytes(bytesAfter);
-			if (!before.toString().equals(after.toString())) {
-				LOGGER.info(".runOptimize moved from {} to {}. As long[], it would consume {}",
-						before,
-						after,
-						PepperLogHelper.humanBytes(IPepperMemoryConstants.LONG * identifiers.getLongCardinality()));
-			}
-
-			addedAfterSort = false;
-
-			// no-op as Roaring is already sorted
-			if (guarantee != null) {
-				guarantee.sort();
-			}
-		}
-	}
-
+	/**
+	 * Collect a mapping of int to int.
+	 */
 	public static class IntIndexCollectorUncompressed {
+		int[] dataElements;
 
-		FileChannel fc;
-		private final CloseableIntBuffer closeable;
-		private final IntBuffer dataElements;
-
+		/**
+		 * Create an IntIndexCollectorUncompressed of the given size.
+		 *
+		 * @param size
+		 *            the requiredsize
+		 */
 		public IntIndexCollectorUncompressed(int size) {
-			try {
-				this.closeable = PepperBufferHelper.makeIntBuffer(size);
-				this.dataElements = this.closeable.asIntBuffer();
-			} catch (RuntimeException | IOException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
-			}
+			dataElements = new int[size];
 		}
 
+		/**
+		 * Set a particular entry.
+		 *
+		 * @param index
+		 *            the index into the array
+		 * @param value
+		 *            the value
+		 */
 		public void set(int index, int value) {
-			dataElements.put(index, value);
+			dataElements[index] = value;
 		}
 
+		/**
+		 * Retrieve an entry.
+		 *
+		 * @param index
+		 *            the index
+		 * @return the value
+		 */
 		public int get(int index) {
-			return dataElements.get(index);
+			return dataElements[index];
 		}
-		//
-		// public IIndexReader.IOne2OneIndex writeTo(File indexFile) throws IOException {
-		// return new IntIndexStreamer().writeTo(indexFile, dataElements);
-		// }
 
-		protected IteratorInt asIteratorInt() {
-			return asIntIterator(dataElements);
+		/**
+		 * Store the collector to a file.
+		 *
+		 * @param indexFile
+		 *            the file
+		 * @return an index which holds the same values as the collector
+		 * @throws IOException
+		 *             if a problem occurred with the write
+		 */
+		public IIndexReader.IOne2OneIndex writeTo(File indexFile) throws IOException {
+			return new IntIndexStreamer().writeTo(indexFile, dataElements);
 		}
 	}
 
@@ -435,16 +287,23 @@ public abstract class IndexWriter {
 	 */
 	public static class SizeIndexCollectorUncompressed extends IntIndexCollectorUncompressed {
 
+		/**
+		 * Create a collector of the required size.
+		 *
+		 * @param size
+		 *            the number of entries
+		 */
 		public SizeIndexCollectorUncompressed(int size) {
 			super(size);
 		}
 
 		/**
-		 * Cope with objects bigger than Integer.MAX_VALUE. E.g. double[Integer.MAX_VALUE] The original problem was that
-		 * the array to size mapping had an integer as the size (IntIndexCollectorUncompressed). This array would be
-		 * approximately 0x18 + 0x8 * 0x7fffffff = 0x400000010 bytes, too big for an int. Expanding the array size array
-		 * to longs could be overkill. Instead we do some simple compression - values 0 - 0x7fffffff convert as now, int
-		 * values 0x80000000 to 0xffffffff convert to <code>(n &amp; 0x7fffffffL)*8 + 0x80000000L</code>.
+		 * Cope with objects of size in bytes bigger than Integer.MAX_VALUE. E.g. double[Integer.MAX_VALUE] The original
+		 * problem was that the array to size mapping had an integer as the size (IntIndexCollectorUncompressed). This
+		 * array would be approximately 0x18 + 0x8 * 0x7fffffff = 0x400000010 bytes, too big for an int. Expanding the
+		 * array size array to longs could be overkill. Instead we do some simple compression - values 0 - 0x7fffffff
+		 * convert as now, int values 0x80000000 to 0xffffffff convert to
+		 * <code>(n &amp; 0x7fffffffL)*8 + 0x80000000L</code>.
 		 *
 		 * @param y
 		 *            the long value in the range -1 to 0x7fffffff, 0x80000000L to 0x400000000L
@@ -481,12 +340,32 @@ public abstract class IndexWriter {
 			return ret;
 		}
 
+		/**
+		 * Set the size for an object.
+		 *
+		 * @param index
+		 *            the object ID
+		 * @param value
+		 *            the size
+		 */
 		public void set(int index, long value) {
 			set(index, compress(value));
 		}
 
+		/**
+		 * Get the expanded size.
+		 *
+		 * @param index
+		 *            the object ID
+		 * @return the size
+		 */
+		public long getSize(int index) {
+			int v = get(index);
+			return expand(v);
+		}
+
 		public IIndexReader.IOne2SizeIndex writeTo(File indexFile) throws IOException {
-			return new SizeIndexReader(new IntIndexStreamer().writeTo(indexFile, asIteratorInt()));
+			return new SizeIndexReader(new IntIndexStreamer().writeTo(indexFile, dataElements));
 		}
 	}
 
@@ -669,90 +548,159 @@ public abstract class IndexWriter {
 	}
 
 	static class IntIndexIterator implements IteratorInt {
-		final IntIndex<?> intArray;
+		IntIndex<?> intArray;
 		long nextIndex = 0;
 
 		public IntIndexIterator(IntIndex<?> intArray) {
 			this.intArray = intArray;
 		}
 
-		@Override
 		public int next() {
 			return intArray.get(nextIndex++);
 		}
 
-		@Override
 		public boolean hasNext() {
 			return nextIndex < intArray.size;
 		}
 	}
 
+	/**
+	 * A collector of ArrayIntCompressed.
+	 */
 	public static class IntIndexCollector extends IntIndex<ArrayIntCompressed> implements IOne2OneIndex {
 		final int mostSignificantBit;
-		final int[] classIndexToClassId;
+		final int size;
+		final int pageSize = IndexWriter.PAGE_SIZE_INT;
+		final ConcurrentHashMap<Integer, ArrayIntCompressed> pages =
+				new ConcurrentHashMap<Integer, ArrayIntCompressed>();
 
+		/**
+		 * Construct a collector of the required size, holding int values up to the specified size.
+		 *
+		 * @param size
+		 *            the number of entries
+		 * @param mostSignificantBit
+		 *            the most significant bit set of any entry
+		 */
 		public IntIndexCollector(int size, int mostSignificantBit) {
-			super(size);
+			this.size = size;
 			this.mostSignificantBit = mostSignificantBit;
-			this.classIndexToClassId = IntStream.range(0, size).toArray();
 		}
 
-		public IntIndexCollector(int nbIds, int[] classIndexToClassId) {
-			super(nbIds);
-			this.mostSignificantBit = IndexWriter.mostSignificantBit(classIndexToClassId.length);
-			this.classIndexToClassId = classIndexToClassId;
-		}
-
-		@Override
-		public int[] getNext(int index, int length) {
-			throw new UnsupportedOperationException("Is it used?");
-		}
-
-		@Override
-		public void set(int index, int value) {
-			super.set(index, Arrays.binarySearch(classIndexToClassId, value));
-		}
-
-		@Override
-		public int get(int index) {
-			return classIndexToClassId[super.get(index)];
-		}
-
-		@Override
 		protected ArrayIntCompressed getPage(int page) {
-			ArrayIntCompressed array = pages.get(page);
-			if (array == null) {
-				int ps = page < page(size) ? pageSize : offset(size);
-				array = new ArrayIntCompressed(ps, 31 - mostSignificantBit, 0);
-				pages.put(page, array);
-			}
-			return array;
+			ArrayIntCompressed existing = pages.get(page);
+			if (existing != null)
+				return existing;
+
+			int ps = page < (size / pageSize) ? pageSize : size % pageSize;
+			ArrayIntCompressed newArray = new ArrayIntCompressed(ps, 31 - mostSignificantBit, 0);
+			existing = pages.putIfAbsent(page, newArray);
+			return (existing != null) ? existing : newArray;
 		}
 
+		/**
+		 * Write the collector to a file.
+		 *
+		 * @param indexFile
+		 *            the file
+		 * @return an index which holds the same values as the collector
+		 * @throws IOException
+		 *             if a problem occurred with the write
+		 */
 		public IIndexReader.IOne2OneIndex writeTo(File indexFile) throws IOException {
 			// needed to re-compress
-			return new IntIndexStreamer().writeTo(indexFile, this.iterator());
+			return new IntIndexStreamer().writeTo(indexFile, new IteratorInt() {
+				int index = 0;
+
+				public boolean hasNext() {
+					return (index < size);
+				}
+
+				public int next() {
+					return get(index++);
+				}
+			});
 		}
 
 		public IIndexReader.IOne2OneIndex writeTo(DataOutputStream out, long position) throws IOException {
-			return new IntIndexStreamer().writeTo(out, position, this.iterator());
+			// needed to re-compress
+			return new IntIndexStreamer().writeTo(out, position, new IteratorInt() {
+				int index = 0;
+
+				public boolean hasNext() {
+					return (index < size);
+				}
+
+				public int next() {
+					return get(index++);
+				}
+			});
 		}
 
-		@Override
+		public void set(int index, int value) {
+			ArrayIntCompressed array = getPage(index / pageSize);
+			// TODO unlock this by having ArrayIntCompressed use atomics
+			// uses bit operations internally, so we should sync against the page
+			synchronized (array) {
+				array.set(index % pageSize, value);
+			}
+		}
+
+		public int get(int index) {
+			ArrayIntCompressed array = getPage(index / pageSize);
+
+			// TODO unlock this by having ArrayIntCompressed use atomics
+			// we currently lock a whole page, when we only need a single element
+			synchronized (array) {
+				return array.get(index % pageSize);
+			}
+		}
+
 		public void close() throws IOException {
 		}
 
-		@Override
 		public void delete() {
-			pages = null;
+			pages.clear();
+		}
+
+		public int size() {
+			return size;
+		}
+
+		public void unload() {
+			throw new UnsupportedOperationException(Messages.IndexWriter_NotImplemented);
+		}
+
+		public int[] getAll(int[] index) {
+			throw new UnsupportedOperationException(Messages.IndexWriter_NotImplemented);
+		}
+
+		public int[] getNext(int index, int length) {
+			throw new UnsupportedOperationException(Messages.IndexWriter_NotImplemented);
 		}
 	}
 
+	/**
+	 * A helper to write out an index to a file.
+	 */
 	public static class IntIndexStreamer extends IntIndex<SoftReference<ArrayIntCompressed>> {
 		DataOutputStream out;
 		ArrayLong pageStart;
 		int[] page;
 		int left;
+
+		// tracks number of pages added, may not be available if they are still being compressed
+		int pagesAdded;
+
+		// if the writer task has an exception during async we want to throw it on the next write
+		Exception storedException = null;
+		// if the writer task has an OutOfMemoryError during async we want to throw it on the next write
+		OutOfMemoryError storedError = null;
+
+		// Writer _must_ be single thread to ensure page update logic stays correct. Compressor
+		// could be, but generally not limited by compression speed, so one is enough.
+		final ExecutorService compressor = singleThreadedExecutor("IntIndexStreamer-Compressor"); //$NON-NLS-1$
+		final ExecutorService writer = singleThreadedExecutor("IntIndexStreamer-Writer"); //$NON-NLS-1$
 
 		public IIndexReader.IOne2OneIndex writeTo(File indexFile, IteratorInt iterator) throws IOException {
 			DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
@@ -766,6 +714,17 @@ public abstract class IndexWriter {
 			return getReader(indexFile);
 		}
 
+		/**
+		 * Write an array to a file and return an index reader.
+		 *
+		 * @param indexFile
+		 *            the file
+		 * @param array
+		 *            the array to write out
+		 * @return the index reader
+		 * @throws IOException
+		 *             if a problem occurs with the write
+		 */
 		public IIndexReader.IOne2OneIndex writeTo(File indexFile, int[] array) throws IOException {
 			DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
 
@@ -778,6 +737,19 @@ public abstract class IndexWriter {
 			return getReader(indexFile);
 		}
 
+		/**
+		 * Write out a page at a particular position.
+		 *
+		 * @param out
+		 *            the output stream
+		 * @param position
+		 *            the position of the data
+		 * @param iterator
+		 *            where the data comes from
+		 * @return a reader for the data written so far
+		 * @throws IOException
+		 *             if the is a problem with the write
+		 */
 		public IIndexReader.IOne2OneIndex writeTo(DataOutputStream out, long position, IteratorInt iterator)
 				throws IOException {
 			openStream(out, position);
@@ -787,6 +759,19 @@ public abstract class IndexWriter {
 			return getReader(null);
 		}
 
+		/**
+		 * Write out a page at a particular position.
+		 *
+		 * @param out
+		 *            the output stream
+		 * @param position
+		 *            the position of the data
+		 * @param array
+		 *            where the data comes from
+		 * @return a reader for the data written so far
+		 * @throws IOException
+		 *             if the is a problem with the write
+		 */
 		public IIndexReader.IOne2OneIndex writeTo(DataOutputStream out, long position, int[] array) throws IOException {
 			openStream(out, position);
 			addAll(array);
@@ -810,8 +795,32 @@ public abstract class IndexWriter {
 		 * @return total bytes written to index file
 		 */
 		long closeStream() throws IOException {
-			if (left < page.length)
-				addPage();
+			try {
+				if (left < page.length)
+					addPage();
+				else
+					new WriterTask(null); // Dummy to test for pending exception
+			} catch (IOException e) {
+				// Early termination with an exception
+				try {
+					compressor.shutdownNow();
+					compressor.awaitTermination(100, TimeUnit.SECONDS);
+					writer.shutdownNow();
+					writer.awaitTermination(100, TimeUnit.SECONDS);
+					throw e;
+				} catch (InterruptedException ie) {
+					throw new IOException(ie);
+				}
+			}
+
+			try {
+				compressor.shutdown();
+				compressor.awaitTermination(100, TimeUnit.SECONDS);
+				writer.shutdown();
+				writer.awaitTermination(100, TimeUnit.SECONDS);
+			} catch (InterruptedException ie) {
+				throw new IOException(ie);
+			}
 
 			// write header information
 			for (int jj = 0; jj < pageStart.size(); jj++)
@@ -826,7 +835,7 @@ public abstract class IndexWriter {
 
 			this.out = null;
 
-			return this.pageStart.lastElement() + (8 * pageStart.size()) + 8 - this.pageStart.firstElement();
+			return this.pageStart.lastElement() + (8L * pageStart.size()) + 8 - this.pageStart.firstElement();
 		}
 
 		IndexReader.IntIndexReader getReader(File indexFile) {
@@ -867,16 +876,20 @@ public abstract class IndexWriter {
 			}
 		}
 
+		long addAllWithLengthFirst(int[] values, int offset, int length) throws IOException {
+			long startPos = size;
+			add(length);
+			addAll(values, offset, length);
+			return startPos;
+		}
+
 		private void addPage() throws IOException {
-			ArrayIntCompressed array = new ArrayIntCompressed(page, 0, page.length - left);
+			Future<byte[]> compressionResult = compressor.submit(new CompressionTask(page, left, pagesAdded));
+			// compression may finish in any order, but writes have to be correct, so order them
+			writer.execute(new WriterTask(compressionResult));
 
-			byte[] buffer = array.toByteArray();
-			out.write(buffer);
-			int written = buffer.length;
-
-			pages.put(pages.size(), new SoftReference<ArrayIntCompressed>(array));
-			pageStart.add(pageStart.lastElement() + written);
-
+			pagesAdded += 1;
+			page = new int[page.length];
 			left = page.length;
 		}
 
@@ -885,34 +898,102 @@ public abstract class IndexWriter {
 			throw new UnsupportedOperationException();
 		}
 
+		/*
+		 * Compresses a page of data to a byte array
+		 */
+		private class CompressionTask implements Callable<byte[]> {
+			final int[] page;
+			final int left;
+			final int pageNumber;
+
+			public CompressionTask(final int[] page, final int left, final int pageNumber) {
+				this.page = page;
+				this.left = left;
+				this.pageNumber = pageNumber;
+			}
+
+			public byte[] call() {
+				ArrayIntCompressed array = new ArrayIntCompressed(page, 0, page.length - left);
+				pages.put(pageNumber, new SoftReference<ArrayIntCompressed>(array));
+				return array.toByteArray();
+			}
+		}
+
+		/*
+		 * Writes data to output Assumes there is only a single WriterTask that can ever be running
+		 */
+		private class WriterTask implements Runnable {
+			final Future<byte[]> byteData;
+
+			public WriterTask(final Future<byte[]> byteData) throws IOException {
+				this.byteData = byteData;
+				if (storedException != null) {
+					throw new IOException(Messages.IndexWriter_StoredException, storedException);
+				}
+				if (storedError != null) {
+					throw new IOException(Messages.IndexWriter_StoredError, storedError);
+				}
+			}
+
+			public void run() {
+				byte[] buffer;
+				try {
+					buffer = byteData.get();
+					out.write(buffer);
+					int written = buffer.length;
+
+					// update the shared page list
+					pageStart.add(pageStart.lastElement() + written);
+				} catch (InterruptedException | ExecutionException | IOException e) {
+					storedException = e;
+				} catch (OutOfMemoryError e) {
+					storedError = e;
+				}
+			}
+		}
 	}
 
+	/**
+	 * Write out a mapping of ints to int arrays.
+	 */
 	public static class IntArray1NWriter {
-		CloseableCompositeIntBuffer closeable;
-		IIntBufferWrapper header;
+		/** length of set() queue to buffer before writing to output as a batch */
+		private static final int TASK_BUFFER_SIZE = 1024;
+		/** Number of ints to write out in the buffer */
+		private static final int TASK_BUFFER_MAX_OBJECTS = 10000;
+		/** Size of all arrays in the buffer */
+		private static final int TASK_BUFFER_MAX_MEMORY = 20000;
+
+		int[] header;
 		// Used to expand the range of values stored in the header up to 2^40
-		ByteBuffer header2;
+		byte[] header2;
 		File indexFile;
 
 		DataOutputStream out;
 		IntIndexStreamer body;
 
-		public IntArray1NWriter(int size, File indexFile) throws IOException {
-			try {
-				this.closeable = PepperBufferHelper.makeIntLargeBuffer(size);
-				this.header = this.closeable.asIntBuffer();
-
-				LOGGER.info("Use a mapped intBuffer of size={}, memory={}",
-						header.capacity(),
-						PepperLogHelper.humanBytes(IPepperMemoryConstants.INT * header.capacity()));
-				// this.header = IntBuffer.allocate(size);
-			} catch (RuntimeException | IOException e) {
-				e.printStackTrace();
-				throw e;
+		CopyOnWriteArrayList<ArrayListSetTask> allTasks = new CopyOnWriteArrayList<ArrayListSetTask>();
+		ThreadLocal<ArrayListSetTask> threadTaskQueue = ThreadLocal.withInitial(new Supplier<ArrayListSetTask>() {
+			public ArrayListSetTask get() {
+				ArrayListSetTask newList = new ArrayListSetTask(TASK_BUFFER_SIZE);
+				allTasks.add(newList);
+				return newList;
 			}
-			// this.header = IntBuffer.allocate(size);
-			// Lazy allocate header2
-			// this.header2 = new byte[size];
+		});
+
+		/**
+		 * Construct a writer of the required size.
+		 *
+		 * @param size
+		 *            the number of entries
+		 * @param indexFile
+		 *            the file to be written to
+		 * @throws IOException
+		 *             if there is a problem writing the file
+		 */
+		public IntArray1NWriter(int size, File indexFile) throws IOException {
+			this.header = new int[size];
+			this.header2 = new byte[size];
 			this.indexFile = indexFile;
 
 			this.out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
@@ -920,18 +1001,40 @@ public abstract class IndexWriter {
 			this.body.openStream(this.out, 0);
 		}
 
+		/**
+		 * Used to record the addresses as IDs.
+		 *
+		 * @param identifier
+		 *            used to map references to IDs
+		 * @param index
+		 *            the index associated with these references
+		 * @param references
+		 *            the references (should be in identifier otherwise ignored)
+		 * @throws IOException
+		 *             if there is a problem writing the data
+		 */
 		public void log(Identifier identifier, int index, ArrayLong references) throws IOException {
 			log((IIndexReader.IOne2LongIndex) identifier, index, references);
 		}
 
 		/**
+		 * Used to record the addresses as IDs. Sorts the references in order (except the first) and removes duplicates.
+		 *
+		 * @param identifier
+		 *            used to map references to IDs
+		 * @param index
+		 *            the index associated with these references
+		 * @param references
+		 *            the references (should be in identifier otherwise ignored)
+		 * @throws IOException
+		 *             if there is a problem writing the data
 		 * @since 1.2
 		 */
 		public void log(IIndexReader.IOne2LongIndex identifier, int index, ArrayLong references) throws IOException {
 			// remove duplicates and convert to identifiers
 			// keep pseudo reference as first one
 
-			final long pseudo = references.firstElement();
+			long pseudo = references.firstElement();
 
 			references.sort();
 
@@ -964,50 +1067,77 @@ public abstract class IndexWriter {
 			this.set(index, references.toArray(), 0, references.size());
 		}
 
+		/**
+		 * must not contain duplicates!
+		 */
 		public void log(int index, int[] values) throws IOException {
 			this.set(index, values, 0, values.length);
 		}
 
 		void setHeader(int index, long val) {
-			header.put(index, (int) val);
-			byte hi = (byte) (val >> 32);
-			if ((hi != 0 || val > IndexWriter.MAX_OLD_HEADER_VALUE) && header2 == null)
-				header2 = ByteBuffer.allocate(header.capacity());
-			// Once we have started, always overwrite
-			if (header2 != null)
-				header2.put(index, hi);
+			header[index] = (int) val;
+			header2[index] = (byte) (val >> 32);
 		}
 
 		private long getHeader(int index) {
-			long header2Value = header2 != null ? (header2.get(index) & 0xffL) << 32 : 0;
-
-			long headerValue = header.get(index) & 0xffffffffL;
-			return header2Value | headerValue;
+			return ((header2[index] & 0xffL) << 32) | (header[index] & 0xffffffffL);
 		}
 
 		protected void set(int index, int[] values, int offset, int length) throws IOException {
-			long bodyPos = body.size;
-			setHeader(index, bodyPos);
+			ArrayListSetTask tasks = threadTaskQueue.get();
+			tasks.add(new SetTask(index, values, offset, length));
 
-			body.add(length);
-
-			body.addAll(values, offset, length);
+			long memsize = tasks.memcount;
+			long objcount = tasks.objcount;
+			if (tasks.size() >= TASK_BUFFER_SIZE || memsize > TASK_BUFFER_MAX_OBJECTS
+					|| objcount > TASK_BUFFER_MAX_MEMORY) {
+				publishTasks(tasks);
+				tasks.clear();
+			}
 		}
 
+		void publishTasks(final ArrayListSetTask tasks) throws IOException {
+			synchronized (body) {
+				for (SetTask t : tasks) {
+					long bodyPos = body.addAllWithLengthFirst(t.values, t.offset, t.length);
+					setHeader(t.index, bodyPos);
+				}
+			}
+		}
+
+		/**
+		 * Finishes writing out everything
+		 *
+		 * @return a reader for the data
+		 * @throws IOException
+		 *             if there is a problem writing the data
+		 */
 		public IIndexReader.IOne2ManyIndex flush() throws IOException {
+			synchronized (body) {
+				for (ArrayListSetTask list : allTasks) {
+					publishTasks(list);
+					list.clear();
+				}
+			}
+
 			long divider = body.closeStream();
 
 			IIndexReader.IOne2OneIndex headerIndex = null;
-			if (header2 != null) {
+			boolean usesHeader2 = false;
+			for (int i = 0; i < header2.length; i++) {
+				if (header2[i] != 0) {
+					usesHeader2 = true;
+					break;
+				}
+			}
+			if (usesHeader2) {
 				headerIndex = new PosIndexStreamer().writeTo2(out, divider, new IteratorLong() {
 					int i;
 
-					@Override
 					public boolean hasNext() {
-						return i < header.capacity();
+						return i < header.length;
 					}
 
-					@Override
 					public long next() {
 						long ret = getHeader(i++);
 						return ret;
@@ -1015,7 +1145,7 @@ public abstract class IndexWriter {
 				});
 
 			} else {
-				headerIndex = new IntIndexStreamer().writeTo(out, divider, asIntIterator(header));
+				headerIndex = new IntIndexStreamer().writeTo(out, divider, header);
 			}
 
 			out.writeLong(divider);
@@ -1027,17 +1157,26 @@ public abstract class IndexWriter {
 		}
 
 		/**
+		 * Creates a reader to read the written data.
+		 *
 		 * @throws IOException
+		 *             if there is a problem
 		 */
 		protected IIndexReader.IOne2ManyIndex createReader(IIndexReader.IOne2OneIndex headerIndex,
 				IIndexReader.IOne2OneIndex bodyIndex) throws IOException {
 			return new IndexReader.IntIndex1NReader(this.indexFile, headerIndex, bodyIndex);
 		}
 
+		/**
+		 * Terminate the IntArray1NWriter and delete any file which has been written so far. Use to cancel part way
+		 * through.
+		 */
 		public void cancel() {
 			try {
 				if (out != null) {
 					out.close();
+					if (body != null)
+						body.closeStream();
 					body = null;
 					out = null;
 				}
@@ -1048,17 +1187,72 @@ public abstract class IndexWriter {
 			}
 		}
 
+		/**
+		 * Get the index file.
+		 *
+		 * @return the file
+		 */
 		public File getIndexFile() {
 			return indexFile;
 		}
+
+		private static class SetTask {
+			final int index;
+			final int[] values;
+			final int offset;
+			final int length;
+
+			public SetTask(final int index, final int[] values, final int offset, final int length) {
+				this.index = index;
+				this.values = values;
+				this.offset = offset;
+				this.length = length;
+			}
+		}
+
+		private static class ArrayListSetTask extends ArrayList<SetTask> {
+			private static final long serialVersionUID = 1L;
+			/** Number of values to write */
+			long objcount;
+			/** total size of all arrays */
+			long memcount;
+
+			public ArrayListSetTask(int n) {
+				super(n);
+			}
+
+			public boolean add(SetTask t) {
+				objcount += t.length;
+				memcount += t.values.length;
+				return super.add(t);
+			}
+
+			public void clear() {
+				objcount = 0;
+				memcount = 0;
+				super.clear();
+			}
+		}
 	}
 
+	/**
+	 * Used to write out a sorted array of ints.
+	 */
 	public static class IntArray1NSortedWriter extends IntArray1NWriter {
+		/**
+		 * Construct a IntArray1NSortedWriter of the required size.
+		 *
+		 * @param size
+		 *            number of entries
+		 * @param indexFile
+		 *            the output file
+		 * @throws IOException
+		 *             if there is a problem with file
+		 */
 		public IntArray1NSortedWriter(int size, File indexFile) throws IOException {
 			super(size, indexFile);
 		}
 
-		@Override
 		protected void set(int index, int[] values, int offset, int length) throws IOException {
 			long bodyPos = body.size + 1;
 			setHeader(index, bodyPos);
@@ -1066,7 +1260,6 @@ public abstract class IndexWriter {
 			body.addAll(values, offset, length);
 		}
 
-		@Override
 		protected IIndexReader.IOne2ManyIndex createReader(IIndexReader.IOne2OneIndex headerIndex,
 				IIndexReader.IOne2OneIndex bodyIndex) throws IOException {
 			return new IndexReader.IntIndex1NSortedReader(this.indexFile, headerIndex, bodyIndex);
@@ -1074,6 +1267,10 @@ public abstract class IndexWriter {
 
 	}
 
+	/**
+	 * A writer for inbound references. The object and the inbound reference are stored in a segment based on the object
+	 * ID. Later the segments are sorted by object ID and then by reference ID before being written out.
+	 */
 	public static class InboundWriter {
 		int size;
 		File indexFile;
@@ -1087,7 +1284,14 @@ public abstract class IndexWriter {
 		long[] segmentSizes;
 
 		/**
+		 * Construct an inbound writer.
+		 *
+		 * @param size
+		 *            the number of entries
+		 * @param indexFile
+		 *            the index file to be written to
 		 * @throws IOException
+		 *             if there is a problem writing the file
 		 */
 		public InboundWriter(int size, File indexFile) throws IOException {
 			this.size = size;
@@ -1105,10 +1309,22 @@ public abstract class IndexWriter {
 			this.segmentSizes = new long[segments];
 		}
 
+		/**
+		 * Record an inbound reference.
+		 *
+		 * @param objectIndex
+		 *            the object has a reference from ref
+		 * @param refIndex
+		 *            the reference
+		 * @param isPseudo
+		 *            is this a pseudo reference, first entry of the outbounds (e.g. class ID)
+		 * @throws IOException
+		 *             if there is a problem with the write
+		 */
 		public void log(int objectIndex, int refIndex, boolean isPseudo) throws IOException {
 			int segment = objectIndex / pageSize;
 			if (segments[segment] == null) {
-				File segmentFile = new File(this.indexFile.getAbsolutePath() + segment + ".log");
+				File segmentFile = new File(this.indexFile.getAbsolutePath() + segment + ".log");//$NON-NLS-1$
 				segments[segment] = new BitOutputStream(new FileOutputStream(segmentFile));
 			}
 
@@ -1133,6 +1349,17 @@ public abstract class IndexWriter {
 			return (header2 != null ? (header2[index] & 0xffL) << 32 : 0) | (header[index] & 0xffffffffL);
 		}
 
+		/**
+		 * Write out all the data as one big file.
+		 *
+		 * @param monitor
+		 *            to show progress, report errors
+		 * @param keyWriter
+		 *            to write out the keys
+		 * @return a reader
+		 * @throws IOException
+		 *             if there is a problem reading or writing files
+		 */
 		public IIndexReader.IOne2ManyObjectsIndex flush(IProgressListener monitor, KeyWriter keyWriter)
 				throws IOException {
 			close();
@@ -1142,17 +1369,16 @@ public abstract class IndexWriter {
 			DataOutputStream index =
 					new DataOutputStream(new BufferedOutputStream(new FileOutputStream(this.indexFile), 1024 * 256));
 
-			BitInputStream segmentIn = null;
-
+			IntIndexStreamer body = new IntIndexStreamer();
+			body.openStream(index, 0);
+			boolean bodyopen = true;
 			try {
-				IntIndexStreamer body = new IntIndexStreamer();
-				body.openStream(index, 0);
 
 				for (int segment = 0; segment < segments.length; segment++) {
 					if (monitor.isCanceled())
 						throw new IProgressListener.OperationCanceledException();
 
-					File segmentFile = new File(this.indexFile.getAbsolutePath() + segment + ".log");
+					File segmentFile = new File(this.indexFile.getAbsolutePath() + segment + ".log");//$NON-NLS-1$
 					int startIndex = segment * pageSize;
 					processGiantSegmentFile(monitor,
 							keyWriter,
@@ -1165,17 +1391,16 @@ public abstract class IndexWriter {
 
 				// write header
 				long divider = body.closeStream();
+				bodyopen = false;
 				IIndexReader.IOne2OneIndex headerIndex = null;
 				if (header2 != null) {
 					headerIndex = new PosIndexStreamer().writeTo2(index, divider, new IteratorLong() {
 						int i;
 
-						@Override
 						public boolean hasNext() {
 							return i < header.length;
 						}
 
-						@Override
 						public long next() {
 							long ret = getHeader(i++);
 							return ret;
@@ -1201,12 +1426,8 @@ public abstract class IndexWriter {
 				try {
 					if (index != null)
 						index.close();
-				} catch (IOException ignore) {
-				}
-
-				try {
-					if (segmentIn != null)
-						segmentIn.close();
+					if (bodyopen)
+						body.closeStream();
 				} catch (IOException ignore) {
 				}
 
@@ -1277,7 +1498,7 @@ public abstract class IndexWriter {
 			try {
 				try {
 					for (int ss = 0; ss < subsegs; ++ss) {
-						File subsegmentFile = new File(this.indexFile.getAbsolutePath() + segment + "." + ss + ".log");
+						File subsegmentFile = new File(this.indexFile.getAbsolutePath() + segment + "." + ss + ".log");//$NON-NLS-1$ //$NON-NLS-2$
 						subsegments[ss] = new BitOutputStream(new FileOutputStream(subsegmentFile));
 					}
 
@@ -1319,14 +1540,14 @@ public abstract class IndexWriter {
 
 				// Process the subsegments
 				for (int ss = 0; ss < subsegs; ++ss) {
-					File subsegmentFile = new File(this.indexFile.getAbsolutePath() + segment + "." + ss + ".log");
+					File subsegmentFile = new File(this.indexFile.getAbsolutePath() + segment + "." + ss + ".log");//$NON-NLS-1$ //$NON-NLS-2$
 					processSegmentFile(monitor, keyWriter, body, subsegmentFile, subsegmentSizes[ss], segment);
 				}
 			} finally {
 				// Tidy up in case of cancel
 				// Normal operation will have deleted these files
 				for (int ss = 0; ss < subsegs; ++ss) {
-					File subsegmentFile = new File(this.indexFile.getAbsolutePath() + segment + "." + ss + ".log");
+					File subsegmentFile = new File(this.indexFile.getAbsolutePath() + segment + "." + ss + ".log");//$NON-NLS-1$ //$NON-NLS-2$
 					if (subsegmentFile.exists())
 						subsegmentFile.delete();
 				}
@@ -1417,6 +1638,8 @@ public abstract class IndexWriter {
 			Arrays.sort(refIndex, fromIndex, toIndex);
 
 			int endPseudo = fromIndex;
+			// Shouldn't ever be duplicate pseudo reference, but handle just in case
+			int pseudos = 0;
 
 			if ((toIndex - fromIndex) > 100000) {
 				BitField duplicates = new BitField(size);
@@ -1430,14 +1653,20 @@ public abstract class IndexWriter {
 
 					endPseudo++;
 					refIndex[jj] = -refIndex[jj] - 1;
-
+				}
+				/*
+				 * Output the pseudo references in reverse order as they were originally negative and are now the wrong
+				 * way round. Doesn't strictly matter, but ascending order is helpful for gzip readers.
+				 */
+				for (jj = endPseudo - 1; jj >= fromIndex; jj--) {
 					if (!duplicates.get(refIndex[jj])) {
 						body.add(refIndex[jj]);
 						duplicates.set(refIndex[jj]);
+						++pseudos;
 					}
 				}
 
-				for (; jj < toIndex; jj++) // other references
+				for (jj = endPseudo; jj < toIndex; jj++) // other references
 				{
 					if ((jj == fromIndex || refIndex[jj - 1] != refIndex[jj]) && !duplicates.get(refIndex[jj])) {
 						body.add(refIndex[jj]);
@@ -1455,12 +1684,19 @@ public abstract class IndexWriter {
 
 					endPseudo++;
 					refIndex[jj] = -refIndex[jj] - 1;
-
-					if (duplicates.add(refIndex[jj]))
+				}
+				/*
+				 * Output the pseudo references in reverse order as they were originally negative and are now the wrong
+				 * way round. Doesn't strictly matter, but ascending order is helpful for gzip readers.
+				 */
+				for (jj = endPseudo - 1; jj >= fromIndex; jj--) {
+					if (duplicates.add(refIndex[jj])) {
 						body.add(refIndex[jj]);
+						++pseudos;
+					}
 				}
 
-				for (; jj < toIndex; jj++) // other references
+				for (jj = endPseudo; jj < toIndex; jj++) // other references
 				{
 					if ((jj == fromIndex || refIndex[jj - 1] != refIndex[jj]) && !duplicates.contains(refIndex[jj])) {
 						body.add(refIndex[jj]);
@@ -1471,20 +1707,24 @@ public abstract class IndexWriter {
 			if (endPseudo > fromIndex) {
 				long h = getHeader(objectId);
 				if (h > INBOUND_MAX_KEY1) {
-					keyWriter.storeKey(objectId, new long[] { h - 1, endPseudo - fromIndex });
+					keyWriter.storeKey(objectId, new long[] { h - 1, pseudos });
 				} else {
-					keyWriter.storeKey(objectId, new int[] { header[objectId] - 1, endPseudo - fromIndex });
+					keyWriter.storeKey(objectId, new int[] { header[objectId] - 1, pseudos });
 				}
 			}
 		}
 
+		/**
+		 * Terminate the InboundWriter and delete any files which have been written so far. Use to cancel part way
+		 * through.
+		 */
 		public synchronized void cancel() {
 			try {
 				close();
 
 				if (segments != null) {
 					for (int ii = 0; ii < segments.length; ii++) {
-						new File(this.indexFile.getAbsolutePath() + ii + ".log").delete();
+						new File(this.indexFile.getAbsolutePath() + ii + ".log").delete();//$NON-NLS-1$
 					}
 				}
 			} catch (IOException ignore) {
@@ -1511,18 +1751,34 @@ public abstract class IndexWriter {
 
 	}
 
+	/**
+	 * Build index for mapping int to int array.
+	 */
 	public static class IntArray1NUncompressedCollector {
 		int[][] elements;
 		File indexFile;
 
 		/**
+		 * Constructor for index of given size
+		 *
+		 * @param size
+		 *            number of entries
 		 * @throws IOException
+		 *             if a problem occurs with the write
 		 */
 		public IntArray1NUncompressedCollector(int size, File indexFile) throws IOException {
 			this.elements = new int[size][];
 			this.indexFile = indexFile;
 		}
 
+		/**
+		 * Add entry for classid
+		 *
+		 * @param classId
+		 *            the class id
+		 * @param methodId
+		 *            the method id to be added to the array
+		 */
 		public void log(int classId, int methodId) {
 			if (elements[classId] == null) {
 				elements[classId] = new int[] { methodId };
@@ -1534,10 +1790,22 @@ public abstract class IndexWriter {
 			}
 		}
 
+		/**
+		 * Get the backing file
+		 *
+		 * @return the backing file
+		 */
 		public File getIndexFile() {
 			return indexFile;
 		}
 
+		/**
+		 * Write the in memory version to disk and return the reader.
+		 *
+		 * @return the new reader
+		 * @throws IOException
+		 *             if a write error occurs
+		 */
 		public IIndexReader.IOne2ManyIndex flush() throws IOException {
 			IntArray1NSortedWriter writer = new IntArray1NSortedWriter(elements.length, indexFile);
 			for (int ii = 0; ii < elements.length; ii++) {
@@ -1553,21 +1821,54 @@ public abstract class IndexWriter {
 	// long based indices
 	// //////////////////////////////////////////////////////////////
 
+	/**
+	 * Build a int to long index.
+	 */
 	public static class LongIndexCollectorUncompressed {
 		long[] dataElements;
 
+		/**
+		 * Construct a collector of the given size.
+		 *
+		 * @param size
+		 *            the number of entries
+		 */
 		public LongIndexCollectorUncompressed(int size) {
 			dataElements = new long[size];
 		}
 
+		/**
+		 * Add one entry.
+		 *
+		 * @param index
+		 *            the int value
+		 * @param value
+		 *            the corresponding long
+		 */
 		public void set(int index, long value) {
 			dataElements[index] = value;
 		}
 
+		/**
+		 * Retrieve an entry.
+		 *
+		 * @param index
+		 *            the int key
+		 * @return the long value
+		 */
 		public long get(int index) {
 			return dataElements[index];
 		}
 
+		/**
+		 * Write the in-memory mapping to disk and return a reader.
+		 *
+		 * @param indexFile
+		 *            the output file
+		 * @return a reader for the index
+		 * @throws IOException
+		 *             if a problem occurs with the write
+		 */
 		public IIndexReader.IOne2LongIndex writeTo(File indexFile) throws IOException {
 			return new LongIndexStreamer().writeTo(indexFile, dataElements);
 		}
@@ -1691,56 +1992,115 @@ public abstract class IndexWriter {
 			this.longArray = longArray;
 		}
 
-		@Override
 		public long next() {
 			return longArray.get(nextIndex++);
 		}
 
-		@Override
 		public boolean hasNext() {
 			return nextIndex < longArray.size();
 		}
 	}
 
+	/**
+	 * A collector for a int to long mapping. Compressed with a maximum range of bits.
+	 */
 	public static class LongIndexCollector extends LongIndex {
-		int mostSignificantBit;
+		final int mostSignificantBit;
+		final int size;
+		final int pageSize = IndexWriter.PAGE_SIZE_LONG;
+		final ConcurrentHashMap<Integer, ArrayLongCompressed> pages =
+				new ConcurrentHashMap<Integer, ArrayLongCompressed>();
 
+		/**
+		 * Create the collector.
+		 *
+		 * @param size
+		 *            the number of elements
+		 * @param mostSignificantBit
+		 *            the MSB of the long values
+		 */
 		public LongIndexCollector(int size, int mostSignificantBit) {
-			super(size);
+			this.size = size;
 			this.mostSignificantBit = mostSignificantBit;
 		}
 
-		@Override
 		protected ArrayLongCompressed getPage(int page) {
-			ArrayLongCompressed array = (ArrayLongCompressed) pages.get(page);
-			if (array == null) {
-				int ps = page < (size / pageSize) ? pageSize : size % pageSize;
-				array = new ArrayLongCompressed(ps, 63 - mostSignificantBit, 0);
-				pages.put(page, array);
-			}
-			return array;
+			ArrayLongCompressed existing = pages.get(page);
+			if (existing != null)
+				return existing;
+
+			int ps = page < (size / pageSize) ? pageSize : size % pageSize;
+			ArrayLongCompressed newArray = new ArrayLongCompressed(ps, 63 - mostSignificantBit, 0);
+			existing = pages.putIfAbsent(page, newArray);
+			return (existing != null) ? existing : newArray;
 		}
 
 		public IIndexReader.IOne2LongIndex writeTo(File indexFile) throws IOException {
+			HashMapIntObject<Object> output = new HashMapIntObject<Object>(pages.size());
+			for (Map.Entry<Integer, ArrayLongCompressed> entry : pages.entrySet()) {
+				output.put(entry.getKey(), entry.getValue());
+			}
 			// needed to re-compress
-			return new LongIndexStreamer().writeTo(indexFile, this.size, this.pages, this.pageSize);
+			return new LongIndexStreamer().writeTo(indexFile, this.size, output, this.pageSize);
+		}
+
+		public void set(int index, long value) {
+			ArrayLongCompressed array = getPage(index / pageSize);
+			// uses bit operations internally, so we should sync against the page
+			// TODO unlock this by having ArrayLongCompressed use atomics
+			synchronized (array) {
+				array.set(index % pageSize, value);
+			}
 		}
 	}
 
+	/**
+	 * A helper class to output a list of longs.
+	 */
 	public static class LongIndexStreamer extends LongIndex {
 		DataOutputStream out;
 		ArrayLong pageStart;
 		long[] page;
 		int left;
 
+		// tracks number of pages added, may not be available if they are still being compressed
+		int pagesAdded;
+
+		// if the writer task has an exception during async we want to throw it on the next write
+		Exception storedException = null;
+		// if the writer task has an OutOfMemoryError during async we want to throw it on the next write
+		OutOfMemoryError storedError = null;
+
+		// Writer _must_ be single thread to ensure page update logic stays correct. Compressor
+		// could be, but generally not limited by compression speed, so one is enough.
+		final ExecutorService compressor = singleThreadedExecutor("LongIndexStreamer-Compressor");
+		final ExecutorService writer = singleThreadedExecutor("LongIndexStreamer-Writer");
+
+		/**
+		 * A simple constructor.
+		 */
 		public LongIndexStreamer() {
 		}
 
+		/**
+		 * Construct a streamer which outputs to a file
+		 *
+		 * @param indexFile
+		 *            the output file
+		 * @throws IOException
+		 *             if a problem occurs with a write
+		 */
 		public LongIndexStreamer(File indexFile) throws IOException {
 			DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
 			openStream(out, 0);
 		}
 
+		/**
+		 * Close the backing file.
+		 *
+		 * @throws IOException
+		 *             if a problem occurs with the write or close.
+		 */
 		public void close() throws IOException {
 			DataOutputStream out = this.out;
 			closeStream();
@@ -1772,6 +2132,17 @@ public abstract class IndexWriter {
 			return getReader(indexFile);
 		}
 
+		/**
+		 * Output a whole long array
+		 *
+		 * @param indexFile
+		 *            the output file
+		 * @param array
+		 *            the source data
+		 * @return a reader for the data
+		 * @throws IOException
+		 *             if a problem occurred with the write
+		 */
 		public IOne2LongIndex writeTo(File indexFile, long[] array) throws IOException {
 			DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
 
@@ -1784,6 +2155,17 @@ public abstract class IndexWriter {
 			return getReader(indexFile);
 		}
 
+		/**
+		 * Output a whole long iterator
+		 *
+		 * @param indexFile
+		 *            the output file
+		 * @param iterator
+		 *            the source data
+		 * @return a reader for the data
+		 * @throws IOException
+		 *             if a problem occurred with the write
+		 */
 		public IOne2LongIndex writeTo(File indexFile, IteratorLong iterator) throws IOException {
 			FileOutputStream fos = new FileOutputStream(indexFile);
 			try {
@@ -1804,6 +2186,17 @@ public abstract class IndexWriter {
 			}
 		}
 
+		/**
+		 * Output a whole ArrayLong
+		 *
+		 * @param indexFile
+		 *            the output file
+		 * @param array
+		 *            the source data
+		 * @return a reader for the data
+		 * @throws IOException
+		 *             if a problem occurred with the write
+		 */
 		public IOne2LongIndex writeTo(File indexFile, ArrayLong array) throws IOException {
 			DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
 
@@ -1840,8 +2233,32 @@ public abstract class IndexWriter {
 		 * @return total bytes written to index file
 		 */
 		long closeStream() throws IOException {
-			if (left < page.length)
-				addPage();
+			try {
+				if (left < page.length)
+					addPage();
+				else
+					new WriterTask(null); // Dummy to test for pending exception
+			} catch (IOException e) {
+				// Early termination with an exception
+				try {
+					compressor.shutdownNow();
+					compressor.awaitTermination(100, TimeUnit.SECONDS);
+					writer.shutdownNow();
+					writer.awaitTermination(100, TimeUnit.SECONDS);
+					throw e;
+				} catch (InterruptedException ie) {
+					throw new IOException(ie);
+				}
+			}
+
+			try {
+				compressor.shutdown();
+				compressor.awaitTermination(100, TimeUnit.SECONDS);
+				writer.shutdown();
+				writer.awaitTermination(100, TimeUnit.SECONDS);
+			} catch (InterruptedException ie) {
+				throw new IOException(ie);
+			}
 
 			// write header information
 			for (int jj = 0; jj < pageStart.size(); jj++)
@@ -1854,7 +2271,7 @@ public abstract class IndexWriter {
 
 			this.out = null;
 
-			return this.pageStart.lastElement() + (8 * pageStart.size()) + 8 - this.pageStart.firstElement();
+			return this.pageStart.lastElement() + (8L * pageStart.size()) + 8 - this.pageStart.firstElement();
 		}
 
 		IndexReader.LongIndexReader getReader(File indexFile) throws IOException {
@@ -1901,15 +2318,12 @@ public abstract class IndexWriter {
 		}
 
 		private void addPage() throws IOException {
-			ArrayLongCompressed array = new ArrayLongCompressed(page, 0, page.length - left);
+			Future<byte[]> compressionResult = compressor.submit(new CompressionTask(page, left, pagesAdded));
+			// compression may finish in any order, but writes have to be correct, so order them
+			writer.execute(new WriterTask(compressionResult));
 
-			byte[] buffer = array.toByteArray();
-			out.write(buffer);
-			int written = buffer.length;
-
-			pages.put(pages.size(), new SoftReference<ArrayLongCompressed>(array));
-			pageStart.add(pageStart.lastElement() + written);
-
+			pagesAdded += 1;
+			page = new long[page.length];
 			left = page.length;
 		}
 
@@ -1918,6 +2332,59 @@ public abstract class IndexWriter {
 			throw new UnsupportedOperationException();
 		}
 
+		/*
+		 * Compresses a page of data to a byte array
+		 */
+		private class CompressionTask implements Callable<byte[]> {
+			final long[] page;
+			final int left;
+			final int pageNumber;
+
+			public CompressionTask(final long[] page, final int left, final int pageNumber) {
+				this.page = page;
+				this.left = left;
+				this.pageNumber = pageNumber;
+			}
+
+			public byte[] call() {
+				ArrayLongCompressed array = new ArrayLongCompressed(page, 0, page.length - left);
+				pages.put(pageNumber, new SoftReference<ArrayLongCompressed>(array));
+				return array.toByteArray();
+			}
+		}
+
+		/*
+		 * Writes data to output Assumes there is only a single WriterTask that can ever be running
+		 */
+		private class WriterTask implements Runnable {
+			final Future<byte[]> byteData;
+
+			public WriterTask(final Future<byte[]> byteData) throws IOException {
+				this.byteData = byteData;
+				if (storedException != null) {
+					throw new IOException(Messages.IndexWriter_StoredException, storedException);
+				}
+				if (storedError != null) {
+					throw new IOException(Messages.IndexWriter_StoredError, storedError);
+				}
+			}
+
+			public void run() {
+				byte[] buffer;
+				try {
+					buffer = byteData.get();
+					out.write(buffer);
+					int written = buffer.length;
+
+					// update the shared page list
+					pageStart.add(pageStart.lastElement() + written);
+				} catch (InterruptedException | ExecutionException | IOException e) {
+					storedException = e;
+				} catch (OutOfMemoryError e) {
+					storedError = e;
+				}
+			}
+		}
 	}
 
 	/**
@@ -2012,10 +2479,16 @@ public abstract class IndexWriter {
 			out = null;
 		}
 
+		/**
+		 * Terminate the LongArray1NWriter and delete any files which have been written so far. Use to cancel part way
+		 * through.
+		 */
 		public void cancel() {
 			try {
 				if (out != null) {
 					out.close();
+					if (body != null)
+						body.closeStream();
 					body = null;
 					out = null;
 				}
@@ -2029,7 +2502,6 @@ public abstract class IndexWriter {
 		public File getIndexFile() {
 			return indexFile;
 		}
-
 	}
 
 	// //////////////////////////////////////////////////////////////
@@ -2037,8 +2509,7 @@ public abstract class IndexWriter {
 	// //////////////////////////////////////////////////////////////
 
 	public static long[] copyOf(long[] original, int newLength) {
-		long[] copy = new long[newLength];
-		System.arraycopy(original, 0, copy, 0, Math.min(original.length, newLength));
+		long copy[] = Arrays.copyOf(original, newLength);
 		return copy;
 	}
 
@@ -2056,8 +2527,6 @@ public abstract class IndexWriter {
 	}
 
 	public static int mostSignificantBit(int x) {
-		int javaAnswer = 32 - Integer.numberOfLeadingZeros(x);
-
 		int length = 0;
 		if ((x & 0xffff0000) != 0) {
 			length += 16;
@@ -2084,8 +2553,6 @@ public abstract class IndexWriter {
 			// x >>= 1;
 		}
 
-		assert javaAnswer == length;
-
 		return length - 1;
 	}
 
@@ -2094,50 +2561,25 @@ public abstract class IndexWriter {
 		return lead == 0x0 ? mostSignificantBit((int) x) : 32 + mostSignificantBit((int) lead);
 	}
 
-	public static int lessSignificantBit(int x) {
-		return Integer.numberOfTrailingZeros(x);
-	}
+	static ExecutorService singleThreadedExecutor(String name) {
+		final int poolSize = 1;
+		final int timeoutSeconds = 1;
 
-	private static IteratorInt asIntIterator(IntBuffer header) {
-		header.position(0);
-
-		IteratorInt it = new IteratorInt() {
-			@Override
-			public int next() {
-				return header.get();
-			}
-
-			@Override
-			public boolean hasNext() {
-				return header.hasRemaining();
+		RejectedExecutionHandler blockingSubmitToQueue = (Runnable r, ThreadPoolExecutor executor) -> {
+			try {
+				// call put(), to force blocking on the queue
+				executor.getQueue().put(r);
+			} catch (InterruptedException e) {
+				throw new RejectedExecutionException("thread interrupted while waiting to submit", e);
 			}
 		};
 
-		return it;
+		return new ThreadPoolExecutor(poolSize,
+				poolSize,
+				timeoutSeconds,
+				TimeUnit.SECONDS,
+				new SynchronousQueue<Runnable>(),
+				r -> new Thread(r, name),
+				blockingSubmitToQueue);
 	}
-
-	private static IteratorInt asIntIterator(IIntBufferWrapper header) {
-		int capacity = header.capacity();
-
-		IteratorInt it = new IteratorInt() {
-			int nextIndex = 0;
-
-			@Override
-			public int next() {
-				return header.get(nextIndex++);
-			}
-
-			@Override
-			public boolean hasNext() {
-				return nextIndex < capacity;
-			}
-		};
-
-		return it;
-	}
-
-	public static Identifier newIdentifier() {
-		return new RoaringIdentifier();
-	}
-
 }

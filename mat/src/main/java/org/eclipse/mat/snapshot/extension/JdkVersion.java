@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2016 IBM Corporation and others
+ * Copyright (c) 2008, 2019 IBM Corporation and others
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    IBM Corporation - initial implementation - versions as int constants
@@ -21,7 +23,11 @@ import java.util.EnumSet;
 public enum JdkVersion {
 	SUN, IBM14, IBM15, IBM16, // Harmony based collections
 	IBM17, // Oracle based collections
-	IBM18, JAVA18;
+	IBM18, IBM19, JAVA18, JAVA19,
+	/**
+	 * @since 1.10
+	 */
+	JAVA_11; // Java 11
 
 	// helpers
 	public static EnumSet<JdkVersion> ALL = EnumSet.allOf(JdkVersion.class);

@@ -1,14 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 2011 IBM Corporation.
+ * Copyright (c) 2011, 2018 IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.mat.hprof.ui;
+
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.mat.hprof.HprofPlugin;
 
 /**
  * Constant definitions for plug-in preferences
@@ -20,6 +25,9 @@ public class HprofPreferences {
 	/** Default strictness for preferences and value parsing */
 	public static final HprofStrictness DEFAULT_STRICTNESS = HprofStrictness.STRICTNESS_STOP;
 
+	/** Additional references for classes */
+	public static final String ADDITIONAL_CLASS_REFERENCES = "hprofAddClassRefs"; //$NON-NLS-1$
+
 	/**
 	 * Return the currently selected preference for strictness. This first checks the preference store, and then checks
 	 * for any -D$(STRICTNESS)=true command line arguments.
@@ -27,9 +35,12 @@ public class HprofPreferences {
 	 * @return Current strictness preference or reflection of command line setting.
 	 */
 	public static HprofStrictness getCurrentStrictness() {
-		// HprofPreferences.STRICTNESS_PREF
-		HprofPreferences.HprofStrictness strictnessPreference = HprofPreferences.HprofStrictness
-				.parse(System.getProperty("mat.strictness", HprofPreferences.DEFAULT_STRICTNESS.toString()));
+		HprofPreferences.HprofStrictness strictnessPreference =
+				HprofPreferences.HprofStrictness.parse(Platform.getPreferencesService()
+						.getString(HprofPlugin.getDefault().getBundle().getSymbolicName(),
+								HprofPreferences.STRICTNESS_PREF,
+								"", //$NON-NLS-1$
+								null));
 
 		// Check if the user overrides on the command line
 		for (HprofStrictness strictness : HprofStrictness.values()) {
@@ -98,5 +109,13 @@ public class HprofPreferences {
 			}
 			return DEFAULT_STRICTNESS;
 		}
+	}
+
+	public static boolean useAdditionalClassReferences() {
+		return Platform.getPreferencesService()
+				.getBoolean(HprofPlugin.getDefault().getBundle().getSymbolicName(),
+						HprofPreferences.ADDITIONAL_CLASS_REFERENCES,
+						false,
+						null);
 	}
 }

@@ -1,12 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2009 SAP AG.
+ * Copyright (c) 2008, 2020 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson (IBM Corporation) - fix deprecated method
  *******************************************************************************/
 package org.eclipse.mat.snapshot;
 
@@ -91,12 +94,12 @@ public final class DominatorsSummary {
 			for (ClassDominatorRecord record : classDominatorRecords) {
 				ClassloaderDominatorRecord clr = map.get(record.getClassloaderId());
 				if (clr == null) {
-					map.put(record.getClassloaderId(), clr = factoryClass.newInstance());
+					map.put(record.getClassloaderId(), clr = factoryClass.getDeclaredConstructor().newInstance());
 
 					clr.setId(record.getClassloaderId());
 
 					if (clr.getId() == -1) {
-						clr.name = "<ROOT>";
+						clr.name = "<ROOT>"; //$NON-NLS-1$
 					} else {
 						IObject object = snapshot.getObject(clr.id);
 						clr.name = object.getClassSpecificName();
@@ -377,7 +380,6 @@ public final class DominatorsSummary {
 	 * A comparator by name
 	 */
 	public static final Comparator<Object> COMPARE_BY_NAME = new Comparator<Object>() {
-		@Override
 		public int compare(Object o1, Object o2) {
 			if (o1 instanceof ClassDominatorRecord)
 				return ((ClassDominatorRecord) o1).getClassName().compareTo(((ClassDominatorRecord) o2).getClassName());
@@ -392,7 +394,6 @@ public final class DominatorsSummary {
 	 * A comparator by number of dominators
 	 */
 	public static final Comparator<Object> COMPARE_BY_DOMINATORS = new Comparator<Object>() {
-		@Override
 		public int compare(Object o1, Object o2) {
 			int c1 = 0;
 			int c2 = 0;
@@ -414,7 +415,6 @@ public final class DominatorsSummary {
 	 * A comparator by number of dominated objects
 	 */
 	public static final Comparator<Object> COMPARE_BY_DOMINATED = new Comparator<Object>() {
-		@Override
 		public int compare(Object o1, Object o2) {
 			int c1 = 0;
 			int c2 = 0;
@@ -436,7 +436,6 @@ public final class DominatorsSummary {
 	 * A comparator by dominated heap size
 	 */
 	public static final Comparator<Object> COMPARE_BY_DOMINATED_HEAP_SIZE = new Comparator<Object>() {
-		@Override
 		public int compare(Object o1, Object o2) {
 			long c1 = 0;
 			long c2 = 0;
@@ -458,7 +457,6 @@ public final class DominatorsSummary {
 	 * A comparator by dominators heap size
 	 */
 	public static final Comparator<Object> COMPARE_BY_DOMINATOR_HEAP_SIZE = new Comparator<Object>() {
-		@Override
 		public int compare(Object o1, Object o2) {
 			long c1 = 0;
 			long c2 = 0;
@@ -478,7 +476,6 @@ public final class DominatorsSummary {
 	 * A comparator by dominated objects' retained size
 	 */
 	public static final Comparator<Object> COMPARE_BY_DOMINATED_RETAINED_HEAP_SIZE = new Comparator<Object>() {
-		@Override
 		public int compare(Object o1, Object o2) {
 			long c1 = 0;
 			long c2 = 0;
@@ -500,7 +497,6 @@ public final class DominatorsSummary {
 	 * A comparator by dominators' retained size
 	 */
 	public static final Comparator<Object> COMPARE_BY_DOMINATOR_RETAINED_HEAP_SIZE = new Comparator<Object>() {
-		@Override
 		public int compare(Object o1, Object o2) {
 			long c1 = 0;
 			long c2 = 0;
@@ -522,7 +518,6 @@ public final class DominatorsSummary {
 	 */
 	public static Comparator<Object> reverseComparator(final Comparator<Object> comparator) {
 		return new Comparator<Object>() {
-			@Override
 			public int compare(Object o1, Object o2) {
 				return comparator.compare(o2, o1);
 			}

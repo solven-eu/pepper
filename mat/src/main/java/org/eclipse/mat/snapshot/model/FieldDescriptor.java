@@ -1,12 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and others.
+ * Copyright (c) 2008, 2018 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson/IBM Corporation - enhancements and fixes
  *******************************************************************************/
 package org.eclipse.mat.snapshot.model;
 
@@ -81,9 +84,18 @@ public class FieldDescriptor implements Serializable {
 	 */
 	public String getVerboseSignature() {
 		if (type == IObject.Type.OBJECT)
-			return "ref";
+			return "ref"; //$NON-NLS-1$
 
 		String t = IPrimitiveArray.TYPE[type];
 		return t.substring(0, t.length() - 2);
+	}
+
+	/**
+	 * A readable representation of the field descriptor. Do not rely on the format of the result.
+	 *
+	 * @return a description of this field descriptor.
+	 */
+	public String toString() {
+		return getVerboseSignature() + " " + name; //$NON-NLS-1$
 	}
 }

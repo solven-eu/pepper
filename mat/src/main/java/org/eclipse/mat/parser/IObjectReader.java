@@ -1,12 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and others.
+ * Copyright (c) 2008, 2022 SAP AG, IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson (IBM Corporation) - Javadoc
  *******************************************************************************/
 package org.eclipse.mat.parser;
 
@@ -26,8 +29,11 @@ public interface IObjectReader {
 	 * Open the dump file associated with the snapshot
 	 *
 	 * @param snapshot
+	 *            the snapshot
 	 * @throws SnapshotException
+	 *             some other problem
 	 * @throws IOException
+	 *             an IO problem, or corrupt indexes or unexpected data in the dump
 	 */
 	void open(ISnapshot snapshot) //
 			throws SnapshotException, IOException;
@@ -44,7 +50,9 @@ public interface IObjectReader {
 	 *         {@link org.eclipse.mat.parser.model.PrimitiveArrayImpl},
 	 *         {@link org.eclipse.mat.parser.model.ClassLoaderImpl}
 	 * @throws SnapshotException
+	 *             some other problem such as where the object is incompatible with the snapshot
 	 * @throws IOException
+	 *             an IO problem or unexpected data in the dump
 	 */
 	IObject read(int objectId, ISnapshot snapshot) //
 			throws SnapshotException, IOException;
@@ -59,8 +67,10 @@ public interface IObjectReader {
 	 * @param length
 	 *            how much to read
 	 * @return a byte[], short[], int[], long[], boolean[], char[], float[], double[]
-	 * @throws IOException
 	 * @throws SnapshotException
+	 *             some other problem such as where the object is incompatible with the snapshot
+	 * @throws IOException
+	 *             an IO problem or unexpected data in the dump
 	 */
 	Object readPrimitiveArrayContent(PrimitiveArrayImpl array, int offset, int length) //
 			throws IOException, SnapshotException;
@@ -69,13 +79,16 @@ public interface IObjectReader {
 	 * Get detailed information about a object array
 	 *
 	 * @param array
+	 *            the array
 	 * @param offset
 	 *            where in the array to start
 	 * @param length
 	 *            how much to read
 	 * @return an array of object addresses, with 0 for nulls
-	 * @throws IOException
 	 * @throws SnapshotException
+	 *             some other problem such as where the object is incompatible with the snapshot
+	 * @throws IOException
+	 *             an IO problem or unexpected data in the dump
 	 */
 	long[] readObjectArrayContent(ObjectArrayImpl array, int offset, int length) //
 			throws IOException, SnapshotException;
@@ -85,8 +98,11 @@ public interface IObjectReader {
 	 *
 	 * @param addon
 	 *            type of the additional information
-	 * @return the additional information
+	 * @param <A>
+	 *            used to set the return type
+	 * @return the additional information or null if none available
 	 * @throws SnapshotException
+	 *             an IO problem or unexpected data in the dump
 	 */
 	<A> A getAddon(Class<A> addon) //
 			throws SnapshotException;
@@ -95,6 +111,7 @@ public interface IObjectReader {
 	 * tidy up when snapshot no longer required
 	 *
 	 * @throws IOException
+	 *             should not normally occur
 	 */
 	void close() throws IOException;
 

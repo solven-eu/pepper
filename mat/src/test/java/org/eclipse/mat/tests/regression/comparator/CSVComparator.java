@@ -1,12 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2008 SAP AG.
+ * Copyright (c) 2008,2020 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson (IBM Corporation) - fix deprecated method
  *******************************************************************************/
 package org.eclipse.mat.tests.regression.comparator;
 
@@ -22,7 +25,6 @@ import org.eclipse.mat.util.MessageUtil;
 
 public class CSVComparator implements IComparator {
 
-	@Override
 	public List<Difference> compare(File baseline, File testFile) throws Exception {
 		String testName = baseline.getName().substring(0, baseline.getName().lastIndexOf("."));
 
@@ -47,7 +49,7 @@ public class CSVComparator implements IComparator {
 			int lineNumber = 1;
 			while ((baseLine = baselineReader.readLine()) != null) {
 				if (!(baseLine).equals(testLine = testFileReader.readLine())) {
-					differences.add(new Difference(new Integer(lineNumber).toString(), baseLine, testLine));
+					differences.add(new Difference(Integer.valueOf(lineNumber).toString(), baseLine, testLine));
 				}
 				if (differences.size() == 10) // add only first 10 differences
 					break;

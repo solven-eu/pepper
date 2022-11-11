@@ -1,49 +1,56 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2016 SAP AG, IBM Corporation and others.
+ * Copyright (c) 2008, 2021 SAP AG, IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
  *    IBM Corporation - additional debug information
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
  *******************************************************************************/
 package org.eclipse.mat.hprof;
 
-import java.io.BufferedInputStream;
+import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.mat.SnapshotException;
 import org.eclipse.mat.collect.HashMapLongObject;
 import org.eclipse.mat.hprof.ui.HprofPreferences;
-import org.eclipse.mat.parser.io.PositionInputStream;
 import org.eclipse.mat.parser.model.ClassImpl;
 import org.eclipse.mat.snapshot.MultipleSnapshotsException;
 import org.eclipse.mat.snapshot.model.Field;
 import org.eclipse.mat.snapshot.model.FieldDescriptor;
 import org.eclipse.mat.snapshot.model.GCRootInfo;
-import org.eclipse.mat.snapshot.model.IClass;
+import org.eclipse.mat.snapshot.model.IObject.Type;
 import org.eclipse.mat.snapshot.model.IPrimitiveArray;
+import org.eclipse.mat.snapshot.model.ObjectReference;
 import org.eclipse.mat.util.IProgressListener;
 import org.eclipse.mat.util.IProgressListener.Severity;
 import org.eclipse.mat.util.MessageUtil;
 import org.eclipse.mat.util.SimpleMonitor;
 
 public class Pass1Parser extends AbstractParser {
-	private static final Pattern PATTERN_OBJ_ARRAY = Pattern.compile("^(\\[+)L(.*);$");
-	private static final Pattern PATTERN_PRIMITIVE_ARRAY = Pattern.compile("^(\\[+)(.)$");
+	private static final Pattern PATTERN_OBJ_ARRAY = Pattern.compile("^(\\[+)L(.*);$"); //$NON-NLS-1$
+	private static final Pattern PATTERN_PRIMITIVE_ARRAY = Pattern.compile("^(\\[+)(.)$"); //$NON-NLS-1$
+
+	// New size of classes including per-instance fields
+	private final boolean NEWCLASSSIZE = HprofPreferences.useAdditionalClassReferences();
 
 	private HashMapLongObject<String> class2name = new HashMapLongObject<String>();
 	private HashMapLongObject<Long> thread2id = new HashMapLongObject<Long>();
@@ -51,12 +58,17 @@ public class Pass1Parser extends AbstractParser {
 	private HashMapLongObject<StackTrace> serNum2stackTrace = new HashMapLongObject<StackTrace>();
 	private HashMapLongObject<Long> classSerNum2id = new HashMapLongObject<Long>();
 	private HashMapLongObject<List<JavaLocal>> thread2locals = new HashMapLongObject<List<JavaLocal>>();
+	private HashMapLongObject<String> constantPool = new HashMapLongObject<String>();
 	private IHprofParserHandler handler;
 	private SimpleMonitor.Listener monitor;
 	private long previousArrayStart;
 	private long previousArrayUncompressedEnd;
 	private boolean foundCompressed;
-	private final boolean verbose = Boolean.getBoolean("mat.verbose");
+	private int biggestArrays[];
+	private long streamLength;
+	private final boolean verbose = Platform.inDebugMode() && HprofPlugin.getDefault().isDebugging()
+			&& Boolean.parseBoolean(Platform.getDebugOption("org.eclipse.mat.hprof/debug/parser")); //$NON-NLS-1$
+	private BufferingRafPositionInputStream in;
 
 	public Pass1Parser(IHprofParserHandler handler,
 			SimpleMonitor.Listener monitor,
@@ -64,11 +76,13 @@ public class Pass1Parser extends AbstractParser {
 		super(strictnessPreference);
 		this.handler = handler;
 		this.monitor = monitor;
+		this.biggestArrays = new int[Runtime.getRuntime().availableProcessors()];
 	}
 
-	public void read(File file, String dumpNrToRead) throws SnapshotException, IOException {
+	public void read(File file, String prefix, String dumpNrToRead, long estimatedLength)
+			throws SnapshotException, IOException {
 		// See http://java.net/downloads/heap-snapshot/hprof-binary-format.html
-		in = new PositionInputStream(new BufferedInputStream(new FileInputStream(file)));
+		in = new BufferingRafPositionInputStream(file, prefix, 0, 8 * 1024, 0);
 
 		int currentDumpNr = 0;
 		List<MultipleSnapshotsException.Context> ctxs = new ArrayList<MultipleSnapshotsException.Context>();
@@ -91,50 +105,78 @@ public class Pass1Parser extends AbstractParser {
 			long prevTimeOffset = 0;
 			long timeWrap = 0;
 
-			long fileSize = file.length();
+			// Actual file size
+			long fileSize0 = file.length();
+			// Estimated stream length
+			long fileSize = estimatedLength;
 			long curPos = in.position();
 
-			while (curPos < fileSize) {
+			recordLoop: while (true) {
 				if (monitor.isProbablyCanceled())
 					throw new IProgressListener.OperationCanceledException();
-				monitor.totalWorkDone(curPos / 1000);
+				monitor.totalWorkDone(in.workPosition() / 1000);
 
-				int record = in.readUnsignedByte();
+				/*
+				 * Use this instead of record = in.readUnsignedByte(); so that we can detect the end of a zipped stream.
+				 */
+				int r = in.read();
+				if (r == -1)
+					break;
+				int record = r & 0xff;
 
-				long timeOffset = readUnsignedInt(); // time stamp in microseconds
+				long timeOffset = in.readUnsignedInt(); // time stamp in microseconds
 				if (timeOffset < prevTimeOffset) {
 					// Wrap after 4294 seconds
 					timeWrap += 1L << 32;
 				}
 				prevTimeOffset = timeOffset;
 
-				long length = readUnsignedInt();
+				long length = in.readUnsignedInt();
 				if (verbose)
-					System.out.println("Read record type " + record
-							+ ", length "
+					System.out.println("Read record type " + record //$NON-NLS-1$
+							+ ", length " //$NON-NLS-1$
 							+ length
-							+ " at position 0x"
+							+ " at position 0x" //$NON-NLS-1$
 							+ Long.toHexString(curPos));
 
+				if (curPos + 9 >= fileSize && fileSize > fileSize0 && curPos + 9 + length >= 0x100000000L) {
+					/*
+					 * Gzip has uncertain stream length though the lower 32-bits are correct, so make the estimated size
+					 * grow.
+					 */
+					while (fileSize < curPos + 9) {
+						fileSize += 0x100000000L;
+					}
+				}
 				length = updateLengthIfNecessary(fileSize, curPos, record, length, monitor);
 
 				if (length < 0)
-					throw new SnapshotException(MessageUtil
-							.format(Messages.Pass1Parser_Error_IllegalRecordLength, length, in.position(), record));
+					throw new SnapshotException(MessageUtil.format(Messages.Pass1Parser_Error_IllegalRecordLength,
+							length,
+							Long.toHexString(in.position() - 4),
+							Integer.toHexString(record),
+							Long.toHexString(curPos)));
 
-				if (curPos + length - 9 > fileSize) {
+				if (curPos + 9 + length > fileSize) {
 					switch (strictnessPreference) {
 					case STRICTNESS_STOP:
-						throw new SnapshotException(Messages.HPROFStrictness_Stopped,
-								new SnapshotException(MessageUtil.format(Messages.Pass1Parser_Error_invalidHPROFFile,
-										length,
-										fileSize - curPos - 9)));
+						// If we are sure about the file size
+						if (fileSize == fileSize0 || fileSize < 0x10000000L)
+							throw new SnapshotException(Messages.HPROFStrictness_Stopped,
+									new SnapshotException(
+											MessageUtil.format(Messages.Pass1Parser_Error_invalidHPROFFile,
+													length,
+													fileSize - curPos - 9,
+													Integer.toHexString(record),
+													Long.toHexString(curPos))));
 					case STRICTNESS_WARNING:
 					case STRICTNESS_PERMISSIVE:
 						monitor.sendUserMessage(Severity.WARNING,
 								MessageUtil.format(Messages.Pass1Parser_Error_invalidHPROFFile,
 										length,
-										fileSize - curPos - 9),
+										fileSize - curPos - 9,
+										Integer.toHexString(record),
+										Long.toHexString(curPos)),
 								null);
 						break;
 					default:
@@ -145,12 +187,18 @@ public class Pass1Parser extends AbstractParser {
 				switch (record) {
 				case Constants.Record.STRING_IN_UTF8:
 					if (((int) (length - idSize) < 0))
-						throw new SnapshotException(MessageUtil
-								.format(Messages.Pass1Parser_Error_IllegalRecordLength, length, in.position(), record));
+						throw new SnapshotException(MessageUtil.format(Messages.Pass1Parser_Error_IllegalRecordLength,
+								length,
+								Long.toHexString(in.position() - 4),
+								Integer.toHexString(record),
+								Long.toHexString(curPos)));
 					readString(length);
 					break;
 				case Constants.Record.LOAD_CLASS:
 					readLoadClass();
+					break;
+				case Constants.Record.UNLOAD_CLASS:
+					readUnloadClass();
 					break;
 				case Constants.Record.STACK_FRAME:
 					readStackFrame(length);
@@ -166,7 +214,12 @@ public class Pass1Parser extends AbstractParser {
 							handler.addProperty(IHprofParserHandler.CREATION_DATE, String.valueOf(dumpTime));
 							foundDump = true;
 						}
-						readDumpSegments(length);
+						long posnext = readDumpSegments(length);
+						if (posnext < curPos + length) {
+							// Truncated file, so could not read to end of segment
+							curPos = posnext;
+							break recordLoop;
+						}
 					} else
 						in.skipBytes(length);
 					if (ctxs.size() < currentDumpNr + 1) {
@@ -185,7 +238,6 @@ public class Pass1Parser extends AbstractParser {
 					currentDumpNr++;
 					in.skipBytes(length);
 					break;
-				case Constants.Record.UNLOAD_CLASS:
 				case Constants.Record.ALLOC_SITES:
 				case Constants.Record.HEAP_SUMMARY:
 				case Constants.Record.START_THREAD:
@@ -200,13 +252,15 @@ public class Pass1Parser extends AbstractParser {
 						throw new SnapshotException(Messages.HPROFStrictness_Stopped,
 								new SnapshotException(MessageUtil.format(Messages.Pass1Parser_UnexpectedRecord,
 										Integer.toHexString(record),
-										length)));
+										length,
+										Long.toHexString(curPos))));
 					case STRICTNESS_WARNING:
 					case STRICTNESS_PERMISSIVE:
 						monitor.sendUserMessage(Severity.WARNING,
 								MessageUtil.format(Messages.Pass1Parser_UnexpectedRecord,
 										Integer.toHexString(record),
-										length),
+										length,
+										Long.toHexString(curPos)),
 								null);
 						in.skipBytes(length);
 						break;
@@ -218,12 +272,15 @@ public class Pass1Parser extends AbstractParser {
 
 				curPos = in.position();
 			}
+			streamLength = curPos;
 		} finally {
 			try {
 				in.close();
 			} catch (IOException ignore) {
 			}
 		}
+
+		handler.addProperty(IHprofParserHandler.STREAM_LENGTH, Long.toString(streamLength()));
 
 		if (!foundDump)
 			throw new SnapshotException(MessageUtil.format(Messages.Pass1Parser_Error_NoHeapDumpIndexFound,
@@ -253,32 +310,60 @@ public class Pass1Parser extends AbstractParser {
 
 	}
 
+	/**
+	 * Total of the size of the k biggest object arrays. k = number of processors Use to estimate how much more memory
+	 * parallel parsing will use.
+	 *
+	 * @return size in bytes
+	 */
+	public long biggestArrays() {
+		long total = 0;
+		for (int s : biggestArrays) {
+			total += s;
+		}
+		return total;
+	}
+
+	/**
+	 * Find the uncompressed stream length (in case the dump is compressed).
+	 *
+	 * @return the length in bytes
+	 */
+	public long streamLength() {
+		return streamLength;
+	}
+
 	private void readString(long length) throws IOException {
-		long id = readID();
+		long id = in.readID(idSize);
 		byte[] chars = new byte[(int) (length - idSize)];
 		in.readFully(chars);
-		handler.getConstantPool().put(id, new String(chars, "UTF-8"));
+		constantPool.put(id, new String(chars, "UTF-8")); //$NON-NLS-1$
 	}
 
 	private void readLoadClass() throws IOException {
-		long classSerNum = readUnsignedInt(); // used in stacks frames
-		long classID = readID();
-		in.skipBytes(4);
-		long nameID = readID();
+		long classSerNum = in.readUnsignedInt(); // used in stacks frames
+		long classID = in.readID(idSize);
+		in.skipBytes(4); // stack trace
+		long nameID = in.readID(idSize);
 
 		String className = getStringConstant(nameID).replace('/', '.');
 		class2name.put(classID, className);
 		classSerNum2id.put(classSerNum, classID);
 	}
 
-	private void readStackFrame(long length) throws IOException {
-		assert length > 0;
+	private void readUnloadClass() throws IOException {
+		long classSerNum = in.readUnsignedInt(); // used in stacks frames
+		long classID = classSerNum2id.get(classSerNum);
+		// class2name only holds active classes
+		class2name.remove(classID);
+	}
 
-		long frameId = readID();
-		long methodName = readID();
-		long methodSig = readID();
-		long srcFile = readID();
-		long classSerNum = readUnsignedInt();
+	private void readStackFrame(long length) throws IOException {
+		long frameId = in.readID(idSize);
+		long methodName = in.readID(idSize);
+		long methodSig = in.readID(idSize);
+		long srcFile = in.readID(idSize);
+		long classSerNum = in.readUnsignedInt();
 		int lineNr = in.readInt(); // can be negative
 		StackFrame frame = new StackFrame(frameId,
 				lineNr,
@@ -290,24 +375,22 @@ public class Pass1Parser extends AbstractParser {
 	}
 
 	private void readStackTrace(long length) throws IOException {
-		assert length > 0;
-
-		long stackTraceNr = readUnsignedInt();
-		long threadNr = readUnsignedInt();
-		long frameCount = readUnsignedInt();
+		long stackTraceNr = in.readUnsignedInt();
+		long threadNr = in.readUnsignedInt();
+		long frameCount = in.readUnsignedInt();
 		long[] frameIds = new long[(int) frameCount];
 		for (int i = 0; i < frameCount; i++) {
-			frameIds[i] = readID();
+			frameIds[i] = in.readID(idSize);
 		}
 		StackTrace stackTrace = new StackTrace(stackTraceNr, threadNr, frameIds);
 		serNum2stackTrace.put(stackTraceNr, stackTrace);
 	}
 
-	private void readDumpSegments(long length) throws IOException, SnapshotException {
+	private long readDumpSegments(long length) throws IOException, SnapshotException {
 		long segmentStartPos = in.position();
 		long segmentsEndPos = segmentStartPos + length;
 
-		while (segmentStartPos < segmentsEndPos) {
+		subrecordLoop: while (segmentStartPos < segmentsEndPos) {
 			long workDone = segmentStartPos / 1000;
 			if (this.monitor.getWorkDone() < workDone) {
 				if (this.monitor.isProbablyCanceled())
@@ -315,60 +398,88 @@ public class Pass1Parser extends AbstractParser {
 				this.monitor.totalWorkDone(workDone);
 			}
 
-			int segmentType = in.readUnsignedByte();
-			if (verbose)
-				System.out.println("    Read heap sub-record type " + segmentType
-						+ " at position 0x"
-						+ Long.toHexString(segmentStartPos));
-			switch (segmentType) {
-			case Constants.DumpSegment.ROOT_UNKNOWN:
-				readGC(GCRootInfo.Type.UNKNOWN, 0);
-				break;
-			case Constants.DumpSegment.ROOT_THREAD_OBJECT:
-				readGCThreadObject(GCRootInfo.Type.THREAD_OBJ);
-				break;
-			case Constants.DumpSegment.ROOT_JNI_GLOBAL:
-				readGC(GCRootInfo.Type.NATIVE_STACK, idSize);
-				break;
-			case Constants.DumpSegment.ROOT_JNI_LOCAL:
-				readGCWithThreadContext(GCRootInfo.Type.NATIVE_LOCAL, true);
-				break;
-			case Constants.DumpSegment.ROOT_JAVA_FRAME:
-				readGCWithThreadContext(GCRootInfo.Type.JAVA_LOCAL, true);
-				break;
-			case Constants.DumpSegment.ROOT_NATIVE_STACK:
-				readGCWithThreadContext(GCRootInfo.Type.NATIVE_STACK, false);
-				break;
-			case Constants.DumpSegment.ROOT_STICKY_CLASS:
-				readGC(GCRootInfo.Type.SYSTEM_CLASS, 0);
-				break;
-			case Constants.DumpSegment.ROOT_THREAD_BLOCK:
-				readGC(GCRootInfo.Type.THREAD_BLOCK, 4);
-				break;
-			case Constants.DumpSegment.ROOT_MONITOR_USED:
-				readGC(GCRootInfo.Type.BUSY_MONITOR, 0);
-				break;
-			case Constants.DumpSegment.CLASS_DUMP:
-				readClassDump(segmentStartPos);
-				break;
-			case Constants.DumpSegment.INSTANCE_DUMP:
-				readInstanceDump(segmentStartPos);
-				break;
-			case Constants.DumpSegment.OBJECT_ARRAY_DUMP:
-				readObjectArrayDump(segmentStartPos);
-				break;
-			case Constants.DumpSegment.PRIMITIVE_ARRAY_DUMP:
-				readPrimitiveArrayDump(segmentStartPos);
-				break;
-			default:
-				throw new SnapshotException(MessageUtil
-						.format(Messages.Pass1Parser_Error_InvalidHeapDumpFile, segmentType, segmentStartPos));
+			int segmentType = -1;
+			try {
+				segmentType = in.readUnsignedByte();
+				if (verbose)
+					System.out.println("    Read heap sub-record type " + segmentType //$NON-NLS-1$
+							+ " at position 0x" //$NON-NLS-1$
+							+ Long.toHexString(segmentStartPos));
+				switch (segmentType) {
+				case Constants.DumpSegment.ROOT_UNKNOWN:
+					readGC(GCRootInfo.Type.UNKNOWN, 0);
+					break;
+				case Constants.DumpSegment.ROOT_THREAD_OBJECT:
+					readGCThreadObject(GCRootInfo.Type.THREAD_OBJ);
+					break;
+				case Constants.DumpSegment.ROOT_JNI_GLOBAL:
+					readGC(GCRootInfo.Type.NATIVE_STATIC, idSize);
+					break;
+				case Constants.DumpSegment.ROOT_JNI_LOCAL:
+					readGCWithThreadContext(GCRootInfo.Type.NATIVE_LOCAL, true);
+					break;
+				case Constants.DumpSegment.ROOT_JAVA_FRAME:
+					readGCWithThreadContext(GCRootInfo.Type.JAVA_LOCAL, true);
+					break;
+				case Constants.DumpSegment.ROOT_NATIVE_STACK:
+					readGCWithThreadContext(GCRootInfo.Type.NATIVE_STACK, false);
+					break;
+				case Constants.DumpSegment.ROOT_STICKY_CLASS:
+					readGC(GCRootInfo.Type.SYSTEM_CLASS, 0);
+					break;
+				case Constants.DumpSegment.ROOT_THREAD_BLOCK:
+					readGCWithThreadContext(GCRootInfo.Type.THREAD_BLOCK, false);
+					break;
+				case Constants.DumpSegment.ROOT_MONITOR_USED:
+					readGC(GCRootInfo.Type.BUSY_MONITOR, 0);
+					break;
+				case Constants.DumpSegment.CLASS_DUMP:
+					readClassDump(segmentStartPos);
+					break;
+				case Constants.DumpSegment.INSTANCE_DUMP:
+					readInstanceDump(segmentStartPos);
+					break;
+				case Constants.DumpSegment.OBJECT_ARRAY_DUMP:
+					readObjectArrayDump(segmentStartPos);
+					break;
+				case Constants.DumpSegment.PRIMITIVE_ARRAY_DUMP:
+					readPrimitiveArrayDump(segmentStartPos);
+					break;
+				default:
+					throw new SnapshotException(MessageUtil.format(Messages.Pass1Parser_Error_InvalidHeapDumpFile,
+							Integer.toHexString(segmentType),
+							Long.toHexString(segmentStartPos)));
+				}
+			} catch (EOFException e) {
+				switch (strictnessPreference) {
+				case STRICTNESS_STOP:
+					throw new SnapshotException(Messages.HPROFStrictness_Stopped,
+							new SnapshotException(MessageUtil.format(Messages.Pass1Parser_Error_invalidHPROFFile,
+									segmentsEndPos - segmentStartPos,
+									in.position() - segmentStartPos,
+									Integer.toHexString(segmentType),
+									Long.toHexString(segmentStartPos)), e));
+				case STRICTNESS_WARNING:
+				case STRICTNESS_PERMISSIVE:
+					/*
+					 * Recover from early end of file. The EOFException occurred in this record so the start of the
+					 * record is an okay end point.
+					 */
+					monitor.sendUserMessage(Severity.WARNING,
+							MessageUtil.format(Messages.Pass1Parser_ExceptionReadingSubrecord,
+									Integer.toHexString(segmentType),
+									Long.toHexString(in.position()),
+									Long.toHexString(segmentStartPos),
+									segmentStartPos - (segmentsEndPos - length)),
+							e);
+					break subrecordLoop;
+				}
 			}
 
 			segmentStartPos = in.position();
 		}
 		if (verbose)
-			System.out.println("    Finished heap sub-records.");
+			System.out.println("    Finished heap sub-records."); //$NON-NLS-1$
 		if (segmentStartPos != segmentsEndPos) {
 			switch (strictnessPreference) {
 			case STRICTNESS_STOP:
@@ -392,27 +503,59 @@ public class Pass1Parser extends AbstractParser {
 				throw new SnapshotException(Messages.HPROFStrictness_Unhandled_Preference);
 			}
 		}
+		return segmentStartPos;
+	}
+
+	/**
+	 * Guaranteed skip of skips, and that we can read the last byte, so we haven't skipped beyond the end of the file
+	 *
+	 * @param s
+	 * @return bytes skipped
+	 * @throws IOException
+	 *             if unable to skip the bytes or read the last byte
+	 */
+	private long checkSkipBytes(long s) throws IOException {
+		if (s > 0) {
+			if (s > 1) {
+				// Since skipBytes returns only an int, we might have to call
+				// it more than once.
+				long left = s - 1;
+
+				while (left > 0) {
+					long toSkip = Math.min((long) Integer.MAX_VALUE, left);
+					int skipped = in.skipBytes(toSkip);
+
+					if (skipped < toSkip) {
+						throw new EOFException();
+					}
+
+					left -= skipped;
+				}
+			}
+			in.readByte();
+		}
+		return s;
 	}
 
 	private void readGCThreadObject(int gcType) throws IOException {
-		long id = readID();
+		long id = in.readID(idSize);
 		int threadSerialNo = in.readInt();
 		thread2id.put(threadSerialNo, id);
 		handler.addGCRoot(id, 0, gcType);
 
-		in.skipBytes(4);
+		checkSkipBytes(4);
 	}
 
 	private void readGC(int gcType, int skip) throws IOException {
-		long id = readID();
+		long id = in.readID(idSize);
 		handler.addGCRoot(id, 0, gcType);
 
 		if (skip > 0)
-			in.skipBytes(skip);
+			checkSkipBytes(skip);
 	}
 
 	private void readGCWithThreadContext(int gcType, boolean hasLineInfo) throws IOException {
-		long id = readID();
+		long id = in.readID(idSize);
 		int threadSerialNo = in.readInt();
 		Long tid = thread2id.get(threadSerialNo);
 		if (tid != null) {
@@ -433,33 +576,74 @@ public class Pass1Parser extends AbstractParser {
 	}
 
 	private void readClassDump(long segmentStartPos) throws IOException {
-		long address = readID();
+		long address = in.readID(idSize);
 		in.skipBytes(4); // stack trace serial number
-		long superClassObjectId = readID();
-		long classLoaderObjectId = readID();
+		long superClassObjectId = in.readID(idSize);
+		long classLoaderObjectId = in.readID(idSize);
 
-		// skip signers, protection domain, reserved ids (2), instance size
-		in.skipBytes(this.idSize * 4 + 4);
+		// read signers, protection domain, reserved ids (2)
+		long signersId = in.readID(idSize);
+		long protectionDomainId = in.readID(idSize);
+		long reserved1Id = in.readID(idSize);
+		long reserved2Id = in.readID(idSize);
+		int extraDummyStatics = 0;
+		if (NEWCLASSSIZE) {
+			// Always add signers / protectionDomain
+			extraDummyStatics += 2;
+			if (reserved1Id != 0)
+				++extraDummyStatics;
+			if (reserved2Id != 0)
+				++extraDummyStatics;
+		}
+
+		// instance size
+		int instsize = in.readInt();
 
 		// constant pool: u2 ( u2 u1 value )*
 		int constantPoolSize = in.readUnsignedShort();
+		Field[] constantPool = new Field[constantPoolSize];
 		for (int ii = 0; ii < constantPoolSize; ii++) {
-			in.skipBytes(2); // index
-			skipValue(); // value
+			int index = in.readUnsignedShort(); // index
+			String name = "<constant pool[" + index + "]>"; //$NON-NLS-1$ //$NON-NLS-2$
+			byte type = in.readByte();
+
+			Object value = readValue(in, null, type);
+			constantPool[ii] = new Field(name, type, value);
 		}
 
 		// static fields: u2 num ( name ID, u1 type, value)
 		int numStaticFields = in.readUnsignedShort();
-		Field[] statics = new Field[numStaticFields];
+		Field[] statics = new Field[numStaticFields + extraDummyStatics];
 
 		for (int ii = 0; ii < numStaticFields; ii++) {
-			long nameId = readID();
+			long nameId = in.readID(idSize);
 			String name = getStringConstant(nameId);
 
 			byte type = in.readByte();
 
-			Object value = readValue(null, type);
+			Object value = readValue(in, null, type);
 			statics[ii] = new Field(name, type, value);
+		}
+
+		if (NEWCLASSSIZE) {
+			int si = numStaticFields;
+			statics[si++] =
+					new Field("<signers>", Type.OBJECT, signersId == 0 ? null : new ObjectReference(null, signersId)); //$NON-NLS-1$
+			statics[si++] = new Field("<protectionDomain>", //$NON-NLS-1$
+					Type.OBJECT,
+					protectionDomainId == 0 ? null : new ObjectReference(null, protectionDomainId));
+			if (reserved1Id != 0)
+				statics[si++] = new Field("<reserved1>", //$NON-NLS-1$
+						Type.OBJECT,
+						reserved1Id == 0 ? null : new ObjectReference(null, reserved1Id));
+			if (reserved2Id != 0)
+				statics[si++] = new Field("<reserved2>", //$NON-NLS-1$
+						Type.OBJECT,
+						reserved2Id == 0 ? null : new ObjectReference(null, reserved2Id));
+			Field all[] = new Field[statics.length + constantPool.length];
+			System.arraycopy(statics, 0, all, 0, statics.length);
+			System.arraycopy(constantPool, 0, all, statics.length, constantPool.length);
+			statics = all;
 		}
 
 		// instance fields: u2 num ( name ID, u1 type )
@@ -467,7 +651,7 @@ public class Pass1Parser extends AbstractParser {
 		FieldDescriptor[] fields = new FieldDescriptor[numInstanceFields];
 
 		for (int ii = 0; ii < numInstanceFields; ii++) {
-			long nameId = readID();
+			long nameId = in.readID(idSize);
 			String name = getStringConstant(nameId);
 
 			byte type = in.readByte();
@@ -477,7 +661,7 @@ public class Pass1Parser extends AbstractParser {
 		// get name
 		String className = class2name.get(address);
 		if (className == null)
-			className = "unknown-name@0x" + Long.toHexString(address);
+			className = "unknown-name@0x" + Long.toHexString(address); //$NON-NLS-1$
 
 		if (className.charAt(0) == '[') // quick check if array at hand
 		{
@@ -487,14 +671,14 @@ public class Pass1Parser extends AbstractParser {
 				int l = matcher.group(1).length();
 				className = matcher.group(2);
 				for (int ii = 0; ii < l; ii++)
-					className += "[]";
+					className += "[]"; //$NON-NLS-1$
 			}
 
 			// primitive arrays
 			matcher = PATTERN_PRIMITIVE_ARRAY.matcher(className);
 			if (matcher.matches()) {
 				int count = matcher.group(1).length() - 1;
-				className = "unknown[]";
+				className = "unknown[]"; //$NON-NLS-1$
 
 				char signature = matcher.group(2).charAt(0);
 				for (int ii = 0; ii < IPrimitiveArray.SIGNATURES.length; ii++) {
@@ -505,65 +689,78 @@ public class Pass1Parser extends AbstractParser {
 				}
 
 				for (int ii = 0; ii < count; ii++)
-					className += "[]";
+					className += "[]"; //$NON-NLS-1$
 			}
 		}
 
 		ClassImpl clazz = new ClassImpl(address, className, superClassObjectId, classLoaderObjectId, statics, fields);
-		handler.addClass(clazz, segmentStartPos);
+		// This will be replaced by a size calculated from the field sizes
+		clazz.setHeapSizePerInstance(instsize);
+		handler.addClass(clazz, segmentStartPos, idSize, instsize);
 
-		// Just in case the superclass is missing
-		if (superClassObjectId != 0 && handler.lookupClass(superClassObjectId) == null) {
-			// A real size of an instance will override this
-			handler.reportRequiredClass(superClassObjectId, Integer.MAX_VALUE);
-		}
+		// TODO do we actually need this code?
+		// if so - move it to HprofParserHandlerImpl
+		// instanceaddress2classID was a HashMapLongObject<Long>
+
+		/*
+		 * // Just in case the superclass is missing if (superClassObjectId != 0 &&
+		 * handler.lookupClass(superClassObjectId) == null) { // Try to calculate how big the superclass should be int
+		 * ownFieldsSize = 0; for (FieldDescriptor field : clazz.getFieldDescriptors()) { int type = field.getType(); if
+		 * (type == IObject.Type.OBJECT) ownFieldsSize += idSize; else ownFieldsSize +=
+		 * IPrimitiveArray.ELEMENT_SIZE[type]; } int supersize = Math.max(instsize - ownFieldsSize, 0); // A real size
+		 * of an instance will override this handler.reportRequiredClass(superClassObjectId, supersize); }
+		 *
+		 * // Check / set types of classes if (instanceaddress2classID.containsKey(address)) { // Already seen an
+		 * instance dump for class type long classId = instanceaddress2classID.get(address); IClass type =
+		 * handler.lookupClass(classId); if (type instanceof ClassImpl) { clazz.setClassInstance((ClassImpl)type); } }
+		 *
+		 * for (Iterator<Entry<Long>>it = instanceaddress2classID.entries(); it.hasNext(); ) { Entry<Long>e = it.next();
+		 * if (e.getValue() == address) { // Existing class has this class as its type IClass base =
+		 * handler.lookupClass(e.getKey()); if (base instanceof ClassImpl) { ClassImpl baseCls = (ClassImpl)base;
+		 * baseCls.setClassInstance(clazz); } } }
+		 */
 	}
 
 	private void readInstanceDump(long segmentStartPos) throws IOException {
-		long address = readID();
-		handler.reportInstance(address, segmentStartPos);
-		in.skipBytes(4);
-		long classID = readID();
+		long address = in.readID(idSize);
+		in.skipBytes(4); // stack trace serial
+		long classID = in.readID(idSize);
 		int payload = in.readInt();
-		// check if class needs to be created
-		IClass instanceType = handler.lookupClass(classID);
-		if (instanceType == null)
-			handler.reportRequiredClass(classID, payload);
 
-		in.skipBytes(payload);
+		checkSkipBytes(payload);
+
+		handler.reportInstanceWithClass(address, segmentStartPos, classID, payload);
 	}
 
 	private void readObjectArrayDump(long segmentStartPos) throws IOException {
-		long address = readID();
+		long address = in.readID(idSize);
 		if (!foundCompressed && idSize == 8 && address > previousArrayStart && address < previousArrayUncompressedEnd) {
 			monitor.sendUserMessage(Severity.INFO,
 					MessageUtil.format(Messages.Pass1Parser_DetectedCompressedReferences,
 							Long.toHexString(address),
 							Long.toHexString(previousArrayStart)),
 					null);
-			handler.addProperty(IHprofParserHandler.REFERENCE_SIZE, "4");
+			handler.addProperty(IHprofParserHandler.REFERENCE_SIZE, "4"); //$NON-NLS-1$
 			foundCompressed = true;
 		}
 
-		handler.reportInstance(address, segmentStartPos);
-
-		in.skipBytes(4);
+		in.skipBytes(4); // stack trace serial
 		int size = in.readInt();
-		long arrayClassObjectID = readID();
+		long arrayClassObjectID = in.readID(idSize);
 
-		// check if class needs to be created
-		IClass arrayType = handler.lookupClass(arrayClassObjectID);
-		if (arrayType == null)
-			handler.reportRequiredObjectArray(arrayClassObjectID);
-
-		in.skipBytes((long) size * idSize);
+		checkSkipBytes((long) size * idSize);
 		previousArrayStart = address;
 		previousArrayUncompressedEnd = address + 16 + (long) size * 8;
+		if (size > biggestArrays[0]) {
+			biggestArrays[0] = size;
+			Arrays.sort(biggestArrays);
+		}
+
+		handler.reportInstanceOfObjectArray(address, segmentStartPos, arrayClassObjectID);
 	}
 
 	private void readPrimitiveArrayDump(long segmentStartPos) throws SnapshotException, IOException {
-		long address = readID();
-		handler.reportInstance(address, segmentStartPos);
+		long address = in.readID(idSize);
 
 		in.skipBytes(4);
 		int size = in.readInt();
@@ -572,22 +769,19 @@ public class Pass1Parser extends AbstractParser {
 		if ((elementType < IPrimitiveArray.Type.BOOLEAN) || (elementType > IPrimitiveArray.Type.LONG))
 			throw new SnapshotException(Messages.Pass1Parser_Error_IllegalType);
 
-		// check if class needs to be created
-		String name = IPrimitiveArray.TYPE[elementType];
-		IClass clazz = handler.lookupClassByName(name, true);
-		if (clazz == null)
-			handler.reportRequiredPrimitiveArray(elementType);
-
 		int elementSize = IPrimitiveArray.ELEMENT_SIZE[elementType];
-		in.skipBytes((long) elementSize * size);
+		checkSkipBytes((long) elementSize * size);
+
+		handler.reportInstanceOfPrimitiveArray(address, segmentStartPos, elementType);
 	}
 
 	private String getStringConstant(long address) {
 		if (address == 0L)
-			return "";
+			return ""; //$NON-NLS-1$
 
-		String result = handler.getConstantPool().get(address);
-		return result == null ? Messages.Pass1Parser_Error_UnresolvedName + Long.toHexString(address) : result;
+		String result = constantPool.get(address);
+		return result == null ? MessageUtil.format(Messages.Pass1Parser_Error_UnresolvedName, Long.toHexString(address))
+				: result;
 	}
 
 	private void dumpThreads() {
@@ -597,9 +791,9 @@ public class Pass1Parser extends AbstractParser {
 			return;
 
 		PrintWriter out = null;
-		String outputName = handler.getSnapshotInfo().getPrefix() + "threads";
+		String outputName = handler.getSnapshotInfo().getPrefix() + "threads"; //$NON-NLS-1$
 		try {
-			out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outputName), "UTF-8"));
+			out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outputName), "UTF-8")); //$NON-NLS-1$
 
 			Iterator<StackTrace> it = serNum2stackTrace.values();
 			while (it.hasNext()) {
@@ -607,15 +801,15 @@ public class Pass1Parser extends AbstractParser {
 				Long tid = thread2id.get(stack.threadSerialNr);
 				if (tid == null)
 					continue;
-				String threadId = tid == null ? "<unknown>" : "0x" + Long.toHexString(tid);
-				out.println("Thread " + threadId);
+				String threadId = tid == null ? "<unknown>" : "0x" + Long.toHexString(tid); //$NON-NLS-1$ //$NON-NLS-2$
+				out.println("Thread " + threadId); //$NON-NLS-1$
 				out.println(stack);
-				out.println("  locals:");
+				out.println("  locals:"); //$NON-NLS-1$
 				List<JavaLocal> locals = thread2locals.get(stack.threadSerialNr);
 				if (locals != null) {
 					for (JavaLocal javaLocal : locals) {
-						out.println("    objectId=0x" + Long.toHexString(javaLocal.objectId)
-								+ ", line="
+						out.println("    objectId=0x" + Long.toHexString(javaLocal.objectId) //$NON-NLS-1$
+								+ ", line=" //$NON-NLS-1$
 								+ javaLocal.lineNumber);
 
 					}
@@ -674,23 +868,23 @@ public class Pass1Parser extends AbstractParser {
 			String className = null;
 			Long classId = classSerNum2id.get(classSerNum);
 			if (classId == null) {
-				className = "<UNKNOWN CLASS>";
+				className = "<UNKNOWN CLASS>"; //$NON-NLS-1$
 			} else {
 				className = class2name.get(classId);
 			}
 
-			String sourceLocation = "";
+			String sourceLocation = ""; //$NON-NLS-1$
 			if (lineNr > 0) {
-				sourceLocation = "(" + sourceFile + ":" + String.valueOf(lineNr) + ")";
+				sourceLocation = "(" + sourceFile + ":" + String.valueOf(lineNr) + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			} else if (lineNr == 0 || lineNr == -1) {
-				sourceLocation = "(Unknown Source)";
+				sourceLocation = "(Unknown Source)"; //$NON-NLS-1$
 			} else if (lineNr == -2) {
-				sourceLocation = "(Compiled method)";
+				sourceLocation = "(Compiled method)"; //$NON-NLS-1$
 			} else if (lineNr == -3) {
-				sourceLocation = "(Native Method)";
+				sourceLocation = "(Native Method)"; //$NON-NLS-1$
 			}
 
-			return "  at " + className + "." + method + methodSignature + " " + sourceLocation;
+			return "  at " + className + "." + method + methodSignature + " " + sourceLocation; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 
 	}
@@ -712,7 +906,7 @@ public class Pass1Parser extends AbstractParser {
 				StackFrame frame = id2frame.get(frameId);
 				if (frame != null) {
 					b.append(frame.toString());
-					b.append("\r\n");
+					b.append("\r\n"); //$NON-NLS-1$
 				}
 
 			}
@@ -721,7 +915,7 @@ public class Pass1Parser extends AbstractParser {
 
 	}
 
-	private class JavaLocal {
+	private static class JavaLocal {
 		private long objectId;
 		private int lineNumber;
 		private int type;

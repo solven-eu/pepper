@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2010 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -21,7 +23,7 @@ public interface IPrimitiveArray extends IArray {
 	 *
 	 * @see IObject.Type
 	 */
-	byte[] SIGNATURES = { -1,
+	public static final byte[] SIGNATURES = { -1,
 			-1,
 			-1,
 			-1,
@@ -39,14 +41,15 @@ public interface IPrimitiveArray extends IArray {
 	 *
 	 * @see IObject.Type
 	 */
-	int[] ELEMENT_SIZE = { -1, -1, -1, -1, 1, 2, 4, 8, 1, 2, 4, 8 };
+	public static final int[] ELEMENT_SIZE = { -1, -1, -1, -1, 1, 2, 4, 8, 1, 2, 4, 8 };
 
 	/**
 	 * Display string of the type. Indexes match the values of {@link IObject.Type}
 	 *
 	 * @see IObject.Type
 	 */
-	String[] TYPE = { null,
+	@SuppressWarnings("nls")
+	public static final String[] TYPE = { null,
 			null,
 			null,
 			null,
@@ -60,11 +63,11 @@ public interface IPrimitiveArray extends IArray {
 			"long[]" };
 
 	/**
-	 * Java component type of the primitive array. Indexes match the values of {link IObject.Type}
+	 * Java component type of the primitive array. Indexes match the values of {@link IObject.Type}
 	 *
 	 * @see IObject.Type
 	 */
-	Class<?>[] COMPONENT_TYPE = { null,
+	public static final Class<?>[] COMPONENT_TYPE = { null,
 			null,
 			null,
 			null,
@@ -80,12 +83,12 @@ public interface IPrimitiveArray extends IArray {
 	/**
 	 * Returns the {@link IObject.Type} of the primitive array.
 	 */
-	int getType();
+	public int getType();
 
 	/**
 	 * Returns the component type of the array.
 	 */
-	Class<?> getComponentType();
+	public Class<?> getComponentType();
 
 	/**
 	 * Returns the value of the array at the specified index
@@ -96,7 +99,7 @@ public interface IPrimitiveArray extends IArray {
 	 *         Boolean - for a boolean array Char - for a char array Float - for a float array Double - for a double
 	 *         array
 	 */
-	Object getValueAt(int index);
+	public Object getValueAt(int index);
 
 	/**
 	 * Get the primitive Java array. The return value can be cast into the correct component type, e.g.
@@ -111,7 +114,7 @@ public interface IPrimitiveArray extends IArray {
 	 * The return value must not be modified because it is cached by the heap dump adapter. This method does not return
 	 * a copy of the array for performance reasons.
 	 */
-	Object getValueArray();
+	public Object getValueArray();
 
 	/**
 	 * Get the primitive Java array, beginning at <code>offset</code> and <code>length</code> number of elements.
@@ -119,5 +122,5 @@ public interface IPrimitiveArray extends IArray {
 	 * The return value must not be modified because it is cached by the heap dump adapter. This method does not return
 	 * a copy of the array for performance reasons.
 	 */
-	Object getValueArray(int offset, int length);
+	public Object getValueArray(int offset, int length);
 }

@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2009 SAP AG.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -74,7 +76,7 @@ public class MultiplePathsFromGCRootsRecord {
 		HashMapIntObject<MultiplePathsFromGCRootsRecord> nextLevelRecords =
 				new HashMapIntObject<MultiplePathsFromGCRootsRecord>();
 		for (int[] path : paths) {
-			if (path != null && path.length - new_level - 1 >= 0) {
+			if (path != null && (path.length - new_level - 1 >= 0)) {
 				MultiplePathsFromGCRootsRecord record = nextLevelRecords.get(path[path.length - new_level - 1]);
 				if (record == null) {
 					record = new MultiplePathsFromGCRootsRecord(path[path.length - new_level - 1], new_level, snapshot);
@@ -162,7 +164,6 @@ public class MultiplePathsFromGCRootsRecord {
 	public static Comparator<MultiplePathsFromGCRootsRecord> getComparatorByNumberOfReferencedObjects() {
 		return new Comparator<MultiplePathsFromGCRootsRecord>() {
 
-			@Override
 			public int compare(MultiplePathsFromGCRootsRecord o1, MultiplePathsFromGCRootsRecord o2) {
 				if (o1.paths.size() < o2.paths.size())
 					return 1;
@@ -180,7 +181,6 @@ public class MultiplePathsFromGCRootsRecord {
 	public static Comparator<MultiplePathsFromGCRootsRecord> getComparatorByReferencedHeapSize() {
 		return new Comparator<MultiplePathsFromGCRootsRecord>() {
 
-			@Override
 			public int compare(MultiplePathsFromGCRootsRecord o1, MultiplePathsFromGCRootsRecord o2) {
 				try {
 					if (o1.getReferencedHeapSize() < o2.getReferencedHeapSize())
@@ -203,7 +203,6 @@ public class MultiplePathsFromGCRootsRecord {
 	public static Comparator<MultiplePathsFromGCRootsRecord> getComparatorByReferencedRetainedSize() {
 		return new Comparator<MultiplePathsFromGCRootsRecord>() {
 
-			@Override
 			public int compare(MultiplePathsFromGCRootsRecord o1, MultiplePathsFromGCRootsRecord o2) {
 				if (o1.getReferencedRetainedSize() < o2.getReferencedRetainedSize())
 					return 1;

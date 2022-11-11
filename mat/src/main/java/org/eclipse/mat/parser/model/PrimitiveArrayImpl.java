@@ -1,16 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and others.
+ * Copyright (c) 2008, 2021 SAP AG, IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson - lazy loading of length
  *******************************************************************************/
 package org.eclipse.mat.parser.model;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,45 +55,39 @@ public class PrimitiveArrayImpl extends AbstractArrayImpl implements IPrimitiveA
 		this.type = type;
 	}
 
-	@Override
 	public int getType() {
 		return type;
 	}
 
-	@Override
 	public Class<?> getComponentType() {
 		return COMPONENT_TYPE[type];
 	}
 
-	@Override
 	public Object getValueAt(int index) {
 		Object data = getValueArray(index, 1);
 		return data != null ? Array.get(data, 0) : null;
 	}
 
-	@Override
 	public Object getValueArray() {
 		try {
 			return source.getHeapObjectReader().readPrimitiveArrayContent(this, 0, getLength());
 		} catch (SnapshotException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
-	@Override
 	public Object getValueArray(int offset, int length) {
 		try {
 			return source.getHeapObjectReader().readPrimitiveArrayContent(this, offset, length);
 		} catch (SnapshotException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
-	@Override
 	protected Field internalGetField(String name) {
 		return null;
 	}
@@ -101,24 +99,33 @@ public class PrimitiveArrayImpl extends AbstractArrayImpl implements IPrimitiveA
 		return references;
 	}
 
-	@Override
 	public List<NamedReference> getOutboundReferences() {
 		List<NamedReference> references = new ArrayList<NamedReference>(1);
-		references.add(new PseudoReference(source, classInstance.getObjectAddress(), "<class>"));
+		references.add(new PseudoReference(source, classInstance.getObjectAddress(), "<class>"));//$NON-NLS-1$
 		return references;
 	}
 
 	@Override
 	protected StringBuffer appendFields(StringBuffer buf) {
-		return super.appendFields(buf).append(";size=").append(getUsedHeapSize());
+		return super.appendFields(buf).append(";size=").append(getUsedHeapSize());//$NON-NLS-1$
 	}
 
 	@Override
 	public long getUsedHeapSize() {
 		try {
-			return getSnapshot().getHeapSize(getObjectId());
+			int objId;
+			try {
+				objId = getObjectId();
+			} catch (RuntimeException e) {
+				Throwable cause = e.getCause();
+				if (cause instanceof SnapshotException)
+					throw (SnapshotException) cause;
+				else
+					throw e;
+			}
+			return getSnapshot().getHeapSize(objId);
 		} catch (SnapshotException e) {
-			return doGetUsedHeapSize(classInstance, length, type);
+			return doGetUsedHeapSize(classInstance, getLength(), type);
 		}
 	}
 

@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and IBM Corporation.
+ * Copyright (c) 2008, 2018 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -15,9 +17,17 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.InvalidRegistryObjectException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.mat.SnapshotException;
-import org.eclipse.mat.parser.internal.SnapshotFactoryImpl;
+import org.eclipse.mat.internal.MATPlugin;
+import org.eclipse.mat.internal.Messages;
 import org.eclipse.mat.util.IProgressListener;
 
 /**
@@ -47,11 +57,24 @@ public final class SnapshotFactory {
 				throws SnapshotException;
 
 		/**
-		 * Free resources when the snapshot is no longer needed.
+		 * Free resources when the snapshot is no longer needed. Use instead of {@link ISnapshot#dispose()} if the
+		 * snapshot is obtained from {@link #openSnapshot(File, Map, IProgressListener)} as openSnapshot() may obtain a
+		 * copy from a cache.
 		 *
 		 * @param snapshot
 		 */
 		void dispose(ISnapshot snapshot);
+
+		/**
+		 * Run an OQL query
+		 *
+		 * @param queryString
+		 *            the OQL query
+		 * @return the result
+		 * @throws OQLParseException
+		 * @throws SnapshotException
+		 */
+		IOQLQuery createQuery(String queryString) throws OQLParseException, SnapshotException;
 
 		/**
 		 * Show which parsers the factory handles
@@ -61,7 +84,30 @@ public final class SnapshotFactory {
 		List<SnapshotFormat> getSupportedFormats();
 	}
 
-	private static Implementation factory = new SnapshotFactoryImpl();
+	private static Implementation factory;
+
+	static {
+		try {
+			IExtensionPoint extensionPoint =
+					Platform.getExtensionRegistry().getExtensionPoint(MATPlugin.PLUGIN_ID + ".factory"); //$NON-NLS-1$
+			if (extensionPoint != null) {
+				for (IExtension extension : extensionPoint.getExtensions()) {
+					factory =
+							(Implementation) extension.getConfigurationElements()[0].createExecutableExtension("impl"); //$NON-NLS-1$
+					break;
+				}
+			}
+		} catch (InvalidRegistryObjectException e) {
+			Logger.getLogger(SnapshotFactory.class.getName())
+					.log(Level.SEVERE, Messages.SnapshotFactory_ErrorMsg_FactoryCreation, e);
+		} catch (CoreException e) {
+			Logger.getLogger(SnapshotFactory.class.getName())
+					.log(Level.SEVERE, Messages.SnapshotFactory_ErrorMsg_FactoryCreation, e);
+		}
+		if (factory == null)
+			Logger.getLogger(SnapshotFactory.class.getName())
+					.log(Level.SEVERE, Messages.SnapshotFactory_ErrorMsg_FactoryCreation);
+	}
 
 	/**
 	 * Create a snapshot Object from a file representation of a snapshot.
@@ -99,13 +145,25 @@ public final class SnapshotFactory {
 	 * <p>
 	 * Please call this method prior to dropping the last reference to the snapshot as this method ensures the proper
 	 * return of all resources (e.g. main memory, file and socket handles...) when the last user has disposed it through
-	 * the snapshot factory. After calling this method the snapshot can't be used anymore.
+	 * the snapshot factory. After calling this method the snapshot can't be used anymore. Use instead of
+	 * {@link ISnapshot#dispose()} if the snapshot is obtained from {@link #openSnapshot(File, Map, IProgressListener)}
+	 * as openSnapshot() may obtain a copy from a cache.
 	 *
 	 * @param snapshot
 	 *            snapshot which should be disposed
 	 */
 	public static void dispose(ISnapshot snapshot) {
 		factory.dispose(snapshot);
+	}
+
+	/**
+	 * Factory to create an OQL Query.
+	 *
+	 * @throws OQLParseException
+	 *             if the OQL contains parsing errors
+	 */
+	public static IOQLQuery createQuery(String queryString) throws OQLParseException, SnapshotException {
+		return factory.createQuery(queryString);
 	}
 
 	/**

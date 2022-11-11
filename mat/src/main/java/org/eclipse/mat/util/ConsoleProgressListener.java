@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2010 SAP AG.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -34,92 +36,79 @@ public class ConsoleProgressListener implements IProgressListener {
 		this.out = out;
 	}
 
-	@Override
 	public void beginTask(String name, int totalWork) {
-		out.write(Messages.ConsoleProgressListener_Label_Task + " " + name + "\n");
-		out.write("[");
-		if (totalWork > 80) {
-			workPerDot = totalWork / 80;
-		} else {
-			workPerDot = 1;
-		}
+		out.write(Messages.ConsoleProgressListener_Label_Task + " " + name + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		out.write("["); //$NON-NLS-1$
+		workPerDot = totalWork > 80 ? (totalWork / 80) : 1;
 		workAccumulated = 0;
 		dotsPrinted = 0;
 		out.flush();
 	}
 
-	@Override
 	public void done() {
 		if (!isDone) {
-			out.write("]\n");
+			out.write("]\n"); //$NON-NLS-1$
 			out.flush();
 			isDone = true;
 		}
 
 	}
 
-	@Override
 	public boolean isCanceled() {
 		return false;
 	}
 
-	@Override
 	public void setCanceled(boolean value) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public void subTask(String name) {
-		out.write("\n" + Messages.ConsoleProgressListener_Label_Subtask + " " + name + "\n[");
+		out.write("\n" + Messages.ConsoleProgressListener_Label_Subtask + " " + name + "\n["); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		for (int ii = 0; ii < dotsPrinted; ii++)
-			out.write(".");
+			out.write("."); //$NON-NLS-1$
 		out.flush();
 	}
 
-	@Override
 	public void worked(int work) {
 		workAccumulated += work;
 
 		int dotsToPrint = workAccumulated / workPerDot;
 		if (dotsToPrint > 0) {
 			dotsPrinted += dotsToPrint;
-			for (int ii = 0; ii < dotsToPrint; ii++) {
-				out.write(".");
-			}
+			for (int ii = 0; ii < dotsToPrint; ii++)
+				out.write("."); //$NON-NLS-1$
 			workAccumulated -= (dotsToPrint * workPerDot);
 			out.flush();
 		}
 	}
 
-	@Override
 	public void sendUserMessage(Severity severity, String message, Throwable exception) {
-		out.write("\n");
+		out.write("\n"); //$NON-NLS-1$
 
 		switch (severity) {
 		case INFO:
-			out.write("[INFO] ");
+			out.write("[INFO] "); //$NON-NLS-1$
 			break;
 		case WARNING:
-			out.write("[WARNING] ");
+			out.write("[WARNING] "); //$NON-NLS-1$
 			break;
 		case ERROR:
-			out.write("[ERROR] ");
+			out.write("[ERROR] "); //$NON-NLS-1$
 			break;
 		default:
-			out.write("[UNKNOWN] ");
+			out.write("[UNKNOWN] "); //$NON-NLS-1$
 		}
 
 		out.write(message);
 
 		if (exception != null) {
-			out.write("\n");
+			out.write("\n"); //$NON-NLS-1$
 			exception.printStackTrace(out);
 		}
 
-		out.write("\n[");
-		for (int ii = 0; ii < dotsPrinted; ii++) {
-			out.write(".");
-		}
+		out.write("\n["); //$NON-NLS-1$
+		for (int ii = 0; ii < dotsPrinted; ii++)
+			out.write("."); //$NON-NLS-1$
 	}
 
 }

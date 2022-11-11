@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and others.
+ * Copyright (c) 2008, 2021 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -33,7 +35,7 @@ import org.eclipse.mat.util.VoidProgressListener;
 public class ClassLoaderImpl extends InstanceImpl implements IClassLoader {
 	private static final long serialVersionUID = 1L;
 
-	public static final String NO_LABEL = "__none__";
+	public static final String NO_LABEL = "__none__";//$NON-NLS-1$
 
 	private volatile transient List<IClass> definedClasses = null;
 
@@ -65,18 +67,25 @@ public class ClassLoaderImpl extends InstanceImpl implements IClassLoader {
 
 	@Override
 	public String getClassSpecificName() {
-		String label = source.getClassLoaderLabel(getObjectId());
+		try {
+			int objectId = getObjectId();
+			String label = source.getClassLoaderLabel(objectId);
 
-		if (NO_LABEL.equals(label)) {
-			label = ClassSpecificNameResolverRegistry.resolve(this);
-			if (label != null)
-				source.setClassLoaderLabel(getObjectId(), label);
+			if (NO_LABEL.equals(label)) {
+				label = ClassSpecificNameResolverRegistry.resolve(this);
+				if (label != null)
+					source.setClassLoaderLabel(objectId, label);
+			}
+
+			return label;
+		} catch (RuntimeException e) {
+			if (e.getCause() instanceof SnapshotException)
+				return ClassSpecificNameResolverRegistry.resolve(this);
+			else
+				throw e;
 		}
-
-		return label;
 	}
 
-	@Override
 	public List<IClass> getDefinedClasses() throws SnapshotException {
 		// Double-checked locking, but okay as definedClasses is volatile and running with Java 1.5 or later
 		List<IClass> result = definedClasses;
@@ -91,7 +100,6 @@ public class ClassLoaderImpl extends InstanceImpl implements IClassLoader {
 		return result;
 	}
 
-	@Override
 	public long getRetainedHeapSizeOfObjects(boolean calculateIfNotAvailable,
 			boolean calculateMinRetainedSize,
 			IProgressListener listener) throws SnapshotException {

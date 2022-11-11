@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2013 SAP AG and others.
+ * Copyright (c) 2010, 2021 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     SAP AG - initial API and implementation
@@ -11,81 +13,104 @@
  *******************************************************************************/
 package org.eclipse.mat.hprof;
 
-public class Messages {
-	public static final String AbstractParser_Error_IllegalType = "Illegal Type:  {0}";
-	public static final String AbstractParser_Error_InvalidHPROFHeader = "Invalid HPROF file header.";
-	public static final String AbstractParser_Error_NotHeapDump = "Not a HPROF heap dump";
-	public static final String AbstractParser_Error_UnknownHPROFVersion = "Unknown HPROF Version ({0})";
-	public static final String AbstractParser_Error_UnsupportedHPROFVersion = "Unsupported HPROF Version {0}";
-	public static final String EnhancerRegistry_ErrorCreatingParser = "Error creating parser for {0}";
-	public static final String EnhancerRegistry_ErrorCreatingRuntime = "Error creating runtime for {0}";
-	public static final String HprofIndexBuilder_ExtractingObjects = "Extracting objects from {0}";
-	public static final String HprofIndexBuilder_Parsing = "Parsing {0}";
-	public static final String HprofIndexBuilder_Scanning = "Scanning {0}";
-	public static final String HprofIndexBuilder_Writing = "Writing {0}";
-	public static final String HprofParserHandlerImpl_Error_ExpectedClassSegment =
-			"Error: Found instance segment but expected class segment (see FAQ): 0x{0}";
-	public static final String HprofParserHandlerImpl_Error_MultipleClassInstancesExist =
-			"multiple class instances exist for {0}";
-	public static final String HprofParserHandlerImpl_HeapContainsObjects = "Heap {0} contains {1,number} objects";
-	public static final String HprofRandomAccessParser_Error_DumpIncomplete =
-			"need to create dummy class. dump incomplete";
-	public static final String HprofRandomAccessParser_Error_DuplicateClass = "Duplicate class: {0}";
-	public static final String HprofRandomAccessParser_Error_IllegalDumpSegment = "Illegal dump segment {0}";
-	public static final String HprofRandomAccessParser_Error_MissingClass = "missing fake class {0}";
-	public static final String HprofRandomAccessParser_Error_MissingFakeClass = "missing fake class";
-	public static final String JMapHeapDumpProvider_ErrorCreatingDump = "Error creating heap dump. jmap exit code  = ";
-	public static final String JMapHeapDumpProvider_HeapDumpNotCreated =
-			"Heap dump file was not created. jmap exit code  = ";
-	public static final String JMapHeapDumpProvider_WaitForHeapDump =
-			"Waiting while the heap dump is written to the disk";
-	public static final String LocalJavaProcessesUtils_ErrorGettingProcesses = "Error getting list of processes";
-	public static final String LocalJavaProcessesUtils_ErrorGettingProcessListJPS =
-			"Error getting Java processes list with 'jps'. Try to configure a JDK for the HPROF jmap provider";
-	public static final String Pass1Parser_DetectedCompressedReferences =
-			"Detected compressed references, because with uncompressed 64-bit references the array at 0x{0} would overlap the array at 0x{1}";
-	public static final String Pass1Parser_Error_IllegalRecordLength =
-			"Illegal record length {0} at byte {1} for record type {2}";
-	public static final String Pass1Parser_Error_IllegalType = "Illegal primitive object array type";
-	public static final String Pass1Parser_Error_InvalidHeapDumpFile =
-			"Error: Invalid heap dump file.\n Unsupported segment type {0} at position {1}";
-	public static final String Pass1Parser_Error_invalidHPROFFile =
-			"(Possibly) Invalid HPROF file: Expected to read another {0,number} bytes, but only {1,number} bytes are available.";
-	public static final String Pass1Parser_Error_SupportedDumps = "Only 32bit and 64bit dumps are supported.";
-	public static final String Pass1Parser_Error_UnresolvedName = "Unresolved Name 0x";
-	public static final String Pass1Parser_Error_WritingThreadsInformation = "Error writing threads information";
-	public static final String Pass1Parser_Info_WroteThreadsTo = "Wrote threads call stacks to {0}";
-	public static final String Pass1Parser_Error_NoHeapDumpIndexFound =
-			"Parser found {0} HPROF dumps in file {1}. No heap dump index {2} found. See FAQ.";
-	public static final String Pass1Parser_Info_UsingDumpIndex =
-			"Parser found {0} HPROF dumps in file {1}. Using dump index {2}. See FAQ.";
-	public static final String Pass1Parser_UnexpectedEndPosition =
-			"Heap dump segment at 0x{0} size {1} ends at 0x{2} instead of 0x{3}";
-	public static final String Pass1Parser_UnexpectedRecord =
-			"Heap dump record 0x{0} size {1} is not a supported record type.";
-	public static final String Pass1Parser_GuessingLengthOverflow =
-			"Guessing that heap dump record 0x{0} at 0x{1} with length {2} is probably overflowed, updating to length {3}. See bug 404679.";
-	public static final String Pass1Parser_HeapDumpCreated = "Heap dump created at {0,time,long} {0,date,long}";
-	public static final String Pass1Parser_HeapDumpsFound = "{0} heap dumps found";
-	public static final String Pass2Parser_Error_HandleMustCreateFakeClassForName =
-			"handler must create fake class for {0}";
-	public static final String Pass2Parser_Error_HandlerMustCreateFakeClassForAddress =
-			"handler must create fake class for 0x{0}";
-	public static final String Pass2Parser_Error_InsufficientBytesRead =
-			"Insufficient bytes read for instance at {0}, expected {1} read {2}";
-	public static final String HPROFPreferences_Description = "Optional configuration of the HPROF heapdump parser.";
-	public static final String HPROFPreferences_Strictness =
-			"Parser Strictness: What to do when the dump doesn't match the specification";
-	public static final String HPROFPreferences_Strictness_Stop =
-			"Strict: Do not finish loading the dump and throw an error. For one exception to this strictness, see bug 404679.";
-	public static final String HPROFPreferences_Strictness_Warning =
-			"Warning: Continue parsing and loading the dump and raise a warning to the Error Log.";
-	public static final String HPROFPreferences_Strictness_Permissive =
-			"Permissive: Raise a warning and try to fix the potential problem.";
-	public static final String HPROFStrictness_Unhandled_Preference =
-			"The parser does not know how to handle the current strictness preference in some situations.";
-	public static final String HPROFStrictness_Stopped =
-			"The HPROF parser encountered a violation of the HPROF specification that it could not safely handle. This could be due to file truncation or a bug in the JVM. Please consider filing a bug at eclipse.org. To continue parsing the dump anyway, you can use -DhprofStrictnessWarning=true or set the strictness mode under Preferences > HPROF Parser > Parser Strictness. See the inner exception for details.";
+import org.eclipse.osgi.util.NLS;
+
+public class Messages extends NLS {
+	private static final String BUNDLE_NAME = "org.eclipse.mat.hprof.messages"; //$NON-NLS-1$
+	public static String AbstractParser_Error_IllegalType;
+	public static String AbstractParser_Error_InvalidHPROFHeader;
+	public static String AbstractParser_Error_NotHeapDump;
+	public static String AbstractParser_Error_UnknownHPROFVersion;
+	public static String AbstractParser_Error_UnsupportedHPROFVersion;
+	public static String AbstractParser_GuessedRecordLength;
+	public static String EnhancerRegistry_ErrorCreatingParser;
+	public static String EnhancerRegistry_ErrorCreatingRuntime;
+	public static String ExportHprof_AvoidExample;
+	public static String ExportHprof_ExportTo;
+	public static String ExportHprof_PrepareClasses;
+	public static String ExportHprof_PrepareGCRoots;
+	public static String ExportHprof_PrepareObjects;
+	public static String ExportHprof_PrepareThreadStacks;
+	public static String ExportHprof_DumpClasses;
+	public static String ExportHprof_DumpGCRoots;
+	public static String ExportHprof_DumpObjects;
+	public static String ExportHprof_DumpStrings;
+	public static String ExportHprof_DumpThreadStacks;
+	public static String ExportHprof_RemapProperties;
+	public static String ExportHprof_SegmentSizeMismatch;
+	public static String ExportHprof_SegmentTooLong;
+	public static String GZIPInputStream2_BadHeaderCRC;
+	public static String GZIPInputStream2_BadHeaderFlag;
+	public static String GZIPInputStream2_BadTrailerCRC;
+	public static String GZIPInputStream2_BadTrailerLength;
+	public static String GZIPInputStream2_NotAGzip;
+	public static String GZIPInputStream2_NotDeflate;
+	public static String GZIPInputStream2_TruncatedComment;
+	public static String GZIPInputStream2_TruncatedExtra;
+	public static String GZIPInputStream2_TruncatedHeader;
+	public static String GZIPInputStream2_TruncatedHeaderCRC;
+	public static String GZIPInputStream2_TruncatedName;
+	public static String HprofIndexBuilder_ExtractingObjects;
+	public static String HprofIndexBuilder_Parsing;
+	public static String HprofIndexBuilder_Scanning;
+	public static String HprofIndexBuilder_Writing;
+	public static String HprofParserHandlerImpl_DiscardedObjects;
+	public static String HprofParserHandlerImpl_Error_ExpectedClassSegment;
+	public static String HprofParserHandlerImpl_Error_MultipleClassInstancesExist;
+	public static String HprofParserHandlerImpl_HeapContainsObjects;
+	public static String HprofRandomAccessParser_Error_DumpIncomplete;
+	public static String HprofRandomAccessParser_Error_DuplicateClass;
+	public static String HprofRandomAccessParser_Error_IllegalDumpSegment;
+	public static String HprofRandomAccessParser_Error_MissingClass;
+	public static String HprofRandomAccessParser_Error_MissingFakeClass;
+	public static String IPositionInputStream_mark;
+	public static String IPositionInputStream_reset;
+	public static String IPositionInputStream_seek;
+	public static String JMapHeapDumpProvider_ErrorCreatingDump;
+	public static String JMapHeapDumpProvider_HeapDumpNotCreated;
+	public static String JMapHeapDumpProvider_WaitForHeapDump;
+	public static String JMapHeapDumpProvider_ListProcesses;
+	public static String JMapHeapDumpProvider_CompressingDump;
+	public static String LocalJavaProcessesUtils_ErrorGettingProcesses;
+	public static String LocalJavaProcessesUtils_ErrorGettingProcessListJPS;
+	public static String Pass1Parser_DetectedCompressedReferences;
+	public static String Pass1Parser_Error_IllegalRecordLength;
+	public static String Pass1Parser_Error_IllegalType;
+	public static String Pass1Parser_Error_InvalidHeapDumpFile;
+	public static String Pass1Parser_Error_invalidHPROFFile;
+	public static String Pass1Parser_Error_NoHeapDumpIndexFound;
+	public static String Pass1Parser_Error_SupportedDumps;
+	public static String Pass1Parser_Error_UnresolvedName;
+	public static String Pass2Parser_Error_HandleMustCreateFakeClassForName;
+	public static String Pass2Parser_Error_HandlerMustCreateFakeClassForAddress;
+	public static String Pass2Parser_Error_InsufficientBytesRead;
+	public static String Pass1Parser_Info_UsingDumpIndex;
+	public static String Pass1Parser_Info_WroteThreadsTo;
+	public static String Pass1Parser_Error_WritingThreadsInformation;
+	public static String Pass1Parser_ExceptionReadingSubrecord;
+	public static String Pass1Parser_UnexpectedEndPosition;
+	public static String Pass1Parser_UnexpectedRecord;
+	public static String Pass1Parser_GuessingLengthOverflow;
+	public static String Pass1Parser_HeapDumpCreated;
+	public static String Pass1Parser_HeapDumpsFound;
+	public static String HPROFPreferencePage_DiscardOffset;
+	public static String HPROFPreferencePage_DiscardPattern;
+	public static String HPROFPreferencePage_DiscardPercentage;
+	public static String HPROFPreferencePage_DiscardSeed;
+	public static String HPROFPreferencePage_EnableDiscard;
+	public static String HPROFPreferences_Description;
+	public static String HPROFPreferences_Strictness;
+	public static String HPROFPreferences_Strictness_Stop;
+	public static String HPROFPreferences_Strictness_Warning;
+	public static String HPROFPreferences_Strictness_Permissive;
+	public static String HPROFStrictness_Unhandled_Preference;
+	public static String HPROFStrictness_Stopped;
+	public static String HPROFPreferences_Additional_Class_References;
+
+	static {
+		// initialize resource bundle
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	}
 
 	private Messages() {
 	}

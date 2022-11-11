@@ -1,15 +1,31 @@
 /*******************************************************************************
- * Copyright (c) 2008 SAP AG.
+ * Copyright (c) 2008,2020 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson (IBM Corporation) - fix deprecated method
  *******************************************************************************/
 package org.eclipse.mat.tests.collect;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,14 +48,24 @@ import org.eclipse.mat.tests.TestSnapshots;
 import org.junit.Test;
 
 public class PrimitiveMapTests {
+	/** Needs huge heap, tests arithmetic overflow */
+	private static final int HUGE_SIZE_BIG = Integer.MAX_VALUE / 100 * 76;
+	private static final int HUGE_SIZE_SMALL = Integer.MAX_VALUE / 1000 * 1;
+	private static final boolean USE_HUGE = false;
+	private static final int HUGE_SIZE = USE_HUGE ? HUGE_SIZE_BIG : HUGE_SIZE_SMALL;
 	private static final int NUM_VALUES = 10000;
+	private static final int NUM_VALUES2 = 31545;
+	private static final int CAPACITY2 = 63096;
+	private static final int PERF_COUNT = 2;
+	private static final double PERF_FACTOR = 10.0;
+	private static final double PERF_MIN_FOR_PROBLEM = 1000;
 
 	// //////////////////////////////////////////////////////////////
 	// HashMapIntLong
 	// //////////////////////////////////////////////////////////////
 
 	@Test
-	public void testIntLongMap() {
+	public void testIntLongMap() throws ClassNotFoundException, IOException {
 		Random r = new Random();
 
 		Integer[] keys = new Integer[NUM_VALUES];
@@ -74,24 +100,96 @@ public class PrimitiveMapTests {
 
 	}
 
-	class MapIntLongBridge implements Map<Integer, Long> {
+	@Test
+	public void testIntLongMapPerf() {
+		long best = Long.MAX_VALUE;
+		long worst = Long.MIN_VALUE;
+		int worstj = 0, bestj = 0;
+		for (int j = 1; j <= 6; ++j) {
+			long time = testIntLongMapPerf(NUM_VALUES2, j, PERF_COUNT);
+			if (time < best) {
+				best = time;
+				bestj = j;
+			}
+			if (time > worst) {
+				worst = time;
+				worstj = j;
+			}
+		}
+		assertThat("Worst for group " + worstj + " more than " + PERF_FACTOR + " times the best for group " + bestj, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				worst,
+				lessThanOrEqualTo(expectedWorstTime(best)));
+	}
+
+	/**
+	 * Given a best time, what is the worse we can tolerate?
+	 *
+	 * @param best
+	 * @return worst allowable time
+	 */
+	private long expectedWorstTime(long best) {
+		return (long) Math.max(PERF_FACTOR * best, PERF_MIN_FOR_PROBLEM);
+	}
+
+	public long testIntLongMapPerf(int n, int m, int c) {
+		Random r = new Random();
+
+		Integer[] keys = new Integer[n / m * m];
+		Long[] values = new Long[n / m * m];
+
+		for (int ii = 0; ii < n / m; ii++) {
+			for (int j = 0; j < m; ++j) {
+				keys[ii * m + j] = ii + n * 2 * j;
+				values[ii * m + j] = r.nextLong();
+			}
+		}
+
+		long then = System.currentTimeMillis();
+		for (int j = 0; j < c; ++j) {
+			new TestStub<Integer, Long>(keys, values) {
+				@Override
+				protected Map<Integer, Long> createEmpty() {
+					return new MapIntLongBridge(new HashMapIntLong(CAPACITY2));
+				}
+			}.perfRun();
+		}
+		long now = System.currentTimeMillis();
+		return now - then;
+	}
+
+	@Test
+	public void testIntLongMapHuge() {
+		int s1 = HUGE_SIZE;
+		HashMapIntLong huge = new HashMapIntLong(s1);
+		int s2 = s1 / 3 * 2;
+		for (int i = 0; i < s2; ++i) {
+			huge.put(i * 47, i * 2L);
+		}
+		assertThat(huge.size(), equalTo(s2));
+		for (int i = 0; i < s2; ++i) {
+			boolean removed = huge.remove(i * 47);
+			assertNotNull(removed);
+		}
+		assertThat(huge.size(), equalTo(0));
+		assertTrue(huge.isEmpty());
+	}
+
+	static class MapIntLongBridge implements Map<Integer, Long>, Serializable {
+		private static final long serialVersionUID = 1L;
 		HashMapIntLong delegate;
 
 		MapIntLongBridge(HashMapIntLong delegate) {
 			this.delegate = delegate;
 		}
 
-		@Override
 		public void clear() {
 			delegate.clear();
 		}
 
-		@Override
 		public boolean containsKey(Object key) {
 			return delegate.containsKey((Integer) key);
 		}
 
-		@Override
 		public boolean containsValue(Object value) {
 			long v = (Long) value;
 
@@ -102,24 +200,20 @@ public class PrimitiveMapTests {
 			return false;
 		}
 
-		@Override
 		public Set<Entry<Integer, Long>> entrySet() {
 			Set<Entry<Integer, Long>> answer = new HashSet<Entry<Integer, Long>>();
 			for (Iterator<HashMapIntLong.Entry> iter = delegate.entries(); iter.hasNext();) {
 				final HashMapIntLong.Entry entry = iter.next();
 				answer.add(new Entry<Integer, Long>() {
 
-					@Override
 					public Integer getKey() {
 						return entry.getKey();
 					}
 
-					@Override
 					public Long getValue() {
 						return entry.getValue();
 					}
 
-					@Override
 					public Long setValue(Long value) {
 						throw new UnsupportedOperationException();
 					}
@@ -128,17 +222,14 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		public Long get(Object key) {
 			return delegate.get((Integer) key);
 		}
 
-		@Override
 		public boolean isEmpty() {
 			return delegate.isEmpty();
 		}
 
-		@Override
 		public Set<Integer> keySet() {
 			Set<Integer> answer = new HashSet<Integer>();
 			for (IteratorInt iter = delegate.keys(); iter.hasNext();)
@@ -146,7 +237,6 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		public Long put(Integer key, Long value) {
 			Long retValue = null;
 
@@ -159,12 +249,10 @@ public class PrimitiveMapTests {
 			return replace ? retValue : null;
 		}
 
-		@Override
 		public void putAll(Map<? extends Integer, ? extends Long> t) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public Long remove(Object key) {
 			Long retValue = null;
 
@@ -177,12 +265,10 @@ public class PrimitiveMapTests {
 			return removed ? retValue : null;
 		}
 
-		@Override
 		public int size() {
 			return delegate.size();
 		}
 
-		@Override
 		public Collection<Long> values() {
 			List<Long> answer = new ArrayList<Long>();
 			for (IteratorLong iter = delegate.values(); iter.hasNext();)
@@ -191,12 +277,13 @@ public class PrimitiveMapTests {
 		}
 	}
 
-	class MapIntLongBridge2 extends MapIntLongBridge {
+	static class MapIntLongBridge2 extends MapIntLongBridge {
+		private static final long serialVersionUID = 1L;
+
 		public MapIntLongBridge2(HashMapIntLong delegate) {
 			super(delegate);
 		}
 
-		@Override
 		public Set<Integer> keySet() {
 			Set<Integer> answer = new HashSet<Integer>();
 			int[] keys = delegate.getAllKeys();
@@ -205,7 +292,6 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		public Collection<Long> values() {
 			List<Long> answer = new ArrayList<Long>();
 			long[] values = delegate.getAllValues();
@@ -220,7 +306,7 @@ public class PrimitiveMapTests {
 	// //////////////////////////////////////////////////////////////
 
 	@Test
-	public void testIntObjectMap() {
+	public void testIntObjectMap() throws ClassNotFoundException, IOException {
 		Random r = new Random();
 
 		Integer[] keys = new Integer[NUM_VALUES];
@@ -261,28 +347,91 @@ public class PrimitiveMapTests {
 
 	}
 
+	@Test
+	public void testIntObjectMapPerf() {
+		long best = Long.MAX_VALUE;
+		long worst = Long.MIN_VALUE;
+		int worstj = 0, bestj = 0;
+		for (int j = 1; j <= 6; ++j) {
+			long time = testIntObjectMapPerf(NUM_VALUES2, j, PERF_COUNT);
+			if (time < best) {
+				best = time;
+				bestj = j;
+			}
+			if (time > worst) {
+				worst = time;
+				worstj = j;
+			}
+		}
+		assertThat("Worst for group " + worstj + " more than " + PERF_FACTOR + " times the best for group " + bestj, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				worst,
+				lessThanOrEqualTo(expectedWorstTime(best)));
+	}
+
+	public long testIntObjectMapPerf(int n, int m, int c) {
+		Random r = new Random();
+
+		Integer[] keys = new Integer[n / m * m];
+		Long[] values = new Long[n / m * m];
+
+		for (int ii = 0; ii < n / m; ii++) {
+			for (int j = 0; j < m; ++j) {
+				keys[ii * m + j] = ii + n * 2 * j;
+				values[ii * m + j] = r.nextLong();
+			}
+		}
+
+		long then = System.currentTimeMillis();
+		for (int j = 0; j < c; ++j) {
+			new TestStub<Integer, Long>(keys, values) {
+				@Override
+				protected Map<Integer, Long> createEmpty() {
+					return new MapIntObjectBridge<Long>(new HashMapIntObject<Long>(CAPACITY2));
+				}
+			}.perfRun();
+		}
+		long now = System.currentTimeMillis();
+		return now - then;
+	}
+
+	@Test
+	public void testIntObjectMapHuge() {
+		int s1 = HUGE_SIZE;
+		HashMapIntObject<Integer> huge = new HashMapIntObject<Integer>(s1);
+		int s2 = s1 / 3 * 2;
+		for (int i = 0; i < s2; ++i) {
+			huge.put(i * 47, i * 2);
+		}
+		assertThat(huge.size(), equalTo(s2));
+		for (int i = 0; i < s2; ++i) {
+			Integer removed = huge.remove(i * 47);
+			assertNotNull(removed);
+			assertThat("Should have removed " + (i * 47L), removed, equalTo(i * 2)); //$NON-NLS-1$
+		}
+		assertThat(huge.size(), equalTo(0));
+		assertTrue(huge.isEmpty());
+	}
+
 	// //////////////////////////////////////////////////////////////
 	// bridges
 	// //////////////////////////////////////////////////////////////
 
-	class MapIntObjectBridge<V> implements Map<Integer, V> {
+	static class MapIntObjectBridge<V> implements Map<Integer, V>, Serializable {
+		private static final long serialVersionUID = 1L;
 		HashMapIntObject<V> delegate;
 
 		MapIntObjectBridge(HashMapIntObject<V> delegate) {
 			this.delegate = delegate;
 		}
 
-		@Override
 		public void clear() {
 			delegate.clear();
 		}
 
-		@Override
 		public boolean containsKey(Object key) {
 			return delegate.containsKey((Integer) key);
 		}
 
-		@Override
 		public boolean containsValue(Object value) {
 			for (Iterator<V> iter = delegate.values(); iter.hasNext();) {
 				if (value.equals(iter.next()))
@@ -291,24 +440,20 @@ public class PrimitiveMapTests {
 			return false;
 		}
 
-		@Override
 		public Set<Entry<Integer, V>> entrySet() {
 			Set<Entry<Integer, V>> answer = new HashSet<Entry<Integer, V>>();
 			for (Iterator<HashMapIntObject.Entry<V>> iter = delegate.entries(); iter.hasNext();) {
 				final HashMapIntObject.Entry<V> entry = iter.next();
 				answer.add(new Entry<Integer, V>() {
 
-					@Override
 					public Integer getKey() {
 						return entry.getKey();
 					}
 
-					@Override
 					public V getValue() {
 						return entry.getValue();
 					}
 
-					@Override
 					public V setValue(V value) {
 						throw new UnsupportedOperationException();
 					}
@@ -317,17 +462,14 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		public V get(Object key) {
 			return delegate.get((Integer) key);
 		}
 
-		@Override
 		public boolean isEmpty() {
 			return delegate.isEmpty();
 		}
 
-		@Override
 		public Set<Integer> keySet() {
 			Set<Integer> answer = new HashSet<Integer>();
 			for (IteratorInt iter = delegate.keys(); iter.hasNext();)
@@ -335,27 +477,22 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		public V put(Integer key, V value) {
 			return delegate.put(key, value);
 		}
 
-		@Override
 		public void putAll(Map<? extends Integer, ? extends V> t) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public V remove(Object key) {
 			return delegate.remove((Integer) key);
 		}
 
-		@Override
 		public int size() {
 			return delegate.size();
 		}
 
-		@Override
 		public Collection<V> values() {
 			List<V> answer = new ArrayList<V>();
 			for (Iterator<V> iter = delegate.values(); iter.hasNext();)
@@ -364,13 +501,13 @@ public class PrimitiveMapTests {
 		}
 	}
 
-	class MapIntObjectBridge2<V> extends MapIntObjectBridge<V> {
+	static class MapIntObjectBridge2<V> extends MapIntObjectBridge<V> {
+		private static final long serialVersionUID = 1L;
 
 		public MapIntObjectBridge2(HashMapIntObject<V> delegate) {
 			super(delegate);
 		}
 
-		@Override
 		public Set<Integer> keySet() {
 			Set<Integer> answer = new HashSet<Integer>();
 			int[] keys = delegate.getAllKeys();
@@ -379,7 +516,6 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		@SuppressWarnings("unchecked")
 		public Collection<V> values() {
 			List<V> answer = new ArrayList<V>();
@@ -390,13 +526,13 @@ public class PrimitiveMapTests {
 		}
 	}
 
-	class MapIntObjectBridge3<V> extends MapIntObjectBridge<V> {
+	static class MapIntObjectBridge3<V> extends MapIntObjectBridge<V> {
+		private static final long serialVersionUID = 1L;
 
 		public MapIntObjectBridge3(HashMapIntObject<V> delegate) {
 			super(delegate);
 		}
 
-		@Override
 		@SuppressWarnings("unchecked")
 		public Collection<V> values() {
 			List<V> answer = new ArrayList<V>();
@@ -412,7 +548,7 @@ public class PrimitiveMapTests {
 	// //////////////////////////////////////////////////////////////
 
 	@Test
-	public void testLongObjectMap() {
+	public void testLongObjectMap() throws ClassNotFoundException, IOException {
 		Random r = new Random();
 
 		Long[] keys = new Long[NUM_VALUES];
@@ -452,24 +588,87 @@ public class PrimitiveMapTests {
 		}.run();
 	}
 
-	class MapLongObjectBridge<V> implements Map<Long, V> {
+	@Test
+	public void testLongObjectMapPerf() {
+		long best = Long.MAX_VALUE;
+		long worst = Long.MIN_VALUE;
+		int worstj = 0, bestj = 0;
+		for (int j = 1; j <= 6; ++j) {
+			long time = testLongObjectMapPerf(NUM_VALUES2, j, PERF_COUNT);
+			if (time < best) {
+				best = time;
+				bestj = j;
+			}
+			if (time > worst) {
+				worst = time;
+				worstj = j;
+			}
+		}
+		assertThat("Worst for group " + worstj + " more than " + PERF_FACTOR + " times the best for group " + bestj, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				worst,
+				lessThanOrEqualTo(expectedWorstTime(best)));
+	}
+
+	public long testLongObjectMapPerf(int n, int m, int c) {
+		Random r = new Random();
+
+		Long[] keys = new Long[n / m * m];
+		Integer[] values = new Integer[n / m * m];
+
+		for (int ii = 0; ii < n / m; ii++) {
+			for (int j = 0; j < m; ++j) {
+				keys[ii * m + j] = ii + n * 2L * j;
+				values[ii * m + j] = r.nextInt();
+			}
+		}
+
+		long then = System.currentTimeMillis();
+		for (int j = 0; j < c; ++j) {
+			new TestStub<Long, Integer>(keys, values) {
+				@Override
+				protected Map<Long, Integer> createEmpty() {
+					return new MapLongObjectBridge<Integer>(new HashMapLongObject<Integer>(CAPACITY2));
+				}
+			}.perfRun();
+		}
+		long now = System.currentTimeMillis();
+		return now - then;
+	}
+
+	@Test
+	public void testLongObjectMapHuge() {
+		int s1 = HUGE_SIZE;
+		HashMapLongObject<Integer> huge = new HashMapLongObject<Integer>(s1);
+		int s2 = s1 / 3 * 2;
+		for (int i = 0; i < s2; ++i) {
+			huge.put(i * 47L, i * 2);
+		}
+		assertThat(huge.size(), equalTo(s2));
+		for (int i = 0; i < s2; ++i) {
+			Integer removed = huge.remove(i * 47L);
+			assertNotNull(removed);
+			assertEquals("Should have removed " + (i * 47L), (int) removed, i * 2); //$NON-NLS-1$
+		}
+		assertThat(huge.size(), equalTo(0));
+		assertTrue(huge.isEmpty());
+	}
+
+	static class MapLongObjectBridge<V> implements Map<Long, V>, Serializable {
+		private static final long serialVersionUID = 1L;
 		HashMapLongObject<V> delegate;
 
 		MapLongObjectBridge(HashMapLongObject<V> delegate) {
 			this.delegate = delegate;
 		}
 
-		@Override
 		public void clear() {
 			delegate.clear();
 		}
 
-		@Override
 		public boolean containsKey(Object key) {
 			return delegate.containsKey((Long) key);
 		}
 
-		@Override
 		public boolean containsValue(Object value) {
 			for (Iterator<V> iter = delegate.values(); iter.hasNext();) {
 				if (value.equals(iter.next()))
@@ -478,24 +677,20 @@ public class PrimitiveMapTests {
 			return false;
 		}
 
-		@Override
 		public Set<Entry<Long, V>> entrySet() {
 			Set<Entry<Long, V>> answer = new HashSet<Entry<Long, V>>();
 			for (Iterator<HashMapLongObject.Entry<V>> iter = delegate.entries(); iter.hasNext();) {
 				final HashMapLongObject.Entry<V> entry = iter.next();
 				answer.add(new Entry<Long, V>() {
 
-					@Override
 					public Long getKey() {
 						return entry.getKey();
 					}
 
-					@Override
 					public V getValue() {
 						return entry.getValue();
 					}
 
-					@Override
 					public V setValue(V value) {
 						throw new UnsupportedOperationException();
 					}
@@ -504,17 +699,14 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		public V get(Object key) {
 			return delegate.get((Long) key);
 		}
 
-		@Override
 		public boolean isEmpty() {
 			return delegate.isEmpty();
 		}
 
-		@Override
 		public Set<Long> keySet() {
 			Set<Long> answer = new HashSet<Long>();
 			for (IteratorLong iter = delegate.keys(); iter.hasNext();)
@@ -522,27 +714,22 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		public V put(Long key, V value) {
 			return delegate.put(key, value);
 		}
 
-		@Override
 		public void putAll(Map<? extends Long, ? extends V> t) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public V remove(Object key) {
 			return delegate.remove((Long) key);
 		}
 
-		@Override
 		public int size() {
 			return delegate.size();
 		}
 
-		@Override
 		public Collection<V> values() {
 			List<V> answer = new ArrayList<V>();
 			for (Iterator<V> iter = delegate.values(); iter.hasNext();)
@@ -551,13 +738,13 @@ public class PrimitiveMapTests {
 		}
 	}
 
-	class MapLongObjectBridge2<V> extends MapLongObjectBridge<V> {
+	static class MapLongObjectBridge2<V> extends MapLongObjectBridge<V> {
+		private static final long serialVersionUID = 1L;
 
 		public MapLongObjectBridge2(HashMapLongObject<V> delegate) {
 			super(delegate);
 		}
 
-		@Override
 		public Set<Long> keySet() {
 			Set<Long> answer = new HashSet<Long>();
 			long[] keys = delegate.getAllKeys();
@@ -566,7 +753,6 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		@SuppressWarnings("unchecked")
 		public Collection<V> values() {
 			List<V> answer = new ArrayList<V>();
@@ -577,13 +763,13 @@ public class PrimitiveMapTests {
 		}
 	}
 
-	class MapLongObjectBridge3<V> extends MapLongObjectBridge<V> {
+	static class MapLongObjectBridge3<V> extends MapLongObjectBridge<V> {
+		private static final long serialVersionUID = 1L;
 
 		public MapLongObjectBridge3(HashMapLongObject<V> delegate) {
 			super(delegate);
 		}
 
-		@Override
 		@SuppressWarnings("unchecked")
 		public Collection<V> values() {
 			List<V> answer = new ArrayList<V>();
@@ -599,7 +785,7 @@ public class PrimitiveMapTests {
 	// //////////////////////////////////////////////////////////////
 
 	@Test
-	public void testObjectLongMap() {
+	public void testObjectLongMap() throws ClassNotFoundException, IOException {
 		Random r = new Random();
 
 		Integer[] keys = new Integer[NUM_VALUES];
@@ -619,7 +805,9 @@ public class PrimitiveMapTests {
 			// make sure we have at least one via equals
 			if (ii == 20) {
 				ii++;
+				// Deliberately construct new object
 				keys[ii] = new Integer(keys[ii - 1]);
+				// Deliberately construct new object
 				values[ii] = new Long(values[ii - 1]);
 			}
 		}
@@ -653,25 +841,87 @@ public class PrimitiveMapTests {
 		}.run();
 	}
 
-	class MapObjectLongBridge<K> implements Map<K, Long> {
+	@Test
+	public void testObjectLongMapPerf() {
+		long best = Long.MAX_VALUE;
+		long worst = Long.MIN_VALUE;
+		int worstj = 0, bestj = 0;
+		for (int j = 1; j <= 6; ++j) {
+			long time = testObjectLongMapPerf(NUM_VALUES2, j, PERF_COUNT);
+			if (time < best) {
+				best = time;
+				bestj = j;
+			}
+			if (time > worst) {
+				worst = time;
+				worstj = j;
+			}
+		}
+		assertThat("Worst for group " + worstj + " more than " + PERF_FACTOR + " times the best for group " + bestj, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				worst,
+				lessThanOrEqualTo(expectedWorstTime(best)));
+	}
+
+	public long testObjectLongMapPerf(int n, int m, int c) {
+		Random r = new Random();
+
+		Integer[] keys = new Integer[n / m * m];
+		Long[] values = new Long[n / m * m];
+
+		for (int ii = 0; ii < n / m; ii++) {
+			for (int j = 0; j < m; ++j) {
+				keys[ii * m + j] = ii + n * 2 * j;
+				values[ii * m + j] = r.nextLong();
+			}
+		}
+
+		long then = System.currentTimeMillis();
+		for (int j = 0; j < c; ++j) {
+			new TestStub<Integer, Long>(keys, values) {
+				@Override
+				protected Map<Integer, Long> createEmpty() {
+					return new MapObjectLongBridge<Integer>(new HashMapObjectLong<Integer>(CAPACITY2));
+				}
+			}.perfRun();
+		}
+		long now = System.currentTimeMillis();
+		return now - then;
+	}
+
+	@Test
+	public void testObjectLongMapHuge() {
+		int s1 = HUGE_SIZE;
+		HashMapObjectLong<Integer> huge = new HashMapObjectLong<Integer>(s1);
+		int s2 = s1 / 3 * 2;
+		for (int i = 0; i < s2; ++i) {
+			huge.put(i * 47, i * 2);
+		}
+		assertThat(huge.size(), equalTo(s2));
+		for (int i = 0; i < s2; ++i) {
+			boolean removed = huge.remove(i * 47);
+			assertNotNull(removed);
+		}
+		assertThat(huge.size(), equalTo(0));
+		assertTrue(huge.isEmpty());
+	}
+
+	static class MapObjectLongBridge<K> implements Map<K, Long>, Serializable {
+		private static final long serialVersionUID = 1L;
 		HashMapObjectLong<K> delegate;
 
 		MapObjectLongBridge(HashMapObjectLong<K> delegate) {
 			this.delegate = delegate;
 		}
 
-		@Override
 		public void clear() {
 			delegate.clear();
 		}
 
-		@Override
 		@SuppressWarnings("unchecked")
 		public boolean containsKey(Object key) {
 			return delegate.containsKey((K) key);
 		}
 
-		@Override
 		public boolean containsValue(Object value) {
 			long v = (Long) value;
 
@@ -682,24 +932,20 @@ public class PrimitiveMapTests {
 			return false;
 		}
 
-		@Override
 		public Set<Entry<K, Long>> entrySet() {
 			Set<Entry<K, Long>> answer = new HashSet<Entry<K, Long>>();
 			for (Iterator<HashMapObjectLong.Entry<K>> iter = delegate.entries(); iter.hasNext();) {
 				final HashMapObjectLong.Entry<K> entry = iter.next();
 				answer.add(new Entry<K, Long>() {
 
-					@Override
 					public K getKey() {
 						return entry.getKey();
 					}
 
-					@Override
 					public Long getValue() {
 						return entry.getValue();
 					}
 
-					@Override
 					public Long setValue(Long value) {
 						throw new UnsupportedOperationException();
 					}
@@ -708,18 +954,15 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		@SuppressWarnings("unchecked")
 		public Long get(Object key) {
 			return delegate.get((K) key);
 		}
 
-		@Override
 		public boolean isEmpty() {
 			return delegate.isEmpty();
 		}
 
-		@Override
 		public Set<K> keySet() {
 			Set<K> answer = new HashSet<K>();
 			for (Iterator<K> iter = delegate.keys(); iter.hasNext();)
@@ -727,7 +970,6 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		public Long put(K key, Long value) {
 			Long retValue = null;
 
@@ -740,12 +982,10 @@ public class PrimitiveMapTests {
 			return replace ? retValue : null;
 		}
 
-		@Override
 		public void putAll(Map<? extends K, ? extends Long> t) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		@SuppressWarnings("unchecked")
 		public Long remove(Object key) {
 			Long retValue = null;
@@ -759,12 +999,10 @@ public class PrimitiveMapTests {
 			return removed ? retValue : null;
 		}
 
-		@Override
 		public int size() {
 			return delegate.size();
 		}
 
-		@Override
 		public Collection<Long> values() {
 			List<Long> answer = new ArrayList<Long>();
 			for (IteratorLong iter = delegate.values(); iter.hasNext();)
@@ -773,13 +1011,13 @@ public class PrimitiveMapTests {
 		}
 	}
 
-	class MapObjectLongBridge2<K> extends MapObjectLongBridge<K> {
+	static class MapObjectLongBridge2<K> extends MapObjectLongBridge<K> {
+		private static final long serialVersionUID = 1L;
 
 		public MapObjectLongBridge2(HashMapObjectLong<K> delegate) {
 			super(delegate);
 		}
 
-		@Override
 		@SuppressWarnings("unchecked")
 		public Set<K> keySet() {
 			Set<K> answer = new HashSet<K>();
@@ -789,7 +1027,6 @@ public class PrimitiveMapTests {
 			return answer;
 		}
 
-		@Override
 		public Collection<Long> values() {
 			List<Long> answer = new ArrayList<Long>();
 			long[] values = delegate.getAllValues();
@@ -799,13 +1036,13 @@ public class PrimitiveMapTests {
 		}
 	}
 
-	class MapObjectLongBridge3<K> extends MapObjectLongBridge<K> {
+	static class MapObjectLongBridge3<K> extends MapObjectLongBridge<K> {
+		private static final long serialVersionUID = 1L;
 
 		public MapObjectLongBridge3(HashMapObjectLong<K> delegate) {
 			super(delegate);
 		}
 
-		@Override
 		@SuppressWarnings("unchecked")
 		public Set<K> keySet() {
 			Set<K> answer = new HashSet<K>();
@@ -816,7 +1053,9 @@ public class PrimitiveMapTests {
 		}
 	}
 
-	class MapObjectLongBridge4<K> extends MapObjectLongBridge<K> {
+	static class MapObjectLongBridge4<K> extends MapObjectLongBridge<K> {
+		private static final long serialVersionUID = 1L;
+
 		public MapObjectLongBridge4(HashMapObjectLong<K> delegate) {
 			super(delegate);
 		}
@@ -824,9 +1063,9 @@ public class PrimitiveMapTests {
 		/**
 		 * check that remove is done by equality not identity
 		 */
-		@Override
 		public Long remove(Object key) {
 			if (key instanceof Integer) {
+				// Deliberately construct new object
 				key = new Integer((Integer) key);
 			}
 			return super.remove(key);
@@ -848,9 +1087,9 @@ public class PrimitiveMapTests {
 
 		protected abstract Map<K, V> createEmpty();
 
-		public void run() {
+		public void run() throws IOException, ClassNotFoundException {
 			TestSnapshots.testAssertionsEnabled();
-			assert keys.length == values.length : "Keys and values must have the same length";
+			assert keys.length == values.length : "Keys and values must have the same length"; //$NON-NLS-1$
 
 			Map<K, V> subject = createEmpty();
 			Map<K, V> reference = new HashMap<K, V>();
@@ -860,8 +1099,25 @@ public class PrimitiveMapTests {
 			verifyKeys(subject, reference);
 			verifyValues(subject, reference);
 			verifyGets(subject, reference);
+			verifyContains(subject, reference);
+			byte b[] = serialize(subject);
+			Map<K, V> subject2 = deserialize(b);
+			verifyGets(subject2, reference);
 			verifyRemove(subject, reference);
 			verifyEmpty(subject);
+		}
+
+		/**
+		 * For performance testing
+		 */
+		public void perfRun() {
+			TestSnapshots.testAssertionsEnabled();
+			assert keys.length == values.length : "Keys and values must have the same length"; //$NON-NLS-1$
+
+			Map<K, V> subject = createEmpty();
+			Map<K, V> reference = new HashMap<K, V>();
+			verifyInsert(subject, reference);
+			verifyContains(subject, reference);
 		}
 
 		private void verifyGets(Map<K, V> subject, Map<K, V> reference) {
@@ -870,6 +1126,31 @@ public class PrimitiveMapTests {
 				V get2 = reference.get(key);
 
 				assert get == null ? get2 == null : get.equals(get2);
+			}
+		}
+
+		private void verifyContains(Map<K, V> subject, Map<K, V> reference) {
+			int i = 0;
+			for (K key : keys) {
+				boolean contains1 = subject.containsKey(key);
+				boolean contains2 = reference.containsKey(key);
+
+				assert contains1 == contains2;
+
+				if (key instanceof Integer) {
+					Integer keyi = i;
+					contains1 = subject.containsKey(keyi);
+					contains2 = reference.containsKey(keyi);
+
+					assert contains1 == contains2;
+				} else if (key instanceof Long) {
+					Long keyl = (long) i;
+					contains1 = subject.containsKey(keyl);
+					contains2 = reference.containsKey(keyl);
+
+					assert contains1 == contains2;
+				}
+				++i;
 			}
 		}
 
@@ -919,6 +1200,21 @@ public class PrimitiveMapTests {
 				assert !subject.containsValue(value);
 			for (K key : keys)
 				assert subject.remove(key) == null;
+		}
+
+		private byte[] serialize(Map<K, V> subject) throws IOException {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(subject);
+			return baos.toByteArray();
+		}
+
+		@SuppressWarnings("unchecked")
+		private Map<K, V> deserialize(byte b[]) throws IOException, ClassNotFoundException {
+			ByteArrayInputStream bais = new ByteArrayInputStream(b);
+			ObjectInputStream ois = new ObjectInputStream(bais);
+			Object subject = ois.readObject();
+			return (Map<K, V>) subject;
 		}
 	}
 }

@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2013 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -16,7 +18,6 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import org.eclipse.mat.SnapshotException;
-import org.eclipse.mat.collect.ArrayIntCompressed;
 import org.eclipse.mat.collect.ArrayUtils;
 import org.eclipse.mat.collect.BitField;
 import org.eclipse.mat.collect.IteratorInt;
@@ -48,10 +49,8 @@ public class DominatorTree {
 		private int r, n;
 		private int[] dom;
 		private int[] parent;
-		private ArrayIntCompressed compressedParent;
 		private int[] anchestor;
 		private int[] vertex;
-		private ArrayIntCompressed compressedVertex;
 		private int[] label;
 		private int[] semi;
 
@@ -84,7 +83,9 @@ public class DominatorTree {
 			n = snapshot.getSnapshotInfo().getNumberOfObjects() + 1;
 			r = 1;
 
+			parent = new int[n + 1];
 			anchestor = new int[n + 1];
+			vertex = new int[n + 1];
 			label = new int[n + 1];
 			semi = new int[n + 1];
 
@@ -96,10 +97,6 @@ public class DominatorTree {
 			bucket = new int[n + 1];
 			dom = null;
 			bucket = null;
-
-			// vertex and parent are read-only once dfs() is completed: it can be compressed after dfs() completion
-			vertex = new int[n + 1];
-			parent = new int[n + 1];
 		}
 
 		public void compute() throws IOException, SnapshotException, IProgressListener.OperationCanceledException {
@@ -108,10 +105,6 @@ public class DominatorTree {
 
 			n = 0;
 			dfs(r);
-			compressedVertex = new ArrayIntCompressed(vertex);
-			vertex = null;
-			compressedParent = new ArrayIntCompressed(parent);
-			parent = null;
 
 			outboundIndex.unload();
 
@@ -127,7 +120,7 @@ public class DominatorTree {
 			Arrays.fill(bucket, -1);
 
 			for (int i = n; i >= 2; i--) {
-				int w = compressedVertex.get(i);
+				int w = vertex[i];
 				for (int v : getPredecessors(w)) {
 					v += 2;
 					if (v < 0)
@@ -139,22 +132,22 @@ public class DominatorTree {
 				}
 				// add w to bucket(vertex(semi(w)))
 				// create the bucket if needed
-				bucket[w] = bucket[compressedVertex.get(semi[w])]; // serves as next(w)
-				bucket[compressedVertex.get(semi[w])] = w; // serves as
+				bucket[w] = bucket[vertex[semi[w]]]; // serves as next(w)
+				bucket[vertex[semi[w]]] = w; // serves as
 				// first(vertex[semi[w]])
-				link(compressedParent.get(w), w);
+				link(parent[w], w);
 
-				int v = bucket[compressedParent.get(w)];
+				int v = bucket[parent[w]];
 				while (v != -1) {
 					int u = eval(v);
 					if (semi[u] < semi[v]) {
 						dom[v] = u;
 					} else {
-						dom[v] = compressedParent.get(w);
+						dom[v] = parent[w];
 					}
 					v = bucket[v]; // here bucket serves as next[]
 				}
-				bucket[compressedParent.get(w)] = -1;
+				bucket[parent[w]] = -1;
 				// }
 				if (i % 1000 == 0) {
 					if (progressListener.isCanceled())
@@ -164,8 +157,8 @@ public class DominatorTree {
 			}
 
 			for (int i = 2; i <= n; i++) {
-				int w = compressedVertex.get(i);
-				if (dom[w] != compressedVertex.get(semi[w])) {
+				int w = vertex[i];
+				if (dom[w] != vertex[semi[w]]) {
 					dom[w] = dom[dom[w]];
 				}
 			}
@@ -174,8 +167,6 @@ public class DominatorTree {
 			progressListener.done();
 
 			parent = anchestor = vertex = label = semi = bucket = null;
-			compressedVertex = null;
-			compressedParent = null;
 			inboundIndex.unload();
 
 			if (progressListener0.isCanceled())
@@ -190,12 +181,10 @@ public class DominatorTree {
 									new IteratorInt() {
 										int nextIndex = 2;
 
-										@Override
 										public boolean hasNext() {
 											return nextIndex < dom.length;
 										}
 
-										@Override
 										public int next() {
 											return dom[nextIndex++];
 										}

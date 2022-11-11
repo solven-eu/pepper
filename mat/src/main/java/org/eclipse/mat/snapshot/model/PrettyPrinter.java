@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2012 SAP AG and others.
+ * Copyright (c) 2008, 2020 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -30,12 +32,12 @@ public final class PrettyPrinter {
 	 * @throws SnapshotException
 	 */
 	public static String objectAsString(IObject stringObject, int limit) throws SnapshotException {
-		Object valueObj = stringObject.resolveValue("value");
+		Object valueObj = stringObject.resolveValue("value"); //$NON-NLS-1$
 		if (!(valueObj instanceof IPrimitiveArray))
 			return null;
 		IPrimitiveArray charArray = (IPrimitiveArray) valueObj;
 
-		Object countObj = stringObject.resolveValue("count");
+		Object countObj = stringObject.resolveValue("count"); //$NON-NLS-1$
 		// count and offset fields were removed with JDK7u6
 		if (countObj == null) {
 			if (charArray.getType() == IObject.Type.BYTE) {
@@ -48,7 +50,7 @@ public final class PrettyPrinter {
 				}
 				Collection<IClass> clss = stringObject.getSnapshot().getClassesByName("java.lang.StringUTF16", false);//$NON-NLS-1$
 				int bigEndian;
-				if (!clss.isEmpty()) {
+				if (clss != null && !clss.isEmpty()) {
 					Object o = clss.iterator().next().resolveValue("HI_BYTE_SHIFT"); //$NON-NLS-1$
 					bigEndian = o instanceof Integer && (Integer) o == 8 ? 1 : 0;
 				} else {
@@ -63,12 +65,12 @@ public final class PrettyPrinter {
 				return null;
 			Integer count = (Integer) countObj;
 			if (count.intValue() == 0)
-				return "";
+				return ""; //$NON-NLS-1$
 
 			// IBM java.lang.String implementation may have count but not offset
 			Integer offset = 0;
-			Object offsetObj = stringObject.resolveValue("offset");
-			if (offsetObj instanceof Integer) {
+			Object offsetObj = stringObject.resolveValue("offset"); //$NON-NLS-1$
+			if ((offsetObj instanceof Integer)) {
 				offset = (Integer) offsetObj;
 			}
 
@@ -80,11 +82,11 @@ public final class PrettyPrinter {
 						return compactByteArrayAsString(charArray, offset, count, limit);
 					}
 				}
-				Object o = stringObject.getSnapshot()
-						.getClassesByName("java.lang.String", false) //$NON-NLS-1$
-						.iterator()
-						.next()
-						.resolveValue("HI_BYTE_SHIFT"); //$NON-NLS-1$
+				Collection<IClass> stringClasses =
+						stringObject.getSnapshot().getClassesByName("java.lang.String", false); //$NON-NLS-1$
+				if (stringClasses == null || stringClasses.isEmpty())
+					return null;
+				Object o = stringClasses.iterator().next().resolveValue("HI_BYTE_SHIFT"); //$NON-NLS-1$
 				int bigEndian = o instanceof Integer && (Integer) o == 8 ? 1 : 0;
 				return byteArrayAsString(charArray, offset, count, limit, bigEndian);
 			} else {
@@ -130,10 +132,10 @@ public final class PrettyPrinter {
 			if (val >= 32 && val < 127)
 				result.append(val);
 			else
-				result.append("\\u").append(String.format("%04x", 0xFFFF & val));
+				result.append("\\u").append(String.format("%04x", 0xFFFF & val)); //$NON-NLS-1$//$NON-NLS-2$
 		}
 		if (limit < count)
-			result.append("...");
+			result.append("..."); //$NON-NLS-1$
 		return result.toString();
 	}
 

@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2010 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -208,7 +210,7 @@ abstract public class GCRootInfo implements Serializable {
 		for (int i = 0; i < TYPE_STRING.length; i++) {
 			if (((1 << i) & typeSet) != 0) {
 				if (!first) {
-					buf.append(", ");
+					buf.append(", "); //$NON-NLS-1$
 				} else {
 					// Performance optimization - if there is only one bit set
 					// return the type string without building a new string.

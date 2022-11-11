@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2010 SAP AG.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -19,6 +21,7 @@ import org.eclipse.mat.collect.BitField;
 import org.eclipse.mat.collect.HashMapIntObject;
 import org.eclipse.mat.parser.IObjectReader;
 import org.eclipse.mat.parser.index.IndexManager;
+import org.eclipse.mat.parser.internal.util.ParserRegistry;
 import org.eclipse.mat.parser.internal.util.ParserRegistry.Parser;
 import org.eclipse.mat.parser.model.ClassImpl;
 import org.eclipse.mat.parser.model.XGCRootInfo;
@@ -78,7 +81,7 @@ public class SnapshotImplBuilder {
 	}
 
 	public SnapshotImpl create(Parser parser, IProgressListener listener) throws IOException, SnapshotException {
-		IObjectReader heapObjectReader = parser.createObjectReader();
+		IObjectReader heapObjectReader = parser.create(IObjectReader.class, ParserRegistry.OBJECT_READER);
 		return SnapshotImpl.create(snapshotInfo,
 				parser.getUniqueIdentifier(),
 				heapObjectReader,

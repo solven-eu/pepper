@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2010 SAP AG.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -47,7 +49,7 @@ public class RetainedSizeCache implements IIndexReader {
 	 * @param snapshotInfo
 	 */
 	public RetainedSizeCache(XSnapshotInfo snapshotInfo) {
-		this.filename = snapshotInfo.getPrefix() + "i2sv2.index";
+		this.filename = snapshotInfo.getPrefix() + "i2sv2.index"; //$NON-NLS-1$
 		readId2Size(snapshotInfo.getPrefix());
 	}
 
@@ -65,17 +67,21 @@ public class RetainedSizeCache implements IIndexReader {
 		isDirty = true;
 	}
 
-	@Override
 	public void close() {
 		if (!isDirty)
 			return;
 
-		File file = new File(filename);
-		try (DataOutputStream out = new DataOutputStream(new FileOutputStream(file))) {
+		try {
+			File file = new File(filename);
+
+			DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
+
 			for (int key : id2size.getAllKeys()) {
 				out.writeInt(key);
 				out.writeLong(id2size.get(key));
 			}
+
+			out.close();
 
 			isDirty = false;
 		} catch (IOException e) {
@@ -89,7 +95,9 @@ public class RetainedSizeCache implements IIndexReader {
 		boolean delete = false;
 
 		try {
-			id2size = new HashMapIntLong((int) file.length() / 8);
+			// Cope with large numbers, entries = size / 12, scale up for hashing
+			int initialCapacity = (int) Math.min(file.length() / 8, Integer.MAX_VALUE - 20);
+			id2size = new HashMapIntLong(initialCapacity);
 
 			in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
 
@@ -130,7 +138,7 @@ public class RetainedSizeCache implements IIndexReader {
 		if (file.exists()) {
 			doRead(file, false);
 		} else {
-			File legacyFile = new File(prefix + "i2s.index");
+			File legacyFile = new File(prefix + "i2s.index");//$NON-NLS-1$
 			if (legacyFile.exists()) {
 				doRead(legacyFile, true);
 			} else {
@@ -139,17 +147,14 @@ public class RetainedSizeCache implements IIndexReader {
 		}
 	}
 
-	@Override
 	public int size() {
 		return id2size.size();
 	}
 
-	@Override
 	public void unload() throws IOException {
 		close();
 	}
 
-	@Override
 	public void delete() {
 		close();
 

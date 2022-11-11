@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2014 SAP AG, IBM Corporation and others.
+ * Copyright (c) 2008, 2022 SAP AG, IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -16,7 +18,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
-import java.util.Arrays;
 
 import org.eclipse.mat.SnapshotException;
 import org.eclipse.mat.collect.ArrayIntCompressed;
@@ -25,15 +26,14 @@ import org.eclipse.mat.collect.HashMapIntObject;
 import org.eclipse.mat.parser.index.IndexWriter.ArrayIntLongCompressed;
 import org.eclipse.mat.parser.internal.Messages;
 import org.eclipse.mat.parser.io.SimpleBufferedRandomAccessInputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementations to read index files.
  */
 public abstract class IndexReader {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(IndexReader.class);
-
+	/**
+	 * Debug flag for use by developers of MAT
+	 */
 	public static final boolean DEBUG = false;
 
 	/**
@@ -63,9 +63,15 @@ public abstract class IndexReader {
 	 */
 	public static class IntIndexReader extends IndexWriter.IntIndex<SoftReference<ArrayIntCompressed>>
 			implements IIndexReader.IOne2OneIndex {
+		/**
+		 * The lock to protect the read from concurrent access
+		 */
 		public Object LOCK = new Object();
 
 		File indexFile;
+		/**
+		 * For use reading the actual index file
+		 */
 		public SimpleBufferedRandomAccessInputStream in;
 		long[] pageStart;
 
@@ -94,7 +100,7 @@ public abstract class IndexReader {
 		}
 
 		public IntIndexReader(File indexFile) throws IOException {
-			this(new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(indexFile, "r")),
+			this(new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(indexFile, "r")), //$NON-NLS-1$
 					0,
 					indexFile.length());
 			this.indexFile = indexFile;
@@ -135,13 +141,12 @@ public abstract class IndexReader {
 				if (indexFile == null)
 					throw new IOException(Messages.IndexReader_Error_IndexIsEmbedded);
 
-				in = new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(this.indexFile, "r"));
+				in = new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(this.indexFile, "r"));//$NON-NLS-1$
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
 
-		@Override
 		public synchronized void close() {
 			unload();
 
@@ -189,12 +194,15 @@ public abstract class IndexReader {
 			return array;
 		}
 
-		@Override
 		public void delete() {
 			close();
 
-			if (indexFile != null)
-				indexFile.delete();
+			if (indexFile != null) {
+				// TODO Consider logging a failure to delete
+				if (indexFile.delete()) {
+					indexFile = null;
+				}
+			}
 		}
 
 	}
@@ -262,7 +270,9 @@ public abstract class IndexReader {
 		 * Constructor used when reopening a dump
 		 *
 		 * @param indexFile
+		 *            the file holding the index
 		 * @throws IOException
+		 *             if there was a problem reading the file
 		 */
 		public SizeIndexReader(File indexFile) throws IOException {
 			this(new IntIndexReader(indexFile));
@@ -272,6 +282,7 @@ public abstract class IndexReader {
 		 * Construct a size index reader based on a int index holding the compressed data
 		 *
 		 * @param idx
+		 *            the source index
 		 */
 		public SizeIndexReader(IIndexReader.IOne2OneIndex idx) {
 			this.idx = idx;
@@ -279,24 +290,42 @@ public abstract class IndexReader {
 
 		/**
 		 * Expand the compressed size.
+		 *
+		 * @param index
+		 *            the encoded compressed size
+		 * @return the actual size in bytes
 		 */
-		@Override
 		public long getSize(int index) {
 			return IndexWriter.SizeIndexCollectorUncompressed.expand(get(index));
 		}
 
 		/**
 		 * Get the (compressed) size. Delegate to the int index.
+		 *
+		 * @param index
+		 *            the index of the object
+		 * @return the encoded compressed size
 		 */
-		@Override
 		public int get(int index) {
 			return idx.get(index);
 		}
 
 		/**
-		 * Delegate to the int index.
+		 * Delegate to the int index. Gets the encoded sizes for a list of object IDs
 		 */
-		@Override
+		public int[] getAll(int[] index) {
+			return idx.getAll(index);
+		}
+
+		/**
+		 * Delegate to the int index. Gets the encoded sizes for a consecutive list of object IDs
+		 *
+		 * @param index
+		 *            the starting index
+		 * @param length
+		 *            the number to read
+		 * @return an array of compressed sizes
+		 */
 		public int[] getNext(int index, int length) {
 			return idx.getNext(index, length);
 		}
@@ -304,7 +333,6 @@ public abstract class IndexReader {
 		/**
 		 * Delegate to the int index.
 		 */
-		@Override
 		public void close() throws IOException {
 			idx.close();
 		}
@@ -312,15 +340,15 @@ public abstract class IndexReader {
 		/**
 		 * Delegate to the int index.
 		 */
-		@Override
 		public void delete() {
 			idx.delete();
 		}
 
 		/**
 		 * Delegate to the int index.
+		 *
+		 * @return the number of entries
 		 */
-		@Override
 		public int size() {
 			return idx.size();
 		}
@@ -328,7 +356,6 @@ public abstract class IndexReader {
 		/**
 		 * Delegate to the int index.
 		 */
-		@Override
 		public void unload() throws IOException {
 			idx.unload();
 		}
@@ -371,7 +398,6 @@ public abstract class IndexReader {
 			open();
 		}
 
-		@Override
 		public int[] get(int index) {
 			long p = header.getPos(index);
 
@@ -384,7 +410,7 @@ public abstract class IndexReader {
 			try {
 				if (in == null) {
 
-					in = new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(this.indexFile, "r"));
+					in = new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(this.indexFile, "r"));//$NON-NLS-1$
 
 					if (this.header != null)
 						this.header.in = in;
@@ -397,10 +423,11 @@ public abstract class IndexReader {
 			}
 		}
 
-		@Override
 		public synchronized void close() {
-			header.unload();
-			body.unload();
+			if (header != null)
+				header.unload();
+			if (body != null)
+				body.unload();
 
 			if (in != null) {
 				try {
@@ -417,23 +444,24 @@ public abstract class IndexReader {
 			}
 		}
 
-		@Override
 		public void unload() throws IOException {
 			header.unload();
 			body.unload();
 		}
 
-		@Override
 		public int size() {
 			return header.size();
 		}
 
-		@Override
 		public void delete() {
 			close();
 
-			if (indexFile != null)
-				indexFile.delete();
+			if (indexFile != null) {
+				// TODO Consider logging a failure to delete
+				if (indexFile.delete()) {
+					indexFile = null;
+				}
+			}
 		}
 	}
 
@@ -454,7 +482,6 @@ public abstract class IndexReader {
 		 * next one, which is greater than the first. 0 means no data E.g. 10 6 1 0 14 Reading item 0 gets from [10,14)
 		 * Reading item 1 gets from [6,14) Reading item 2 gets from [1,14) Reading item 3 gets an empty array
 		 */
-		@Override
 		public int[] get(int index) {
 			long p0;
 			long p1;
@@ -491,7 +518,6 @@ public abstract class IndexReader {
 			super(indexFile, header, body);
 		}
 
-		@Override
 		public int[] getObjectsOf(Serializable key) throws SnapshotException, IOException {
 			if (key == null)
 				return new int[0];
@@ -552,23 +578,11 @@ public abstract class IndexReader {
 			this.indexFile = indexFile;
 			this.pageStart = pageStart;
 
-			LOGGER.debug("Open for size={} file={}", size, indexFile);
-
 			open();
 		}
 
-		@Override
-		public String toString() {
-			return "LongIndexReader [indexFile=" + indexFile
-					+ ", size="
-					+ size
-					+ ", pageStart="
-					+ Arrays.toString(pageStart)
-					+ "]";
-		}
-
 		public LongIndexReader(File indexFile) throws IOException {
-			this(new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(indexFile, "r")),
+			this(new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(indexFile, "r")), //$NON-NLS-1$
 					0,
 					indexFile.length());
 			this.indexFile = indexFile;
@@ -601,10 +615,9 @@ public abstract class IndexReader {
 			if (indexFile == null)
 				throw new IOException(Messages.IndexReader_Error_IndexIsEmbedded);
 
-			in = new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(this.indexFile, "r"));
+			in = new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(this.indexFile, "r"));//$NON-NLS-1$
 		}
 
-		@Override
 		public synchronized void close() {
 			unload();
 
@@ -653,12 +666,15 @@ public abstract class IndexReader {
 			return array;
 		}
 
-		@Override
 		public void delete() {
 			close();
 
-			if (indexFile != null)
-				indexFile.delete();
+			if (indexFile != null) {
+				// TODO Consider logging a failure to delete
+				if (indexFile.delete()) {
+					indexFile = null;
+				}
+			}
 		}
 
 	}
@@ -699,7 +715,7 @@ public abstract class IndexReader {
 			try {
 				if (in == null) {
 
-					in = new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(this.indexFile, "r"));
+					in = new SimpleBufferedRandomAccessInputStream(new RandomAccessFile(this.indexFile, "r"));//$NON-NLS-1$
 
 					if (this.header != null)
 						this.header.in = in;
@@ -712,7 +728,6 @@ public abstract class IndexReader {
 			}
 		}
 
-		@Override
 		public synchronized void close() {
 			unload();
 
@@ -727,23 +742,24 @@ public abstract class IndexReader {
 			}
 		}
 
-		@Override
 		public void unload() {
 			header.unload();
 			body.unload();
 		}
 
-		@Override
 		public int size() {
 			return header.size();
 		}
 
-		@Override
 		public void delete() {
 			close();
 
-			if (indexFile != null)
-				indexFile.delete();
+			if (indexFile != null) {
+				// TODO Consider logging a failure to delete
+				if (indexFile.delete()) {
+					indexFile = null;
+				}
+			}
 		}
 	}
 }

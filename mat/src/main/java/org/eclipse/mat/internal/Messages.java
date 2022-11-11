@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2013 SAP AG and IBM Corporation.
+ * Copyright (c) 2008, 2021 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     SAP AG - initial API and implementation
@@ -11,603 +13,678 @@
  *******************************************************************************/
 package org.eclipse.mat.internal;
 
-public class Messages {
-	public static final String ArgumentParser_ErrorMsg_ParsingError = "Error parsing ''{0}'': {1}";
-	public static final String ArgumentParser_ErrorMsg_Unparsed = "Remaining unparsed line: {0}";
-	public static final String ArrayFillRatioQuery_ColumnFillRatio = "Fill Ratio";
-	public static final String ArrayFillRatioQuery_ColumnNumObjects = "\\# Objects";
-	public static final String ArrayFillRatioQuery_ExtractingFillRatios = "Extracting fill ratios...";
-	public static final String ArraysBySizeQuery_ColumnLength = "Length";
-	public static final String ArraysBySizeQuery_ColumnNumObjects = "\\# Objects";
-	public static final String ArraysBySizeQuery_ExtractingArraySizes = "Extracting array sizes...";
-	public static final String BigDropsQuery_AccumulationPoint = "Accumulation Point";
-	public static final String BigDropsQuery_Column_AccPtSize = "Acc.Pt. Size";
-	public static final String BigDropsQuery_Column_AccumulationPoint = "Accumulation Point";
-	public static final String BigDropsQuery_Column_Dominator = "Dominator";
-	public static final String BigDropsQuery_Column_DomRetainedSize = "Dom. Retained Size";
-	public static final String BigDropsQuery_Column_NumChildren = "\\# Children";
-	public static final String BigDropsQuery_Dominator = "Dominator";
-	public static final String BigDropsQuery_Root = "<ROOT>";
-	public static final String BundleReaderFactory_ErrorMsg_EquinoxNotFound = "Could not find Equinox OSGi Framework.";
-	public static final String BundleRegistryQuery_Bundles = "Bundles";
-	public static final String BundleRegistryQuery_BundleState = "Bundle State";
-	public static final String BundleRegistryQuery_BundlesUsing = "Bundles Using";
-	public static final String BundleRegistryQuery_ContributedBy = "contributed by: {0}";
-	public static final String BundleRegistryQuery_Dependencies = "Dependencies";
-	public static final String BundleRegistryQuery_Dependents = "Dependents";
-	public static final String BundleRegistryQuery_ErrorMsg_FailedReadingModel = "Failed reading bundle from OSGiModel";
-	public static final String BundleRegistryQuery_ExtensionPoints = "Extension Points";
-	public static final String BundleRegistryQuery_Extensions = "Extensions";
-	public static final String BundleRegistryQuery_Fragments = "Fragments";
-	public static final String BundleRegistryQuery_HostedBy = "hosted by: {0}";
-	public static final String BundleRegistryQuery_Properties = "Properties";
-	public static final String BundleRegistryQuery_RegisteredBy = "registered by: {0}";
-	public static final String BundleRegistryQuery_RegisteredServices = "Registered Services";
-	public static final String BundleRegistryQuery_Services = "Services";
-	public static final String BundleRegistryQuery_UserServices = "Used Services";
-	public static final String ClassLoaderExplorerQuery_Class = "Class";
-	public static final String ClassLoaderExplorerQuery_ClassLoader = "Class Loader";
-	public static final String ClassLoaderExplorerQuery_Column_DefinedClasses = "Defined Classes";
-	public static final String ClassLoaderExplorerQuery_Column_NoInstances = "No. of Instances";
-	public static final String ClassLoaderExplorerQuery_DefinedClasses = "Defined Classes";
-	public static final String ClassLoaderExplorerQuery_Instances = "Instances";
-	public static final String ClassSpecificNameResolverRegistry_Error_CreateResolver =
-			"Error while creating name resolver ''{0}''";
-	public static final String ClassSpecificNameResolverRegistry_Error_MissingObject =
-			"No object to resolve class specific name for.";
-	public static final String ClassSpecificNameResolverRegistry_Error_MissingSubjects =
-			"Resolver without subjects: ''{0}''";
-	public static final String ClassSpecificNameResolverRegistry_Error_Resolving = "Error resolving name of {0}";
-	public static final String ClassSpecificNameResolverRegistry_ErrorMsg_DuringResolving =
-			"Error resolving name of {0}";
-	public static final String ClassSpecificNameResolverRegistry_ErrorMsg_MissingSubject =
-			"Resolver without subjects: ''{0}''";
-	public static final String ClassSpecificNameResolverRegistry_ErrorMsg_WhileCreatingResolver =
-			"Error while creating name resolver ''{0}''";
-	public static final String CollectionFillRatioQuery_ClassNotFound = "Class ''{0}'' not found in heap dump.";
-	public static final String CollectionFillRatioQuery_Column_FillRatio = "Fill Ratio";
-	public static final String CollectionFillRatioQuery_ColumnNumObjects = "\\# Objects";
-	public static final String CollectionFillRatioQuery_ErrorMsg_AllArgumentsMustBeSet =
-			"If the collection argument is set to a custom (e.g. non-JDK) collection class, the size_attribute and array_attribute argument must be set. Otherwise, the query cannot calculate the fill ratio.";
-	public static final String CollectionFillRatioQuery_ExtractingFillRatios = "Extracting collection fill ratios...";
-	public static final String CollectionFillRatioQuery_IgnoringCollection = "Ignoring collection {0}";
-	public static final String CollectionUtil_BadBackingArray =
-			"Field ''{0}'' of {1} contains {2} instead of an array of objects as a backing array";
-	public static final String CollectionsBySizeQuery_ClassNotFound = "Class ''{0}'' not found in heap dump.";
-	public static final String CollectionsBySizeQuery_CollectingSizes = "Collecting collection sizes...";
-	public static final String CollectionsBySizeQuery_Column_Length = "Length";
-	public static final String CollectionsBySizeQuery_Column_NumObjects = "\\# Objects";
-	public static final String CollectionsBySizeQuery_ErrorMsg_ArgumentMissing =
-			"If the collection argument is set to a custom (e.g. non-JDK) collection class, the size_attribute must be set. Otherwise, the query cannot determine the size of the collection.";
-	public static final String CollectionsBySizeQuery_IgnoringCollection = "Ignoring collection {0}";
-	public static final String Column_ClassLoaderName = "Class Loader Name";
-	public static final String Column_ClassName = "Class Name";
-	public static final String Column_Heap = "Heap";
-	public static final String Column_Objects = "Objects";
-	public static final String Column_Percentage = "Percentage";
-	public static final String Column_RetainedHeap = "Retained Heap";
-	public static final String Column_ShallowHeap = "Shallow Heap";
-	public static final String CompareTablesQuery_ColumnAbsolute = "{0} \\#{1}";
-	public static final String CompareTablesQuery_ColumnDifference = "{0} \\#{1}-\\#{2}";
-	public static final String CompareTablesQuery_ColumnPercentDifference = "{0} \\#{1}-\\#{2} %";
-	public static final String CompareTablesQuery_DifferenceFirst = "Table {0} without Table {1}";
-	public static final String CompareTablesQuery_DifferenceLast = "{0} and Table {1}";
-	public static final String CompareTablesQuery_DifferenceMiddle = "{0}, Table {1}";
-	public static final String CompareTablesQuery_DifferenceOf2 = "Table {0} without Table {1}";
-	public static final String CompareTablesQuery_IntersectionFirst = "Intersection of Table {0}, Table {1}";
-	public static final String CompareTablesQuery_IntersectionLast = "{0} and Table {1}";
-	public static final String CompareTablesQuery_IntersectionMiddle = "{0}, Table {1}";
-	public static final String CompareTablesQuery_IntersectionOf2 = "Intersection of Table {0} and Table {1}";
-	public static final String CompareTablesQuery_Table = "Table {0}";
-	public static final String CompareTablesQuery_SymmetricDifferenceFirst =
-			"Symmetric difference of Table {0}, Table {1}";
-	public static final String CompareTablesQuery_SymmetricDifferenceLast = "{0} and Table {1}";
-	public static final String CompareTablesQuery_SymmetricDifferenceMiddle = "{0}, Table {1}";
-	public static final String CompareTablesQuery_SymmetricDifferenceOf2 =
-			"Symmetric difference of Table {0} and Table {1}";
-	public static final String CompareTablesQuery_UnionFirst = "Union of Table {0}, Table {1}";
-	public static final String CompareTablesQuery_UnionLast = "{0} and Table {1}";
-	public static final String CompareTablesQuery_UnionMiddle = "{0}, Table {1}";
-	public static final String CompareTablesQuery_UnionOf2 = "Union of Table {0} and Table {1}";
-	public static final String ComponentReportQuery_Classes = "Classes:";
-	public static final String ComponentReportQuery_ClassLoader = "Class Loader:";
-	public static final String ComponentReportQuery_CollectionFillRatios = "Collection Fill Ratios";
-	public static final String ComponentReportQuery_Comment = "Comment";
-	public static final String ComponentReportQuery_ComponentReport = "Component Report {0}";
-	public static final String ComponentReportQuery_Details = "Details";
-	public static final String ComponentReportQuery_DetectedEmptyCollections =
-			"Detected the following empty collections:";
-	public static final String ComponentReportQuery_Distribution = "Distribution";
-	public static final String ComponentReportQuery_DuplicateStrings = "Duplicate Strings";
-	public static final String ComponentReportQuery_EmptyCollections = "Empty Collections";
-	public static final String ComponentReportQuery_PathsToReferents = "Paths to referents";
-	public static final String ComponentReportQuery_FinalizerStatistics = "Finalizer Statistics";
-	public static final String ComponentReportQuery_Histogram = "Histogram";
-	public static final String ComponentReportQuery_HistogramFinalizeMethod =
-			"Histogram of Objects with Finalize Method";
-	public static final String ComponentReportQuery_HistogramOfSoftReferences = "Histogram of Soft References";
-	public static final String ComponentReportQuery_HistogramOfWeakReferences = "Histogram of Weak References";
-	public static final String ComponentReportQuery_Label_Bytes = "({0} bytes)";
-	public static final String ComponentReportQuery_MapCollisionRatios = "Map Collision Ratios";
-	public static final String ComponentReportQuery_Miscellaneous = "Miscellaneous";
-	public static final String ComponentReportQuery_Msg_DetectedCollectionFillRatios =
-			"Detected the following collections with fill ratios below 20%:";
-	public static final String ComponentReportQuery_Msg_DetectedCollisionRatios =
-			"Detected the following maps with collision ratios above 80%:";
-	public static final String ComponentReportQuery_Msg_FoundOccurrences =
-			"Found {0,number} occurrences of char[] with at least 10 instances having identical content. Total size is {1} bytes.";
-	public static final String ComponentReportQuery_Msg_InstancesRetainBytes =
-			"{0,number} instances of <strong>{1}</strong> retain <strong>{2}</strong> bytes.";
-	public static final String ComponentReportQuery_Msg_NoAliveSoftReferences =
-			"Component does not keep Soft References alive.";
-	public static final String ComponentReportQuery_Msg_NoAliveWeakReferences =
-			"Component does not keep Weak References alive.";
-	public static final String ComponentReportQuery_Msg_NoCollisionRatiosFound =
-			"No maps found with collision ratios greater than 80%.";
-	public static final String ComponentReportQuery_Msg_NoExcessiveEmptyCollectionsFound =
-			"No excessive usage of empty collections found.";
-	public static final String ComponentReportQuery_Msg_NoFinalizerFound =
-			"Component does not keep object with Finalizer methods alive.";
-	public static final String ComponentReportQuery_Msg_NoFinalizerObjects =
-			"Heap dump contains no java.lang.ref.Finalizer objects.<br/>IBM VMs implement Finalizer differently and are currently not supported by this report.";
-	public static final String ComponentReportQuery_Msg_NoLowFillRatiosFound =
-			"No serious amount of collections with low fill ratios found.";
-	public static final String ComponentReportQuery_Msg_NoSoftReferencesFound =
-			"Heap dump contains no soft references.";
-	public static final String ComponentReportQuery_Msg_NoWeakReferencesFound =
-			"Heap dump contains no weak references.";
-	public static final String ComponentReportQuery_Msg_SoftReferencesFound =
-			"A total of {0} java.lang.ref.SoftReference object{0,choice,0\\#s|1\\#|2\\#s} have been found, which softly reference {1,choice,0\\#no objects|1\\#one object|2\\#{1,number} objects}.";
-	public static final String ComponentReportQuery_Msg_SoftReferencesRetained =
-			"{0,choice,0\\#No objects|1\\#one object|2\\#{0,number} objects} totalling {1} are retained (kept alive) only via soft references.";
-	public static final String ComponentReportQuery_Msg_SoftReferencesStronglyRetained =
-			"{0,choice,0\\#No objects|1\\#One object|2\\#{0,number} objects} totalling {1} are softly referenced and also strongly retained (kept alive) via soft references.";
-	public static final String ComponentReportQuery_Msg_TotalFinalizerMethods =
-			"A total of {0} object{0,choice,0\\#s|1\\#|2\\#s} implement the finalize method.";
-	public static final String ComponentReportQuery_Msg_WeakReferencesFound =
-			"A total of {0} java.lang.ref.WeakReference object{0,choice,0\\#s|1\\#|2\\#s} have been found, which weakly reference {1,choice,0\\#no objects|1\\#one object|2\\#{1,number} objects}.";
-	public static final String ComponentReportQuery_Msg_WeakReferencesRetained =
-			"{0,choice,0\\#No objects|1\\#One object|2\\#{0,number} objects} totalling {1} are retained (kept alive) only via weak references.";
-	public static final String ComponentReportQuery_Msg_WeakReferencesStronglyRetained =
-			"{0,choice,0\\#No objects|1\\#One object|2\\#{0,number} objects} totalling {1} are weakly referenced and also strongly retained (kept alive) via weak references.";
-	public static final String ComponentReportQuery_Objects = "Objects:";
-	public static final String ComponentReportQuery_Overview = "Overview";
-	public static final String ComponentReportQuery_PossibleMemoryLeak = "Possible Memory Leak";
-	public static final String ComponentReportQuery_PossibleMemoryWaste = "Possible Memory Waste";
-	public static final String ComponentReportQuery_RetainedSet = "Retained Set";
-	public static final String ComponentReportQuery_Size = "Size:";
-	public static final String ComponentReportQuery_SoftReferenceStatistics = "Soft Reference Statistics";
-	public static final String ComponentReportQuery_TopConsumers = "Top Consumers";
-	public static final String ComponentReportQuery_TopElementsInclude = "Top elements include:";
-	public static final String ComponentReportQuery_WeakReferenceStatistics = "Weak Reference Statistics";
-	public static final String CustomizedRetainedSetQuery_RetainedBy = "Retained by ''{0}''";
-	public static final String DominatorQuery_Group_ByClass = "Group by class";
-	public static final String DominatorQuery_Group_ByClassLoader = "Group by class loader";
-	public static final String DominatorQuery_Group_ByPackage = "Group by package";
-	public static final String DominatorQuery_Group_None = "No Grouping (objects)";
-	public static final String DominatorQuery_LabelAll = "<all>";
-	public static final String DominatorQuery_Msg_Grouping = "Grouping by package";
-	public static final String DuplicatedClassesQuery_Checking = "Checking for duplicate Classes";
-	public static final String DuplicatedClassesQuery_ClassLoaderNotFound = "ClassLoader of 0x{0} not found";
-	public static final String DuplicatedClassesQuery_Column_Count = "Count";
-	public static final String DuplicatedClassesQuery_Column_DefinedClasses = "Defined Classes";
-	public static final String DuplicatedClassesQuery_Column_NoInstances = "No. of Instances";
-	public static final String EclipseNameResolver_EquinoxStartupClassLoader = "Equinox Startup Class Loader";
-	public static final String EclipseNameResolver_Point = "({0},{1})";
-	public static final String EclipseNameResolver_Rectangle = "({0},{1},{2},{3})";
-	public static final String EclipseNameResolver_RGB = "({0,number,000},{1,number,000},{2,number,000})";
-	public static final String EquinoxBundleReader_CannotFindContributorID =
-			"Could not parse contributorId. Expected a number but got \"{0}\"";
-	public static final String EquinoxBundleReader_ErrorMsg_BundleNotFound = "Bundle host not found: 0x{0}";
-	public static final String EquinoxBundleReader_ErrorMsg_DuplicateConfigurationElement =
-			"Duplicate configuration element: {0}, first object address: 0x{1}, second object address: 0x{2}";
-	public static final String EquinoxBundleReader_ErrorMsg_DuplicateExtension =
-			"Duplicate extension: {0}, first object address: 0x{1}, second object address: 0x{2}";
-	public static final String EquinoxBundleReader_ErrorMsg_DuplicateExtensionPoint =
-			"Duplicate extension point: {0}, first object address: 0x{1}, second object address: 0x{2}";
-	public static final String EquinoxBundleReader_ErrorMsg_ExpectedArrayType = "Expected array type: 0x{0}";
-	public static final String EquinoxBundleReader_ErrorMsg_ExpectedFieldExtraInformation =
-			"Expected ''extraInformation'': 0x{0}";
-	public static final String EquinoxBundleReader_ErrorMsg_ExpectedFieldObjectId =
-			"Expected field ''objectId'': 0x{0}";
-	public static final String EquinoxBundleReader_ErrorMsg_ExpectedFieldParent = "Expected field ''parentId'': 0x{0}";
-	public static final String EquinoxBundleReader_ErrorMsg_ExpectedStringArray =
-			"Expected ''propertiesAndValues'' in String[] format: 0x{0}";
-	public static final String EquinoxBundleReader_ErrorMsg_ReadingProperty =
-			"Error reading property of ConfigurationElement: 0x{0}";
-	public static final String EquinoxBundleReader_ErrorMsg_ServiceName = "Error reading service''s name: 0x{0}";
-	public static final String EquinoxBundleReader_ErrorMsg_ServiceProperty = "Error reading Service property: 0x{0}";
-	public static final String EquinoxBundleReader_ErrorMsg_SoftReferencesNotHandled =
-			"Extension 0x{0} has properties in the form of SoftReference. Not handled.";
-	public static final String EquinoxBundleReader_ErrorMsg_UnknownElementType = "Unknown element 0x{0} of type {1}";
-	public static final String EquinoxBundleReader_ExpectedFieldContributorId =
-			"Expected field ''contributorId'': 0x{0}";
-	public static final String EquinoxBundleReader_ExpectedFieldPropertiesAndValues =
-			"Expected field ''propertiesAndValues'': 0x{0}";
-	public static final String EquinoxBundleReader_NotApplicable = "N/A";
-	public static final String EquinoxBundleReader_ProcessListenerBundles = "Bundles";
-	public static final String EquinoxBundleReader_ReadingBundles = "Reading bundles";
-	public static final String EquinoxBundleReader_ReadingExtensions = "Reading extensions";
-	public static final String EquinoxBundleReader_ReadingServices = "Reading services";
-	public static final String EquinoxBundleReader_ReadingDependencies = "Reading dependencies";
-	public static final String EquinoxBundleReader_State_Active = "active";
-	public static final String EquinoxBundleReader_State_Installed = "installed";
-	public static final String EquinoxBundleReader_State_Resolved = "resolved";
-	public static final String EquinoxBundleReader_State_Starting = "starting";
-	public static final String EquinoxBundleReader_State_LazyStarting = "lazy starting";
-	public static final String EquinoxBundleReader_State_Stopping = "stopping";
-	public static final String EquinoxBundleReader_State_Uninstalled = "uninstalled";
-	public static final String ExtractListValuesQuery_CollectingElements = "Collecting {0} element(s) of {1}";
-	public static final String ExtractListValuesQuery_NotAWellKnownList = "Not a (well-known) list: {0}";
-	public static final String FinalizerQuery_Finalizers = "Finalizers";
-	public static final String FinalizerQuery_FinalizerThread = "Finalizer Thread";
-	public static final String FinalizerQuery_FinalizerThreadLocals = "Finalizer Thread Locals";
-	public static final String FinalizerQuery_InProcessing = "In processing by Finalizer Thread";
-	public static final String FinalizerQuery_ReadyForFinalizer = "Ready for Finalizer Thread";
-	public static final String FinalizerQueueQuery_ErrorMsg_MultipleFinalizerClasses =
-			"Error: Snapshot contains multiple java.lang.ref.Finalizer classes.";
-	public static final String FinalizerQueueQuery_Msg_ExtractingObjects =
-			"Extracting objects ready for finalization from queue...";
-	public static final String FinalizerQueueQuery_ReadyForFinalizerThread = "Ready for Finalizer Thread";
-	public static final String FinalizerQueueQuery_ReadyForFinalizerThread_Histogram =
-			"Ready for Finalizer Thread - Histogram";
-	public static final String FinalizerQueueQuery_ReadyForFinalizerThread_List =
-			"Ready for Finalizer Thread - Object List";
-	public static final String FinalizerReferenceStatQuery_Label_Referenced =
-			"Histogram of Objects Referenced by Finalizer";
-	public static final String FinalizerReferenceStatQuery_Label_Retained = "Only Retained through Finalizer";
-	public static final String FinalizerReferenceStatQuery_Label_StronglyRetainedReferents =
-			"Referents strongly retained by finalizer references";
-	public static final String FinalizerThreadQuery_ErrorMsg_FinalizerThreadInstanceNotFound =
-			"Instance of class java.lang.ref.Finalizer$FinalizerThread not found in heap dump.";
-	public static final String FinalizerThreadQuery_ErrorMsg_FinalizerThreadNotFound =
-			"Class java.lang.ref.Finalizer$FinalizerThread not found in heap dump.";
-	public static final String FinalizerThreadQuery_ErrorMsg_MultipleFinalizerThreadClasses =
-			"Error: Snapshot contains multiple instances of java.lang.ref.Finalizer$FinalizerThread class.";
-	public static final String FinalizerThreadQuery_ErrorMsg_MultipleThreadClassesFound =
-			"Error: Snapshot contains multiple java.lang.Thread classes.";
-	public static final String FinalizerThreadQuery_ErrorMsg_MultipleThreads =
-			"Error: Snapshot contains multiple java.lang.ref.Finalizer$FinalizerThread classes.";
-	public static final String FinalizerThreadQuery_ErrorMsg_ThreadClassNotFound =
-			"Class java.lang.Thread not found in heap dump.";
-	public static final String FinalizerThreadQuery_ErrorMsg_ThreadInstanceNotFound =
-			"Instance of class java.lang.Thread not found in heap dump.";
-	public static final String FinalizerThreadQuery_FinalizerThread = "Finalizer thread";
-	public static final String FinalizerThreadQuery_SecondaryFinalizer = "Secondary finalizer";
-	public static final String FindLeaksQuery_AccumulationPoint = "Accumulation Point";
-	public static final String FindLeaksQuery_Column_AccPointPercent = "Acc. Point %";
-	public static final String FindLeaksQuery_Column_AccPointRetainedHeap = "Acc. Point Retained Heap";
-	public static final String FindLeaksQuery_Column_AccumulationPoint = "Accumulation Point";
-	public static final String FindLeaksQuery_Column_NumObjects = "\\# Objects";
-	public static final String FindLeaksQuery_Column_SuspectPercent = "Suspect's %";
-	public static final String FindLeaksQuery_Column_SuspectRetainedHeap = "Suspect's Retained Heap";
-	public static final String FindLeaksQuery_ColumnLeakSuspect = "Leak Suspect";
-	public static final String FindLeaksQuery_LeakSuspect = "Leak Suspect";
-	public static final String FindLeaksQuery_NotFound = "<not found>";
-	public static final String FindLeaksQuery_PathNotFound = "Couldn''t find paths for {0} of the {1} objects";
-	public static final String FindLeaksQuery_SearchingGroupsOfObjects = "Searching suspicious groups of objects ...";
-	public static final String FindLeaksQuery_SearchingSingleObjects = "Searching suspicious single objects ...";
-	public static final String FindLeaksQuery_TooManySuspects =
-			"Too many suspect instances ({0}). Will use {1} random from them to search for common path.";
-	public static final String FindStringsQuery_SearchingStrings = "Searching Strings...";
-	public static final String GCRootInfo_BusyMonitor = "Busy Monitor";
-	public static final String GCRootInfo_Finalizable = "Finalizable";
-	public static final String GCRootInfo_JavaLocal = "Java Local";
-	public static final String GCRootInfo_JavaStackFrame = "Java Stack Frame";
-	public static final String GCRootInfo_JNIGlobal = "JNI Global";
-	public static final String GCRootInfo_JNILocal = "JNI Local";
-	public static final String GCRootInfo_NativeStack = "Native Stack";
-	public static final String GCRootInfo_SystemClass = "System Class";
-	public static final String GCRootInfo_Thread = "Thread";
-	public static final String GCRootInfo_ThreadBlock = "Thread Block";
-	public static final String GCRootInfo_Unfinalized = "Unfinalized";
-	public static final String GCRootInfo_Unreachable = "Unreachable";
-	public static final String GCRootInfo_Unkown = "Unknown";
-	public static final String GroupByValueQuery_Column_AvgRetainedSize = "Avg. Retained Size";
-	public static final String GroupByValueQuery_Column_Objects = "Objects";
-	public static final String GroupByValueQuery_Column_StringValue = "String Value";
-	public static final String GroupByValueQuery_GroupingObjects = "Grouping objects ...";
-	public static final String HashEntriesQuery_Column_Collection = "Collection";
-	public static final String HashEntriesQuery_Column_Key = "Key";
-	public static final String HashEntriesQuery_Column_Value = "Value";
-	public static final String HashEntriesQuery_ErrorMsg_ClassNotFound = "Class ''{0}'' not found in heap dump.";
-	public static final String HashEntriesQuery_ErrorMsg_MissingArguments =
-			"If the map argument is set to a custom (e.g. non-JDK) collection class, the array_attribute, key_attribute and value_attribute arguments must be set. Otherwise, the query cannot determine the contents of the map.";
-	public static final String HashEntriesQuery_Msg_Extracting = "Extracting Key Value Pairs...";
-	public static final String HashSetValuesQuery_ErrorMsg_MissingArgument =
-			"If the collection argument is set to a custom (e.g. non-JDK) collection class, the array_attribute and key_attribute arguments must be set. Otherwise, the query cannot determine the contents of the hash set.";
-	public static final String HashSetValuesQuery_ErrorMsg_NotAHashSet = "Not a hash set: {0}";
-	public static final String HeapDumpInfoQuery_32bit = "32-bit";
-	public static final String HeapDumpInfoQuery_64bit = "64-bit";
-	public static final String HeapDumpInfoQuery_Column_HeapFormat = "Format";
-	public static final String HeapDumpInfoQuery_Column_JVMVersion = "JVM version";
-	public static final String HeapDumpInfoQuery_Column_Time = "Time";
-	public static final String HeapDumpInfoQuery_TimeFormat = "{0,time,long}";
-	public static final String HeapDumpInfoQuery_Column_Date = "Date";
-	public static final String HeapDumpInfoQuery_DateFormat = "{0,date}";
-	public static final String HeapDumpInfoQuery_Column_FilePath = "File path";
-	public static final String HeapDumpInfoQuery_Column_FileLength = "File length";
-	public static final String HeapDumpInfoQuery_Column_IdentifierSize = "Identifier size";
-	public static final String HeapDumpInfoQuery_Column_UseCompressedOops = "Compressed object pointers";
-	public static final String HeapDumpInfoQuery_Column_NumClasses = "Number of classes";
-	public static final String HeapDumpInfoQuery_Column_NumClassLoaders = "Number of class loaders";
-	public static final String HeapDumpInfoQuery_Column_NumGCRoots = "Number of GC roots";
-	public static final String HeapDumpInfoQuery_Column_NumObjects = "Number of objects";
-	public static final String HeapDumpInfoQuery_NumClassesFormat = "{0}";
-	public static final String HeapDumpInfoQuery_NumClassLoadersFormat = "{0}";
-	public static final String HeapDumpInfoQuery_NumGCRootsFormat = "{0}";
-	public static final String HeapDumpInfoQuery_NumObjectsFormat = "{0}";
-	public static final String HeapDumpInfoQuery_FileLengthFormat = "{0}";
-	public static final String HeapDumpInfoQuery_Column_UsedHeapDump = "Used heap dump";
-	public static final String HeapDumpInfoQuery_MultipleSnapshotIdentifier = "Multiple snapshot identifier";
-	public static final String HeapDumpInfoQuery_PropertyName = "Property Name";
-	public static final String HeapDumpInfoQuery_ProperyValue = "Property Value";
-	public static final String HeapDumpProviderRegistry_ErrorGettingArgumentErrorMsg =
-			"Error get argument ''{0}'' of class ''{1}''";
-	public static final String HeapDumpProviderRegistry_NameAlreadyBouneErrorMsg =
-			"Heap dump adapter name ''{0}'' is already bound to {1}\\!";
-	public static final String HeapDumpProviderRegistry_UnableToAccessArgumentErrorMsg =
-			"Unable to access argument ''{0}'' of class ''{1}''. Make sure the attribute is PUBLIC.";
-	public static final String HeapDumpProviderRegistry_WrongTypeErrorMsg =
-			"Field {0} of {1} has advice {2} but is not of type {3}.";
-	public static final String HeapObjectArgumentFactory_ErrorMsg_MultipleObjects =
-			"Argument ''{0}'' expects one object not {1} objects";
-	public static final String HeapObjectArgumentFactory_ErrorMsg_SettingField =
-			"{0}: Error setting heap objects to field ''{1}''";
-	public static final String HeapObjectArgumentFactory_ErrorMsg_TypeNotSupported =
-			"Type ''{0}'' of argument ''{1}'' not supported.";
-	public static final String HeapObjectArgumentFactory_Label_Objects = "[objects]";
-	public static final String HeapObjectArgumentFactory_Objects = "Objects";
-	public static final String HeapObjectContextArgument_Label_Context = "[context]";
-	public static final String HeapObjectParamArgument_ErrorMsg_NorResult = "OQL Query does not yield a result: {0}";
-	public static final String HeapObjectParamArgument_ErrorMsg_NotAClass =
-			"Not a class: 0x{0} ({2}). If specifying ''{3}'', the selected objects all must be classes.";
-	public static final String HeapObjectParamArgument_ErrorMsg_NotAClassLoader =
-			"Not a class loader: 0x{0} ({2}). If specifying ''{3}'', the selected objects all must be class loaders.";
-	public static final String HeapObjectParamArgument_ErrorMsg_NotAListOfObjects =
-			"OQL query does not return a list of objects: {0}";
-	public static final String HeapObjectParamArgument_ErrorMsg_UnknownArgument = "Unknown argument type: {0}";
-	public static final String HeapObjectParamArgument_Msg_AddedInstances = "Added class {0} and {1} instances of it";
-	public static final String HeapObjectParamArgument_Msg_MatchingPattern =
-			"{0} classes ({1} instances) are matching the pattern";
-	public static final String HeapObjectParamArgument_Msg_ObjectFound = "Object 0x{0} not found";
-	public static final String HeapObjectParamArgument_Msg_SearchingByPattern =
-			"Looking up objects for class name pattern ''{0}''";
-	public static final String Histogram_ClassLoaderStatistics = "CLASSLOADER STATISTICS";
-	public static final String Histogram_ClassStatistics = "CLASS STATISTICS";
-	public static final String Histogram_Column_ClassLoaderPerClass = "Class Loader / Class";
-	public static final String Histogram_Column_PackagePerClass = "Package / Class";
-	public static final String Histogram_Column_SuperclassPerClass = "Superclass / Class";
-	public static final String Histogram_Description =
-			"Histogram {0} with {1} class loaders, {2} classes, {3} objects, {4} used heap bytes:";
-	public static final String Histogram_Difference = "Histogram difference between {0} and {1}";
-	public static final String Histogram_Intersection = "Histogram intersection of {0} and {1}";
-	public static final String HistogramQuery_GroupByClass = "Group by class";
-	public static final String HistogramQuery_GroupByClassLoader = "Group by class loader";
-	public static final String HistogramQuery_GroupBySuperclass = "Group by superclass";
-	public static final String HistogramQuery_GroupByPackage = "Group by package";
-	public static final String HistogramQuery_HistogramOf = "Histogram of {0}";
-	public static final String HistogramQuery_IllegalArgument = "Illegal groupBy argument: {0}";
-	public static final String HistogramRecordBeanInfo_Label = "Label";
-	public static final String HistogramRecordBeanInfo_NumberOfObjects = "Number of Objects";
-	public static final String HistogramRecordBeanInfo_RetainedHeapSize = "Retained Heap Size";
-	public static final String HistogramRecordBeanInfo_UsedHeapSize = "Used Heap Size";
-	public static final String ImmediateDominatorsQuery_Column_DominatedShallowHeap = "Dom. Shallow Heap";
-	public static final String ImmediateDominatorsQuery_ColumnDominatedObjects = "Dom. Objects";
-	public static final String ImmediateDominatorsQuery_DominatedObjects = "Dominated Objects";
-	public static final String ImmediateDominatorsQuery_Objects = "Objects";
-	public static final String InspectionAssert_NotSupported =
-			"Dump format ''{0}'' does not support inspection ''{1}''.";
-	public static final String JettyNameResolvers_JSPofWebApp = "JSPs of {0}";
-	public static final String JettyRequestResolver_Collection = "Collection";
-	public static final String JettyRequestResolver_Msg_ThreadExecutesHTTPRequest =
-			"The thread is executing an HTTP Request to <strong>{0}</strong>.";
-	public static final String JettyRequestResolver_Parameters = "Parameters";
-	public static final String JettyRequestResolver_Summary = "Summary";
-	public static final String JettyRequestResolver_URI = "URI";
-	public static final String LeakHunterQuery_AccumulatedObjects = "Accumulated Objects in Dominator Tree";
-	public static final String LeakHunterQuery_AccumulatedObjectsByClass =
-			"Accumulated Objects by Class in Dominator Tree";
-	public static final String LeakHunterQuery_AllAccumulatedObjectsByClass = "All Accumulated Objects by Class";
-	public static final String LeakHunterQuery_BiggestInstances = "Biggest instances:";
-	public static final String LeakHunterQuery_CommonPath = "Common Path To the Accumulation Point";
-	public static final String LeakHunterQuery_Description = "Description";
-	public static final String LeakHunterQuery_ErrorRetrievingRequestDetails = "Error retrieving request details";
-	public static final String LeakHunterQuery_ErrorShortestPaths =
-			"Error creating shortest paths to accumulation point.";
-	public static final String LeakHunterQuery_FindingProblemSuspects = "Finding problem suspects";
-	public static final String LeakHunterQuery_Hint = "Hint {0}";
-	public static final String LeakHunterQuery_Keywords = "Keywords";
-	public static final String LeakHunterQuery_LeakHunter = "Leak Hunter";
-	public static final String LeakHunterQuery_Msg_AccumulatedBy =
-			"The memory is accumulated in classloader/component <b>&quot;{0}&quot;</b>.";
-	public static final String LeakHunterQuery_Msg_AccumulatedByInstance =
-			"The memory is accumulated in one instance of <b>&quot;{0}&quot;</b> loaded by <b>&quot;{1}&quot;</b>.";
-	public static final String LeakHunterQuery_Msg_AccumulatedByLoadedBy =
-			"The memory is accumulated in class <b>&quot;{0}&quot;</b>, loaded by <b>&quot;{1}&quot;</b>.";
-	public static final String LeakHunterQuery_Msg_Bytes = "{0} bytes. ";
-	public static final String LeakHunterQuery_Msg_Class =
-			"The class <b>&quot;{0}&quot;</b>, loaded by <b>&quot;{1}&quot;</b>, occupies <b>{2}</b> bytes. ";
-	public static final String LeakHunterQuery_Msg_ClassLoader =
-			"The classloader/component <b>&quot;{0}&quot;</b> occupies <b>{1}</b> bytes. ";
-	public static final String LeakHunterQuery_Msg_Instance =
-			"One instance of <b>&quot;{0}&quot;</b> loaded by <b>&quot;{1}&quot;</b> occupies <b>{2}</b> bytes. ";
-	public static final String LeakHunterQuery_Msg_InstancesOccupy =
-			"{0} instances of <b>&quot;{1}&quot;</b>, loaded by <b>&quot;{2}&quot;</b> occupy <b>{3}</b> bytes. ";
-	public static final String LeakHunterQuery_Msg_ReferencedBy =
-			"The instance is referenced by classloader/component. <b>&quot;{0}&quot;</b>. ";
-	public static final String LeakHunterQuery_Msg_ReferencedByClass =
-			"The instance is referenced by class <b>&quot;{0}&quot;</b>, loaded by <b>&quot;{1}&quot;</b>. ";
-	public static final String LeakHunterQuery_Msg_ReferencedByInstance =
-			"The instance is referenced by <b>{0}</b>&nbsp;, loaded by <b>&quot;{1}&quot;</b>. ";
-	public static final String LeakHunterQuery_Msg_ReferencedFromClass =
-			"These instances are referenced from the class <b>&quot;{0}&quot;</b>, loaded by <b>&quot;{1}&quot;</b>";
-	public static final String LeakHunterQuery_Msg_ReferencedFromClassLoader =
-			"These instances are referenced from classloader/component <b>&quot;{0}&quot;</b>";
-	public static final String LeakHunterQuery_Msg_ReferencedFromInstance =
-			"These instances are referenced from one instance of <b>&quot;{0}&quot;</b>, loaded by <b>&quot;{1}&quot;</b>";
-	public static final String LeakHunterQuery_Msg_SuspectsRelated =
-			"The problem suspects {0} and {1} may be related, because the reference chains to them have a common beginning.";
-	public static final String LeakHunterQuery_Msg_Thread =
-			"The thread <b>{0}</b> keeps local variables with total size <b>{1}</b> bytes.";
-	public static final String LeakHunterQuery_NothingFound = "No leak suspect was found";
-	public static final String LeakHunterQuery_Overview = "Overview";
-	public static final String LeakHunterQuery_PreparingResults = "Preparing results";
-	public static final String LeakHunterQuery_ProblemSuspect = "Problem Suspect {0}";
-	public static final String LeakHunterQuery_ReferencePattern = "Reference Pattern";
-	public static final String LeakHunterQuery_RequestDetails = "Request Details";
-	public static final String LeakHunterQuery_SeeStackstrace = "See stacktrace";
-	public static final String LeakHunterQuery_ShortestPaths = "Shortest Paths To the Accumulation Point";
-	public static final String LeakHunterQuery_StackTraceAvailable = "The stacktrace of this Thread is available.";
-	public static final String LeakHunterQuery_SystemClassLoader = "&lt;system class loader&gt;";
-	public static final String LeakHunterQuery_ThreadDetails = "Thread Details";
-	public static final String LeakHunterQuery_ThreadStack = "Thread Stack";
-	public static final String LeakHunterQuery_TicketForSuspect = "{0} for &quot;{1}&quot;";
-	public static final String LeakingPlugins_NoLeakingPlugInsDetected = "No leaking plug-ins detected.";
-	public static final String MapCollisionRatioQuery_CalculatingCollisionRatios =
-			"Calculating Map Collision Ratios...";
-	public static final String MapCollisionRatioQuery_Column_CollisionRatio = "Collision Ratio";
-	public static final String MapCollisionRatioQuery_Column_NumObjects = "\\# Objects";
-	public static final String MapCollisionRatioQuery_ErrorMsg_ClassNotFound = "Class ''{0}'' not found in heap dump.";
-	public static final String MapCollisionRatioQuery_ErrorMsg_MissingArgument =
-			"If the collection argument is set to a custom (e.g. non-JDK) collection class, the size_attribute and array_attribute argument must be set. Otherwise, the query cannot calculate the collision ratio.";
-	public static final String MapCollisionRatioQuery_IgnoringCollection = "Ignoring collection {0}";
-	public static final String MATPlugin_InternalError = "Internal Error";
-	public static final String MultiplePath2GCRootsQuery_Column_RefObjects = "Ref. Objects";
-	public static final String MultiplePath2GCRootsQuery_Column_RefShallowHeap = "Ref. Shallow Heap";
-	public static final String MultiplePath2GCRootsQuery_Group_FromGCRoots = "Merge Paths from GC Roots";
-	public static final String MultiplePath2GCRootsQuery_Group_FromGCRootsOnClass =
-			"Merge Paths from GC Roots on Class";
-	public static final String MultiplePath2GCRootsQuery_Group_ToGCRoots = "Merge to GC Roots on Class";
-	public static final String ObjectTreeFactory_Column_Percentage = "Percentage";
-	public static final String ObjectTreeFactory_ErrorMsg_addChild =
-			"\\#addChild must be called after a root object has been added.";
-	public static final String ObjectTreeFactory_ErrorMsg_addChildren =
-			"\\#addChildren must be called after a root object has been added.";
-	public static final String OQLQuery_ExecutedQuery = "Executed Query:";
-	public static final String OQLQuery_NoResult = "Your Query did not yield any result.";
-	public static final String OQLQuery_ProblemReported = "Problem reported: ";
-	public static final String ParseSnapshotApp_ErrorMsg_FileNotFound = "File not found: {0}";
-	public static final String ParseSnapshotApp_ErrorMsg_ReportNotFound = "Report not found: {0}";
-	public static final String ParseSnapshotApp_Usage = "Usage: [options] <snapshot> [(<report id>)*]";
-	public static final String ParseSnapshotApp_MultipleSnapshotsDetail = "Snapshot identifier: {0} Information: {1}";
-	public static final String ParseSnapshotApp_MultipleSnapshotsDetected =
-			"Multiple heap dump snapshots have been detected in the file being analyzed. Use the 'runtime_identifier' option to select which snapshot to process.";
-	public static final String PhantomReferenceStatQuery_Label_Referenced = "Histogram of Phantomly Referenced";
-	public static final String PhantomReferenceStatQuery_Label_Retained = "Only Phantomly Retained";
-	public static final String PhantomReferenceStatQuery_Label_StronglyRetainedReferents =
-			"Referents strongly retained by phantom references";
-	public static final String PieFactory_ErrorMsg_NoSnapshotAvailable =
-			"No snapshot available. Use new PieFactory(snapshot) instead.";
-	public static final String PieFactory_Label_Remainder = "Remainder";
-	public static final String PieFactory_Label_RetainedSize = "Retained Size:";
-	public static final String PieFactory_Label_ShallowSize = "Shallow Size:";
-	public static final String PrimitiveArraysWithAConstantValueQuery_SearchingArrayValues =
-			"Searching array values...";
-	public static final String ReferenceQuery_ErrorMsg_NoMatchingClassesFound = "No classes matching pattern {0}";
-	public static final String ReferenceQuery_Msg_ComputingReferentSet =
-			"Computing Referent Set (objects referenced by the Reference objects)...";
-	public static final String ReferenceQuery_Msg_ComputingRetainedSet =
-			"Computing retained set of reference set (assuming only the referents are no longer referenced by the Reference objects)...";
-	public static final String ReferenceQuery_Msg_ComputingStronglyRetainedSet =
-			"Computing strongly retained set of reference set...";
-	public static final String ReferenceQuery_HistogramOfReferentObjects = "Histogram of referent objects";
-	public static final String ReferenceQuery_OnlyRetainedByReferents = "Only retained via referents";
-	public static final String ReferenceQuery_StronglyRetainedByReferences =
-			"Referents strongly retained by references";
-	public static final String RetainedSetQuery_RetainedBy = "Retained by ''{0}''";
-	public static final String RetainedSizeDerivedData_Error_IllegalContext =
-			"Context provider ''{0}'' returned an illegal context object set for ''{1}'' with content ''{2}''. Return null instead.";
-	public static final String RetainedSizeDerivedData_Error_IllegalObjectId =
-			"Context provider ''{0}'' returned an context object with an illegeal object id for ''{1}''. Return null instead.";
-	public static final String RetainedSizeDerivedData_ErrorMsg_IllegalContextObject =
-			"Context provider ''{0}'' returned an illegal context object set for ''{1}}'' with content ''{{2}}'''. Return null instead.";
-	public static final String RetainedSizeDerivedData_ErrorMsg_IllegalObjectId =
-			"Context provider ''{0}'' returned an context object with an illegeal object id for ''{1}}''. Return null instead.";
-	public static final String RetainedSizeDerivedData_Label_Approximate =
-			"Calculate Minimum Retained Size (quick approx.)";
-	public static final String RetainedSizeDerivedData_Label_Precise = "Calculate Precise Retained Size";
-	public static final String Service_ErrorMsg_MismatchKeysServices =
-			"Number of keys does not correspond to the number of values for the service: 0x{0}";
-	public static final String SnapshotFactory_Error = "Error during creation of snapshot factory.";
-	public static final String SnapshotFactory_ErrorMsg_FactoryCreation = "Error during creation of snapshot factory.";
-	public static final String SnapshotQuery_ErrorMsg_NoResult = "Query {0} did not produce a result.";
-	public static final String SnapshotQuery_ErrorMsg_QueryNotAvailable = "Query not available: {0}";
-	public static final String SnapshotQuery_ErrorMsg_UnkownArgument = "Unknown argument: {0} for query {1}";
-	public static final String SnapshotQuery_ErrorMsg_UnsuitableSubjects =
-			"Query {0} has unsuitable Subjects {1} for the snapshot";
-	public static final String SnapshotQuery_ErrorMsg_UnsupportedTyp =
-			"Unsupported type for argument {0}: {1}\n(Use: IObject, Integer, int[], ArrayInt, IHeapObjectArgument)";
-	public static final String SoftReferenceStatQuery_Label_Referenced = "Histogram of Softly Referenced";
-	public static final String SoftReferenceStatQuery_Label_Retained = "Only Softly Retained";
-	public static final String SoftReferenceStatQuery_Label_StronglyRetainedReferents =
-			"Referents strongly retained by soft reference";
-	public static final String SubjectRegistry_Error_MissingAnnotation =
-			"Missing or empty @Subject(s) annotation: ''{0}''";
-	public static final String SubjectRegistry_ErrorMsg_MissingSubjectAnnotation =
-			"Missing or empty @Subject(s) annotation: ''{0}''";
-	public static final String TaskInfo_Column_Id = "Id";
-	public static final String TaskInfo_Column_Name = "Name";
-	public static final String TaskInfo_Column_Number = "\\#";
-	public static final String TaskInfo_Column_State = "State";
-	public static final String TaskInfo_State_Idle = "idle";
-	public static final String TaskInfo_State_NotApplicable = "N/A";
-	public static final String TaskInfo_State_Processing = "processing";
-	public static final String TaskInfo_State_Waiting = "waiting for a task";
-	public static final String TaskInfo_State_WaitingSyncIO = "waiting for sync. I/O";
-	public static final String ThreadInfoImpl_Column_ContextClassLoader = "Context Class Loader";
-	public static final String ThreadInfoImpl_Column_IsDaemon = "Is Daemon";
-	public static final String ThreadInfoImpl_Column_Instance = "Instance";
-	public static final String ThreadInfoImpl_Column_Name = "Name";
-	public static final String ThreadInfoQuery_Requests = "Requests";
-	public static final String ThreadInfoQuery_ThreadDetails = "Thread Details";
-	public static final String ThreadInfoQuery_ThreadLabel = "Thread {0}";
-	public static final String ThreadInfoQuery_ThreadProperties = "Thread Properties";
-	public static final String ThreadInfoQuery_ThreadStack = "Thread Stack";
-	public static final String ThreadOverviewQuery_SearchingThreads = "Searching Threads...";
-	public static final String ThreadOverviewQuery_ThreadDetails = "Thread Details";
-	public static final String ThreadStackQuery_Column_ObjectStackFrame = "Object / Stack Frame";
-	public static final String ThreadStackQuery_Label_Local = "<local>";
-	public static final String ThreadStackQuery_Label_Local_Blocked_On = "<local, blocked on>";
-	public static final String TopComponentsReportQuery_TopComponentReports = "Top Component Reports";
-	public static final String TopConsumers2Query_BiggestClasses = "Biggest Top-Level Dominator Classes";
-	public static final String TopConsumers2Query_BiggestClassesOverview =
-			"Biggest Top-Level Dominator Classes (Overview)";
-	public static final String TopConsumers2Query_BiggestClassLoaders = "Biggest Top-Level Dominator Class Loaders";
-	public static final String TopConsumers2Query_BiggestClassLoadersOverview =
-			"Biggest Top-Level Dominator Class Loaders (Overview)";
-	public static final String TopConsumers2Query_BiggestObjects = "Biggest Objects";
-	public static final String TopConsumers2Query_BiggestObjectsOverview = "Biggest Objects (Overview)";
-	public static final String TopConsumers2Query_BiggestPackages = "Biggest Top-Level Dominator Packages";
-	public static final String TopConsumers2Query_Column_Package = "Package";
-	public static final String TopConsumers2Query_Column_RetainedHeapPercent = "Retained Heap, %";
-	public static final String TopConsumers2Query_Column_TopDominators = "\\# Top Dominators";
-	public static final String TopConsumers2Query_CreatingHistogram = "Creating histogram";
-	public static final String TopConsumers2Query_GroupingByPackage = "Grouping by package";
-	public static final String TopConsumers2Query_Label_all = "<all>";
-	public static final String TopConsumers2Query_MsgNoObjects = "There are no objects matching the specified criteria";
-	public static final String TopConsumers2Query_NoClassesBiggerThan = "No classes bigger than {0}%.";
-	public static final String TopConsumers2Query_NoClassLoaderBiggerThan = "No class loader bigger than {0}%.";
-	public static final String TopConsumers2Query_NoObjectsBiggerThan = "No objects bigger than {0}%.";
-	public static final String TopConsumers2Query_TopConsumers = "Top Consumers";
-	public static final String TopConsumersQuery_ColumnLabels =
-			"package,  retained%,  retained bytes, \\#top-dominators";
-	public static final String TQuantize_Label_GroupByClassLoader = "Group by class loader";
-	public static final String TQuantize_Label_GroupByPackage = "Group by package";
-	public static final String TQuantize_Label_GroupedByClassLoader = "Grouped ''{0}'' by class loader";
-	public static final String TQuantize_Label_GroupedByPackage = "Grouped ''{0}'' by package";
-	public static final String TQuantize_None = "<none>";
-	public static final String VmInfoDescriptor_ErrorGettingArgumentErrorMsg =
-			"Error get argument ''{0}'' of class ''{1}''";
-	public static final String VmInfoDescriptor_UnableToAccessArgumentErrorMsg =
-			"Unable to access argument ''{0}'' of class ''{1}''. Make sure the attribute is PUBLIC.";
-	public static final String VmInfoDescriptor_WrongTypeErrorMsg =
-			"Field {0} of {1} has advice {2} but is not of type {3}.";
-	public static final String WasteInCharArraysQuery_CheckingCharArrays = "Checking char[]...";
-	public static final String WeakReferenceStatQuery_Label_Referenced = "Histogram of Weakly Referenced";
-	public static final String WeakReferenceStatQuery_Label_Retained = "Only Weakly Retained";
-	public static final String WeakReferenceStatQuery_Label_StronglyRetainedReferents =
-			"Referents strongly retained by weak references";
+import org.eclipse.osgi.util.NLS;
+
+public class Messages extends NLS {
+	private static final String BUNDLE_NAME = "org.eclipse.mat.internal.messages"; //$NON-NLS-1$
+
+	public static String AbstractExtractedCollection_ToString;
+	public static String AbstractExtractedCollection_UnhandledCollection;
+
+	public static String ArgumentParser_ErrorMsg_ParsingError;
+	public static String ArgumentParser_ErrorMsg_Unparsed;
+
+	public static String ArrayFillRatioQuery_ColumnFillRatio;
+	public static String ArrayFillRatioQuery_ColumnNumObjects;
+	public static String ArrayFillRatioQuery_ExtractingFillRatios;
+
+	public static String ArraysBySizeQuery_ColumnLength;
+	public static String ArraysBySizeQuery_ColumnNumObjects;
+	public static String ArraysBySizeQuery_ExtractingArraySizes;
+	public static String ArraysBySizeQuery_SingleInstanceSize;
+
+	public static String BigDropsQuery_AccumulationPoint;
+	public static String BigDropsQuery_Column_AccPtSize;
+	public static String BigDropsQuery_Column_AccumulationPoint;
+	public static String BigDropsQuery_Column_Dominator;
+	public static String BigDropsQuery_Column_DomRetainedSize;
+	public static String BigDropsQuery_Column_NumChildren;
+	public static String BigDropsQuery_Dominator;
+	public static String BigDropsQuery_Root;
+
+	public static String BundleReaderFactory_ErrorMsg_EquinoxNotFound;
+	public static String BundleRegistryQuery_Bundles;
+	public static String BundleRegistryQuery_BundleState;
+	public static String BundleRegistryQuery_BundlesUsing;
+	public static String BundleRegistryQuery_ContributedBy;
+	public static String BundleRegistryQuery_Dependencies;
+	public static String BundleRegistryQuery_Dependents;
+	public static String BundleRegistryQuery_ErrorMsg_FailedReadingModel;
+	public static String BundleRegistryQuery_ExtensionPoints;
+	public static String BundleRegistryQuery_Extensions;
+	public static String BundleRegistryQuery_Fragments;
+	public static String BundleRegistryQuery_HostedBy;
+	public static String BundleRegistryQuery_Properties;
+	public static String BundleRegistryQuery_RegisteredBy;
+	public static String BundleRegistryQuery_RegisteredServices;
+	public static String BundleRegistryQuery_Services;
+	public static String BundleRegistryQuery_UserServices;
+
+	public static String ClassLoaderExplorerQuery_Class;
+	public static String ClassLoaderExplorerQuery_ClassLoader;
+	public static String ClassLoaderExplorerQuery_Column_DefinedClasses;
+	public static String ClassLoaderExplorerQuery_Column_NoInstances;
+	public static String ClassLoaderExplorerQuery_DefinedClasses;
+	public static String ClassLoaderExplorerQuery_Instances;
+
+	public static String ClassSpecificNameResolverRegistry_Error_CreateResolver;
+	public static String ClassSpecificNameResolverRegistry_Error_MissingObject;
+	public static String ClassSpecificNameResolverRegistry_Error_MissingSubjects;
+	public static String ClassSpecificNameResolverRegistry_Error_Resolving;
+	public static String ClassSpecificNameResolverRegistry_ErrorMsg_DuringResolving;
+	public static String ClassSpecificNameResolverRegistry_ErrorMsg_MissingSubject;
+	public static String ClassSpecificNameResolverRegistry_ErrorMsg_WhileCreatingResolver;
+
+	public static String CollectionFillRatioQuery_ClassNotFound;
+	public static String CollectionFillRatioQuery_Column_FillRatio;
+	public static String CollectionFillRatioQuery_ColumnNumObjects;
+	public static String CollectionFillRatioQuery_ErrorMsg_AllArgumentsMustBeSet;
+	public static String CollectionFillRatioQuery_ExtractingFillRatios;
+	public static String CollectionFillRatioQuery_IgnoringCollection;
+	public static String CollectionFillRatioQuery_NeedSizeAndArrayOrNone;
+
+	public static String CollectionUtil_BadBackingArray;
+
+	public static String CollectionsBySizeQuery_ClassNotFound;
+	public static String CollectionsBySizeQuery_CollectingSizes;
+	public static String CollectionsBySizeQuery_Column_Length;
+	public static String CollectionsBySizeQuery_Column_NumObjects;
+	public static String CollectionsBySizeQuery_ErrorMsg_ArgumentMissing;
+	public static String CollectionsBySizeQuery_IgnoringCollection;
+	public static String CollectionsBySizeQuery_NeedSizeAndArrayOrNone;
+
+	public static String Column_ClassName;
+	public static String Column_ClassLoaderName;
+	public static String Column_Heap;
+	public static String Column_Objects;
+	public static String Column_Percentage;
+	public static String Column_RetainedHeap;
+	public static String Column_ShallowHeap;
+	public static String Column_WastedHeap;
+
+	public static String CompareTablesQuery_APPROX;
+	public static String CompareTablesQuery_Comparing;
+	public static String CompareTablesQuery_IncompleteSorting;
+	public static String CompareTablesQuery_Initial;
+	public static String CompareTablesQuery_InitialComparisonForTable;
+	public static String CompareTablesQuery_ResolvingDuplicateKey;
+	public static String CompareTablesQuery_BuildingResult;
+	public static String CompareTablesQuery_ColumnAbsolute;
+	public static String CompareTablesQuery_ColumnDifference;
+	public static String CompareTablesQuery_ColumnPercentDifference;
+	public static String CompareTablesQuery_DifferenceFirst;
+	public static String CompareTablesQuery_DifferenceLast;
+	public static String CompareTablesQuery_DifferenceMiddle;
+	public static String CompareTablesQuery_DifferenceOf2;
+	public static String CompareTablesQuery_GE;
+	public static String CompareTablesQuery_IntersectionFirst;
+	public static String CompareTablesQuery_IntersectionLast;
+	public static String CompareTablesQuery_IntersectionMiddle;
+	public static String CompareTablesQuery_IntersectionOf2;
+	public static String CompareTablesQuery_LE;
+	public static String CompareTablesQuery_MissingKeyColumn;
+	public static String CompareTablesQuery_Table;
+	public static String CompareTablesQuery_SymmetricDifferenceFirst;
+	public static String CompareTablesQuery_SymmetricDifferenceLast;
+	public static String CompareTablesQuery_SymmetricDifferenceMiddle;
+	public static String CompareTablesQuery_SymmetricDifferenceOf2;
+	public static String CompareTablesQuery_UnionFirst;
+	public static String CompareTablesQuery_UnionLast;
+	public static String CompareTablesQuery_UnionMiddle;
+	public static String CompareTablesQuery_UnionOf2;
+
+	public static String ComponentReportQuery_ArrayFillRatios;
+	public static String ComponentReportQuery_Classes;
+	public static String ComponentReportQuery_ClassLoader;
+	public static String ComponentReportQuery_CollectionFillRatios;
+	public static String ComponentReportQuery_Comment;
+	public static String ComponentReportQuery_ComponentReport;
+	public static String ComponentReportQuery_Details;
+	public static String ComponentReportQuery_DetectedEmptyCollections;
+	public static String ComponentReportQuery_DetectedTheFollowingArraysWithLowFillRatios;
+	public static String ComponentReportQuery_DetectedTheFollowingPrimitiveArray;
+	public static String ComponentReportQuery_DetectedZeroLengthArray;
+	public static String ComponentReportQuery_Distribution;
+	public static String ComponentReportQuery_DuplicateStrings;
+	public static String ComponentReportQuery_EmptyCollections;
+
+	public static String ComponentReportQuery_ExampleLeakDetails;
+	public static String ComponentReportQuery_FinalizerStatistics;
+	public static String ComponentReportQuery_Histogram;
+	public static String ComponentReportQuery_HistogramFinalizeMethod;
+	public static String ComponentReportQuery_HistogramOfSoftReferences;
+	public static String ComponentReportQuery_HistogramOfWeakReferences;
+	public static String ComponentReportQuery_Label_Bytes;
+	public static String ComponentReportQuery_MapCollisionRatios;
+	public static String ComponentReportQuery_Miscellaneous;
+	public static String ComponentReportQuery_Msg_DetectedCollectionFillRatios;
+	public static String ComponentReportQuery_Msg_DetectedCollisionRatios;
+	public static String ComponentReportQuery_Msg_FoundOccurrences;
+	public static String ComponentReportQuery_Msg_InstancesRetainBytes;
+	public static String ComponentReportQuery_Msg_NoAliveSoftReferences;
+	public static String ComponentReportQuery_Msg_NoAliveWeakReferences;
+	public static String ComponentReportQuery_Msg_NoCollisionRatiosFound;
+	public static String ComponentReportQuery_Msg_NoExcessiveEmptyCollectionsFound;
+	public static String ComponentReportQuery_Msg_NoFinalizerFound;
+	public static String ComponentReportQuery_Msg_NoFinalizerObjects;
+	public static String ComponentReportQuery_Msg_NoLowFillRatiosFound;
+	public static String ComponentReportQuery_Msg_NoSoftReferencesFound;
+	public static String ComponentReportQuery_Msg_NoWeakReferencesFound;
+	public static String ComponentReportQuery_Msg_SoftReferencesFound;
+	public static String ComponentReportQuery_Msg_SoftReferencesRetained;
+	public static String ComponentReportQuery_Msg_SoftReferencesStronglyRetained;
+	public static String ComponentReportQuery_Msg_TotalFinalizerMethods;
+	public static String ComponentReportQuery_Msg_WeakReferencesFound;
+	public static String ComponentReportQuery_Msg_WeakReferencesRetained;
+	public static String ComponentReportQuery_Msg_WeakReferencesStronglyRetained;
+	public static String ComponentReportQuery_NoArraysWithLowFillRatios;
+	public static String ComponentReportQuery_NoExcessiveDuplicateStrings;
+	public static String ComponentReportQuery_NoExcessivePrimitiveArrays;
+	public static String ComponentReportQuery_NoExcessiveUsageZeroLengthArray;
+	public static String ComponentReportQuery_Objects;
+	public static String ComponentReportQuery_Overview;
+	public static String ComponentReportQuery_PathsToReferents;
+	public static String ComponentReportQuery_PossibleMemoryLeak;
+	public static String ComponentReportQuery_PossibleMemoryWaste;
+	public static String ComponentReportQuery_PrimitiveArraysWithAConstantValue;
+	public static String ComponentReportQuery_ReferentResult;
+
+	public static String ComponentReportQuery_RetainedSet;
+	public static String ComponentReportQuery_Size;
+	public static String ComponentReportQuery_SoftReferenceStatistics;
+	public static String ComponentReportQuery_TopConsumers;
+	public static String ComponentReportQuery_TopElementsInclude;
+	public static String ComponentReportQuery_WeakReferenceStatistics;
+	public static String ComponentReportQuery_ZeroLengthArrays;
+	public static String CustomizedRetainedSetQuery_RetainedBy;
+
+	public static String DeltaHistogram_Progress;
+
+	public static String DominatorQuery_Group_ByClass;
+	public static String DominatorQuery_Group_ByClassLoader;
+	public static String DominatorQuery_Group_ByPackage;
+	public static String DominatorQuery_Group_None;
+	public static String DominatorQuery_LabelAll;
+	public static String DominatorQuery_Msg_Grouping;
+
+	public static String DuplicatedClassesQuery_Checking;
+	public static String DuplicatedClassesQuery_ClassLoaderNotFound;
+	public static String DuplicatedClassesQuery_Column_Count;
+	public static String DuplicatedClassesQuery_Column_DefinedClasses;
+	public static String DuplicatedClassesQuery_Column_NoInstances;
+
+	public static String EclipseNameResolver_EquinoxStartupClassLoader;
+	public static String EclipseNameResolver_Point;
+	public static String EclipseNameResolver_Rectangle;
+	public static String EclipseNameResolver_RGB;
+
+	public static String EquinoxBundleReader_CannotFindContributorID;
+
+	public static String EquinoxBundleReader_ErrorMsg_BundleNotFound;
+
+	public static String EquinoxBundleReader_ErrorMsg_DuplicateConfigurationElement;
+	public static String EquinoxBundleReader_ErrorMsg_DuplicateExtension;
+	public static String EquinoxBundleReader_ErrorMsg_DuplicateExtensionPoint;
+	public static String EquinoxBundleReader_ErrorMsg_ExpectedArrayType;
+	public static String EquinoxBundleReader_ErrorMsg_ExpectedFieldExtraInformation;
+	public static String EquinoxBundleReader_ErrorMsg_ExpectedFieldObjectId;
+	public static String EquinoxBundleReader_ErrorMsg_ExpectedFieldParent;
+	public static String EquinoxBundleReader_ErrorMsg_ExpectedStringArray;
+	public static String EquinoxBundleReader_ErrorMsg_ReadingProperty;
+	public static String EquinoxBundleReader_ErrorMsg_ServiceName;
+	public static String EquinoxBundleReader_ErrorMsg_ServiceProperty;
+	public static String EquinoxBundleReader_ErrorMsg_SoftReferencesNotHandled;
+	public static String EquinoxBundleReader_ErrorMsg_UnknownElementType;
+	public static String EquinoxBundleReader_ExpectedFieldContributorId;
+	public static String EquinoxBundleReader_ExpectedFieldPropertiesAndValues;
+	public static String EquinoxBundleReader_NotApplicable;
+
+	public static String EquinoxBundleReader_ProcessListenerBundles;
+	public static String EquinoxBundleReader_ReadingBundles;
+	public static String EquinoxBundleReader_ReadingExtensions;
+	public static String EquinoxBundleReader_ReadingServices;
+	public static String EquinoxBundleReader_ReadingDependencies;
+	public static String EquinoxBundleReader_State_Active;
+	public static String EquinoxBundleReader_State_Installed;
+	public static String EquinoxBundleReader_State_Resolved;
+	public static String EquinoxBundleReader_State_Starting;
+	public static String EquinoxBundleReader_State_LazyStarting;
+	public static String EquinoxBundleReader_State_Stopping;
+	public static String EquinoxBundleReader_State_Uninstalled;
+
+	public static String ExtractListValuesQuery_CollectingElements;
+	public static String ExtractListValuesQuery_NotAWellKnownList;
+
+	public static String FinalizerQuery_Finalizers;
+	public static String FinalizerQuery_FinalizerThread;
+	public static String FinalizerQuery_FinalizerThreadLocals;
+	public static String FinalizerQuery_InProcessing;
+	public static String FinalizerQuery_ReadyForFinalizer;
+
+	public static String FinalizerQueueQuery_ErrorMsg_MultipleFinalizerClasses;
+	public static String FinalizerQueueQuery_Msg_ExtractingObjects;
+	public static String FinalizerQueueQuery_ReadyForFinalizerThread;
+	public static String FinalizerQueueQuery_ReadyForFinalizerThread_Histogram;
+	public static String FinalizerQueueQuery_ReadyForFinalizerThread_List;
+
+	public static String FinalizerReferenceStatQuery_Label_Referenced;
+	public static String FinalizerReferenceStatQuery_Label_Retained;
+	public static String FinalizerReferenceStatQuery_Label_StronglyRetainedReferents;
+
+	public static String FinalizerThreadQuery_ErrorMsg_FinalizerThreadInstanceNotFound;
+	public static String FinalizerThreadQuery_ErrorMsg_FinalizerThreadNotFound;
+	public static String FinalizerThreadQuery_ErrorMsg_MultipleFinalizerThreadClasses;
+	public static String FinalizerThreadQuery_ErrorMsg_MultipleThreadClassesFound;
+	public static String FinalizerThreadQuery_ErrorMsg_MultipleThreads;
+	public static String FinalizerThreadQuery_ErrorMsg_ThreadClassNotFound;
+	public static String FinalizerThreadQuery_ErrorMsg_ThreadInstanceNotFound;
+	public static String FinalizerThreadQuery_FinalizerThread;
+	public static String FinalizerThreadQuery_SecondaryFinalizer;
+
+	public static String FindLeaksQuery_AccumulationPoint;
+	public static String FindLeaksQuery_Column_AccPointPercent;
+	public static String FindLeaksQuery_Column_AccPointRetainedHeap;
+	public static String FindLeaksQuery_Column_AccumulationPoint;
+	public static String FindLeaksQuery_Column_NumObjects;
+	public static String FindLeaksQuery_Column_SuspectPercent;
+	public static String FindLeaksQuery_Column_SuspectRetainedHeap;
+	public static String FindLeaksQuery_ColumnLeakSuspect;
+	public static String FindLeaksQuery_LeakSuspect;
+	public static String FindLeaksQuery_NotFound;
+	public static String FindLeaksQuery_PathNotFound;
+	public static String FindLeaksQuery_SearchingGroupsOfObjects;
+	public static String FindLeaksQuery_SearchingSingleObjects;
+	public static String FindLeaksQuery_TooManySuspects;
+
+	public static String FindLeaksQuery2_Column_AccPointRetainedHeap;
+	public static String FindLeaksQuery2_Column_SuspectRetainedHeap;
+	public static String FindLeaksQuery2_ComparedDominatorTrees;
+	public static String FindLeaksQuery2_Leaks;
+
+	public static String FindStringsQuery_SearchingStrings;
+
+	public static String GCRootInfo_BusyMonitor;
+	public static String GCRootInfo_Finalizable;
+	public static String GCRootInfo_JavaLocal;
+
+	public static String GCRootInfo_JavaStackFrame;
+	public static String GCRootInfo_JNIGlobal;
+	public static String GCRootInfo_JNILocal;
+	public static String GCRootInfo_NativeStack;
+	public static String GCRootInfo_SystemClass;
+	public static String GCRootInfo_Thread;
+	public static String GCRootInfo_ThreadBlock;
+	public static String GCRootInfo_Unfinalized;
+	public static String GCRootInfo_Unkown;
+	public static String GCRootInfo_Unreachable;
+
+	public static String GroupByValueQuery_Column_AvgRetainedSize;
+	public static String GroupByValueQuery_Column_Objects;
+	public static String GroupByValueQuery_Column_StringValue;
+	public static String GroupByValueQuery_GroupingObjects;
+
+	public static String HashEntriesQuery_Column_Collection;
+	public static String HashEntriesQuery_Column_Key;
+	public static String HashEntriesQuery_Column_Value;
+	public static String HashEntriesQuery_ErrorMsg_ClassNotFound;
+	public static String HashEntriesQuery_ErrorMsg_MissingArguments;
+	public static String HashEntriesQuery_Msg_Extracting;
+
+	public static String HashSetValuesQuery_ErrorMsg_MissingArgument;
+	public static String HashSetValuesQuery_ErrorMsg_NotAHashSet;
+
+	public static String HeapDumpInfoQuery_32bit;
+	public static String HeapDumpInfoQuery_64bit;
+	public static String HeapDumpInfoQuery_Column_Date;
+	public static String HeapDumpInfoQuery_Column_FileLength;
+	public static String HeapDumpInfoQuery_Column_FilePath;
+	public static String HeapDumpInfoQuery_Column_HeapFormat;
+	public static String HeapDumpInfoQuery_Column_IdentifierSize;
+	public static String HeapDumpInfoQuery_Column_UseCompressedOops;
+	public static String HeapDumpInfoQuery_Column_JVMVersion;
+	public static String HeapDumpInfoQuery_Column_NumClasses;
+	public static String HeapDumpInfoQuery_Column_NumClassLoaders;
+	public static String HeapDumpInfoQuery_Column_NumGCRoots;
+	public static String HeapDumpInfoQuery_Column_NumObjects;
+	public static String HeapDumpInfoQuery_Column_Time;
+	public static String HeapDumpInfoQuery_Column_UsedHeapDump;
+	public static String HeapDumpInfoQuery_DateFormat;
+	public static String HeapDumpInfoQuery_DiscardOffset;
+	public static String HeapDumpInfoQuery_DiscardOffset_format;
+	public static String HeapDumpInfoQuery_DiscardPattern;
+	public static String HeapDumpInfoQuery_DiscardRatio;
+	public static String HeapDumpInfoQuery_DiscardRatio_format;
+	public static String HeapDumpInfoQuery_DiscardSeed;
+	public static String HeapDumpInfoQuery_DiscardSeed_format;
+	public static String HeapDumpInfoQuery_FileLengthFormat;
+	public static String HeapDumpInfoQuery_MultipleSnapshotIdentifier;
+	public static String HeapDumpInfoQuery_NumClassesFormat;
+	public static String HeapDumpInfoQuery_NumClassLoadersFormat;
+	public static String HeapDumpInfoQuery_NumGCRootsFormat;
+	public static String HeapDumpInfoQuery_NumObjectsFormat;
+	public static String HeapDumpInfoQuery_PropertyName;
+	public static String HeapDumpInfoQuery_ProperyValue;
+	public static String HeapDumpInfoQuery_TimeFormat;
+
+	public static String HeapDumpProviderRegistry_ErrorGettingArgumentErrorMsg;
+
+	public static String HeapDumpProviderRegistry_NameAlreadyBouneErrorMsg;
+
+	public static String HeapDumpProviderRegistry_UnableToAccessArgumentErrorMsg;
+
+	public static String HeapDumpProviderRegistry_WrongTypeErrorMsg;
+
+	public static String HeapObjectArgumentFactory_ErrorMsg_MultipleObjects;
+	public static String HeapObjectArgumentFactory_ErrorMsg_SettingField;
+	public static String HeapObjectArgumentFactory_ErrorMsg_TypeNotSupported;
+	public static String HeapObjectArgumentFactory_Label_Objects;
+	public static String HeapObjectArgumentFactory_Objects;
+
+	public static String HeapObjectContextArgument_Label_Context;
+
+	public static String HeapObjectParamArgument_ErrorMsg_NorResult;
+	public static String HeapObjectParamArgument_ErrorMsg_NotAClass;
+	public static String HeapObjectParamArgument_ErrorMsg_NotAClassLoader;
+	public static String HeapObjectParamArgument_ErrorMsg_NotAListOfObjects;
+	public static String HeapObjectParamArgument_ErrorMsg_UnknownArgument;
+	public static String HeapObjectParamArgument_Msg_AddedInstances;
+	public static String HeapObjectParamArgument_Msg_MatchingPattern;
+	public static String HeapObjectParamArgument_Msg_ObjectFound;
+	public static String HeapObjectParamArgument_Msg_SearchingByPattern;
+
+	public static String Histogram_ClassLoaderStatistics;
+	public static String Histogram_ClassStatistics;
+	public static String Histogram_Column_ClassLoaderPerClass;
+	public static String Histogram_Column_PackagePerClass;
+	public static String Histogram_Column_SuperclassPerClass;
+	public static String Histogram_Description;
+	public static String Histogram_Difference;
+	public static String Histogram_Intersection;
+
+	public static String HistogramQuery_GroupByClass;
+	public static String HistogramQuery_GroupByClassLoader;
+	public static String HistogramQuery_GroupByPackage;
+	public static String HistogramQuery_GroupBySuperclass;
+	public static String HistogramQuery_HistogramOf;
+	public static String HistogramQuery_IllegalArgument;
+
+	public static String HistogramRecordBeanInfo_Label;
+	public static String HistogramRecordBeanInfo_NumberOfObjects;
+	public static String HistogramRecordBeanInfo_RetainedHeapSize;
+	public static String HistogramRecordBeanInfo_UsedHeapSize;
+
+	public static String ImmediateDominatorsQuery_Column_DominatedShallowHeap;
+	public static String ImmediateDominatorsQuery_ColumnDominatedObjects;
+	public static String ImmediateDominatorsQuery_DominatedObjects;
+	public static String ImmediateDominatorsQuery_Objects;
+
+	public static String InspectionAssert_NotSupported;
+
+	public static String JettyNameResolvers_JSPofWebApp;
+
+	public static String JettyRequestResolver_Collection;
+	public static String JettyRequestResolver_Msg_ThreadExecutesHTTPRequest;
+	public static String JettyRequestResolver_Parameters;
+	public static String JettyRequestResolver_Summary;
+	public static String JettyRequestResolver_URI;
+
+	public static String LeakHunterQuery_AccumulatedObjects;
+	public static String LeakHunterQuery_AccumulatedObjectsByClass;
+	public static String LeakHunterQuery_AllAccumulatedObjectsByClass;
+	public static String LeakHunterQuery_BiggestInstances;
+	public static String LeakHunterQuery_BiggestInstancesHeading;
+	public static String LeakHunterQuery_BiggestInstancesOverview;
+	public static String LeakHunterQuery_CommonPath;
+	public static String LeakHunterQuery_Description;
+	public static String LeakHunterQuery_ErrorRetrievingRequestDetails;
+	public static String LeakHunterQuery_ErrorShortestPaths;
+	public static String LeakHunterQuery_FindingProblemSuspects;
+	public static String LeakHunterQuery_Hint;
+	public static String LeakHunterQuery_Keywords;
+	public static String LeakHunterQuery_LeakHunter;
+	public static String LeakHunterQuery_Msg_AccumulatedBy;
+	public static String LeakHunterQuery_Msg_AccumulatedByInstance;
+	public static String LeakHunterQuery_Msg_AccumulatedByLoadedBy;
+	public static String LeakHunterQuery_Msg_Bytes;
+	public static String LeakHunterQuery_Msg_Class;
+	public static String LeakHunterQuery_Msg_ClassLoader;
+	public static String LeakHunterQuery_Msg_Instance;
+	public static String LeakHunterQuery_Msg_InstancesOccupy;
+	public static String LeakHunterQuery_Msg_ReferencedBy;
+	public static String LeakHunterQuery_Msg_ReferencedByClass;
+	public static String LeakHunterQuery_Msg_ReferencedByInstance;
+	public static String LeakHunterQuery_Msg_ReferencedFromClass;
+	public static String LeakHunterQuery_Msg_ReferencedFromClassLoader;
+	public static String LeakHunterQuery_Msg_ReferencedFromInstance;
+	public static String LeakHunterQuery_Msg_SuspectsRelated;
+	public static String LeakHunterQuery_Msg_Thread;
+	public static String LeakHunterQuery_NothingFound;
+	public static String LeakHunterQuery_Overview;
+	public static String LeakHunterQuery_OtherSuspectInstances;
+	public static String LeakHunterQuery_PreparingResults;
+	public static String LeakHunterQuery_ProblemSuspect;
+	public static String LeakHunterQuery_ReferencePattern;
+	public static String LeakHunterQuery_ReferencePatternFor;
+	public static String LeakHunterQuery_RequestDetails;
+	public static String LeakHunterQuery_SeeStackstrace;
+	public static String LeakHunterQuery_SeeStackstraceVars;
+	public static String LeakHunterQuery_ShortestPaths;
+	public static String LeakHunterQuery_StackTraceAvailable;
+	public static String LeakHunterQuery_SystemClassLoader;
+	public static String LeakHunterQuery_ThreadDetails;
+	public static String LeakHunterQuery_ThreadRootShortestPath;
+	public static String LeakHunterQuery_ThreadStack;
+	public static String LeakHunterQuery_ThreadStackAndLocals;
+	public static String LeakHunterQuery_TicketForSuspect;
+
+	public static String LeakingPlugins_NoLeakingPlugInsDetected;
+
+	public static String MapCollisionRatioQuery_CalculatingCollisionRatios;
+	public static String MapCollisionRatioQuery_Column_CollisionRatio;
+	public static String MapCollisionRatioQuery_Column_NumObjects;
+	public static String MapCollisionRatioQuery_ErrorMsg_ClassNotFound;
+	public static String MapCollisionRatioQuery_ErrorMsg_MissingArgument;
+
+	public static String MapCollisionRatioQuery_IgnoringCollection;
+
+	public static String MATPlugin_InternalError;
+
+	public static String MultiplePath2GCRootsQuery_Column_RefObjects;
+	public static String MultiplePath2GCRootsQuery_Column_RefShallowHeap;
+	public static String MultiplePath2GCRootsQuery_Group_FromGCRoots;
+	public static String MultiplePath2GCRootsQuery_Group_FromGCRootsOnClass;
+	public static String MultiplePath2GCRootsQuery_Group_ToGCRoots;
+	public static String MultiplePath2GCRootsQuery_PathNodeObject;
+	public static String MultiplePath2GCRootsQuery_PathNodeObjects;
+	public static String MultiplePath2GCRootsQuery_ReferencedObjects;
+
+	public static String ObjectTreeFactory_Column_Percentage;
+	public static String ObjectTreeFactory_ErrorMsg_addChild;
+	public static String ObjectTreeFactory_ErrorMsg_addChildren;
+
+	public static String OQLQuery_Column_Value;
+	public static String OQLQuery_ExecutedQuery;
+	public static String OQLQuery_NoResult;
+	public static String OQLQuery_ProblemReported;
+	public static String OQLQuery_TooManyObjects;
+	public static String OQLQuery_Unindexed;
+
+	public static String ParseSnapshotApp_ErrorMsg_FileNotFound;
+
+	public static String ParseSnapshotApp_ErrorMsg_ReportNotFound;
+	public static String ParseSnapshotApp_Usage;
+	public static String ParseSnapshotApp_MultipleSnapshotsDetail;
+
+	public static String ParseSnapshotApp_MultipleSnapshotsDetected;
+
+	public static String PhantomReferenceStatQuery_Label_Referenced;
+	public static String PhantomReferenceStatQuery_Label_Retained;
+	public static String PhantomReferenceStatQuery_Label_StronglyRetainedReferents;
+
+	public static String PieFactory_ErrorMsg_NoSnapshotAvailable;
+	public static String PieFactory_Label_Remainder;
+	public static String PieFactory_Label_RetainedSize;
+	public static String PieFactory_Label_ShallowSize;
+
+	public static String PrimitiveArraysWithAConstantValueQuery_SearchingArrayValues;
+	public static String PrimitiveArraysWithAConstantValueQuery_Column_Length;
+	public static String PrimitiveArraysWithAConstantValueQuery_Column_NumObjects;
+	public static String PrimitiveArraysWithAConstantValueQuery_Column_Value;
+
+	public static String ReferenceLeakQuery_CommonPaths;
+	public static String ReferenceLeakQuery_CommonPathsLimit;
+	public static String ReferenceLeakQuery_ComputingReferentLeaks;
+	public static String ReferenceLeakQuery_ErrorReadingReference;
+	public static String ReferenceLeakQuery_ExaminingReferenceObjects;
+	public static String ReferenceLeakQuery_NoStrongPaths;
+	public static String ReferenceLeakQuery_PathToReferent;
+	public static String ReferenceLeakQuery_TwoPaths;
+
+	public static String ReferenceQuery_ErrorMsg_NoMatchingClassesFound;
+	public static String ReferenceQuery_HistogramOfReferentObjects;
+	public static String ReferenceQuery_MissingReferentObject;
+
+	public static String ReferenceQuery_Msg_ComputingReferentSet;
+	public static String ReferenceQuery_Msg_ComputingRetainedSet;
+	public static String ReferenceQuery_Msg_ComputingStronglyRetainedSet;
+	public static String ReferenceQuery_OnlyRetainedByReferents;
+	public static String ReferenceQuery_StronglyRetainedByReferences;
+
+	public static String RetainedSetQuery_RetainedBy;
+
+	public static String RetainedSizeDerivedData_Approximate;
+	public static String RetainedSizeDerivedData_Error_IllegalContext;
+	public static String RetainedSizeDerivedData_Error_IllegalObjectId;
+	public static String RetainedSizeDerivedData_ErrorMsg_IllegalContextObject;
+	public static String RetainedSizeDerivedData_ErrorMsg_IllegalObjectId;
+	public static String RetainedSizeDerivedData_Label_Approximate;
+	public static String RetainedSizeDerivedData_Label_Precise;
+
+	public static String Service_ErrorMsg_MismatchKeysServices;
+
+	public static String SnapshotFactory_Error;
+	public static String SnapshotFactory_ErrorMsg_FactoryCreation;
+
+	public static String SnapshotQuery_ErrorMsg_NoResult;
+	public static String SnapshotQuery_ErrorMsg_QueryNotAvailable;
+	public static String SnapshotQuery_ErrorMsg_UnkownArgument;
+	public static String SnapshotQuery_ErrorMsg_UnsuitableSubjects;
+
+	public static String SnapshotQuery_ErrorMsg_UnsupportedTyp;
+
+	public static String SoftReferenceStatQuery_Label_Referenced;
+	public static String SoftReferenceStatQuery_Label_Retained;
+	public static String SoftReferenceStatQuery_Label_StronglyRetainedReferents;
+
+	public static String SubjectRegistry_Error_MissingAnnotation;
+	public static String SubjectRegistry_ErrorMsg_MissingSubjectAnnotation;
+
+	public static String TaskInfo_Column_Id;
+	public static String TaskInfo_Column_Name;
+	public static String TaskInfo_Column_Number;
+	public static String TaskInfo_Column_State;
+	public static String TaskInfo_State_Idle;
+	public static String TaskInfo_State_NotApplicable;
+	public static String TaskInfo_State_Processing;
+	public static String TaskInfo_State_Waiting;
+	public static String TaskInfo_State_WaitingSyncIO;
+
+	public static String ThreadDetailsResolver_alive;
+	public static String ThreadDetailsResolver_blocked_on_monitor_enter;
+	public static String ThreadDetailsResolver_in_native;
+	public static String ThreadDetailsResolver_in_object_wait;
+	public static String ThreadDetailsResolver_interrupted;
+	public static String ThreadDetailsResolver_parked;
+	public static String ThreadDetailsResolver_Priority;
+	public static String ThreadDetailsResolver_runnable;
+	public static String ThreadDetailsResolver_sleeping;
+	public static String ThreadDetailsResolver_suspended;
+	public static String ThreadDetailsResolver_State;
+	public static String ThreadDetailsResolver_State_value;
+	public static String ThreadDetailsResolver_terminated;
+	public static String ThreadDetailsResolver_vendor1;
+	public static String ThreadDetailsResolver_vendor2;
+	public static String ThreadDetailsResolver_vendor3;
+	public static String ThreadDetailsResolver_waiting;
+	public static String ThreadDetailsResolver_waiting_indefinitely;
+	public static String ThreadDetailsResolver_waiting_with_timeout;
+
+	public static String ThreadInfoImpl_Column_ContextClassLoader;
+	public static String ThreadInfoImpl_Column_IsDaemon;
+	public static String ThreadInfoImpl_Column_Instance;
+	public static String ThreadInfoImpl_Column_MaxLocalRetainedHeap;
+	public static String ThreadInfoImpl_Column_Name;
+
+	public static String ThreadInfoQuery_Requests;
+	public static String ThreadInfoQuery_ThreadDetails;
+	public static String ThreadInfoQuery_ThreadLabel;
+	public static String ThreadInfoQuery_ThreadProperties;
+	public static String ThreadInfoQuery_ThreadStack;
+
+	public static String ThreadOverviewQuery_SearchingThreads;
+	public static String ThreadOverviewQuery_StackFrameLocalIssue;
+	public static String ThreadOverviewQuery_ThreadDetails;
+
+	public static String ThreadStackQuery_Column_ObjectStackFrame;
+	public static String ThreadStackQuery_Label_Local;
+	public static String ThreadStackQuery_Label_Local_Busy_Monitor;
+	public static String ThreadStackQuery_Label_Local_Possible_Busy_Monitor;
+	public static String ThreadStackQuery_Label_Local_Possibly_Blocked_On;
+	public static String ThreadStackQuery_Label_Local_Probably_Blocked_On;
+
+	public static String TopComponentsReportQuery_TopComponentReports;
+
+	public static String TopConsumers2Query_BiggestClasses;
+	public static String TopConsumers2Query_BiggestClassesOverview;
+	public static String TopConsumers2Query_BiggestClassLoaders;
+	public static String TopConsumers2Query_BiggestClassLoadersOverview;
+	public static String TopConsumers2Query_BiggestObjects;
+	public static String TopConsumers2Query_BiggestObjectsOverview;
+	public static String TopConsumers2Query_BiggestPackages;
+	public static String TopConsumers2Query_Column_Package;
+	public static String TopConsumers2Query_Column_RetainedHeapPercent;
+	public static String TopConsumers2Query_Column_TopDominators;
+	public static String TopConsumers2Query_CreatingHistogram;
+	public static String TopConsumers2Query_GroupingByPackage;
+	public static String TopConsumers2Query_Label_all;
+	public static String TopConsumers2Query_MsgNoObjects;
+	public static String TopConsumers2Query_NoClassesBiggerThan;
+	public static String TopConsumers2Query_NoClassLoaderBiggerThan;
+	public static String TopConsumers2Query_NoObjectsBiggerThan;
+	public static String TopConsumers2Query_TopConsumers;
+
+	public static String TopConsumersQuery_ColumnLabels;
+
+	public static String TQuantize_Label_GroupByClassLoader;
+	public static String TQuantize_Label_GroupByPackage;
+	public static String TQuantize_Label_GroupedByClassLoader;
+	public static String TQuantize_Label_GroupedByPackage;
+	public static String TQuantize_None;
+
+	public static String VmInfoDescriptor_ErrorGettingArgumentErrorMsg;
+
+	public static String VmInfoDescriptor_UnableToAccessArgumentErrorMsg;
+
+	public static String VmInfoDescriptor_WrongTypeErrorMsg;
+
+	public static String WasteInCharArraysQuery_CheckingCharArrays;
+
+	public static String WeakReferenceStatQuery_Label_Referenced;
+	public static String WeakReferenceStatQuery_Label_Retained;
+	public static String WeakReferenceStatQuery_Label_StronglyRetainedReferents;
+
+	public static String WildflyJbossNameResolvers_ModuleClassLoaderFor;
+
+	public static String WrapperCollectionExtractor_CouldNotResolveMultiple;
+	public static String WrapperCollectionExtractor_CouldNotResolveNone;
+	public static String WrapperCollectionExtractor_NotAList1;
+	public static String WrapperCollectionExtractor_NotAList2;
+	public static String WrapperCollectionExtractor_NotAMap1;
+	public static String WrapperCollectionExtractor_NotAMap2;
+
+	static {
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	}
 
 	private Messages() {
 	}

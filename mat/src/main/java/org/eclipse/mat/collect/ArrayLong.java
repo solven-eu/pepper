@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG.
+ * Copyright (c) 2008, 2018 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    IBM Corporation/Andrew Johnson - Javadoc updates
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
  *******************************************************************************/
 package org.eclipse.mat.collect;
 
@@ -30,9 +34,10 @@ public final class ArrayLong {
 	}
 
 	/**
-	 * Create a list of given size
+	 * Create an empty list of given capacity for more entries.
 	 *
 	 * @param initialCapacity
+	 *            in number of entries
 	 */
 	public ArrayLong(int initialCapacity) {
 		elements = new long[initialCapacity];
@@ -75,9 +80,10 @@ public final class ArrayLong {
 	}
 
 	/**
-	 * append a group of entries
+	 * Append a group of entries
 	 *
 	 * @param elements
+	 *            an array of long, to be added to end of this ArrayLong.
 	 */
 	public void addAll(long[] elements) {
 		ensureCapacity(size + elements.length);
@@ -86,9 +92,10 @@ public final class ArrayLong {
 	}
 
 	/**
-	 * append all of another
+	 * Append all of another ArrayLong to the end of this one.
 	 *
 	 * @param template
+	 *            the other ArrayLong
 	 */
 	public void addAll(ArrayLong template) {
 		ensureCapacity(size + template.size);
@@ -100,7 +107,9 @@ public final class ArrayLong {
 	 * modify one particular entry
 	 *
 	 * @param index
+	 *            into this ArrayLong
 	 * @param element
+	 *            the new value to be put here
 	 * @return the previous value
 	 */
 	public long set(int index, long element) {
@@ -113,9 +122,10 @@ public final class ArrayLong {
 	}
 
 	/**
-	 * retrieve one entry
+	 * Retrieve one entry
 	 *
 	 * @param index
+	 *            into the ArrayLong
 	 * @return the entry
 	 */
 	public long get(int index) {
@@ -162,12 +172,10 @@ public final class ArrayLong {
 		return new IteratorLong() {
 			int index = 0;
 
-			@Override
 			public boolean hasNext() {
 				return index < size;
 			}
 
-			@Override
 			public long next() {
 				return elements[index++];
 			}
@@ -206,7 +214,7 @@ public final class ArrayLong {
 	 * arrange the entries in ascending order
 	 */
 	public void sort() {
-		Arrays.sort(elements, 0, size);
+		Arrays.parallelSort(elements, 0, size);
 	}
 
 	// //////////////////////////////////////////////////////////////
@@ -230,9 +238,9 @@ public final class ArrayLong {
 
 	private int newCapacity(int oldCapacity, int minCapacity) {
 		// Scale by 1.5 without overflow
-		int newCapacity = oldCapacity * 3 >>> 1;
+		int newCapacity = (oldCapacity * 3 >>> 1);
 		if (newCapacity < minCapacity) {
-			newCapacity = minCapacity * 3 >>> 1;
+			newCapacity = (minCapacity * 3 >>> 1);
 			if (newCapacity < minCapacity) {
 				// Avoid VM limits for final size
 				newCapacity = Integer.MAX_VALUE - 8;

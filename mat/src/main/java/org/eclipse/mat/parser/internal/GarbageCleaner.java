@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and others.
+ * Copyright (c) 2008, 2021 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
+ *    Andrew Johnson (IBM) - release some indexes for GC
  *******************************************************************************/
 package org.eclipse.mat.parser.internal;
 
@@ -15,14 +19,22 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.eclipse.mat.collect.ArrayInt;
 import org.eclipse.mat.collect.BitField;
 import org.eclipse.mat.collect.HashMapIntObject;
 import org.eclipse.mat.collect.IteratorInt;
+import org.eclipse.mat.collect.IteratorLong;
 import org.eclipse.mat.parser.index.IIndexReader.IOne2LongIndex;
 import org.eclipse.mat.parser.index.IIndexReader.IOne2ManyIndex;
 import org.eclipse.mat.parser.index.IIndexReader.IOne2OneIndex;
@@ -31,9 +43,14 @@ import org.eclipse.mat.parser.index.IndexManager;
 import org.eclipse.mat.parser.index.IndexManager.Index;
 import org.eclipse.mat.parser.index.IndexReader.SizeIndexReader;
 import org.eclipse.mat.parser.index.IndexWriter;
+import org.eclipse.mat.parser.index.IndexWriter.Identifier;
+import org.eclipse.mat.parser.index.IndexWriter.IntIndexCollector;
+import org.eclipse.mat.parser.index.IndexWriter.IntIndexStreamer;
+import org.eclipse.mat.parser.index.IndexWriter.LongIndexStreamer;
 import org.eclipse.mat.parser.internal.snapshot.ObjectMarker;
 import org.eclipse.mat.parser.model.ClassImpl;
 import org.eclipse.mat.parser.model.XGCRootInfo;
+import org.eclipse.mat.snapshot.UnreachableObjectsHistogram;
 import org.eclipse.mat.snapshot.model.IClass;
 import org.eclipse.mat.util.IProgressListener;
 import org.eclipse.mat.util.IProgressListener.OperationCanceledException;
@@ -43,11 +60,14 @@ import org.eclipse.mat.util.SilentProgressListener;
 
 /* package */class GarbageCleaner {
 
+	private final static int PARALLEL_CHUNK_SIZE = 16 * 1024 * 1024;
+
 	public static int[] clean(final PreliminaryIndexImpl idx,
 			final SnapshotImplBuilder builder,
 			Map<String, String> arguments,
-			IProgressListener listener) throws IOException {
+			IProgressListener listener) throws IOException, InterruptedException, ExecutionException {
 		IndexManager idxManager = new IndexManager();
+		ExecutorService es = Executors.newWorkStealingPool();
 
 		try {
 			listener.beginTask(Messages.GarbageCleaner_RemovingUnreachableObjects, 11);
@@ -60,8 +80,25 @@ import org.eclipse.mat.util.SilentProgressListener;
 			int newNoOfObjects = 0;
 			int[] newRoots = idx.gcRoots.getAllKeys();
 
+			if (idx.identifiers instanceof Identifier && oldNoOfObjects > 5000000) {
+				IOne2LongIndex identifiersOld = idx.identifiers;
+				File tempIndexFile = Index.IDENTIFIER.getFile(idx.snapshotInfo.getPrefix() + "temp."); //$NON-NLS-1$
+				listener.subTask(MessageUtil.format(Messages.GarbageCleaner_Writing, tempIndexFile.getAbsolutePath()));
+				idx.identifiers =
+						new LongIndexStreamer().writeTo(tempIndexFile, ((Identifier) identifiersOld).iterator());
+				identifiersOld.close();
+				identifiersOld.delete();
+			}
 			IOne2LongIndex identifiers = idx.identifiers;
 			IOne2ManyIndex preOutbound = idx.outbound;
+			if (idx.object2classId instanceof IntIndexCollector && oldNoOfObjects > 5000000) {
+				IOne2OneIndex object2classIdOld = idx.object2classId;
+				File tempIndexFile = Index.O2CLASS.getFile(idx.snapshotInfo.getPrefix() + "temp."); //$NON-NLS-1$
+				listener.subTask(MessageUtil.format(Messages.GarbageCleaner_Writing, tempIndexFile.getAbsolutePath()));
+				idx.object2classId = ((IntIndexCollector) object2classIdOld).writeTo(tempIndexFile);
+				object2classIdOld.close();
+				object2classIdOld.delete();
+			}
 			IOne2OneIndex object2classId = idx.object2classId;
 			HashMapIntObject<ClassImpl> classesById = idx.classesById;
 
@@ -76,7 +113,6 @@ import org.eclipse.mat.util.SilentProgressListener;
 				try {
 					marker.markMultiThreaded(numProcessors);
 				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
 					IOException ioe = new IOException(e.getMessage());
 					ioe.initCause(e);
 					throw ioe;
@@ -102,14 +138,14 @@ import org.eclipse.mat.util.SilentProgressListener;
 			// unreachable (keep objects) or store a histogram of unreachable
 			// objects
 			if (newNoOfObjects < oldNoOfObjects) {
-				Object un = idx.getSnapshotInfo().getProperty("keep_unreachable_objects");
+				Object un = idx.getSnapshotInfo().getProperty("keep_unreachable_objects"); //$NON-NLS-1$
 				if (un instanceof Integer) {
 					int newRoot;
 					newRoot = (Integer) un;
 					newNoOfObjects = markUnreachableAsGCRoots(idx, reachable, newNoOfObjects, newRoot, listener);
 				}
 				if (newNoOfObjects < oldNoOfObjects) {
-					createHistogramOfUnreachableObjects(idx, reachable);
+					createHistogramOfUnreachableObjects(es, idx, reachable);
 				}
 			}
 
@@ -120,7 +156,6 @@ import org.eclipse.mat.util.SilentProgressListener;
 
 			// create re-index map
 			final int[] map = new int[oldNoOfObjects];
-			final long[] id2a = new long[newNoOfObjects];
 
 			List<ClassImpl> classes2remove = new ArrayList<ClassImpl>();
 
@@ -128,35 +163,39 @@ import org.eclipse.mat.util.SilentProgressListener;
 			long memFree = 0;
 			for (int ii = 0, jj = 0; ii < oldNoOfObjects; ii++) {
 				if (reachable[ii]) {
-					map[ii] = jj;
-					id2a[jj++] = identifiers.get(ii);
+					map[ii] = jj++;
 				} else {
 					map[ii] = -1;
-
-					int classId = object2classId.get(ii);
-					ClassImpl clazz = classesById.get(classId);
-
-					long arraySize = preA2size.getSize(ii);
-					if (arraySize > 0) {
-						clazz.removeInstance(arraySize);
-						memFree += arraySize;
-					} else {
-						// [INFO] some instances of java.lang.Class are not
-						// reported as HPROF_GC_CLASS_DUMP but as
-						// HPROF_GC_INSTANCE_DUMP
-						ClassImpl c = classesById.get(ii);
-
-						if (c == null) {
-							clazz.removeInstance(clazz.getHeapSizePerInstance());
-							memFree += clazz.getHeapSizePerInstance();
-						} else {
-							clazz.removeInstance(c.getUsedHeapSize());
-							memFree += c.getUsedHeapSize();
-							classes2remove.add(c);
-						}
-					}
 				}
 			}
+
+			ArrayList<Callable<CleanupWrapper>> tasks = new ArrayList<Callable<CleanupWrapper>>();
+
+			for (int i = 0; i < oldNoOfObjects; i += PARALLEL_CHUNK_SIZE) {
+				final int start = i;
+				final int length = Math.min(PARALLEL_CHUNK_SIZE, reachable.length - start);
+				tasks.add(new CalculateGarbageCleanupForClass(idx, reachable, start, length));
+			}
+
+			List<Future<CleanupWrapper>> wrappers = null;
+			wrappers = es.invokeAll(tasks);
+
+			for (Future<CleanupWrapper> wrapper : wrappers) {
+				for (CleanupResult cr : wrapper.get().results.values()) {
+					long totalmem = cr.size;
+					for (int i = cr.count; i > 0; --i) {
+						// Remove one by one as removeInstanceBulk is not yet API
+						long instsize = totalmem / i;
+						totalmem -= instsize;
+						cr.clazz.removeInstance(instsize);
+					}
+					memFree += cr.size;
+				}
+				for (ClassImpl c : wrapper.get().classes2remove) {
+					classes2remove.add(c);
+				}
+			}
+
 			if (newNoOfObjects < oldNoOfObjects) {
 				listener.sendUserMessage(Severity.INFO,
 						MessageUtil.format(Messages.GarbageCleaner_RemovedUnreachableObjects,
@@ -164,6 +203,8 @@ import org.eclipse.mat.util.SilentProgressListener;
 								memFree),
 						null);
 			}
+
+			es.shutdown();
 
 			// classes cannot be removed right away
 			// as they are needed to remove instances of this class
@@ -176,10 +217,6 @@ import org.eclipse.mat.util.SilentProgressListener;
 			}
 
 			reachable = null; // early gc...
-
-			identifiers.close();
-			identifiers.delete();
-			identifiers = null;
 
 			if (listener.isCanceled())
 				throw new IProgressListener.OperationCanceledException();
@@ -212,7 +249,25 @@ import org.eclipse.mat.util.SilentProgressListener;
 
 			File indexFile = Index.IDENTIFIER.getFile(idx.snapshotInfo.getPrefix());
 			listener.subTask(MessageUtil.format(Messages.GarbageCleaner_Writing, indexFile.getAbsolutePath()));
-			idxManager.setReader(Index.IDENTIFIER, new IndexWriter.LongIndexStreamer().writeTo(indexFile, id2a));
+			idxManager.setReader(Index.IDENTIFIER, new LongIndexStreamer().writeTo(indexFile, new IteratorLong() {
+				int i = 0;
+
+				@Override
+				public boolean hasNext() {
+					while (i < map.length && map[i] == -1)
+						++i;
+					return i < map.length;
+				}
+
+				@Override
+				public long next() {
+					if (hasNext())
+						return identifiers.get(i++);
+					throw new NoSuchElementException();
+				}
+			}));
+			identifiers.close();
+			identifiers.delete();
 
 			if (listener.isCanceled())
 				throw new IProgressListener.OperationCanceledException();
@@ -224,20 +279,19 @@ import org.eclipse.mat.util.SilentProgressListener;
 
 			indexFile = Index.O2CLASS.getFile(idx.snapshotInfo.getPrefix());
 			listener.subTask(MessageUtil.format(Messages.GarbageCleaner_Writing, indexFile.getAbsolutePath()));
-			idxManager.setReader(Index.O2CLASS,
-					new IndexWriter.IntIndexStreamer().writeTo(indexFile, new NewObjectIntIterator() {
-						@Override
-						int doGetNextInt(int index) {
-							return map[idx.object2classId.get(nextIndex)];
-							// return
-							// map[object2classId.get(nextIndex)];
-						}
+			idxManager.setReader(Index.O2CLASS, new IntIndexStreamer().writeTo(indexFile, new NewObjectIntIterator() {
+				@Override
+				int doGetNextInt(int index) {
+					return map[idx.object2classId.get(nextIndex)];
+					// return
+					// map[object2classId.get(nextIndex)];
+				}
 
-						@Override
-						int[] getMap() {
-							return map;
-						}
-					}));
+				@Override
+				int[] getMap() {
+					return map;
+				}
+			}));
 
 			object2classId.close();
 			object2classId.delete();
@@ -256,7 +310,7 @@ import org.eclipse.mat.util.SilentProgressListener;
 					MessageUtil.format(Messages.GarbageCleaner_Writing, new Object[] { indexFile.getAbsolutePath() }));
 			final BitField arrayObjects = new BitField(newNoOfObjects);
 			// arrayObjects
-			IOne2OneIndex newIdx = new IndexWriter.IntIndexStreamer().writeTo(indexFile, new NewObjectIntIterator() {
+			IOne2OneIndex newIdx = new IntIndexStreamer().writeTo(indexFile, new NewObjectIntIterator() {
 				IOne2SizeIndex a2size = preA2size;
 				int newIndex = 0;
 
@@ -421,7 +475,6 @@ import org.eclipse.mat.util.SilentProgressListener;
 	}
 
 	private static abstract class NewObjectIntIterator extends NewObjectIterator implements IteratorInt {
-		@Override
 		public int next() {
 			int answer = doGetNextInt(nextIndex);
 			findNext();
@@ -439,7 +492,6 @@ import org.eclipse.mat.util.SilentProgressListener;
 			this.classesByNewId = classesByNewId;
 		}
 
-		@Override
 		public void storeKey(int index, Serializable key) {
 			ClassImpl impl = classesByNewId.get(index);
 			impl.setCacheEntry(key);
@@ -460,57 +512,187 @@ import org.eclipse.mat.util.SilentProgressListener;
 		}
 	}
 
-	private static void createHistogramOfUnreachableObjects(PreliminaryIndexImpl idx, boolean[] reachable) {
-		IOne2SizeIndex array2size = idx.array2size;
+	private static void createHistogramOfUnreachableObjects(final ExecutorService es,
+			final PreliminaryIndexImpl idx,
+			final boolean[] reachable) throws InterruptedException, ExecutionException {
+		ArrayList<Callable<HashMap<Integer, Record>>> tasks = new ArrayList<Callable<HashMap<Integer, Record>>>();
 
-		HashMapIntObject<Record> histogram = new HashMapIntObject<Record>();
-
-		int totalObjectCount = 0;
-		long totalSize = 0;
-
-		for (int ii = 0; ii < reachable.length; ii++) {
-			if (!reachable[ii]) {
-				int classId = idx.object2classId.get(ii);
-
-				Record r = histogram.get(classId);
-				if (r == null) {
-					ClassImpl clazz = idx.classesById.get(classId);
-					r = new Record(clazz);
-					histogram.put(classId, r);
-				}
-
-				r.objectCount++;
-				totalObjectCount++;
-				long s = 0;
-
-				s = array2size.getSize(ii);
-				if (s > 0) {
-					// Already got the size
-				} else if (IClass.JAVA_LANG_CLASS.equals(r.clazz.getName())) {
-					ClassImpl classImpl = idx.classesById.get(ii);
-					if (classImpl == null) {
-						s = r.clazz.getHeapSizePerInstance();
-					} else {
-						s = classImpl.getUsedHeapSize();
-					}
-				} else {
-					s = r.clazz.getHeapSizePerInstance();
-				}
-				r.size += s;
-				totalSize += s;
-			}
+		for (int i = 0; i < reachable.length; i += PARALLEL_CHUNK_SIZE) {
+			final int start = i;
+			final int length = Math.min(PARALLEL_CHUNK_SIZE, reachable.length - start);
+			tasks.add(new CreateHistogramOfUnreachableObjectsChunk(idx, reachable, start, length));
 		}
 
-		// List<UnreachableObjectsHistogram.Record> records = new ArrayList<UnreachableObjectsHistogram.Record>();
-		// for (Iterator<Record> iter = histogram.values(); iter.hasNext();)
-		// {
-		// Record r = iter.next();
-		// records.add(new UnreachableObjectsHistogram.Record(r.clazz.getName(), r.clazz.getObjectAddress(),
-		// r.objectCount, r.size));
-		// }
-		//
-		// UnreachableObjectsHistogram deadObjectHistogram = new UnreachableObjectsHistogram(records);
-		// idx.getSnapshotInfo().setProperty(UnreachableObjectsHistogram.class.getName(), deadObjectHistogram);
+		List<Future<HashMap<Integer, Record>>> results = null;
+		results = es.invokeAll(tasks);
+
+		final HashMap<Integer, Record> histogram = new HashMap<Integer, Record>(reachable.length);
+
+		for (Future<HashMap<Integer, Record>> subhistogram : results) {
+			histogram.putAll(subhistogram.get());
+		}
+
+		/*
+		 * The parser might have already discarded some objects, so merge the histograms.
+		 */
+		Serializable parserDeadObjects = idx.getSnapshotInfo().getProperty(UnreachableObjectsHistogram.class.getName());
+		HashMap<Long, UnreachableObjectsHistogram.Record> parserRecords =
+				new HashMap<Long, UnreachableObjectsHistogram.Record>();
+		if (parserDeadObjects instanceof UnreachableObjectsHistogram) {
+			UnreachableObjectsHistogram parserDeadObjectHistogram = (UnreachableObjectsHistogram) parserDeadObjects;
+			for (UnreachableObjectsHistogram.Record r : parserDeadObjectHistogram.getRecords()) {
+				parserRecords.put(r.getClassAddress(), r);
+			}
+		}
+		List<UnreachableObjectsHistogram.Record> records = new ArrayList<UnreachableObjectsHistogram.Record>();
+		for (Record r : histogram.values()) {
+			UnreachableObjectsHistogram.Record r2 = parserRecords.get(r.clazz.getObjectAddress());
+			int existingCount = 0;
+			long existingSize = 0L;
+			if (r2 != null && r.clazz.getName().equals(r2.getClassName())) {
+				existingCount = r2.getObjectCount();
+				existingSize = r2.getShallowHeapSize();
+				parserRecords.remove(r.clazz.getObjectAddress());
+			}
+			records.add(new UnreachableObjectsHistogram.Record(r.clazz.getName(),
+					r.clazz.getObjectAddress(),
+					r.objectCount + existingCount,
+					r.size + existingSize));
+		}
+		records.addAll(parserRecords.values());
+
+		UnreachableObjectsHistogram deadObjectHistogram = new UnreachableObjectsHistogram(records);
+		idx.getSnapshotInfo().setProperty(UnreachableObjectsHistogram.class.getName(), deadObjectHistogram);
+	}
+
+	private static class CreateHistogramOfUnreachableObjectsChunk implements Callable<HashMap<Integer, Record>> {
+		final PreliminaryIndexImpl idx;
+		final boolean[] reachable;
+		final int start;
+		final int length;
+
+		public CreateHistogramOfUnreachableObjectsChunk(PreliminaryIndexImpl idx,
+				boolean[] reachable,
+				int start,
+				int length) {
+			this.idx = idx;
+			this.reachable = reachable;
+			this.start = start;
+			this.length = length;
+		}
+
+		public HashMap<Integer, Record> call() {
+			IOne2SizeIndex array2size = idx.array2size;
+
+			HashMap<Integer, Record> histogram = new HashMap<Integer, Record>(length);
+
+			for (int ii = start; ii < (start + length); ii++) {
+				if (!reachable[ii]) {
+					final int classId = idx.object2classId.get(ii);
+					Record r = histogram.get(classId);
+					if (r == null) {
+						r = new Record(idx.classesById.get(classId));
+						histogram.put(classId, r);
+					}
+
+					long s = array2size.getSize(ii);
+					if (s > 0) {
+						// Already got the size
+					} else if (IClass.JAVA_LANG_CLASS.equals(r.clazz.getName())) {
+						ClassImpl classImpl = idx.classesById.get(ii);
+						if (classImpl == null) {
+							s = r.clazz.getHeapSizePerInstance();
+						} else {
+							s = classImpl.getUsedHeapSize();
+						}
+					} else {
+						s = r.clazz.getHeapSizePerInstance();
+					}
+
+					r.size += s;
+					r.objectCount += 1;
+				}
+			}
+
+			return histogram;
+		}
+	}
+
+	// //////////////////////////////////////////////////////////////
+	// calculate garbage cleanup
+	// //////////////////////////////////////////////////////////////
+
+	private static class CleanupWrapper {
+		final HashMap<Integer, CleanupResult> results;
+		final List<ClassImpl> classes2remove;
+
+		public CleanupWrapper(final HashMap<Integer, CleanupResult> results, final List<ClassImpl> classes2remove) {
+			this.results = results;
+			this.classes2remove = classes2remove;
+		}
+	}
+
+	private static class CleanupResult {
+		int count = 0;
+		long size = 0;
+		final ClassImpl clazz;
+
+		public CleanupResult(ClassImpl clazz) {
+			this.clazz = clazz;
+		}
+	}
+
+	private static class CalculateGarbageCleanupForClass implements Callable<CleanupWrapper> {
+		final PreliminaryIndexImpl idx;
+		final boolean[] reachable;
+		final int start;
+		final int length;
+
+		public CalculateGarbageCleanupForClass(PreliminaryIndexImpl idx, boolean[] reachable, int start, int length) {
+			this.idx = idx;
+			this.reachable = reachable;
+			this.start = start;
+			this.length = length;
+		}
+
+		public CleanupWrapper call() throws Exception {
+			HashMap<Integer, CleanupResult> results = new HashMap<Integer, CleanupResult>();
+			List<ClassImpl> classes2remove = new ArrayList<ClassImpl>();
+			for (int ii = start; ii < (start + length); ii++) {
+				if (reachable[ii])
+					continue;
+
+				int classId = idx.object2classId.get(ii);
+				ClassImpl clazz = idx.classesById.get(classId);
+
+				CleanupResult cr = results.get(classId);
+				if (cr == null) {
+					cr = new CleanupResult(clazz);
+					results.put(classId, cr);
+				}
+
+				long arraySize = idx.array2size.getSize(ii);
+				if (arraySize > 0) {
+					cr.count += 1;
+					cr.size += arraySize;
+				} else {
+					// [INFO] some instances of java.lang.Class are not
+					// reported as HPROF_GC_CLASS_DUMP but as
+					// HPROF_GC_INSTANCE_DUMP
+					ClassImpl c = idx.classesById.get(ii);
+
+					if (c == null) {
+						cr.count += 1;
+						cr.size += clazz.getHeapSizePerInstance();
+					} else {
+						cr.count += 1;
+						cr.size += c.getUsedHeapSize();
+						classes2remove.add(c);
+					}
+				}
+			}
+			return new CleanupWrapper(results, classes2remove);
+		}
 	}
 
 	// //////////////////////////////////////////////////////////////
@@ -568,7 +750,6 @@ import org.eclipse.mat.util.SilentProgressListener;
 			try {
 				marker2.markMultiThreaded(numProcessors);
 			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
 				OperationCanceledException oc = new IProgressListener.OperationCanceledException();
 				oc.initCause(e);
 				throw oc;

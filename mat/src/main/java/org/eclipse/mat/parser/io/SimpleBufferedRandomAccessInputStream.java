@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2010 SAP AG.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -40,12 +42,10 @@ public class SimpleBufferedRandomAccessInputStream extends InputStream {
 		real_pos = raf.getFilePointer();
 	}
 
-	@Override
 	public final int read() throws IOException {
 		if (buf_pos >= buf_end) {
-			if (fillBuffer() < 0) {
+			if (fillBuffer() < 0)
 				return -1;
-			}
 		}
 		if (buf_end == 0) {
 			return -1;
@@ -61,9 +61,8 @@ public class SimpleBufferedRandomAccessInputStream extends InputStream {
 		}
 
 		if (buf_pos >= buf_end) {
-			if (fillBuffer() < 0) {
+			if (fillBuffer() < 0)
 				return -1;
-			}
 		}
 
 		if (buf_end == 0)
@@ -73,9 +72,8 @@ public class SimpleBufferedRandomAccessInputStream extends InputStream {
 
 		while (copied < len) {
 			if (buf_pos >= buf_end) {
-				if (fillBuffer() < 0) {
+				if (fillBuffer() < 0)
 					return copied;
-				}
 			}
 
 			int length = Math.min(len - copied, buf_end - buf_pos);
@@ -97,12 +95,10 @@ public class SimpleBufferedRandomAccessInputStream extends InputStream {
 		return n;
 	}
 
-	@Override
 	public boolean markSupported() {
 		return false;
 	}
 
-	@Override
 	public void close() throws IOException {
 		raf.close();
 		buffer = null;
@@ -188,9 +184,8 @@ public class SimpleBufferedRandomAccessInputStream extends InputStream {
 				throw new IOException();
 		}
 
-		for (int ii = 0; ii < a.length; ii++) {
+		for (int ii = 0; ii < a.length; ii++)
 			a[ii] = readLong(b, offset + (ii * 8));
-		}
 
 		return a.length;
 	}

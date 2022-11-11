@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2013 SAP AG and IBM Corporation.
+ * Copyright (c) 2008, 2021 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -11,9 +13,12 @@
  *******************************************************************************/
 package org.eclipse.mat.parser.internal;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,15 +29,25 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.content.IContentDescription;
+import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.eclipse.mat.SnapshotException;
 import org.eclipse.mat.collect.HashMapIntObject;
 import org.eclipse.mat.collect.IteratorInt;
 import org.eclipse.mat.parser.IIndexBuilder;
+import org.eclipse.mat.parser.internal.oql.OQLQueryImpl;
 import org.eclipse.mat.parser.internal.util.ParserRegistry;
 import org.eclipse.mat.parser.internal.util.ParserRegistry.Parser;
 import org.eclipse.mat.parser.model.ClassImpl;
 import org.eclipse.mat.parser.model.XGCRootInfo;
 import org.eclipse.mat.parser.model.XSnapshotInfo;
+import org.eclipse.mat.snapshot.IOQLQuery;
 import org.eclipse.mat.snapshot.ISnapshot;
 import org.eclipse.mat.snapshot.SnapshotFactory;
 import org.eclipse.mat.snapshot.SnapshotFormat;
@@ -54,7 +69,6 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 
 	private Map<File, SnapshotEntry> snapshotCache = new HashMap<File, SnapshotEntry>();
 
-	@Override
 	public ISnapshot openSnapshot(File file, Map<String, String> args, IProgressListener listener)
 			throws SnapshotException {
 		ISnapshot answer = null;
@@ -72,16 +86,68 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 
 		String name = file.getName();
 
+		/*
+		 * Perhaps there are extensions with dots, e.g. .phd.gz or .hprof.gz, so this code ensures the whole extension
+		 * is removed.
+		 */
+		IContentTypeManager contentTypeManager = Platform.getContentTypeManager();
+		IContentType javaheapdump = contentTypeManager.getContentType("org.eclipse.mat.JavaHeapDump"); //$NON-NLS-1$
+		List<IContentType> listtypes = new ArrayList<IContentType>();
+		if (javaheapdump != null) {
+			String n1 = name;
+			IContentType types[];
+			try (FileInputStream fis = new FileInputStream(file)) {
+				types = contentTypeManager.findContentTypesFor(fis, file.getPath());
+				if (types.length == 0) {
+					try (FileInputStream fis2 = new FileInputStream(file)) {
+						types = contentTypeManager.findContentTypesFor(fis2, null);
+					}
+				}
+			} catch (IOException e) {
+				// Ignore, try using file name alone
+				types = contentTypeManager.findContentTypesFor(file.getPath());
+			}
+			for (IContentType tp : types) {
+				if (tp.isKindOf(javaheapdump)) {
+					// See if this content description is based on the file contents
+					IContentDescription cd1, cd2;
+					try (FileInputStream fis = new FileInputStream(file)) {
+						// Succeeds if based on context
+						cd1 = tp.getDescriptionFor(fis, IContentDescription.ALL);
+					} catch (IOException e) {
+						cd1 = null;
+					}
+					try (InputStream sr = new ByteArrayInputStream(new byte[10])) {
+						// Succeeds if generic type without content checking
+						cd2 = tp.getDescriptionFor(sr, IContentDescription.ALL);
+					} catch (IOException e) {
+						cd2 = null;
+					}
+					if (cd1 != null && cd2 == null)
+						listtypes.add(tp);
+					for (String ext : tp.getFileSpecs(IContentType.FILE_EXTENSION_SPEC)) {
+						// Does extension itself contains a dot, and matches this file ?
+						if (ext.indexOf('.') >= 0 && name.endsWith("." + ext)) //$NON-NLS-1$
+						{
+							// It has a dot, so remove
+							n1 = name.substring(0, name.length() - ext.length());
+						}
+					}
+				}
+			}
+			name = n1;
+		}
+
 		int p = name.lastIndexOf('.');
-		name = p >= 0 ? name.substring(0, p + 1) : name + ".";
+		name = p >= 0 ? name.substring(0, p + 1) : name + ".";//$NON-NLS-1$
 		String prefix = new File(file.getParentFile(), name).getAbsolutePath();
-		String snapshot_identifier = args.get("snapshot_identifier");
+		String snapshot_identifier = args.get("snapshot_identifier"); //$NON-NLS-1$
 		if (snapshot_identifier != null) {
-			prefix += snapshot_identifier + ".";
+			prefix += snapshot_identifier + "."; //$NON-NLS-1$
 		}
 
 		try {
-			File indexFile = new File(prefix + "index");
+			File indexFile = new File(prefix + "index");//$NON-NLS-1$
 			if (indexFile.exists()) {
 				// check if hprof file is newer than index file
 				if (file.lastModified() <= indexFile.lastModified()) {
@@ -106,7 +172,7 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 
 		if (answer == null) {
 			deleteIndexFiles(file, prefix, listener);
-			answer = parse(file, prefix, args, listener);
+			answer = parse(file, prefix, args, listtypes, listener);
 		}
 
 		entry = new SnapshotEntry(1, answer);
@@ -116,7 +182,6 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 		return answer;
 	}
 
-	@Override
 	public synchronized void dispose(ISnapshot snapshot) {
 
 		for (Iterator<SnapshotEntry> iter = snapshotCache.values().iterator(); iter.hasNext();) {
@@ -140,23 +205,56 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 			snapshot.dispose();
 	}
 
-	@Override
+	public IOQLQuery createQuery(String queryString) throws SnapshotException {
+		return new OQLQueryImpl(queryString);
+	}
+
 	public List<SnapshotFormat> getSupportedFormats() {
-		return ParserRegistry.getSupportedFormats();
+		List<SnapshotFormat> answer = new ArrayList<SnapshotFormat>();
+
+		for (Parser parser : ParserPlugin.getDefault().getParserRegistry().delegates())
+			answer.add(parser.getSnapshotFormat());
+
+		return answer;
 	}
 
 	// //////////////////////////////////////////////////////////////
 	// Internal implementations
 	// //////////////////////////////////////////////////////////////
 
-	private final ISnapshot parse(File file, String prefix, Map<String, String> args, IProgressListener listener)
-			throws SnapshotException {
-		List<ParserRegistry.Parser> parsers = ParserRegistry.matchParser(file.getName());
+	private final ISnapshot parse(File file,
+			String prefix,
+			Map<String, String> args,
+			List<IContentType> listtypes,
+			IProgressListener listener) throws SnapshotException {
+		ParserRegistry registry = ParserPlugin.getDefault().getParserRegistry();
+
+		List<ParserRegistry.Parser> parsers = registry.matchParser(file.getName());
+		if (parsers.isEmpty())
+			parsers.addAll(registry.delegates()); // try all...
+		else {
+			// Add some extra parsers by content type
+			for (IContentType type : listtypes) {
+				// Parsers don't match for equality
+				List<ParserRegistry.Parser> parsers2 = registry.matchParser(type);
+				for (ParserRegistry.Parser p2 : parsers2) {
+					boolean found = false;
+					for (ParserRegistry.Parser p3 : parsers) {
+						if (p3.getId().equals(p2.getId())) {
+							found = true;
+							break;
+						}
+					}
+					if (!found)
+						parsers.add(p2);
+				}
+			}
+		}
 
 		List<IOException> errors = new ArrayList<IOException>();
 
 		for (Parser parser : parsers) {
-			IIndexBuilder indexBuilder = parser.createIndexBuider();
+			IIndexBuilder indexBuilder = parser.create(IIndexBuilder.class, ParserRegistry.INDEX_BUILDER);
 
 			if (indexBuilder == null)
 				continue;
@@ -167,22 +265,32 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 				XSnapshotInfo snapshotInfo = new XSnapshotInfo();
 				snapshotInfo.setPath(file.getAbsolutePath());
 				snapshotInfo.setPrefix(prefix);
-				snapshotInfo.setProperty("$heapFormat", parser.getId());
-				if (Boolean.parseBoolean(args.get("keep_unreachable_objects"))) {
-					snapshotInfo.setProperty("keep_unreachable_objects", GCRootInfo.Type.UNREACHABLE);
+				snapshotInfo.setProperty("$heapFormat", parser.getId());//$NON-NLS-1$
+				if (Boolean.parseBoolean(args.get("keep_unreachable_objects")))//$NON-NLS-1$
+				{
+					snapshotInfo.setProperty("keep_unreachable_objects", GCRootInfo.Type.UNREACHABLE);//$NON-NLS-1$
+				}
+				if (args.containsKey("discard_ratio")) //$NON-NLS-1$
+				{
+					snapshotInfo.setProperty("discard_ratio", Integer.parseInt(args.get("discard_ratio"))); //$NON-NLS-1$//$NON-NLS-2$
+					if (args.containsKey("discard_pattern")) //$NON-NLS-1$
+						snapshotInfo.setProperty("discard_pattern", args.get("discard_pattern")); //$NON-NLS-1$ //$NON-NLS-2$
+					if (args.containsKey("discard_offset")) //$NON-NLS-1$
+						snapshotInfo.setProperty("discard_offset", Integer.parseInt(args.get("discard_offset"))); //$NON-NLS-1$ //$NON-NLS-2$
+					if (args.containsKey("discard_seed")) //$NON-NLS-1$
+						snapshotInfo.setProperty("discard_seed", Integer.parseInt(args.get("discard_seed"))); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 
-				String snapshot_identifier = args.get("snapshot_identifier");
+				String snapshot_identifier = args.get("snapshot_identifier"); //$NON-NLS-1$
 				if (snapshot_identifier != null) {
-					snapshotInfo.setProperty("$runtimeId", snapshot_identifier);
+					snapshotInfo.setProperty("$runtimeId", snapshot_identifier);//$NON-NLS-1$
 				}
 
 				PreliminaryIndexImpl idx = new PreliminaryIndexImpl(snapshotInfo);
 
 				indexBuilder.fill(idx, listener);
 
-				// if (ParserPlugin.getDefault().isDebugging())
-				if (false) {
+				if (ParserPlugin.getDefault().isDebugging()) {
 					validateIndices(idx, listener);
 				}
 
@@ -192,9 +300,20 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 
 				indexBuilder.clean(purgedMapping, listener);
 
-				SnapshotImpl snapshot = builder.create(parser, listener);
+				purgedMapping = null;
 
-				snapshot.calculateDominatorTree(listener);
+				SnapshotImpl snapshot = builder.create(parser, listener);
+				boolean done = false;
+				try {
+					snapshot.calculateDominatorTree(listener);
+					snapshot.calculateMinRetainedHeapSizeForClasses(listener);
+					done = true;
+				} finally {
+					if (!done) {
+						// Error in dominator tree, so close the index files
+						snapshot.dispose();
+					}
+				}
 
 				return snapshot;
 			} catch (IOException ioe) {
@@ -208,13 +327,14 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 		}
 
 		if (errors.size() > 1) {
-			// MultiStatus status = new MultiStatus(ParserPlugin.PLUGIN_ID, 0,
-			// MessageUtil.format(Messages.SnapshotFactoryImpl_ErrorOpeningHeapDump, file.getName()), null);
-			// for (IOException error : errors)
-			// status.add(new Status(IStatus.ERROR, ParserPlugin.PLUGIN_ID, 0, error.getLocalizedMessage(), error));
-			// // Create a CoreException so that all the errors will be logged
-			// CoreException ce = new CoreException(status);
-			RuntimeException ce = new RuntimeException("Nb errors: " + errors.size(), errors.get(0));
+			MultiStatus status = new MultiStatus(ParserPlugin.PLUGIN_ID,
+					0,
+					MessageUtil.format(Messages.SnapshotFactoryImpl_ErrorOpeningHeapDump, file.getName()),
+					null);
+			for (IOException error : errors)
+				status.add(new Status(IStatus.ERROR, ParserPlugin.PLUGIN_ID, 0, error.getLocalizedMessage(), error));
+			// Create a CoreException so that all the errors will be logged
+			CoreException ce = new CoreException(status);
 
 			throw new SnapshotException(
 					MessageUtil.format(Messages.SnapshotFactoryImpl_Error_OpeningHeapDump, file.getName()),
@@ -332,6 +452,7 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 					if (outs[0] != clsId) {
 						long address = outs[0] >= 0 && outs[0] < maxIndex ? pidx.identifiers.get(outs[0]) : -1;
 						String desc = objDesc(pidx, i);
+						long clsAddress = clsId >= 0 && outs[0] < maxIndex ? pidx.identifiers.get(clsId) : -1;
 						listener.sendUserMessage(Severity.ERROR,
 								MessageUtil.format(Messages.SnapshotFactoryImpl_InvalidFirstOutbound,
 										i,
@@ -339,7 +460,8 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 										desc,
 										outs[0],
 										format(address),
-										clsId),
+										clsId,
+										format(clsAddress)),
 								null);
 					}
 				}
@@ -435,6 +557,34 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 								MessageUtil.format(Messages.SnapshotFactoryImpl_GCRootIDDoesNotMatchIndex, objid, idx),
 								null);
 					}
+					long objaddr = ifo.getObjectAddress();
+					int j = pidx.identifiers.reverse(objaddr);
+					if (j != idx) {
+						listener.sendUserMessage(Severity.ERROR,
+								MessageUtil.format(Messages.SnapshotFactoryImpl_GCRootIDDoesNotMatchAddress,
+										objid,
+										Long.toHexString(objaddr)),
+								null);
+					}
+					int ctxidx = ifo.getContextId();
+					long ctxaddr = ifo.getContextAddress();
+					if (ctxaddr != 0) {
+						if (ctxidx < 0 || ctxidx >= maxIndex) {
+							listener.sendUserMessage(Severity.ERROR,
+									MessageUtil
+											.format(Messages.SnapshotFactoryImpl_GCRootIDOutOfRange, ctxidx, maxIndex),
+									null);
+						}
+						int k = pidx.identifiers.reverse(ctxaddr);
+						if (k != ctxidx) {
+							listener.sendUserMessage(Severity.ERROR,
+									MessageUtil.format(Messages.SnapshotFactoryImpl_GCRootContextIDDoesNotMatchAddress,
+											objid,
+											ctxidx,
+											Long.toHexString(ctxaddr)),
+									null);
+						}
+					}
 				}
 			}
 		}
@@ -464,6 +614,36 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 												idx),
 										null);
 							}
+							long objaddr = ifo.getObjectAddress();
+							int j = pidx.identifiers.reverse(objaddr);
+							if (j != idx) {
+								listener.sendUserMessage(Severity.ERROR,
+										MessageUtil.format(Messages.SnapshotFactoryImpl_GCRootIDDoesNotMatchAddress,
+												objid,
+												Long.toHexString(objaddr)),
+										null);
+							}
+							int ctxidx = ifo.getContextId();
+							long ctxaddr = ifo.getContextAddress();
+							if (ctxaddr != 0) {
+								if (ctxidx < 0 || ctxidx >= maxIndex) {
+									listener.sendUserMessage(Severity.ERROR,
+											MessageUtil.format(Messages.SnapshotFactoryImpl_GCRootIDOutOfRange,
+													ctxidx,
+													maxIndex),
+											null);
+								}
+								int k = pidx.identifiers.reverse(ctxaddr);
+								if (k != ctxidx) {
+									listener.sendUserMessage(Severity.ERROR,
+											MessageUtil.format(
+													Messages.SnapshotFactoryImpl_GCRootContextIDDoesNotMatchAddress,
+													objid,
+													ctxidx,
+													Long.toHexString(ctxaddr)),
+											null);
+								}
+							}
 						}
 					}
 				}
@@ -479,7 +659,7 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 	 * @return A string representing the address
 	 */
 	private static String format(long address) {
-		return "0x" + Long.toHexString(address);
+		return "0x" + Long.toHexString(address); //$NON-NLS-1$
 	}
 
 	/**
@@ -510,11 +690,11 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 								MessageUtil.format(Messages.SnapshotFactoryImpl_ObjDescObjTypeAddress, format(clsAddr));
 					}
 				} else {
-					clsInfo = "";
+					clsInfo = ""; //$NON-NLS-1$
 				}
 			}
 		} else {
-			clsInfo = "";
+			clsInfo = ""; //$NON-NLS-1$
 		}
 		return clsInfo;
 	}
@@ -523,16 +703,15 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 		File prefixFile = new File(prefix);
 		File directory = prefixFile.getParentFile();
 		if (directory == null)
-			directory = new File(".");
+			directory = new File("."); //$NON-NLS-1$
 
 		final String fragment = prefixFile.getName();
 
-		final Pattern indexPattern = Pattern.compile("([A-Za-z0-9]+\\.)?index$");
-		final Pattern threadPattern = Pattern.compile("threads$");
-		final Pattern logPattern = Pattern.compile("inbound\\.index.*\\.log$");
+		final Pattern indexPattern = Pattern.compile("([A-Za-z0-9]+\\.)?index$"); //$NON-NLS-1$
+		final Pattern threadPattern = Pattern.compile("threads$"); //$NON-NLS-1$
+		final Pattern logPattern = Pattern.compile("inbound\\.index.*\\.log$"); //$NON-NLS-1$
 
 		File[] files = directory.listFiles(new FileFilter() {
-			@Override
 			public boolean accept(File f) {
 				if (f.isDirectory())
 					return false;

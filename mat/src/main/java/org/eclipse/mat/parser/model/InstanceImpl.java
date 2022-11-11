@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and others.
+ * Copyright (c) 2008, 2021 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -11,6 +13,7 @@
 package org.eclipse.mat.parser.model;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +71,7 @@ public class InstanceImpl extends AbstractObjectImpl implements IInstance {
 
 			return address;
 		} catch (SnapshotException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 
@@ -84,11 +87,10 @@ public class InstanceImpl extends AbstractObjectImpl implements IInstance {
 
 			return objectId;
 		} catch (SnapshotException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 
-	@Override
 	public List<Field> getFields() {
 		if (fields == null)
 			readFully();
@@ -96,15 +98,12 @@ public class InstanceImpl extends AbstractObjectImpl implements IInstance {
 		return fields;
 	}
 
-	@Override
 	public Field getField(String name) {
 		return internalGetField(name);
 	}
 
 	/**
 	 * Set the fields of this instance. The order should match the order of {@link #getFields()}.
-	 *
-	 * @return a list of fields
 	 */
 	protected void setFields(List<Field> fields) {
 		this.fields = fields;
@@ -126,22 +125,31 @@ public class InstanceImpl extends AbstractObjectImpl implements IInstance {
 			this.fields = fullCopy.fields;
 
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		} catch (SnapshotException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 
 	@Override
 	public long getUsedHeapSize() {
 		try {
-			return getSnapshot().getHeapSize(getObjectId());
+			int objId;
+			try {
+				objId = getObjectId();
+			} catch (RuntimeException e) {
+				Throwable cause = e.getCause();
+				if (cause instanceof SnapshotException)
+					throw (SnapshotException) cause;
+				else
+					throw e;
+			}
+			return getSnapshot().getHeapSize(objId);
 		} catch (SnapshotException e) {
 			return classInstance.getHeapSizePerInstance();
 		}
 	}
 
-	@Override
 	public ArrayLong getReferences() {
 		List<Field> fields = getFields();
 		ArrayLong list = new ArrayLong(fields.size() + 1);
@@ -171,15 +179,23 @@ public class InstanceImpl extends AbstractObjectImpl implements IInstance {
 		return list;
 	}
 
-	@Override
 	public List<NamedReference> getOutboundReferences() {
 		List<NamedReference> list = new ArrayList<NamedReference>();
 
-		list.add(new PseudoReference(source, classInstance.getObjectAddress(), "<class>"));
+		list.add(new PseudoReference(source, classInstance.getObjectAddress(), "<class>"));//$NON-NLS-1$
 
 		HashMapIntObject<HashMapIntObject<XGCRootInfo[]>> threadToLocalVars = source.getRootsPerThread();
 		if (threadToLocalVars != null) {
-			HashMapIntObject<XGCRootInfo[]> localVars = threadToLocalVars.get(getObjectId());
+			HashMapIntObject<XGCRootInfo[]> localVars;
+			try {
+				localVars = threadToLocalVars.get(getObjectId());
+			} catch (RuntimeException e) {
+				if (e.getCause() instanceof SnapshotException) {
+					localVars = null;
+				} else {
+					throw e;
+				}
+			}
 			if (localVars != null) {
 				IteratorInt localsIds = localVars.keys();
 				while (localsIds.hasNext()) {
@@ -187,7 +203,9 @@ public class InstanceImpl extends AbstractObjectImpl implements IInstance {
 					GCRootInfo[] rootInfo = localVars.get(localId);
 					ThreadToLocalReference ref = new ThreadToLocalReference(source,
 							rootInfo[0].getObjectAddress(),
-							"<" + GCRootInfo.getTypeSetAsString(rootInfo) + ">",
+							"<"//$NON-NLS-1$
+									+ GCRootInfo.getTypeSetAsString(rootInfo)
+									+ ">", //$NON-NLS-1$
 							localId,
 							rootInfo);
 					list.add(ref);

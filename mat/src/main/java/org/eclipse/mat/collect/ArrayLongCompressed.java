@@ -1,12 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG.
+ * Copyright (c) 2008, 2018 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson/IBM Corporation - allow changing of entries
  *******************************************************************************/
 package org.eclipse.mat.collect;
 
@@ -83,10 +86,10 @@ public class ArrayLongCompressed {
 		}
 		int leadingClearBits = 0;
 		int trailingClearBits = 0;
-		while ((mask & (1 << (BIT_LENGTH - leadingClearBits - 1))) == 0 && leadingClearBits < BIT_LENGTH) {
+		while (((mask & (1 << (BIT_LENGTH - leadingClearBits - 1))) == 0) && (leadingClearBits < BIT_LENGTH)) {
 			leadingClearBits++;
 		}
-		while ((mask & (1 << trailingClearBits)) == 0 && trailingClearBits < (BIT_LENGTH - leadingClearBits)) {
+		while (((mask & (1 << trailingClearBits)) == 0) && (trailingClearBits < (BIT_LENGTH - leadingClearBits))) {
 			trailingClearBits++;
 		}
 
@@ -117,18 +120,23 @@ public class ArrayLongCompressed {
 	 */
 	public void set(int index, long value) {
 		value >>>= trailingClearBits;
-		final long pos = (long) index * varyingBits;
+		final long pos = (long) (index) * varyingBits;
 		int idx = 2 + (int) (pos >>> 3);
 		int off = ((int) (pos)) & 0x7;
 		off += varyingBits;
 		if (off > 0x8) {
 			off -= 0x8;
+			// Mask off old data
+			data[idx] &= ~((1L << varyingBits - off) - 1);
 			data[idx++] |= (byte) (value >>> off);
 			while (off > 0x8) {
 				off -= 0x8;
 				data[idx++] = (byte) (value >>> off);
 			}
 		}
+		// Mask off old data
+		// Shift 2L by varyingBits - 1 to avoid problem with varying bits == 64
+		data[idx] &= ~(((2L << varyingBits - 1) - 1) << (0x8 - off));
 		data[idx] |= (byte) (value << (0x8 - off));
 	}
 

@@ -1,15 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and others.
+ * Copyright (c) 2008, 2021 SAP AG, IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson (IBM Corporation) - unwrap some exceptions
  *******************************************************************************/
 package org.eclipse.mat.parser.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Comparator;
 
@@ -54,12 +58,10 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 		this.classInstance = classInstance;
 	}
 
-	@Override
 	public long getObjectAddress() {
 		return address;
 	}
 
-	@Override
 	public int getObjectId() {
 		return objectId;
 	}
@@ -83,7 +85,6 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 		this.objectId = objectId;
 	}
 
-	@Override
 	public ClassImpl getClazz() {
 		return classInstance;
 	}
@@ -125,7 +126,6 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 		this.source = (SnapshotImpl) dump;
 	}
 
-	@Override
 	public ISnapshot getSnapshot() {
 		return this.source;
 	}
@@ -133,15 +133,23 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 	/**
 	 * @since 1.0
 	 */
-	@Override
 	abstract public long getUsedHeapSize();
 
-	@Override
 	public long getRetainedHeapSize() {
 		try {
-			return source.getRetainedHeapSize(getObjectId());
+			int objId;
+			try {
+				objId = getObjectId();
+			} catch (RuntimeException e) {
+				Throwable cause = e.getCause();
+				if (cause instanceof SnapshotException)
+					return 0;
+				else
+					throw e;
+			}
+			return source.getRetainedHeapSize(objId);
 		} catch (SnapshotException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 
@@ -156,9 +164,9 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 	public String toString() {
 		StringBuffer s = new StringBuffer(256);
 		s.append(this.getClazz().getName());
-		s.append(" [");
+		s.append(" [");//$NON-NLS-1$
 		appendFields(s);
-		s.append("]");
+		s.append("]");//$NON-NLS-1$
 		return s.toString();
 	}
 
@@ -169,35 +177,32 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 	 * @return
 	 */
 	protected StringBuffer appendFields(StringBuffer buf) {
-		return buf.append("id=0x").append(Long.toHexString(getObjectAddress()));
+		return buf.append("id=0x").append(Long.toHexString(getObjectAddress()));//$NON-NLS-1$
 	}
 
-	@Override
 	public String getClassSpecificName() {
 		return ClassSpecificNameResolverRegistry.resolve(this);
 	}
 
-	@Override
 	public String getTechnicalName() {
 		StringBuilder builder = new StringBuilder(256);
 		builder.append(getClazz().getName());
-		builder.append(" @ 0x");
+		builder.append(" @ 0x");//$NON-NLS-1$
 		builder.append(Long.toHexString(getObjectAddress()));
 		return builder.toString();
 	}
 
-	@Override
 	public String getDisplayName() {
 		String label = getClassSpecificName();
 		if (label == null)
 			return getTechnicalName();
 		else {
-			StringBuilder s = new StringBuilder(256).append(getTechnicalName()).append("  ");
+			StringBuilder s = new StringBuilder(256).append(getTechnicalName()).append("  "); //$NON-NLS-1$
 			if (label.length() <= 256) {
 				s.append(label);
 			} else {
 				s.append(label.substring(0, 256));
-				s.append("...");
+				s.append("...");//$NON-NLS-1$
 			}
 			return s.toString();
 		}
@@ -205,11 +210,21 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 
 	// If the name is in the form <FIELD>{.<FIELD>}
 	// the fields are transiently followed
-	@Override
 	public final Object resolveValue(String name) throws SnapshotException {
 		int p = name.indexOf('.');
 		String n = p < 0 ? name : name.substring(0, p);
-		Field f = internalGetField(n);
+		Field f;
+		try {
+			f = internalGetField(n);
+		} catch (RuntimeException e) {
+			// InstanceImpl.readFully can wrap these exceptions, so unwrap
+			Throwable cause = e.getCause();
+			if (cause instanceof SnapshotException)
+				throw (SnapshotException) cause;
+			if (cause instanceof IOException)
+				throw new SnapshotException(cause);
+			throw e;
+		}
 		if (f == null || f.getValue() == null)
 			return null;
 		if (p < 0) {
@@ -238,9 +253,9 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 		if (ref == null)
 			return null;
 
-		int objectId;
+		IObject object;
 		try {
-			objectId = ref.getObjectId();
+			object = ref.getObject();
 		} catch (SnapshotException e) {
 			// Convert the unknown address exception into something more meaningful
 			String msg = MessageUtil.format(Messages.AbstractObjectImpl_Error_FieldContainsIllegalReference,
@@ -248,7 +263,7 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 			throw new SnapshotException(msg, e);
 		}
 
-		return this.source.getObject(objectId).resolveValue(name.substring(p + 1));
+		return object.resolveValue(name.substring(p + 1));
 	}
 
 	/**
@@ -260,14 +275,23 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 	 */
 	protected abstract Field internalGetField(String name);
 
-	@Override
 	public GCRootInfo[] getGCRootInfo() throws SnapshotException {
-		return source.getGCRootInfo(getObjectId());
+		int objId;
+		try {
+			objId = getObjectId();
+		} catch (RuntimeException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof SnapshotException)
+				throw (SnapshotException) cause;
+			else
+				throw e;
+		}
+		return source.getGCRootInfo(objId);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof IObject && this.objectId == ((IObject) obj).getObjectId();
+		return obj instanceof IObject && this.getObjectAddress() == ((IObject) obj).getObjectAddress();
 	}
 
 	@Override

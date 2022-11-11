@@ -1,12 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG.
+ * Copyright (c) 2008, 2018 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    IBM Corporation/Andrew Johnson - Javadoc updates
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
  *******************************************************************************/
 package org.eclipse.mat.collect;
 
@@ -30,13 +34,38 @@ public final class ArrayInt {
 	}
 
 	/**
-	 * Create a list of given size
+	 * Create an empty list of given capacity for more entries.
 	 *
 	 * @param initialCapacity
+	 *            in number of entries
 	 */
 	public ArrayInt(int initialCapacity) {
 		elements = new int[initialCapacity];
 		size = 0;
+	}
+
+	/**
+	 * Create a list based on a supplied array
+	 *
+	 * @param initialValues
+	 *            a copy is taken of this array
+	 */
+	public ArrayInt(int[] initialValues) {
+		this(initialValues.length);
+		System.arraycopy(initialValues, 0, elements, 0, initialValues.length);
+		size = initialValues.length;
+	}
+
+	/**
+	 * Create a list based on an existing ArrayInt, of size of the template
+	 *
+	 * @param template
+	 *            a copy is taken of these values
+	 */
+	public ArrayInt(ArrayInt template) {
+		this(template.size);
+		System.arraycopy(template.elements, 0, elements, 0, template.size);
+		size = template.size;
 	}
 
 	/**
@@ -51,9 +80,10 @@ public final class ArrayInt {
 	}
 
 	/**
-	 * append a group of entries
+	 * Append a group of entries
 	 *
 	 * @param elements
+	 *            an array of int, to be added to end of this ArrayInt.
 	 */
 	public void addAll(int[] elements) {
 		ensureCapacity(size + elements.length);
@@ -62,9 +92,10 @@ public final class ArrayInt {
 	}
 
 	/**
-	 * append all of another
+	 * Append all of another ArrayInt to the end of this one.
 	 *
 	 * @param template
+	 *            the other ArrayInt
 	 */
 	public void addAll(ArrayInt template) {
 		ensureCapacity(size + template.size);
@@ -76,7 +107,9 @@ public final class ArrayInt {
 	 * modify one particular entry
 	 *
 	 * @param index
+	 *            into this ArrayInt
 	 * @param element
+	 *            the new value to be put here
 	 * @return the previous value
 	 */
 	public int set(int index, int element) {
@@ -89,9 +122,10 @@ public final class ArrayInt {
 	}
 
 	/**
-	 * retrieve one entry
+	 * Retrieve one entry
 	 *
 	 * @param index
+	 *            into the ArrayInt
 	 * @return the entry
 	 */
 	public int get(int index) {
@@ -138,12 +172,10 @@ public final class ArrayInt {
 		return new IteratorInt() {
 			int index = 0;
 
-			@Override
 			public boolean hasNext() {
 				return index < size;
 			}
 
-			@Override
 			public int next() {
 				return elements[index++];
 			}
@@ -184,7 +216,7 @@ public final class ArrayInt {
 	 * arrange the entries in ascending order
 	 */
 	public void sort() {
-		Arrays.sort(elements, 0, size);
+		Arrays.parallelSort(elements, 0, size);
 	}
 
 	// //////////////////////////////////////////////////////////////

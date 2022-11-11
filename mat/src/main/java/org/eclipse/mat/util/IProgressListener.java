@@ -1,17 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG.
+ * Copyright (c) 2008, 2018 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    IBM Corporation/Andrew Johnson - Javadoc updates
  *******************************************************************************/
 package org.eclipse.mat.util;
 
 /**
- * This interface is closely modeled after {@link org.eclipse.core.runtime.IProgressMonitor}. The latter has not been
+ * This interface is closely modeled after { link org.eclipse.core.runtime.IProgressMonitor}. The latter has not been
  * used to avoid a dependency. It is implemented by objects that monitor the progress of an activity; the methods in
  * this interface are invoked by code that performs the activity.
  * <p>
@@ -39,14 +42,14 @@ public interface IProgressListener {
 	 * it. It is only available here for convenience reasons to get rid of the various CanceledException throughout the
 	 * code.
 	 */
-	class OperationCanceledException extends RuntimeException {
+	public class OperationCanceledException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 	}
 
 	/**
 	 * Constant which may be used to indicate that the total amount of work units is not known.
 	 */
-	int UNKNOWN_TOTAL_WORK = -1;
+	public final static int UNKNOWN_TOTAL_WORK = -1;
 
 	/**
 	 * Notifies that the main task is beginning. This must only be called once on a given progress monitor instance.
@@ -58,13 +61,13 @@ public interface IProgressListener {
 	 *            <code>UNKNOWN</code> the implementation is free to indicate progress in a way which doesn't require
 	 *            the total number of work units in advance.
 	 */
-	void beginTask(String name, int totalWork);
+	public void beginTask(String name, int totalWork);
 
 	/**
 	 * Notifies that the work is done; that is, either the main task is completed or the user canceled it. This method
 	 * may be called more than once (implementations should be prepared to handle this case).
 	 */
-	void done();
+	public void done();
 
 	/**
 	 * Returns whether cancelation of current operation has been requested. Long-running operations should poll to see
@@ -73,7 +76,7 @@ public interface IProgressListener {
 	 * @return <code>true</code> if cancellation has been requested, and <code>false</code> otherwise
 	 * @see #setCanceled(boolean)
 	 */
-	boolean isCanceled();
+	public boolean isCanceled();
 
 	/**
 	 * Sets the cancel state to the given value.
@@ -83,7 +86,7 @@ public interface IProgressListener {
 	 *            <code>false</code> clears this flag
 	 * @see #isCanceled()
 	 */
-	void setCanceled(boolean value);
+	public void setCanceled(boolean value);
 
 	/**
 	 * Notifies that a subtask of the main task is beginning. Subtasks are optional; the main task might not have
@@ -92,7 +95,7 @@ public interface IProgressListener {
 	 * @param name
 	 *            the name (or description) of the subtask
 	 */
-	void subTask(String name);
+	public void subTask(String name);
 
 	/**
 	 * Notifies that a given number of work unit of the main task has been completed. Note that this amount represents
@@ -101,7 +104,7 @@ public interface IProgressListener {
 	 * @param work
 	 *            the number of work units just completed
 	 */
-	void worked(int work);
+	public void worked(int work);
 
 	/**
 	 * Defines the severities possible for a user message.
@@ -111,9 +114,8 @@ public interface IProgressListener {
 	 * WARNING</code> - a warning (less severe)</li>
 	 * <li><code>INFO</code> - an informational ("fyi") message (least severe)</li>
 	 * </ul>
-	 * <p>
 	 */
-	enum Severity {
+	public enum Severity {
 		/** Severity indicating this user message is informational only. */
 		INFO,
 		/** Severity indicating this user message represents a warning. */
@@ -132,6 +134,6 @@ public interface IProgressListener {
 	 * @param exception
 	 *            The relevant low-level exception, or <code>null</code> if none.
 	 */
-	void sendUserMessage(Severity severity, String message, Throwable exception);
+	public void sendUserMessage(Severity severity, String message, Throwable exception);
 
 }

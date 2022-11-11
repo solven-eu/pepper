@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008 SAP AG.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -25,7 +27,7 @@ public interface IInstance extends IObject {
 	 * class and its super classes are returned. This order is important to know, if a class declares a field by the
 	 * same name as the class it inherits from.
 	 */
-	List<Field> getFields();
+	public List<Field> getFields();
 
 	/**
 	 * Returns the field identified by the name.
@@ -33,5 +35,5 @@ public interface IInstance extends IObject {
 	 * If declares a member variable by the same name as the parent class does, then the result of this method is
 	 * undefined.
 	 */
-	Field getField(String name);
+	public Field getField(String name);
 }

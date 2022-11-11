@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2009, 2010 SAP AG.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -22,36 +24,29 @@ public class SilentProgressListener implements IProgressListener {
 		this.delegate = delegate;
 	}
 
-	@Override
 	public void beginTask(String name, int totalWork) {
 		delegate.subTask(name);
 	}
 
-	@Override
 	public void done() {
 	}
 
-	@Override
 	public boolean isCanceled() {
 		return delegate.isCanceled();
 	}
 
-	@Override
 	public void sendUserMessage(Severity severity, String message, Throwable exception) {
 		delegate.sendUserMessage(severity, message, exception);
 	}
 
-	@Override
 	public void setCanceled(boolean value) {
 		delegate.setCanceled(value);
 	}
 
-	@Override
 	public void subTask(String name) {
 		delegate.subTask(name);
 	}
 
-	@Override
 	public void worked(int work) {
 	}
 

@@ -1,12 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and others.
+ * Copyright (c) 2008, 2021 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson/IBM Corporation - enhancements and fixes
  *******************************************************************************/
 package org.eclipse.mat.snapshot.model;
 
@@ -28,9 +31,27 @@ public final class Field extends FieldDescriptor implements Serializable {
 	 * @param type
 	 *            the type {@link IObject.Type}
 	 * @param value
-	 *            value is one of ObjectReference - for an object field Byte - for a byte field Short - for a short
-	 *            field Integer - for an int field Long - for a long field Boolean - for a boolean field Char - for a
-	 *            char field Float - for a float field Double - for a double field
+	 *            value is one of
+	 *            <dl>
+	 *            <dt>{@link ObjectReference}</dt>
+	 *            <dd>for an object field</dd>
+	 *            <dt>{@link Byte}</dt>
+	 *            <dd>for a byte field</dd>
+	 *            <dt>{@link Short}</dt>
+	 *            <dd>for a short field</dd>
+	 *            <dt>{@link Integer}</dt>
+	 *            <dd>for an int field</dd>
+	 *            <dt>{@link Long}</dt>
+	 *            <dd>for a long field</dd>
+	 *            <dt>{@link Boolean}</dt>
+	 *            <dd>for a boolean field</dd>
+	 *            <dt>{@link Character}</dt>
+	 *            <dd>for a char field</dd>
+	 *            <dt>{@link Float}</dt>
+	 *            <dd>for a float field</dd>
+	 *            <dt>{@link Double}</dt>
+	 *            <dd>for a double field</dd>
+	 *            </dl>
 	 */
 	public Field(String name, int type, Object value) {
 		super(name, type);
@@ -40,9 +61,27 @@ public final class Field extends FieldDescriptor implements Serializable {
 	/**
 	 * Gets the value of the field.
 	 *
-	 * @return ObjectReference - for an object field Byte - for a byte field Short - for a short field Integer - for an
-	 *         int field Long - for a long field Boolean - for a boolean field Char - for a char field Float - for a
-	 *         float field Double - for a double field
+	 * @return
+	 *         <dl>
+	 *         <dt>{@link ObjectReference}</dt>
+	 *         <dd>for an object field</dd>
+	 *         <dt>{@link Byte}</dt>
+	 *         <dd>for a byte field</dd>
+	 *         <dt>{@link Short}</dt>
+	 *         <dd>for a short field</dd>
+	 *         <dt>{@link Integer}</dt>
+	 *         <dd>for an int field</dd>
+	 *         <dt>{@link Long}</dt>
+	 *         <dd>for a long field</dd>
+	 *         <dt>{@link Boolean}</dt>
+	 *         <dd>for a boolean field</dd>
+	 *         <dt>{@link Character}</dt>
+	 *         <dd>for a char field</dd>
+	 *         <dt>{@link Float}</dt>
+	 *         <dd>for a float field</dd>
+	 *         <dt>{@link Double}</dt>
+	 *         <dd>for a double field</dd>
+	 *         </dl>
 	 */
 	public Object getValue() {
 		return value;
@@ -53,9 +92,27 @@ public final class Field extends FieldDescriptor implements Serializable {
 	 * static fields to change the object reference to one having a link to the current snapshot.
 	 *
 	 * @param object
-	 *            ObjectReference - for an object field Byte - for a byte field Short - for a short field Integer - for
-	 *            an int field Long - for a long field Boolean - for a boolean field Char - for a char field Float - for
-	 *            a float field Double - for a double field
+	 *            object is one of
+	 *            <dl>
+	 *            <dt>{@link ObjectReference}</dt>
+	 *            <dd>for an object field</dd>
+	 *            <dt>{@link Byte}</dt>
+	 *            <dd>for a byte field</dd>
+	 *            <dt>{@link Short}</dt>
+	 *            <dd>for a short field</dd>
+	 *            <dt>{@link Integer}</dt>
+	 *            <dd>for an int field</dd>
+	 *            <dt>{@link Long}</dt>
+	 *            <dd>for a long field</dd>
+	 *            <dt>{@link Boolean}</dt>
+	 *            <dd>for a boolean field</dd>
+	 *            <dt>{@link Character}</dt>
+	 *            <dd>for a char field</dd>
+	 *            <dt>{@link Float}</dt>
+	 *            <dd>for a float field</dd>
+	 *            <dt>{@link Double}</dt>
+	 *            <dd>for a double field</dd>
+	 *            </dl>
 	 */
 	public void setValue(Object object) {
 		value = object;
@@ -66,8 +123,7 @@ public final class Field extends FieldDescriptor implements Serializable {
 	 *
 	 * @return a description of this field.
 	 */
-	@Override
 	public String toString() {
-		return type + " " + name + ": \t" + value;
+		return super.toString() + ": \t" + value; //$NON-NLS-1$
 	}
 }

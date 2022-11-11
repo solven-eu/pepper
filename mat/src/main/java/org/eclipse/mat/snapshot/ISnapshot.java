@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and IBM Corporation.
+ * Copyright (c) 2008, 2022 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -52,7 +54,7 @@ public interface ISnapshot {
 	 *
 	 * @return info object describing the snapshot
 	 */
-	SnapshotInfo getSnapshotInfo();
+	public SnapshotInfo getSnapshotInfo();
 
 	/**
 	 * Get all GC roots.
@@ -64,8 +66,9 @@ public interface ISnapshot {
 	 *
 	 * @return int[] containing the objectIds of all GC roots
 	 * @throws SnapshotException
+	 *             should not normally occur
 	 */
-	int[] getGCRoots() throws SnapshotException;
+	public int[] getGCRoots() throws SnapshotException;
 
 	/**
 	 * Get all classes.
@@ -77,8 +80,9 @@ public interface ISnapshot {
 	 *
 	 * @return collection of all classes
 	 * @throws SnapshotException
+	 *             should not normally occur
 	 */
-	Collection<IClass> getClasses() throws SnapshotException;
+	public Collection<IClass> getClasses() throws SnapshotException;
 
 	/**
 	 * Get all classes by name.
@@ -97,8 +101,9 @@ public interface ISnapshot {
 	 *            taken into account for sub classes anymore)
 	 * @return collection of matching classes - current implementations can return null if there is no class found
 	 * @throws SnapshotException
+	 *             should not normally occur
 	 */
-	Collection<IClass> getClassesByName(String name, boolean includeSubClasses) throws SnapshotException;
+	public Collection<IClass> getClassesByName(String name, boolean includeSubClasses) throws SnapshotException;
 
 	/**
 	 * Get all classes by name pattern.
@@ -114,8 +119,9 @@ public interface ISnapshot {
 	 *            taken into account for subclasses anymore)
 	 * @return collection of matching classes
 	 * @throws SnapshotException
+	 *             should not normally occur
 	 */
-	Collection<IClass> getClassesByName(Pattern namePattern, boolean includeSubClasses) throws SnapshotException;
+	public Collection<IClass> getClassesByName(Pattern namePattern, boolean includeSubClasses) throws SnapshotException;
 
 	/**
 	 * Get histogram for the whole snapshot.
@@ -129,8 +135,9 @@ public interface ISnapshot {
 	 *            progress listener informing about the current state of execution
 	 * @return histogram
 	 * @throws SnapshotException
+	 *             if there is a problem retrieving the information such as because of a damaged index.
 	 */
-	// Histogram getHistogram(IProgressListener progressListener) throws SnapshotException;
+	public Histogram getHistogram(IProgressListener progressListener) throws SnapshotException;
 
 	/**
 	 * Get histogram for some specific objects - usually the result of other calls to the snapshot.
@@ -144,10 +151,11 @@ public interface ISnapshot {
 	 *            object ids for which the histogram should be computed
 	 * @param progressListener
 	 *            progress listener informing about the current state of execution
-	 * @return histogram
+	 * @return histogram - current implementations can return null if the listener is cancelled
 	 * @throws SnapshotException
+	 *             if there is a problem retrieving the information such as because of a damaged index.
 	 */
-	// Histogram getHistogram(int[] objectIds, IProgressListener progressListener) throws SnapshotException;
+	public Histogram getHistogram(int[] objectIds, IProgressListener progressListener) throws SnapshotException;
 
 	/**
 	 * Get all objects referencing the given object.
@@ -160,8 +168,9 @@ public interface ISnapshot {
 	 *            object which is referenced
 	 * @return objects referencing the given object
 	 * @throws SnapshotException
+	 *             should not normally occur
 	 */
-	int[] getInboundRefererIds(int objectId) throws SnapshotException;
+	public int[] getInboundRefererIds(int objectId) throws SnapshotException;
 
 	/**
 	 * Get all objects referenced by the given object.
@@ -185,8 +194,9 @@ public interface ISnapshot {
 	 *            object which is referencing
 	 * @return objects referenced by the given object
 	 * @throws SnapshotException
+	 *             should not normally occur
 	 */
-	int[] getOutboundReferentIds(int objectId) throws SnapshotException;
+	public int[] getOutboundReferentIds(int objectId) throws SnapshotException;
 
 	/**
 	 * Get all objects referencing the given objects.
@@ -202,10 +212,12 @@ public interface ISnapshot {
 	 *            objects which are referenced
 	 * @param progressListener
 	 *            progress listener informing about the current state of execution
-	 * @return objects referencing the given objects
+	 * @return objects referencing the given objects - current implementations can return null if the operation is
+	 *         cancelled
 	 * @throws SnapshotException
+	 *             should not normally occur
 	 */
-	int[] getInboundRefererIds(int[] objectIds, IProgressListener progressListener) throws SnapshotException;
+	public int[] getInboundRefererIds(int[] objectIds, IProgressListener progressListener) throws SnapshotException;
 
 	/**
 	 * Get all objects referenced by the given objects.
@@ -220,10 +232,12 @@ public interface ISnapshot {
 	 *            objects which are referencing
 	 * @param progressListener
 	 *            progress listener informing about the current state of execution
-	 * @return objects referenced by the given objects
+	 * @return objects referenced by the given objects - current implementations can return null if the operation is
+	 *         cancelled
 	 * @throws SnapshotException
+	 *             should not normally occur
 	 */
-	int[] getOutboundReferentIds(int[] objectIds, IProgressListener progressListener) throws SnapshotException;
+	public int[] getOutboundReferentIds(int[] objectIds, IProgressListener progressListener) throws SnapshotException;
 
 	/**
 	 * Get interactive computer for paths from GC roots to the given object.
@@ -244,8 +258,9 @@ public interface ISnapshot {
 	 *            then paths through any of the fields will be avoided
 	 * @return interactive computer for paths from GC roots to the given object
 	 * @throws SnapshotException
+	 *             if a problem occurs creating the paths computer
 	 */
-	IPathsFromGCRootsComputer getPathsFromGCRoots(int objectId, Map<IClass, Set<String>> excludeMap)
+	public IPathsFromGCRootsComputer getPathsFromGCRoots(int objectId, Map<IClass, Set<String>> excludeMap)
 			throws SnapshotException;
 
 	/**
@@ -261,9 +276,10 @@ public interface ISnapshot {
 	 *            then paths through any of the fields will be avoided
 	 * @return IMultiplePathsFromGCRootsComputer The object which can be used to carry out the actual computation and
 	 * @throws SnapshotException
+	 *             if a problem occurs creating the paths computer
 	 */
-	IMultiplePathsFromGCRootsComputer getMultiplePathsFromGCRoots(int[] objectIds, Map<IClass, Set<String>> excludeMap)
-			throws SnapshotException;
+	public IMultiplePathsFromGCRootsComputer getMultiplePathsFromGCRoots(int[] objectIds,
+			Map<IClass, Set<String>> excludeMap) throws SnapshotException;
 
 	/**
 	 * Get retained set of objects for the given objects (including the given objects).
@@ -280,8 +296,9 @@ public interface ISnapshot {
 	 *            progress listener informing about the current state of execution
 	 * @return retained set of objects for the given objects
 	 * @throws SnapshotException
+	 *             if a problem occurs, for example if the operation was interrupted
 	 */
-	int[] getRetainedSet(int[] objectIds, IProgressListener progressListener) throws SnapshotException;
+	public int[] getRetainedSet(int[] objectIds, IProgressListener progressListener) throws SnapshotException;
 
 	/**
 	 * Get retained set of objects for the given fields at the given objects (excluding the given objects).
@@ -295,12 +312,13 @@ public interface ISnapshot {
 	 * @param objectIds
 	 *            objects on which the retained set should be determined
 	 * @param fieldNames
+	 *            the names of the fields which could retain the objects
 	 * @param progressMonitor
 	 *            progress listener informing about the current state of execution
 	 * @return retained set of objects for the given objects
 	 * @throws SnapshotException
 	 */
-	int[] getRetainedSet(int[] objectIds, String[] fieldNames, IProgressListener progressMonitor)
+	public int[] getRetainedSet(int[] objectIds, String[] fieldNames, IProgressListener progressMonitor)
 			throws SnapshotException;
 
 	/**
@@ -321,7 +339,7 @@ public interface ISnapshot {
 	 * @return retained set of objects for the given objects
 	 * @throws SnapshotException
 	 */
-	int[] getRetainedSet(int[] objectIds,
+	public int[] getRetainedSet(int[] objectIds,
 			ExcludedReferencesDescriptor[] excludedReferences,
 			IProgressListener progressMonitor) throws SnapshotException;
 
@@ -345,7 +363,7 @@ public interface ISnapshot {
 	 * @return the minimum retained set of objects for the given objects
 	 * @throws SnapshotException
 	 */
-	int[] getMinRetainedSet(int[] objectIds, IProgressListener progressListener) throws SnapshotException;
+	public int[] getMinRetainedSet(int[] objectIds, IProgressListener progressListener) throws SnapshotException;
 
 	/**
 	 * Calculate the minimum retained size for the given objects. Works much faster than getting the min. retained set
@@ -358,7 +376,7 @@ public interface ISnapshot {
 	 * @return the minimum retained set of objects for the given objects
 	 * @throws SnapshotException
 	 */
-	long getMinRetainedSize(int[] objectIds, IProgressListener listener) throws SnapshotException;
+	public long getMinRetainedSize(int[] objectIds, IProgressListener listener) throws SnapshotException;
 
 	/**
 	 * Get objects the given object directly dominates, i.e. the objects which are life-time dependent on the given
@@ -370,7 +388,7 @@ public interface ISnapshot {
 	 * @return objects the given object directly dominates
 	 * @throws SnapshotException
 	 */
-	int[] getImmediateDominatedIds(int objectId) throws SnapshotException;
+	public int[] getImmediateDominatedIds(int objectId) throws SnapshotException;
 
 	/**
 	 * Get object which directly dominates the given object, i.e. the object which controls the life-time of the given
@@ -382,7 +400,7 @@ public interface ISnapshot {
 	 * @return Object id of the dominator. -1 if the object is dominated by the root of the dominator tree.
 	 * @throws SnapshotException
 	 */
-	int getImmediateDominatorId(int objectId) throws SnapshotException;
+	public int getImmediateDominatorId(int objectId) throws SnapshotException;
 
 	/**
 	 * Get a summary of the dominators for all the given objects. The summary can be viewed on grouped by classes or
@@ -404,8 +422,9 @@ public interface ISnapshot {
 	 *         or class loaders
 	 * @throws SnapshotException
 	 */
-	DominatorsSummary getDominatorsOf(int[] objectIds, Pattern excludePattern, IProgressListener progressListener)
-			throws SnapshotException;
+	public DominatorsSummary getDominatorsOf(int[] objectIds,
+			Pattern excludePattern,
+			IProgressListener progressListener) throws SnapshotException;
 
 	/**
 	 * Get the top-ancestors in the dominator tree from the supplied objectIds. The result will be a list of objects
@@ -420,7 +439,7 @@ public interface ISnapshot {
 	 * @return int[] the objects which not in a parent/child relation in the dominator tree
 	 * @throws SnapshotException
 	 */
-	int[] getTopAncestorsInDominatorTree(int[] objectIds, IProgressListener listener) throws SnapshotException;
+	public int[] getTopAncestorsInDominatorTree(int[] objectIds, IProgressListener listener) throws SnapshotException;
 
 	/**
 	 * Get object abstracting the real Java Object from the heap dump identified by the given id.
@@ -432,7 +451,7 @@ public interface ISnapshot {
 	 * @return object abstracting the real Java Object from the heap dump identified by the given id
 	 * @throws SnapshotException
 	 */
-	IObject getObject(int objectId) throws SnapshotException;
+	public IObject getObject(int objectId) throws SnapshotException;
 
 	/**
 	 * Get the GC root info for an object. If the provided object is not a GC root, then null will be returned;
@@ -447,7 +466,7 @@ public interface ISnapshot {
 	 * @return null if this object is no GC root or GCRootInfo[] if it is
 	 * @throws SnapshotException
 	 */
-	GCRootInfo[] getGCRootInfo(int objectId) throws SnapshotException;
+	public GCRootInfo[] getGCRootInfo(int objectId) throws SnapshotException;
 
 	/**
 	 * Get object abstracting the real Java Class this object was an instance of in the heap dump identified by the
@@ -461,7 +480,7 @@ public interface ISnapshot {
 	 *         given id
 	 * @throws SnapshotException
 	 */
-	IClass getClassOf(int objectId) throws SnapshotException;
+	public IClass getClassOf(int objectId) throws SnapshotException;
 
 	/**
 	 * Get heap size for just the given object. new long[Integer.MAX_VALUE] is bigger than Integer.MAX_VALUE bytes, so
@@ -476,7 +495,7 @@ public interface ISnapshot {
 	 * @throws SnapshotException
 	 * @since 1.0
 	 */
-	long getHeapSize(int objectId) throws SnapshotException;
+	public long getHeapSize(int objectId) throws SnapshotException;
 
 	/**
 	 * Get the total shallow heap size for a set of objects.
@@ -489,7 +508,7 @@ public interface ISnapshot {
 	 * @return total heap size for the given object set
 	 * @throws SnapshotException
 	 */
-	long getHeapSize(int[] objectIds) throws SnapshotException;
+	public long getHeapSize(int[] objectIds) throws SnapshotException;
 
 	/**
 	 * Get retained heap size for the given object.
@@ -505,12 +524,16 @@ public interface ISnapshot {
 	 * @return retained heap size for the given object or 0 if no dominator tree was calculated
 	 * @throws SnapshotException
 	 */
-	long getRetainedHeapSize(int objectId) throws SnapshotException;
+	public long getRetainedHeapSize(int objectId) throws SnapshotException;
 
 	/**
 	 * Returns true if the object by this id is a class.
 	 * <p>
 	 * Performance: Very fast.
+	 *
+	 * @param objectId
+	 *            id of object to test for being a class (and so an {@link IClass}).
+	 * @return true if it is a class
 	 */
 	boolean isClass(int objectId);
 
@@ -518,6 +541,11 @@ public interface ISnapshot {
 	 * Returns true if the object by this id is a class loader.
 	 * <p>
 	 * Performance: Very fast.
+	 *
+	 * @param objectId
+	 *            id of object to test for being a class loader (and so an
+	 *            {@link org.eclipse.mat.snapshot.model.IClassLoader}).
+	 * @return true if it is a class
 	 */
 	boolean isClassLoader(int objectId);
 
@@ -525,6 +553,10 @@ public interface ISnapshot {
 	 * Returns true if the object by this id is an array.
 	 * <p>
 	 * Performance: Very fast.
+	 *
+	 * @param objectId
+	 *            id of object to test for being an array (and so an {@link org.eclipse.mat.snapshot.model.IArray}).
+	 * @return true if it is an array
 	 */
 	boolean isArray(int objectId);
 
@@ -532,6 +564,10 @@ public interface ISnapshot {
 	 * Returns true if the object by this id is a garbage collection root.
 	 * <p>
 	 * Performance: Very fast.
+	 *
+	 * @param objectId
+	 *            id of object to test for being a GC root
+	 * @return true if it is a GC root
 	 */
 	boolean isGCRoot(int objectId);
 
@@ -543,10 +579,12 @@ public interface ISnapshot {
 	 *
 	 * @param objectId
 	 *            id of object you want the address for
-	 * @return object address
+	 * @return object address address of object with that id
 	 * @throws SnapshotException
+	 *             shouldn't normally happen as often a {@link RuntimeException} would be thrown if the object ID is
+	 *             invalid.
 	 */
-	long mapIdToAddress(int objectId) throws SnapshotException;
+	public long mapIdToAddress(int objectId) throws SnapshotException;
 
 	/**
 	 * Map object address (memory address where the object was stored) to object id (snapshot internal identity assigned
@@ -558,8 +596,9 @@ public interface ISnapshot {
 	 *            address of object you want the id for
 	 * @return object id
 	 * @throws SnapshotException
+	 *             if the object address is not found.
 	 */
-	int mapAddressToId(long objectAddress) throws SnapshotException;
+	public int mapAddressToId(long objectAddress) throws SnapshotException;
 
 	/**
 	 * Dispose the whole snapshot.
@@ -568,7 +607,7 @@ public interface ISnapshot {
 	 * return of all resources (e.g. main memory, file and socket handles...). After calling this method the snapshot
 	 * can't be used anymore.
 	 */
-	void dispose();
+	public void dispose();
 
 	/**
 	 * Get additional JVM information, if available.
@@ -576,10 +615,12 @@ public interface ISnapshot {
 	 * For example, from the supplied snapshot implementation {@link org.eclipse.mat.parser.internal.SnapshotImpl} the
 	 * extra information is obtained via {@link org.eclipse.mat.parser.IObjectReader#getAddon(Class)}.
 	 *
-	 * @return SnapshotAddons - extended information, e.g. perm info, OoM stack trace info, JVM arguments, etc.
+	 * @return SnapshotAddons - extended information, e.g. perm info, OoM stack trace info, JVM arguments, etc. returns
+	 *         null if the information is not present
 	 * @throws SnapshotException
+	 *             if there is a problem retrieving the information
 	 */
-	<A> A getSnapshotAddons(Class<A> addon) throws SnapshotException;
+	public <A> A getSnapshotAddons(Class<A> addon) throws SnapshotException;
 
 	/**
 	 * Get a the stack trace information for a given thread object, if thread stack information is available in this
@@ -589,8 +630,9 @@ public interface ISnapshot {
 	 * @return IThreadStack - an object representing the call stack of the thread. Returns null if no info is available
 	 *         for the object, or no stack info is available at all
 	 * @throws SnapshotException
+	 *             if there is a problem retrieving the information
 	 * @since 0.8
 	 */
-	IThreadStack getThreadStack(int objectId) throws SnapshotException;
+	public IThreadStack getThreadStack(int objectId) throws SnapshotException;
 
 }

@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2010 SAP AG.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -24,7 +26,6 @@ public class VoidProgressListener implements IProgressListener {
 	 *
 	 * @see IProgressListener#beginTask(String, int)
 	 */
-	@Override
 	public void beginTask(String name, int totalWork) {
 	}
 
@@ -33,7 +34,6 @@ public class VoidProgressListener implements IProgressListener {
 	 *
 	 * @see IProgressListener#done()
 	 */
-	@Override
 	public void done() {
 	}
 
@@ -42,7 +42,6 @@ public class VoidProgressListener implements IProgressListener {
 	 *
 	 * @see IProgressListener#isCanceled()
 	 */
-	@Override
 	public boolean isCanceled() {
 		return cancelled;
 	}
@@ -52,7 +51,6 @@ public class VoidProgressListener implements IProgressListener {
 	 *
 	 * @see IProgressListener#setCanceled(boolean)
 	 */
-	@Override
 	public void setCanceled(boolean value) {
 		cancelled = value;
 	}
@@ -62,7 +60,6 @@ public class VoidProgressListener implements IProgressListener {
 	 *
 	 * @see IProgressListener#subTask(String)
 	 */
-	@Override
 	public void subTask(String name) {
 	}
 
@@ -71,7 +68,6 @@ public class VoidProgressListener implements IProgressListener {
 	 *
 	 * @see IProgressListener#worked(int)
 	 */
-	@Override
 	public void worked(int work) {
 	}
 
@@ -80,7 +76,6 @@ public class VoidProgressListener implements IProgressListener {
 	 *
 	 * @see IProgressListener#sendUserMessage(Severity, String, Throwable)
 	 */
-	@Override
 	public void sendUserMessage(Severity severity, String message, Throwable exception) {
 	}
 

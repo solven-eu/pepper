@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008 SAP AG.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -39,7 +41,7 @@ public interface IPathsFromGCRootsComputer {
 	 *         GC root)
 	 * @throws SnapshotException
 	 */
-	int[] getNextShortestPath() throws SnapshotException;
+	public int[] getNextShortestPath() throws SnapshotException;
 
 	/**
 	 * Helper method constructing a tree like data structure from the given paths. Either all so far collected paths
@@ -49,5 +51,5 @@ public interface IPathsFromGCRootsComputer {
 	 *            paths from GC roots previously returned by {@link #getNextShortestPath}
 	 * @return tree like data structure holding the paths from GC roots
 	 */
-	PathsFromGCRootsTree getTree(Collection<int[]> paths);
+	public PathsFromGCRootsTree getTree(Collection<int[]> paths);
 }

@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2008, 2010 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -27,7 +29,7 @@ public interface IObject extends Serializable {
 	/**
 	 * The type of the primitive array.
 	 */
-	interface Type {
+	public interface Type {
 		int OBJECT = 2;
 
 		int BOOLEAN = 4;
@@ -47,7 +49,7 @@ public interface IObject extends Serializable {
 	 *
 	 * @return id for the snapshot object
 	 */
-	int getObjectId();
+	public int getObjectId();
 
 	/**
 	 * Get address for the snapshot object. This is the address at which the object was stored in memory. Use the
@@ -57,14 +59,14 @@ public interface IObject extends Serializable {
 	 *
 	 * @return address for the snapshot object
 	 */
-	long getObjectAddress();
+	public long getObjectAddress();
 
 	/**
 	 * Get class snapshot object this object is an instance of.
 	 *
 	 * @return class snapshot object this object is an instance of
 	 */
-	IClass getClazz();
+	public IClass getClazz();
 
 	/**
 	 * Get used heap size of just this object.
@@ -72,7 +74,7 @@ public interface IObject extends Serializable {
 	 * @return used heap size of this object
 	 * @since 1.0
 	 */
-	long getUsedHeapSize();
+	public long getUsedHeapSize();
 
 	/**
 	 * Get retained heap size of this object.
@@ -80,14 +82,14 @@ public interface IObject extends Serializable {
 	 * @return retained heap size of this object (returns 0 if the dominator tree wasn't calculated for the
 	 *         corresponding snapshot)
 	 */
-	long getRetainedHeapSize();
+	public long getRetainedHeapSize();
 
 	/**
 	 * Get technical name of this object which is something like class@address.
 	 *
 	 * @return technical name of this object which is something like class@address
 	 */
-	String getTechnicalName();
+	public String getTechnicalName();
 
 	/**
 	 * Get class specific name of this object which depends on the availability of the appropriate name resolver, e.g.
@@ -95,14 +97,14 @@ public interface IObject extends Serializable {
 	 *
 	 * @return class specific name of the given snapshot object or null if it can't be resolved
 	 */
-	String getClassSpecificName();
+	public String getClassSpecificName();
 
 	/**
 	 * Get concatenation of {@link #getTechnicalName()} and {@link #getClassSpecificName()}.
 	 *
 	 * @return concatenation of {@link #getTechnicalName()} and {@link #getClassSpecificName()}
 	 */
-	String getDisplayName();
+	public String getDisplayName();
 
 	/**
 	 * Get list of snapshot objects referenced from this snapshot object with the name of the field over which it was
@@ -111,7 +113,7 @@ public interface IObject extends Serializable {
 	 * @return list of snapshot objects referenced from this snapshot object with the name of the field over which it
 	 *         was referenced
 	 */
-	List<NamedReference> getOutboundReferences();
+	public List<NamedReference> getOutboundReferences();
 
 	/**
 	 * Resolves and returns the value of a field specified by a dot notation. If the field is a primitive type, the
@@ -125,7 +127,7 @@ public interface IObject extends Serializable {
 	 *            the field name in dot notation
 	 * @return the value of the field
 	 */
-	Object resolveValue(String field) throws SnapshotException;
+	public Object resolveValue(String field) throws SnapshotException;
 
 	/**
 	 * Get {@link GCRootInfo} if the object is a garbage collection root or null otherwise. An object may or may not be
@@ -133,12 +135,12 @@ public interface IObject extends Serializable {
 	 *
 	 * @return {@link GCRootInfo} if the object is a garbage collection root or null otherwise
 	 */
-	GCRootInfo[] getGCRootInfo() throws SnapshotException;
+	public GCRootInfo[] getGCRootInfo() throws SnapshotException;
 
 	/**
 	 * Returns the snapshot from which this object has been read.
 	 *
 	 * @return the snapshot from which this object has been read.
 	 */
-	ISnapshot getSnapshot();
+	public ISnapshot getSnapshot();
 }

@@ -1,12 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2008 SAP AG.
+ * Copyright (c) 2008, 2019 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson - CSV changes
  *******************************************************************************/
 package org.eclipse.mat.tests.regression;
 
@@ -16,14 +19,15 @@ import java.io.FilenameFilter;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.ibm.icu.text.DecimalFormatSymbols;
+
 public class RegTestUtils {
 	static final String BASELINE_EXTENSION = "_baseline";
 	static final String TEST_EXTENSION = "_test";
 	static final String RESULT_FILENAME = "result.xml";
-	public static final String SEPARATOR = ";";
+	public static final String SEPARATOR = new DecimalFormatSymbols().getDecimalSeparator() == ',' ? ";" : ",";
 
 	private static FileFilter filter = new FileFilter() {
-		@Override
 		public boolean accept(File file) {
 			return (file.getName().endsWith(".hprof") || file.getName().endsWith(".dtfj")
 					|| file.getName().endsWith(".dmp.zip"));
@@ -31,7 +35,6 @@ public class RegTestUtils {
 	};
 
 	public static final FilenameFilter cleanupFilter = new FilenameFilter() {
-		@Override
 		public boolean accept(File dir, String name) {
 			Pattern hprofPattern = Pattern.compile(".*\\.hprof");
 			Pattern dtfjPattern = Pattern.compile(".*\\.dtfj|.*\\.dmp.zip|.*\\.phd|javacore.*\\.txt");
@@ -60,7 +63,6 @@ public class RegTestUtils {
 		// check whether sub-folders contain heap dumps
 
 		File[] directories = dumpsFolder.listFiles(new FileFilter() {
-			@Override
 			public boolean accept(File file) {
 				return file.isDirectory();
 			}

@@ -1,12 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG.
+ * Copyright (c) 2008, 2018 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    IBM Corporation/Andrew Johnson - Javadoc updates
  *******************************************************************************/
 package org.eclipse.mat.collect;
 
@@ -52,7 +55,7 @@ public final class ArrayLongBig {
 	 *            long[] which should be added
 	 */
 	public final void addAll(long[] elements) {
-		int free = length & 0x3FF;
+		int free = (length & 0x3FF);
 		int bite = free == 0 ? 0 : Math.min(elements.length, 0x400 - free);
 		if (bite > 0) {
 			System.arraycopy(elements, 0, pages.get(length >> 10), length & 0x3FF, bite);
@@ -75,6 +78,7 @@ public final class ArrayLongBig {
 	 *            index of long which should be returned
 	 * @return long at index
 	 * @throws IndexOutOfBoundsException
+	 *             if the index is beyond the end.
 	 */
 	public final long get(int index) throws IndexOutOfBoundsException {
 		if (index >= length) {

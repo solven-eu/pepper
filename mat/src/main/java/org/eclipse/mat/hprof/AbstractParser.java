@@ -1,21 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2013 SAP AG and IBM Corporation.
+ * Copyright (c) 2008, 2020 SAP AG, IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
  *    IBM Corporation - multiple heap dumps
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
  *******************************************************************************/
 package org.eclipse.mat.hprof;
 
 import java.io.IOException;
-import java.io.InputStream;
 
+import org.eclipse.mat.hprof.describer.Version;
 import org.eclipse.mat.hprof.ui.HprofPreferences;
-import org.eclipse.mat.parser.io.PositionInputStream;
+import org.eclipse.mat.hprof.ui.HprofPreferences.HprofStrictness;
 import org.eclipse.mat.snapshot.ISnapshot;
 import org.eclipse.mat.snapshot.model.IObject;
 import org.eclipse.mat.snapshot.model.IPrimitiveArray;
@@ -23,37 +26,11 @@ import org.eclipse.mat.snapshot.model.ObjectReference;
 import org.eclipse.mat.util.IProgressListener.Severity;
 import org.eclipse.mat.util.MessageUtil;
 import org.eclipse.mat.util.SimpleMonitor.Listener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 // Hprof binary format as defined here:
 // https://heap-snapshot.dev.java.net/files/documents/4282/31543/hprof-binary-format.html
 
 /* package */abstract class AbstractParser {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractParser.class);
-
-	/* package */enum Version {
-		JDK12BETA3("JAVA PROFILE 1.0"), JDK12BETA4("JAVA PROFILE 1.0.1"), JDK6("JAVA PROFILE 1.0.2");
-
-		private String label;
-
-		private Version(String label) {
-			this.label = label;
-		}
-
-		public static final Version byLabel(String label) {
-			for (Version v : Version.values()) {
-				if (v.label.equals(label))
-					return v;
-			}
-			return null;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-	}
-
 	interface Constants {
 		interface Record {
 			int STRING_IN_UTF8 = 0x01;
@@ -89,7 +66,6 @@ import org.slf4j.LoggerFactory;
 		}
 	}
 
-	protected PositionInputStream in;
 	protected Version version;
 	// The size of identifiers in the dump file
 	protected int idSize;
@@ -99,7 +75,7 @@ import org.slf4j.LoggerFactory;
 		this.strictnessPreference = strictnessPreference;
 	}
 
-	/* protected */static Version readVersion(InputStream in) throws IOException {
+	/* protected */static Version readVersion(IPositionInputStream in) throws IOException {
 		StringBuilder version = new StringBuilder();
 
 		int bytesRead = 0;
@@ -129,23 +105,15 @@ import org.slf4j.LoggerFactory;
 		throw new IOException(Messages.AbstractParser_Error_InvalidHPROFHeader);
 	}
 
-	protected long readUnsignedInt() throws IOException {
-		return 0x0FFFFFFFFL & in.readInt();
-	}
-
-	protected long readID() throws IOException {
-		return idSize == 4 ? 0x0FFFFFFFFL & in.readInt() : in.readLong();
-	}
-
-	protected Object readValue(ISnapshot snapshot) throws IOException {
+	protected Object readValue(IPositionInputStream in, ISnapshot snapshot) throws IOException {
 		byte type = in.readByte();
-		return readValue(snapshot, type);
+		return readValue(in, snapshot, type);
 	}
 
-	protected Object readValue(ISnapshot snapshot, int type) throws IOException {
+	protected Object readValue(IPositionInputStream in, ISnapshot snapshot, int type) throws IOException {
 		switch (type) {
 		case IObject.Type.OBJECT:
-			long id = readID();
+			long id = in.readID(idSize);
 			return id == 0 ? null : new ObjectReference(snapshot, id);
 		case IObject.Type.BOOLEAN:
 			return in.readByte() != 0;
@@ -164,17 +132,44 @@ import org.slf4j.LoggerFactory;
 		case IObject.Type.LONG:
 			return in.readLong();
 		default:
-			throw new IOException(MessageUtil.format(Messages.AbstractParser_Error_IllegalType, type));
+			throw new IOException(MessageUtil.format(Messages.AbstractParser_Error_IllegalType, type, in.position()));
 		}
 	}
 
-	protected void skipValue() throws IOException {
-		byte type = in.readByte();
-		skipValue(type);
+	public static Object readValue(IPositionInputStream in, ISnapshot snapshot, int type, int idSize)
+			throws IOException {
+		switch (type) {
+		case IObject.Type.OBJECT:
+			long id = in.readID(idSize);
+			return id == 0 ? null : new ObjectReference(snapshot, id);
+		case IObject.Type.BOOLEAN:
+			return in.readByte() != 0;
+		case IObject.Type.CHAR:
+			return in.readChar();
+		case IObject.Type.FLOAT:
+			return in.readFloat();
+		case IObject.Type.DOUBLE:
+			return in.readDouble();
+		case IObject.Type.BYTE:
+			return in.readByte();
+		case IObject.Type.SHORT:
+			return in.readShort();
+		case IObject.Type.INT:
+			return in.readInt();
+		case IObject.Type.LONG:
+			return in.readLong();
+		default:
+			throw new IOException(MessageUtil.format(Messages.AbstractParser_Error_IllegalType, type, in.position()));
+		}
 	}
 
-	protected void skipValue(int type) throws IOException {
-		if (type == 2)
+	protected void skipValue(IPositionInputStream in) throws IOException {
+		byte type = in.readByte();
+		skipValue(in, type);
+	}
+
+	protected void skipValue(IPositionInputStream in, int type) throws IOException {
+		if (type == IObject.Type.OBJECT)
 			in.skipBytes(idSize);
 		else
 			in.skipBytes(IPrimitiveArray.ELEMENT_SIZE[type]);
@@ -189,12 +184,12 @@ import org.slf4j.LoggerFactory;
 	 * returned value is an 0 offset number or 1 offset id, e.g. #1
 	 */
 	protected String determineDumpNumber() {
-		String dumpNr = System.getProperty("MAT_HPROF_DUMP_NR");
+		String dumpNr = System.getProperty("MAT_HPROF_DUMP_NR"); //$NON-NLS-1$
 		return dumpNr;
 	}
 
 	protected String dumpIdentifier(int n) {
-		return "#" + (n + 1);
+		return "#" + (n + 1); //$NON-NLS-1$
 	}
 
 	protected boolean dumpMatches(int n, String match) {
@@ -206,7 +201,6 @@ import org.slf4j.LoggerFactory;
 			int nm = Integer.parseInt(match);
 			return nm == n;
 		} catch (NumberFormatException e) {
-			LOGGER.trace("Ouch", e);
 		}
 		return false;
 	}
@@ -235,6 +229,22 @@ import org.slf4j.LoggerFactory;
 	 * @return The updated length or the original length if no update is made.
 	 */
 	protected long updateLengthIfNecessary(long fileSize, long curPos, int record, long length, Listener monitor) {
+		// Sometimes the HPROF file is truncated during the write and the
+		// length field is never updated from 0. Presume it goes to the end.
+		if (length == 0 && (strictnessPreference == HprofStrictness.STRICTNESS_WARNING
+				|| strictnessPreference == HprofStrictness.STRICTNESS_PERMISSIVE)) {
+			long length1 = fileSize - curPos - 9;
+			if (length1 > 0) {
+				monitor.sendUserMessage(Severity.WARNING,
+						MessageUtil.format(Messages.AbstractParser_GuessedRecordLength,
+								Integer.toHexString(record),
+								Long.toHexString(curPos),
+								length,
+								length1),
+						null);
+				length = length1;
+			}
+		}
 		// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=404679
 		//
 		// We do this check no matter the strictness preference. Since we're

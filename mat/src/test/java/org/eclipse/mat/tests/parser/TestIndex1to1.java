@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2012, 2013 IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    IBM Corporation - initial API and implementation
@@ -26,7 +28,6 @@ import org.eclipse.mat.parser.index.IIndexReader;
 import org.eclipse.mat.parser.index.IndexReader;
 import org.eclipse.mat.parser.index.IndexWriter;
 import org.eclipse.mat.parser.index.IndexWriter.Identifier;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -123,12 +124,10 @@ public class TestIndex1to1 {
 			IIndexReader.IOne2OneIndex i2 = ic.writeTo(indexFile, new IteratorInt() {
 				long i;
 
-				@Override
 				public boolean hasNext() {
 					return i < n;
 				}
 
-				@Override
 				public int next() {
 					return (int) i++;
 				}
@@ -246,21 +245,19 @@ public class TestIndex1to1 {
 	@Test
 	public void intIdentifier1() {
 		assumeTrue(N < MAXELEMENTS2);
-		Identifier id = IndexWriter.newIdentifier();
+		Identifier id = new Identifier();
 		for (int i = 0; 0 <= i && i < N; ++i) {
 			id.add(i + 0l);
 		}
 		for (int i = 0; 0 <= i && i < N; ++i) {
 			assertEquals(i + 0l, id.get(i));
-			assertEquals(i + 0l, id.getNext(i, 1)[0]);
 		}
 	}
 
-	@Ignore("RoaringIdentifier sorts the longs: can not iterate in the same order as original insertion")
 	@Test
 	public void intIdentifier2() {
 		assumeTrue(N < MAXELEMENTS2);
-		Identifier id = IndexWriter.newIdentifier();
+		Identifier id = new Identifier();
 		Random r = new Random(N);
 		for (int i = 0; 0 <= i && i < N; ++i) {
 			id.add(r.nextLong());
@@ -273,11 +270,10 @@ public class TestIndex1to1 {
 		}
 	}
 
-	@Ignore("RoaringIdentifier sorts the longs: can not iterate in the same order as original insertion")
 	@Test
 	public void intIdentifier3() {
 		assumeTrue(N < MAXELEMENTS2);
-		Identifier id = IndexWriter.newIdentifier();
+		Identifier id = new Identifier();
 		Random r = new Random(N);
 		for (int i = 0; 0 <= i && i < N; ++i) {
 			id.add(r.nextLong());
@@ -292,15 +288,13 @@ public class TestIndex1to1 {
 	public void intIdentifier4() {
 		assumeTrue(N < MAXELEMENTS2);
 		assumeTrue(N > 0);
-		Identifier id = IndexWriter.newIdentifier();
+		Identifier id = new Identifier();
 		Random r = new Random(N);
 		for (int i = 0; 0 <= i && i < N; ++i) {
 			long l1 = r.nextLong();
 			id.add(l1);
 
 		}
-
-		// RoaringBitmap is already sorted
 		id.sort();
 		r = new Random(N);
 		for (IteratorLong l = id.iterator(); l.hasNext(); l.next()) {

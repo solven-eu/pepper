@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2012 SAP AG and IBM Corporation.
+ * Copyright (c) 2008, 2020 SAP AG and IBM Corporation.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
@@ -36,8 +38,8 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(value = Parameterized.class)
 public class TestInstanceSizes {
-	private static final Pattern PATTERN_OBJ_ARRAY = Pattern.compile("^(\\[+)L(.*);$");
-	private static final Pattern PATTERN_PRIMITIVE_ARRAY = Pattern.compile("^(\\[+)(.)$");
+	private static final Pattern PATTERN_OBJ_ARRAY = Pattern.compile("^(\\[+)L(.*);$"); //$NON-NLS-1$
+	private static final Pattern PATTERN_PRIMITIVE_ARRAY = Pattern.compile("^(\\[+)(.)$"); //$NON-NLS-1$
 
 	@Parameters
 	public static Collection<Object[]> data() {
@@ -89,14 +91,14 @@ public class TestInstanceSizes {
 				int l = matcher.group(1).length();
 				className = matcher.group(2);
 				for (int ii = 0; ii < l; ii++)
-					className += "[]";
+					className += "[]"; //$NON-NLS-1$
 			}
 
 			// primitive arrays
 			matcher = PATTERN_PRIMITIVE_ARRAY.matcher(className);
 			if (matcher.matches()) {
 				int count = matcher.group(1).length() - 1;
-				className = "unknown[]";
+				className = "unknown[]"; //$NON-NLS-1$
 
 				char signature = matcher.group(2).charAt(0);
 				for (int ii = 0; ii < IPrimitiveArray.SIGNATURES.length; ii++) {
@@ -107,7 +109,7 @@ public class TestInstanceSizes {
 				}
 
 				for (int ii = 0; ii < count; ii++)
-					className += "[]";
+					className += "[]"; //$NON-NLS-1$
 			}
 		}
 		return className;

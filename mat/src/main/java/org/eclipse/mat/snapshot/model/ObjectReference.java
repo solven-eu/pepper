@@ -1,16 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2010 SAP AG and others.
+ * Copyright (c) 2008, 2021 SAP AG, IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *    SAP AG - initial API and implementation
+ *    Andrew Johnson (IBM Corporation) - lookup by address
  *******************************************************************************/
 package org.eclipse.mat.snapshot.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.eclipse.mat.SnapshotException;
 import org.eclipse.mat.snapshot.ISnapshot;
@@ -61,7 +65,19 @@ public class ObjectReference implements Serializable {
 	 * @throws SnapshotException
 	 */
 	public IObject getObject() throws SnapshotException {
-		return snapshot.getObject(getObjectId());
+		int objectId;
+		try {
+			objectId = getObjectId();
+		} catch (SnapshotException e) {
+			ObjectReference proxy = snapshot.getSnapshotAddons(ObjectReference.class);
+			if (proxy != null) {
+				proxy.address = getObjectAddress();
+				return proxy.getObject();
+			} else {
+				throw e;
+			}
+		}
+		return snapshot.getObject(objectId);
 	}
 
 	/**
@@ -69,8 +85,24 @@ public class ObjectReference implements Serializable {
 	 *
 	 * @return the object address as a hexadecimal number.
 	 */
-	@Override
 	public String toString() {
-		return "0x" + Long.toHexString(address);
+		return "0x" + Long.toHexString(address); //$NON-NLS-1$
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(address);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ObjectReference other = (ObjectReference) obj;
+		return address == other.address;
 	}
 }
