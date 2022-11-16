@@ -25,6 +25,7 @@ public class ConstantBitsIntArray implements IReadableIntArray {
 
 	protected transient int[] varyingIndexes;
 
+	@SuppressWarnings("PMD.CognitiveComplexity")
 	protected ConstantBitsIntArray(int... input) {
 		length = input.length;
 		int intLength = input.length;

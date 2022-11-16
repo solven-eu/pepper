@@ -6,12 +6,15 @@ import java.util.Objects;
 
 import org.springframework.util.comparator.Comparators;
 
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Enables comparing {@link Comparable} of different {@link Class} in the same {@link NavigableSet}.
- * 
+ *
  * @author Benoit Lacelle
  *
  */
+// @SuppressFBWarnings("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE")
 public class ComparableElseClassComparator implements Comparator<Comparable<?>> {
 	final Comparator<Comparable<? extends Object>> nullComparator;
 

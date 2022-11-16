@@ -34,6 +34,7 @@ public class GenerateExcludesForSpark {
 	 * @return
 	 * @throws IOException
 	 */
+	@SuppressWarnings("PMD.InsufficientStringBufferDeclaration")
 	public String generatesExcludes(Resource dependencyTreeResource, Set<String> fileNames) throws IOException {
 		byte[] bytes = ByteStreams.toByteArray(dependencyTreeResource.getInputStream());
 		String dependencyTree = new String(bytes, StandardCharsets.UTF_8);

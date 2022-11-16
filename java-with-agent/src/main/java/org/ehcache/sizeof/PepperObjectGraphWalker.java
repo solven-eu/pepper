@@ -107,7 +107,10 @@ public final class PepperObjectGraphWalker {
 	 * @param root
 	 *            the roots of the objects (a shared graph will only be visited once)
 	 */
-	@SuppressWarnings({ "PMD.NPathComplexity", "PMD.ExcessiveMethodLength" })
+	@SuppressWarnings({ "PMD.NPathComplexity",
+			"PMD.ExcessiveMethodLength",
+			"PMD.CognitiveComplexity",
+			"PMD.CompareObjectsWithEquals" })
 	public void walk(Object... root) {
 		final StringBuilder traversalDebugMessage;
 		if (USE_VERBOSE_DEBUG_LOGGING && LOGGER.isDebugEnabled()) {
@@ -285,6 +288,7 @@ public final class PepperObjectGraphWalker {
 	 *            the type
 	 * @return all fields for that type
 	 */
+	@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 	private static Collection<Field> getAllFields(Class<?> refClass) {
 		Collection<Field> fields = new ArrayList<>();
 		for (Class<?> klazz = refClass; klazz != null; klazz = klazz.getSuperclass()) {

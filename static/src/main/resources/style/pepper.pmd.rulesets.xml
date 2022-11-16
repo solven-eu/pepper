@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Android Application Rules" xmlns="http://pmd.sf.net/ruleset/1.0.0"
-	xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd"
-	xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd">
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Android Application Rules" xmlns="http://pmd.sf.net/ruleset/1.0.0" xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd" xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd">
 
 	<!-- https://pmd.github.io/pmd-6.8.0/pmd_rules_java.html -->
-	<description>Nearly all PMD rules, except those considered not relevant
-		by Pepper
-	</description>
+	<description>Nearly all PMD rules, except those considered not relevant by Pepper</description>
 
 	<!-- https://pmd.github.io/pmd/pmd_rules_java_codestyle.html -->
 	<rule ref="category/java/bestpractices.xml">
@@ -91,6 +87,11 @@
 		<properties>
 			<property name="methodReportLevel" value="600" />
 			<property name="classReportLevel" value="15000" />
+		</properties>
+	</rule>
+	<rule ref="category/java/design.xml/CognitiveComplexity">
+		<properties>
+			<property name="reportLevel" value="25" />
 		</properties>
 	</rule>
 	<rule ref="category/java/documentation.xml">

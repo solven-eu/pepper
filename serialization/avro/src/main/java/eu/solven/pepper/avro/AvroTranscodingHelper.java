@@ -66,6 +66,7 @@ public class AvroTranscodingHelper {
 		// hidden
 	}
 
+	@SuppressWarnings("PMD.CognitiveComplexity")
 	public static Object toJdk(Object value, Supplier<?> exampleValue) {
 		if (value == null) {
 			return null;
@@ -179,6 +180,7 @@ public class AvroTranscodingHelper {
 		return array;
 	}
 
+	@SuppressWarnings("PMD.CognitiveComplexity")
 	public static Optional<?> toPrimitiveArray(Object targetType, List<?> asList) {
 		if (asList.isEmpty()) {
 			return Optional.empty();

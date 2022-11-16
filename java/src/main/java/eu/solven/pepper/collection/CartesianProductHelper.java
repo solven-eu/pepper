@@ -242,6 +242,7 @@ public class CartesianProductHelper {
 		}
 	}
 
+	@SuppressWarnings("PMD.CognitiveComplexity")
 	protected static <T, V> Collection<? extends Map<T, ? extends Set<V>>> computeCoveringMaps(Set<T> keySet,
 			final SetMultimap<T, V> keyToEncountered,
 			Set<Map<T, V>> flatMaps) {
@@ -337,6 +338,7 @@ public class CartesianProductHelper {
 		}
 	}
 
+	@SuppressWarnings("PMD.CognitiveComplexity")
 	private static <T, V> void fillReverseCovering(Set<Map<T, V>> initialFlatMaps,
 			List<T> subCartesianKeys,
 			Set<T> keySet,
@@ -630,7 +632,8 @@ public class CartesianProductHelper {
 		return result;
 	}
 
-	// TODO: We can not use Optional as null is a valid output
+	@SuppressWarnings("PMD.CognitiveComplexity")
+	// BEWARE: We can not use Optional as null is a valid output
 	public static Object intersectCoordinates(Object baseCoordinate, Object additionalCoordinate) {
 		if (baseCoordinate == null) {
 			return additionalCoordinate;

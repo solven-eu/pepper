@@ -59,7 +59,7 @@ public class PepperByteStreamHelper {
 	 * @throws IOException
 	 */
 	// We do not close PipedOutputStream as they are provided as-is
-	@SuppressWarnings("PMD.CloseResource")
+	@SuppressWarnings({ "PMD.CloseResource", "PMD.UseTryWithResources" })
 	public static InputStream toInputStream(OutputStreamConsumer outputStreamConsumer, Supplier<Executor> executor)
 			throws IOException {
 		AtomicReference<Throwable> throwable = new AtomicReference<>();

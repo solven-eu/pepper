@@ -24,6 +24,8 @@ package eu.solven.pepper.primitive;
 
 import com.google.common.base.CharMatcher;
 
+import ch.randelshofer.fastdoubleparser.FastDoubleParser;
+
 /**
  * Try to provide faster primitive faster than FLoat.parseFLoat and Double.parseDouble, even if these method are
  * intrisic methods.
@@ -64,12 +66,29 @@ public class PepperParserHelper {
 	 * @param s
 	 *            The string.
 	 * @return The double value.
+	 *
+	 * @deprecated Prefer https://github.com/wrandelshofer/FastDoubleParser
+	 */
+	public static double parseDouble(CharSequence s) {
+		return FastDoubleParser.parseDouble(s);
+	}
+
+	/**
+	 * Parses a double from a CharSequence. Performance compared to intrinsic java method varies a lot: between 20%
+	 * faster to 100% faster depending on the input values. The trick is to use Long.parseLong, which is extremely fast.
+	 *
+	 * @param s
+	 *            The string.
+	 * @return The double value.
+	 *
+	 * @deprecated Prefer .parseDouble
 	 */
 	@SuppressWarnings({ "PMD.NPathComplexity",
 			"PMD.ExcessiveMethodLength",
 			"PMD.AvoidReassigningParameters",
-			"checkstyle:MagicNumber" })
-	public static double parseDouble(CharSequence s) {
+			"checkstyle:MagicNumber",
+			"PMD.CognitiveComplexity" })
+	public static double parseDoubleWithParseLong(CharSequence s) {
 		if (pow10 == null) {
 			initialize();
 		}

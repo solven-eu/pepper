@@ -31,7 +31,6 @@ import java.util.Objects;
  * Backport from JDK9 .parse(CharSequence)
  *
  * @author Benoit Lacelle
- *
  */
 // https://stackoverflow.com/questions/5767747/pmd-cpd-ignore-bits-of-code-using-comments
 @SuppressWarnings({ "CPD-START",
@@ -76,6 +75,7 @@ public class Jdk9CharSequenceParsers {
 	 *             {@link java.lang.Character#MAX_RADIX}.
 	 * @since 9
 	 */
+	@SuppressWarnings("PMD.CognitiveComplexity")
 	public static int parseInt(CharSequence s, int beginIndex, int endIndex, int radix) throws NumberFormatException {
 		s = Objects.requireNonNull(s);
 
@@ -155,6 +155,7 @@ public class Jdk9CharSequenceParsers {
 	 *             {@link java.lang.Character#MAX_RADIX}.
 	 * @since 9
 	 */
+	@SuppressWarnings("PMD.CognitiveComplexity")
 	public static long parseLong(CharSequence s, int beginIndex, int endIndex, int radix) throws NumberFormatException {
 		s = Objects.requireNonNull(s);
 

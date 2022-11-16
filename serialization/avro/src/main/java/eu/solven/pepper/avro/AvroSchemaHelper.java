@@ -70,6 +70,7 @@ public class AvroSchemaHelper {
 		return proposeSimpleSchema(schemaAsMap, ImmutableBiMap.of());
 	}
 
+	@SuppressWarnings("PMD.CognitiveComplexity")
 	public static Schema proposeSchemaForValue(Object value) {
 		if (value == null) {
 			return Schema.create(Type.NULL);

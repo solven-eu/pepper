@@ -36,7 +36,8 @@
 		<module>arrow</module>
 
 		<!-- Beta: zero-copy CSV reader -->
-		<module>csv</module>
+		<!-- We recommand https://github.com/deephaven/deephaven-csv -->
+		<!--module>csv</module-->
 	</modules>
 
 	<dependencyManagement>

@@ -251,6 +251,7 @@ public class PepperLogHelper {
 		return humanDuration(time, timeUnit);
 	}
 
+	@SuppressWarnings("PMD.CognitiveComplexity")
 	public static Object humanDuration(long time, TimeUnit timeUnit) {
 		return PepperLogHelper.lazyToString(() -> {
 			long timeInMs = timeUnit.toMillis(time);
@@ -308,7 +309,7 @@ public class PepperLogHelper {
 		});
 	}
 
-	@SuppressWarnings("PMD.NPathComplexity")
+	@SuppressWarnings({ "PMD.NPathComplexity", "PMD.CognitiveComplexity" })
 	private static String rawHumanRate(long nbEntries, long time, TimeUnit timeUnit) {
 		if (time <= 0) {
 			// Edge case

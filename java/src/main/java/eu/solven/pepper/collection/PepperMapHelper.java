@@ -260,6 +260,7 @@ public class PepperMapHelper {
 		});
 	}
 
+	@SuppressWarnings("PMD.CognitiveComplexity")
 	private static <
 			T> T digForValue(final Object mapOrList, List<Object> allKeys, BiFunction<Object, Object, T> toValue) {
 		if (allKeys.isEmpty()) {

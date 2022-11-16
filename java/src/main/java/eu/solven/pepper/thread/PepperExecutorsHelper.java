@@ -108,6 +108,7 @@ public class PepperExecutorsHelper {
 
 	private static final Callable<Object> NOOP_CALLABLE = () -> null;
 
+	@SuppressWarnings("PMD.MutableStaticState")
 	protected static boolean allowTryMax = false;
 
 	private static final Function<Runnable, Callable<Object>> RUNNABLE_TO_CALLABLE = task -> {

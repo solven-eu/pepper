@@ -38,6 +38,14 @@
 			<artifactId>guava</artifactId>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/ch.randelshofer/fastdoubleparser -->
+		<dependency>
+			<!--https://github.com/wrandelshofer/FastDoubleParser -->
+			<groupId>ch.randelshofer</groupId>
+			<artifactId>fastdoubleparser</artifactId>
+			<version>0.3.0</version>
+		</dependency>
+
 		<dependency>
 			<!-- Prevent javadoc complaining. Kept as optional, just like Guava -->
 			<groupId>com.google.code.findbugs</groupId>
@@ -75,7 +83,7 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>

@@ -396,7 +396,7 @@ public class PepperSerializationHelper {
 			public void close() throws IOException {
 				// Skip closing as we received a Writer from somewhere else
 				super.flush();
-			};
+			}
 		}) {
 			// By default, we wrap in quotes
 			rawAppendLineInCSVFile(bufferedWriter, row, true, MAX_CHARS_PER_COLUMN);

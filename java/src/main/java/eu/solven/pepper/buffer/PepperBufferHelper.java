@@ -55,8 +55,10 @@ public class PepperBufferHelper {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperBufferHelper.class);
 
+	@SuppressWarnings("PMD.MutableStaticState")
 	@VisibleForTesting
 	protected static boolean forceNoSpaceDisk = false;
+	@SuppressWarnings("PMD.MutableStaticState")
 	@VisibleForTesting
 	protected static boolean forceNoHeap = false;
 

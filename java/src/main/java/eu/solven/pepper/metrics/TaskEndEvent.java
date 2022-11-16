@@ -57,6 +57,7 @@ public class TaskEndEvent implements ITaskActivityEvent {
 		return System.currentTimeMillis() - startEvent.startTime;
 	}
 
+	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 	public static TaskEndEvent postEndEvent(Consumer<? super ITaskActivityEvent> eventBus, TaskStartEvent startEvent) {
 		if (startEvent == null) {
 			LOGGER.info("No StartMetricEvent has been provided");

@@ -55,7 +55,7 @@ public class PepperProcessHelper {
 	protected static final int OS_MARKER_WINDOWS = 1;
 	protected static final int OS_MARKER_MAC = 2;
 
-	// UNIXProcess class is loaded only udner a linux environment
+	// UNIXProcess class is loaded only under a linux environment
 	private static final String CLASS_PROCESS_UNIX = "java.lang.UNIXProcess";
 
 	private static final String WINDOWS_MEMORY_PATTERN = "\",\"";
@@ -64,8 +64,9 @@ public class PepperProcessHelper {
 		// hidden
 	}
 
-	// Deprecated in Java9
+	@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 	public static long getPidOfProcess(Process p) {
+		// In jdk9: ProcessHandle.current().pid()
 		synchronized (PepperProcessHelper.class) {
 			long pid = -1;
 
@@ -85,7 +86,7 @@ public class PepperProcessHelper {
 
 	// Used to prevent Sonar complaining about not using instanceof
 	private static boolean isUnixProcess(String className) {
-		return className.equals(CLASS_PROCESS_UNIX);
+		return CLASS_PROCESS_UNIX.equals(className);
 	}
 
 	/**
@@ -147,7 +148,7 @@ public class PepperProcessHelper {
 		}).collect(Collectors.joining(" "));
 	}
 
-	@SuppressWarnings("PMD.ExcessiveMethodLength")
+	@SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.CognitiveComplexity" })
 	@VisibleForTesting
 	protected static OptionalLong extractMemory(int osFlag, InputStream inputStream) throws IOException {
 		LineProcessor<String> processor = new LineProcessor<String>() {
