@@ -31,13 +31,16 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 
 import eu.solven.pepper.logging.PepperLogHelper;
 
 public class TestPepperLogHelper {
+
 	@Test
-	public void lazyToString() {
+	public void testLazyToString() {
 		// Not the String
 		Assert.assertNotEquals("Youpi", PepperLogHelper.lazyToString(() -> "Youpi"));
 
@@ -46,11 +49,14 @@ public class TestPepperLogHelper {
 	}
 
 	@Test
-	public void testLazyToString() {
-		// The lazyToString should not be a String
-		Assert.assertNotEquals("Youpi", PepperLogHelper.lazyToString(() -> "Youpi"));
+	public void testLazyToString_jackson() throws JsonProcessingException {
+		Object lazyToString = PepperLogHelper.lazyToString(() -> "Youpi");
 
-		Assert.assertEquals("Youpi", PepperLogHelper.lazyToString(() -> "Youpi").toString());
+		ObjectMapper objectMapper = new ObjectMapper();
+		// Check .lazyToString is compatible with Jackson (e.g. for logstash-encoder)
+		Assert.assertEquals("\"Youpi\"", objectMapper.writeValueAsString(lazyToString));
+		// Check it is similar than over the initial String
+		Assert.assertEquals("\"Youpi\"", objectMapper.writeValueAsString("Youpi"));
 	}
 
 	@Test

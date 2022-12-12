@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.annotations.Beta;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
@@ -78,6 +79,7 @@ public class PepperLogHelper {
 	 */
 	public static Object lazyToString(Supplier<String> toStringMe) {
 		return new Object() {
+			@JsonValue
 			@Override
 			public String toString() {
 				return toStringMe.get();
