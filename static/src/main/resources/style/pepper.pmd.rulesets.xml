@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Android Application Rules" xmlns="http://pmd.sf.net/ruleset/1.0.0" xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd" xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd">
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Pepper" xmlns="http://pmd.sf.net/ruleset/1.0.0" xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd" xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd">
 
 	<!-- https://pmd.github.io/pmd-6.8.0/pmd_rules_java.html -->
 	<description>Nearly all PMD rules, except those considered not relevant by Pepper</description>
@@ -33,7 +33,7 @@
 		<exclude name="ConfusingTernary" />
 		<exclude name="CallSuperInConstructor" />
 		<!-- https://github.com/pmd/pmd/issues/411 -->
-		<exclude name="UnnecessaryFinalModifier" />
+		<!--exclude name="UnnecessaryFinalModifier" /-->
 	</rule>
 	<!-- https://pmd.github.io/latest/pmd_rules_java_codestyle.html#longvariable -->
 	<rule ref="category/java/codestyle.xml/LongVariable">
@@ -57,7 +57,6 @@
 		<exclude name="TooManyMethods" />
 		<exclude name="ExcessiveImports" />
 		<exclude name="ExcessiveParameterList" />
-		<exclude name="NcssCount" />
 		<exclude name="DataClass" />
 		<exclude name="UseObjectForClearerAPI" />
 	</rule>
@@ -83,17 +82,24 @@
 			<property name="minimum" value="10" />
 		</properties>
 	</rule>
-	<rule ref="category/java/design.xml/NcssCount">
-		<properties>
-			<property name="methodReportLevel" value="600" />
-			<property name="classReportLevel" value="15000" />
-		</properties>
-	</rule>
 	<rule ref="category/java/design.xml/CognitiveComplexity">
 		<properties>
 			<property name="reportLevel" value="25" />
 		</properties>
 	</rule>
+	<rule ref="category/java/design.xml/NcssCount">
+		<!-- NCSS replaced ExcessiveMethodLength -->
+		<!-- https://pmd.github.io/latest/pmd_rules_java_design.html#ncsscount -->
+		<!-- https://pmd.github.io/latest/pmd_rules_java_design.html#excessivemethodlength -->
+		<properties>
+			<!-- Sync with: checkstyle:MethodLength -->
+			<property name="methodReportLevel" value="100" />
+			
+			<property name="classReportLevel" value="1500" />
+			<property name="ncssOptions" value="" />
+		</properties>
+	</rule>
+
 	<rule ref="category/java/documentation.xml">
 		<exclude name="CommentRequired" />
 		<exclude name="CommentSize" />
@@ -105,7 +111,7 @@
 		</properties>
 	</rule>
 	<rule ref="category/java/errorprone.xml">
-		<exclude name="BeanMembersShouldSerialize" />
+		<exclude name="NonSerializableClass" />
 		<exclude name="AvoidLiteralsInIfCondition" />
 		<!-- TODO Clear this exclusion -->
 		<exclude name="DataflowAnomalyAnalysis" />

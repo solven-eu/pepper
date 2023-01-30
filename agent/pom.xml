@@ -1,9 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
-		<artifactId>pepper-parent</artifactId>
+		<artifactId>aggregator-pepper</artifactId>
 		<version>4.3-SNAPSHOT</version>
 	</parent>
 
@@ -21,32 +22,6 @@
 
 		<sizeof.version>0.4.3</sizeof.version>
 	</properties>
-
-	<profiles>
-		<profile>
-			<id>jdk9</id>
-			<activation>
-				<jdk>9</jdk>
-			</activation>
-			<properties>
-				<!-- We have many tests deactivated in JDK9 -->
-				<jacoco.instruction.ratio>0.30</jacoco.instruction.ratio>
-			</properties>
-		</profile>
-		<profile>
-			<id>circleci</id>
-			<activation>
-				<property>
-					<name>CIRCLECI</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<properties>
-				<!-- For an unknown reason, test for this modules fails within circleci -->
-				<!-- <maven.test.skip>true</maven.test.skip> -->
-			</properties>
-		</profile>
-	</profiles>
 
 	<dependencies>
 
@@ -74,4 +49,30 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>jdk9</id>
+			<activation>
+				<jdk>9</jdk>
+			</activation>
+			<properties>
+				<!-- We have many tests deactivated in JDK9 -->
+				<jacoco.instruction.ratio>0.30</jacoco.instruction.ratio>
+			</properties>
+		</profile>
+		<profile>
+			<id>circleci</id>
+			<activation>
+				<property>
+					<name>CIRCLECI</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<properties>
+				<!-- For an unknown reason, test for this modules fails within circleci -->
+				<!-- <maven.test.skip>true</maven.test.skip> -->
+			</properties>
+		</profile>
+	</profiles>
 </project>

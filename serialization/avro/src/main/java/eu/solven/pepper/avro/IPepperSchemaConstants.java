@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,12 +28,15 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Some constants used when converting various Schema (Avro, Parquet, Arrow, ...) to an example Map
  *
  * @author Benoit Lacelle
  *
  */
+@SuppressFBWarnings("MS_OOI_PKGPROTECT")
 public interface IPepperSchemaConstants {
 	/**
 	 * Typically used as key in {@link Map}

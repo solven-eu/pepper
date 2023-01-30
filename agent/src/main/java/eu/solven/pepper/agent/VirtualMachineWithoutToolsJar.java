@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider.Accessor;
 
 /**
  * Gives access to the VirtualMachine object. It may not be available if tools.jar is not made available. Tools.jar is
- * made available by ensuringf JAVA_HOME targets a jdk
+ * made available by ensuring JAVA_HOME targets a jdk
  *
  * @see <a href=
  *      "http://java.sun.com/javase/6/docs/jdk/api/attach/spec/com/sun/tools/attach/VirtualMachine.html#attach(java.lang.String)"
@@ -419,11 +419,11 @@ public class VirtualMachineWithoutToolsJar {
 
 	public static boolean isVirtualMachineAvailable() {
 		try {
-			if (getJvmVirtualMachine() == null) {
+			if (getJvmVirtualMachine().isPresent()) {
+				return true;
+			} else {
 				LOGGER.trace("VirtualMachine is null");
 				return false;
-			} else {
-				return true;
 			}
 		} catch (Throwable e) {
 			// Whatever the reason is, the VirtualMachine is not available. It

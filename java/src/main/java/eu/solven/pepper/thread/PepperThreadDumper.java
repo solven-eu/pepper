@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.management.LockInfo;
@@ -226,15 +227,21 @@ public class PepperThreadDumper implements IThreadDumper {
 	public String getThreadDumpAsString(boolean withMonitorsAndSynchronizers) {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 
+		Charset charset = Charset.defaultCharset();
+
 		// Do not query monitors and synchronizers are they are not the cause of
 		// a FullGC: we prevent not to freeze the JVM collecting these monitors
 		try {
-			dump(Charset.defaultCharset(), os, withMonitorsAndSynchronizers);
+			dump(charset, os, withMonitorsAndSynchronizers);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 
-		return os.toString();
+		try {
+			return os.toString(charset.name());
+		} catch (UnsupportedEncodingException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	@ManagedOperation
@@ -252,7 +259,11 @@ public class PepperThreadDumper implements IThreadDumper {
 			throw new RuntimeException(e);
 		}
 
-		return os.toString();
+		try {
+			return os.toString(charset.name());
+		} catch (UnsupportedEncodingException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	// qfs-common-worker-76 id=905 state=WAITING

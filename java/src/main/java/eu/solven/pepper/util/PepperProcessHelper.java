@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.OptionalLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -77,7 +78,7 @@ public class PepperProcessHelper {
 					pid = f.getLong(p);
 					f.setAccessible(false);
 				}
-			} catch (Exception e) {
+			} catch (RuntimeException | ReflectiveOperationException e) {
 				pid = -1;
 			}
 			return pid;
@@ -180,7 +181,8 @@ public class PepperProcessHelper {
 			}
 		};
 
-		String lastLine = CharStreams.readLines(new InputStreamReader(inputStream), processor).trim();
+		String lastLine =
+				CharStreams.readLines(new InputStreamReader(inputStream, StandardCharsets.UTF_8), processor).trim();
 
 		if (lastLine.isEmpty()) {
 			LOGGER.trace("Unexpected row: {}", lastLine);

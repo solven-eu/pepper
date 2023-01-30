@@ -1,54 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>io.github.solven-eu.pepper</groupId>
-        <artifactId>pepper-serialization</artifactId>
-        <version>4.3-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>io.github.solven-eu.pepper</groupId>
+		<artifactId>pepper-serialization</artifactId>
+		<version>4.3-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>pepper-arrow</artifactId>
-    <packaging>jar</packaging>
+	<artifactId>pepper-arrow</artifactId>
+	<packaging>jar</packaging>
 
-    <properties>
-        <!-- TODO -->
-        <jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
-        <jacoco.branch.ratio>0.0</jacoco.branch.ratio>
+	<properties>
+		<!-- TODO -->
+		<jacoco.instruction.ratio>0.0</jacoco.instruction.ratio>
+		<jacoco.branch.ratio>0.0</jacoco.branch.ratio>
 
-        <!-- TODO -->
-        <cpd.skip>true</cpd.skip>
-    </properties>
+		<!-- TODO -->
+		<cpd.skip>true</cpd.skip>
+	</properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.github.solven-eu.pepper</groupId>
-            <artifactId>pepper</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>io.github.solven-eu.pepper</groupId>
+			<artifactId>pepper</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
-        <dependency>
-            <groupId>io.github.solven-eu.pepper</groupId>
-            <artifactId>pepper-avro</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>io.github.solven-eu.pepper</groupId>
+			<artifactId>pepper-avro</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.apache.arrow</groupId>
-            <artifactId>arrow-memory-core</artifactId>
-            <version>${arrow.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.arrow</groupId>
-            <artifactId>arrow-vector</artifactId>
-            <version>${arrow.version}</version>
-        </dependency>
-        
-        <dependency>
-        	<!-- One may prefer arrow-memory-netty -->
-            <groupId>org.apache.arrow</groupId>
-            <artifactId>arrow-memory-unsafe</artifactId>
-            <version>${arrow.version}</version>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.apache.arrow</groupId>
+			<artifactId>arrow-memory-core</artifactId>
+			<version>${arrow.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.arrow</groupId>
+			<artifactId>arrow-vector</artifactId>
+			<version>${arrow.version}</version>
+		</dependency>
+
+		<dependency>
+			<!-- One may prefer arrow-memory-netty -->
+			<groupId>org.apache.arrow</groupId>
+			<artifactId>arrow-memory-unsafe</artifactId>
+			<version>${arrow.version}</version>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
 </project>

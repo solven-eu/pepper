@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,6 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,14 +47,12 @@ import eu.solven.pepper.io.PepperSerializationHelper;
  * @author Emeric Vernat
  */
 // TODO: restrict to 95% of the Heap
-public class HeapHistogram implements IHeapHistogram, Serializable {
+public final class HeapHistogram implements IHeapHistogram, Serializable {
 	private static final long serialVersionUID = 2163916067335213382L;
-
-	protected static final Logger LOGGER = LoggerFactory.getLogger(HeapHistogram.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HeapHistogram.class);
 
 	private final List<ClassInfo> classes;
 	private final List<ClassInfo> permGenClasses;
-	private final Date time;
 	private long totalHeapBytes;
 	private long totalHeapInstances;
 	private long totalPermGenBytes;
@@ -65,7 +62,6 @@ public class HeapHistogram implements IHeapHistogram, Serializable {
 	private static final int DECIMAL_RADIX = 10;
 
 	HeapHistogram(InputStream in, boolean jrockit) {
-		time = new Date();
 		final Scanner sc = new Scanner(in, JMAP_CHARSET.toString());
 		final List<ClassInfo> classInfos = scan(sc, jrockit);
 
@@ -105,18 +101,6 @@ public class HeapHistogram implements IHeapHistogram, Serializable {
 		}
 	}
 
-	protected Date getTime() {
-		return time;
-	}
-
-	protected List<ClassInfo> getHeapHistogram() {
-		return Collections.unmodifiableList(classes);
-	}
-
-	protected long getTotalHeapInstances() {
-		return totalHeapInstances;
-	}
-
 	@Override
 	public long getTotalHeapBytes() {
 		return totalHeapBytes;
@@ -126,25 +110,13 @@ public class HeapHistogram implements IHeapHistogram, Serializable {
 		return Collections.unmodifiableList(permGenClasses);
 	}
 
-	long getTotalPermGenInstances() {
-		return totalPermgenInstances;
-	}
-
-	long getTotalPermGenBytes() {
-		return totalPermGenBytes;
-	}
-
-	boolean isSourceDisplayed() {
-		return sourceDisplayed;
-	}
-
 	private void sort() {
 		final Comparator<ClassInfo> classInfoReversedComparator = Collections.reverseOrder(new ClassInfoComparator());
 		Collections.sort(permGenClasses, classInfoReversedComparator);
 		Collections.sort(classes, classInfoReversedComparator);
 	}
 
-	protected void skipHeader(Scanner sc, boolean jrockit) {
+	private void skipHeader(Scanner sc, boolean jrockit) {
 		// num #instances #bytes class name
 		// --------------------------------------
 		sc.nextLine();
@@ -155,7 +127,7 @@ public class HeapHistogram implements IHeapHistogram, Serializable {
 		}
 	}
 
-	protected List<ClassInfo> scan(Scanner sc, boolean jrockit) {
+	private List<ClassInfo> scan(Scanner sc, boolean jrockit) {
 		final Map<String, ClassInfo> classInfoMap = new HashMap<String, ClassInfo>();
 		sc.useRadix(DECIMAL_RADIX);
 

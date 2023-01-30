@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -149,6 +149,7 @@ public final class PepperObjectGraphWalker {
 			}
 
 			Class<?> refClass = ref.getClass();
+			int idHashCode = System.identityHashCode(ref);
 			if (!byPassIfFlyweight(ref) && shouldWalkClass(refClass)) {
 				if (refClass.isArray() && !refClass.getComponentType().isPrimitive()) {
 					for (int i = 0; i < Array.getLength(ref); i++) {
@@ -211,16 +212,13 @@ public final class PepperObjectGraphWalker {
 				}
 
 				if (traversalDebugMessage != null) {
-					traversalDebugMessage.append(ref.getClass().getName())
-							.append('@')
-							.append(System.identityHashCode(ref))
-							.append('\n');
+					traversalDebugMessage.append(ref.getClass().getName()).append('@').append(idHashCode).append('\n');
 				}
 			} else if (traversalDebugMessage != null) {
 				traversalDebugMessage.append("  ignored\t")
 						.append(ref.getClass().getName())
 						.append('@')
-						.append(System.identityHashCode(ref))
+						.append(idHashCode)
 						.append('\n');
 			}
 			visited.put(ref, null);

@@ -5,6 +5,7 @@ Original repo: https://git.eclipse.org/c/mat/org.eclipse.mat.git
 
 A Stand-Alone version of Eclipse MAT. Comparable to vshor_mat but with a much more up-to-date version
 
-It can be used by calling the class: 
+It can be used by calling the class:
 
-    org.eclipse.mat.snapshot.MainSnapshotPreparer <pathToHProf>
+        org.eclipse.mat.snapshot.MainSnapshotPreparer <pathToHProf>
+

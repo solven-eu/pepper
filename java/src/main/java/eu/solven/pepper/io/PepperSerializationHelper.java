@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.Writer;
@@ -56,6 +54,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.SerializationUtils;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.CharMatcher;
@@ -72,6 +71,7 @@ import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 
 import eu.solven.pepper.jmx.SetStaticMBean;
+import eu.solven.pepper.logging.PepperLogHelper;
 
 /**
  * Various utility method related to Serialization, as conversion from/to String to/from Collections and Map
@@ -112,6 +112,7 @@ public class PepperSerializationHelper {
 	// This should be the same as IPostProcessor.SEPARATOR
 	public static final char COLLECTION_SEPARATOR = PIPE;
 
+	@Deprecated
 	public static final char FORCE_SEPARATOR = '#';
 
 	private static final int HEX_FILTER = 0xFF;
@@ -263,6 +264,14 @@ public class PepperSerializationHelper {
 		return Joiner.on(COLLECTION_SEPARATOR).join(asList);
 	}
 
+	/**
+	 *
+	 * @param object
+	 * @return the String, or the className followed by the object .toString
+	 * @deprecated As it seems not useful to call the .toString. You may rely on
+	 *             {@link PepperLogHelper#getObjectAndClass(Object)}
+	 */
+	@Deprecated
 	public static String convertObjectToString(Object object) {
 		if (object == null) {
 			return "";
@@ -278,6 +287,7 @@ public class PepperSerializationHelper {
 	 * @param charSequence
 	 * @return an Object is transcoding succeeded, else the original String
 	 */
+	@Deprecated
 	public static Object convertStringToObject(CharSequence charSequence) {
 		if (charSequence == null || charSequence.length() == 0) {
 			return "";
@@ -505,18 +515,7 @@ public class PepperSerializationHelper {
 	}
 
 	public static byte[] toBytes(Serializable o) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		writeToStream(o, baos);
-
-		return baos.toByteArray();
-	}
-
-	private static void writeToStream(Serializable o, OutputStream outputStream) throws IOException {
-		// TODO Do not close the input outputStream
-		try (ObjectOutputStream oos = new ObjectOutputStream(outputStream)) {
-			oos.writeObject(o);
-		}
+		return SerializationUtils.serialize(o);
 	}
 
 	public static String toMD5(String input) {

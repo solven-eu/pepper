@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ import java.nio.IntBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
@@ -57,10 +58,10 @@ public class PepperBufferHelper {
 
 	@SuppressWarnings("PMD.MutableStaticState")
 	@VisibleForTesting
-	protected static boolean forceNoSpaceDisk = false;
+	protected static final AtomicBoolean FORCE_NO_SPACE_DISK = new AtomicBoolean();
 	@SuppressWarnings("PMD.MutableStaticState")
 	@VisibleForTesting
-	protected static boolean forceNoHeap = false;
+	protected static final AtomicBoolean FORCE_NO_HEAP = new AtomicBoolean();
 
 	protected PepperBufferHelper() {
 		// hidden
@@ -176,7 +177,7 @@ public class PepperBufferHelper {
 	}
 
 	private static long getAvailableHeap() {
-		if (forceNoHeap) {
+		if (FORCE_NO_HEAP.get()) {
 			return 0;
 		} else {
 			long maxHeap = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax();
@@ -209,7 +210,7 @@ public class PepperBufferHelper {
 	}
 
 	private static long getFreeSpace(File tmpFile) {
-		if (forceNoSpaceDisk) {
+		if (FORCE_NO_SPACE_DISK.get()) {
 			return 0;
 		} else {
 			return tmpFile.getFreeSpace();

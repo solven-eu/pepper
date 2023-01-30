@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,8 +35,8 @@ import eu.solven.pepper.memory.IPepperMemoryConstants;
 public class TestPepperBufferHelper {
 	@Before
 	public void resetConstants() {
-		PepperBufferHelper.forceNoSpaceDisk = false;
-		PepperBufferHelper.forceNoHeap = false;
+		PepperBufferHelper.FORCE_NO_SPACE_DISK.set(false);
+		PepperBufferHelper.FORCE_NO_HEAP.set(false);
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class TestPepperBufferHelper {
 
 	@Test
 	public void testBuffer_noDiskButHeap() throws IOException {
-		PepperBufferHelper.forceNoSpaceDisk = true;
+		PepperBufferHelper.FORCE_NO_SPACE_DISK.set(true);
 
 		try (CloseableIntBuffer buffer = PepperBufferHelper.makeIntBuffer(123)) {
 			// By default, we are filled with 0
@@ -69,8 +69,8 @@ public class TestPepperBufferHelper {
 
 	@Test(expected = IllegalStateException.class)
 	public void testBuffer_noDiskNoHeap() throws IOException {
-		PepperBufferHelper.forceNoSpaceDisk = true;
-		PepperBufferHelper.forceNoHeap = true;
+		PepperBufferHelper.FORCE_NO_SPACE_DISK.set(true);
+		PepperBufferHelper.FORCE_NO_HEAP.set(true);
 
 		PepperBufferHelper.makeIntBuffer(123);
 	}

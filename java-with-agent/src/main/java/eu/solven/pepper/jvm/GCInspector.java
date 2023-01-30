@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -90,6 +90,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AtomicLongMap;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import eu.solven.pepper.agent.VirtualMachineWithoutToolsJar;
 import eu.solven.pepper.jmx.PepperJMXHelper;
 import eu.solven.pepper.logging.PepperLogHelper;
@@ -333,6 +334,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	}
 
 	@SuppressWarnings({ "PMD.DoNotCallSystemExit", "PMD.DoNotTerminateVM" })
+	@SuppressFBWarnings("DM_EXIT")
 	private void onOutOfMemoryError(Throwable oom) {
 		LOGGER.error("We encountered an {}", oom.getClass());
 
@@ -882,8 +884,8 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 					bw.newLine();
 					bw.write(lastSkippedRow.get());
 				}
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
 			}
 		} else {
 			LOGGER.warn("VirtualMachine is not available for HeapHisto");

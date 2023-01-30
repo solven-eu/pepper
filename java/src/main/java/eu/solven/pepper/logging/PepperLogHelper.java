@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.annotations.Beta;
@@ -64,6 +66,7 @@ public class PepperLogHelper {
 	private static final String MINUTES_PREFIX = "min";
 	private static final String SECONDS_PREFIX = "sec";
 	private static final String MILLIS_PREFIX = "ms";
+	private static final String MICRO_PREFIX = "μs";
 	private static final String NANOS_PREFIX = "ns";
 
 	protected PepperLogHelper() {
@@ -305,10 +308,26 @@ public class PepperLogHelper {
 		});
 	}
 
+	@Deprecated
 	public static Object getNiceRate(long nbEntries, long time, TimeUnit timeUnit) {
-		return lazyToString(() -> {
-			return rawHumanRate(nbEntries, time, timeUnit);
-		});
+		return humanRate(nbEntries, time, timeUnit);
+	}
+
+	public static Object humanRate(long nbEntries, long time, TimeUnit timeUnit) {
+		return lazyToString(() -> rawHumanRate(nbEntries, time, timeUnit));
+	}
+
+	/**
+	 *
+	 * @param rate
+	 * @param timeUnit
+	 * @return a human-friendly representation of this rate
+	 */
+	public static Object humanRate(double rate, TimeUnit timeUnit) {
+		long timeUnitPerDays = timeUnit.convert(1, TimeUnit.DAYS);
+
+		long nbPerDay = (long) (rate * timeUnitPerDays);
+		return lazyToString(() -> rawHumanRate(nbPerDay, 1, TimeUnit.DAYS));
 	}
 
 	@SuppressWarnings({ "PMD.NPathComplexity", "PMD.CognitiveComplexity" })
@@ -328,6 +347,16 @@ public class PepperLogHelper {
 			long nbPerNano2 = nbEntries / timeUnit.toNanos(time);
 			if (nbPerNano2 > 0) {
 				return nbPerNano2 + "#/" + NANOS_PREFIX;
+			}
+		}
+
+		long nbPerMicros = nbEntries * timeUnit.convert(1, TimeUnit.MICROSECONDS) / time;
+		if (nbPerMicros > 0) {
+			return nbPerMicros + "#/" + MICRO_PREFIX;
+		} else if (timeUnit.toMicros(time) >= 0) {
+			long nbPerMicros2 = nbEntries / timeUnit.toMicros(time);
+			if (nbPerMicros2 > 0) {
+				return nbPerMicros2 + "#/" + MICRO_PREFIX;
 			}
 		}
 
@@ -373,7 +402,7 @@ public class PepperLogHelper {
 	public static Object getFirstChars(Object toString, int limitChars) {
 		if (toString == null) {
 			// Stick to default behavior for null objects
-			return String.valueOf(toString);
+			return String.valueOf((Object) null);
 		}
 		return lazyToString(() -> {
 			String asString = toString.toString();
@@ -424,5 +453,22 @@ public class PepperLogHelper {
 	public static Object getFirstCharsInMap(Map<?, ?> toString, int limitChars) {
 		// TODO: have a limit per key and value
 		return getFirstChars(toString, limitChars);
+	}
+
+	/**
+	 * Log in INFO else DEBUG, more an exponential policy
+	 *
+	 * @param logger
+	 * @param count
+	 * @param format
+	 * @param arguments
+	 */
+	@Beta
+	public static void logExponentially(Logger logger, long count, String format, Object... arguments) {
+		if (Long.bitCount(count) <= 1) {
+			logger.info(format, arguments);
+		} else {
+			logger.debug(format, arguments);
+		}
 	}
 }

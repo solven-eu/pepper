@@ -1,5 +1,75 @@
 {
-  "extends": [
-    "config:base"
-  ]
+    "extends": [
+        "config:base"
+    ],
+    "labels": [
+        "renovate"
+    ],
+    "rebaseWhen": "conflicted",
+    "packageRules": [
+        {
+            "matchUpdateTypes": [
+                "patch",
+                "pin",
+                "digest"
+            ],
+            "automerge": true
+        },
+        {
+            "matchDepTypes": [
+                "devDependencies"
+            ],
+            "automerge": true
+        },
+        {
+            "matchPackagePatterns": [
+                "eslint"
+            ],
+            "groupName": "eslint"
+        },
+        {
+            "matchPackagePatterns": [
+                "pmd"
+            ],
+            "groupName": "pmd"
+        },
+        {
+            "matchPackagePatterns": [
+                "spring"
+            ],
+            "groupName": "spring"
+        },
+        {
+            "matchPackagePatterns": [
+                "com.microsoft"
+            ],
+            "groupName": "microsoft"
+        },
+        {
+            "matchPackagePatterns": [
+                "com.google"
+            ],
+            "groupName": "google"
+        },
+        {
+            "matchPackagePatterns": [
+                "com.github.spotbugs"
+            ],
+            "groupName": "spotbugs"
+        },
+        {
+            "matchPackagePatterns": [
+                "io.projectreactor-reactor-bom",
+                "io.netty"
+            ],
+            "groupName": "netty"
+        },
+        {
+            "matchPackagePatterns": [
+                "org.seleniumhq.selenium",
+                "io.github.bonigarcia:webdrivermanager"
+            ],
+            "groupName": "selenium"
+        }
+    ]
 }

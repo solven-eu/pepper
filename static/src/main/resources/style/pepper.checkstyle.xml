@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE module PUBLIC
-	"-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-	"http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 <module name="Checker">
 	<!-- If you set the basedir property below, then all reported file names will be relative to the specified directory. See http://checkstyle.sourceforge.net/5.x/config.html#Checker 
 		<property name="basedir" value="${basedir}"/> -->
@@ -24,11 +22,11 @@
 	<!-- Checks for Size Violations. -->
 	<!-- See http://checkstyle.sf.net/config_sizes.html -->
 	<module name="FileLength" />
-	
+
 	<!-- Checks for Size Violations. -->
 	<!-- See http://checkstyle.sf.net/config_sizes.html -->
 	<module name="LineLength">
-		<!-- BLA: The limit should be 150 but sometimes Checkstyle counts unexpectedly, or Eclipse does not format as expected -->
+		<!-- @blacelle: The limit should be 150 but sometimes Checkstyle counts unexpectedly, or Eclipse does not format as expected -->
 		<property name="tabWidth" value="4" />
 		<property name="max" value="160" />
 	</module>
@@ -54,15 +52,6 @@
 	<!-- // CHECKSTYLE:OFF -->
 	<!-- // CHECKSTYLE:ON -->
 	<module name="SuppressWithPlainTextCommentFilter" />
-
-	<!-- Checks for Size Violations. -->
-	<!-- See http://checkstyle.sf.net/config_sizes.html -->
-	<module name="LineLength">
-		<!-- @blacelle: The limit should be 150 but sometimes Checkstyle counts unexpectedly, 
-			or Eclipse does not format as expected -->
-		<property name="tabWidth" value="4" />
-		<property name="max" value="160" />
-	</module>
 
 	<module name="TreeWalker">
 		<!-- Enable @SuppressWarnings("checkstyle:magicnumber") -->
@@ -159,7 +148,16 @@
 		<!-- @blacelle: Some imports appears as unused, but they are referenced by Javadoc -->
 		<!-- <module name="UnusedImports" /> -->
 
-		<module name="MethodLength" />
+		<!-- @blacelle: Sync with PMD.ExcessiveMethodLength -->
+		<module name="MethodLength">
+			<!-- https://checkstyle.sourceforge.io/config_sizes.html#MethodLength -->
+			<property name="tokens" value="METHOD_DEF" />
+			<!-- Comments are included -->
+			<property name="countEmpty" value="false" />
+			<!-- https://github.com/pmd/pmd/issues/2123 -->
+			<property name="max" value="100" />
+		</module>
+
 		<!-- @blacelle: Sync with PMD.ExcessiveParameterList -->
 		<module name="ParameterNumber">
 			<property name="max" value="10" />

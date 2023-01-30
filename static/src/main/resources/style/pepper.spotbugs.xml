@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+	<Match>
+		<Source name="**/generated/**" />
+	</Match>
+	<Match>
+		<!-- https://github.com/spotbugs/spotbugs/issues/756 -->
+		<!-- Issue with Java11 try-with-resources -->
+		<Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" />
+	</Match>
+	<Match>
+		<!-- https://github.com/spotbugs/spotbugs/issues/711 -->
+		<!-- Issue with Java11 try-with-resources -->
+		<Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
+	</Match>
+	<Match>
+		<!-- https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#ei-may-expose-internal-representation-by-returning-reference-to-mutable-object-ei-expose-rep -->
+		<!-- This leads to false-positives over LocalDate -->
+		<Bug pattern="EI_EXPOSE_REP" />
+	</Match>
+	<Match>
+		<!-- https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#ei2-may-expose-internal-representation-by-incorporating-reference-to-mutable-object-ei-expose-rep2 -->
+		<!-- This leads to false-positives over RestOperations -->
+		<Bug pattern="EI_EXPOSE_REP2" />
+	</Match>
+</FindBugsFilter>

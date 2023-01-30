@@ -1,9 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
-		<artifactId>pepper-parent</artifactId>
+		<artifactId>aggregator-pepper</artifactId>
 		<version>4.3-SNAPSHOT</version>
 	</parent>
 
@@ -46,6 +47,12 @@
 			<version>0.3.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>annotations</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<!-- Prevent javadoc complaining. Kept as optional, just like Guava -->
 			<groupId>com.google.code.findbugs</groupId>

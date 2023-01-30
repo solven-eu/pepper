@@ -1,17 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
-		<artifactId>pepper-metadata</artifactId>
+		<artifactId>pepper-parent</artifactId>
 		<version>4.3-SNAPSHOT</version>
-		<relativePath>metadata</relativePath>
+		<relativePath>parent</relativePath>
 	</parent>
 
-	<artifactId>pepper-parent</artifactId>
+	<artifactId>aggregator-pepper</artifactId>
 
 	<packaging>pom</packaging>
 	<inceptionYear>2014</inceptionYear>
+
+	<modules>
+		<!-- static resources like the Checkstyle sheet -->
+		<module>static</module>
+
+		<!-- Holds the java-agent enabling Instrumentation -->
+		<module>agent</module>
+
+		<!-- The java-core code -->
+		<module>java</module>
+
+		<!-- The java-core code relying on pepper-agent -->
+		<module>java-with-agent</module>
+
+		<!-- This project metadata, holding for instance deployment resources -->
+		<module>parent</module>
+
+		<!-- Port Eclipse MAT in an autonomous module -->
+		<!-- Not official module as it does not comply with quality standards yet -->
+		<module>mat</module>
+
+		<!-- Some JMH benchmarks, especially for Double parsing -->
+		<module>jmh</module>
+
+		<module>unittest</module>
+
+		<module>serialization</module>
+		<module>compression</module>
+
+		<!-- <module>spark</module> -->
+
+		<!-- Hadoop module, defining context for multiple modules (e.g. Spark, Parquet,..) -->
+		<module>hadoop</module>
+
+		<!-- Helps integration of a PostgreSQL database -->
+		<module>pgsql</module>
+
+		<!-- a JConsole plugin to facilitate tracking of off-heap -->
+		<!-- Excluded as it is an experimental project -->
+		<!-- <module>buffermonitor</module> -->
+	</modules>
+
+	<scm>
+		<!-- Only developerConnection was not set in parent pom as its own parent was not a SNAPSHOT -->
+		<developerConnection>${scm.developerConnection}</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 
 	<!-- Format source code -->
 	<!-- mvn net.revelc.code.formatter:formatter-maven-plugin:2.8.0:format -->
@@ -24,7 +72,7 @@
 	<!-- Do not -T 8 else the prompt for GPG may be lost in the logs -->
 	<!-- mvn release:clean release:prepare release:perform -DskipStyle -Darguments="-Dmaven.test.skip -DskipStyle -Dmaven.javadoc.skip=false" -->
 	<!-- git push \-\-tags -->
-	
+
 	<!-- In case of error: -->
 	<!-- mvn reset \-\-hard HEAD~~ -->
 	<!-- mvn tag -d pepper-XXX -->
@@ -70,23 +118,11 @@
 		<errorprone.version>2.16</errorprone.version>
 
 		<awaitility.version>4.0.3</awaitility.version>
-		<findbugs.version>3.0.5</findbugs.version>
 		<equals.verifier.version>3.11</equals.verifier.version>
 		<checker.quals.version>3.27.0</checker.quals.version>
 
 		<!-- newer version than spring-boot-dependencies, for JDK11 -->
-		<mockito.version>3.2.4</mockito.version>
-
-		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-pmd-plugin -->
-		<maven-pmd-plugin.version>3.19.0</maven-pmd-plugin.version>
-		<!-- https://mvnrepository.com/artifact/net.sourceforge.pmd/pmd -->
-		<!-- Issue with 6.27, probably due to mvn plugin -->
-		<pmd.version>6.51.0</pmd.version>
-
-		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
-		<maven-checkstyle-plugin.version>3.2.0</maven-checkstyle-plugin.version>
-		<!-- https://mvnrepository.com/artifact/com.puppycrawl.tools/checkstyle -->
-		<checkstyle.version>10.4</checkstyle.version>
+		<mockito.version>4.11.0</mockito.version>
 
 		<jacoco.instruction.ratio>0.70</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
@@ -100,123 +136,6 @@
 		<!-- TODO Exclude a few Sonar rules -->
 		<!-- https://docs.sonarqube.org/display/SONAR/Analysis+Parameters#AnalysisParameters-Exclusions/Inclusions -->
 	</properties>
-
-	<profiles>
-		<profile>
-			<!-- Checks for compilation and tests, but not code quality -->
-			<id>skipStyle</id>
-			<activation>
-				<property>
-					<name>skipStyle</name>
-				</property>
-			</activation>
-			<properties>
-				<!-- Skip static-analysis -->
-				<jacoco.skip>true</jacoco.skip>
-				<checkstyle.skip>true</checkstyle.skip>
-				<pmd.skip>true</pmd.skip>
-				<cpd.skip>true</cpd.skip>
-				<maven.javadoc.skip>true</maven.javadoc.skip>
-
-				<!-- Skip formatting by revelc -->
-				<formatter.skip>true</formatter.skip>
-				
-				<cleanthat.skip>true</cleanthat.skip>
-			</properties>
-		</profile>
-		<profile>
-			<!-- Checks for compilation and tests, but not code quality -->
-			<!-- mvn verify -PstyleOnly -->
-			<id>styleOnly</id>
-			<activation>
-				<property>
-					<name>styleOnly</name>
-				</property>
-			</activation>
-			<properties>
-				<!-- Skip tests -->
-				<maven.test.skip>true</maven.test.skip>
-				<!-- Skip jacoco as no tests -->
-				<jacoco.skip>true</jacoco.skip>
-			</properties>
-		</profile>
-		<profile>
-			<!-- Used with -DskipTests: skip tests and skip style checking -->
-			<id>dirty</id>
-			<activation>
-				<property>
-					<name>skipTests</name>
-				</property>
-			</activation>
-			<properties>
-				<!-- Skip tests -->
-				<maven.test.skip>true</maven.test.skip>
-
-				<!-- Skip code validations -->
-				<jacoco.skip>true</jacoco.skip>
-				<checkstyle.skip>true</checkstyle.skip>
-				<pmd.skip>true</pmd.skip>
-				<cpd.skip>true</cpd.skip>
-				<maven.javadoc.skip>true</maven.javadoc.skip>
-				<cleanthat.skip>true</cleanthat.skip>
-			</properties>
-		</profile>
-
-		<profile>
-			<id>circleci</id>
-			<activation>
-				<property>
-					<name>env.CIRCLECI</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<properties>
-				<!-- CircleCI machines seems to have a lot of cores, which would led to too many forks given available memory -->
-				<forkCount>1</forkCount>
-			</properties>
-		</profile>
-	</profiles>
-
-	<modules>
-		<!-- static resources like the Checkstyle sheet -->
-		<module>static</module>
-		
-		<!-- Holds the java-agent enabling Instrumentation -->
-		<module>agent</module>
-
-		<!-- The java-core code -->
-		<module>java</module>
-		
-		<!-- The java-core code relying on pepper-agent -->
-		<module>java-with-agent</module>
-
-		<!-- This project metadata, holding for instance deployment resources -->
-		<module>metadata</module>
-
-		<!-- Port Eclipse MAT in an autonomous module -->
-		<!-- Not official module as it does not comply with quality standards yet -->
-		<module>mat</module>
-
-		<!-- Some JMH benchmarks, especially for Double parsing -->
-		<module>jmh</module>
-
-		<module>unittest</module>
-
-		<module>serialization</module>
-		<module>compression</module>
-		
-		<!-- <module>spark</module> -->
-
-		<!-- Hadoop module, defining context for multiple modules (e.g. Spark, Parquet,..) -->
-		<module>hadoop</module>
-
-		<!-- Helps integration of a PostgreSQL database -->
-		<module>pgsql</module>
-
-		<!-- a JConsole plugin to facilitate tracking of off-heap -->
-		<!-- Excluded as it is an experimental project -->
-		<!-- <module>buffermonitor</module> -->
-	</modules>
 
 	<dependencyManagement>
 		<dependencies>
@@ -386,10 +305,10 @@
 					<executions>
 						<execution>
 							<id>attach-sources</id>
-							<phase>verify</phase>
 							<goals>
 								<goal>jar-no-fork</goal>
 							</goals>
+							<phase>verify</phase>
 						</execution>
 					</executions>
 				</plugin>
@@ -408,10 +327,10 @@
 						</execution>
 						<execution>
 							<id>default-report</id>
-							<phase>prepare-package</phase>
 							<goals>
 								<goal>report</goal>
 							</goals>
+							<phase>prepare-package</phase>
 						</execution>
 						<execution>
 							<id>default-check</id>
@@ -444,12 +363,6 @@
 							</configuration>
 						</execution>
 					</executions>
-				</plugin>
-
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>findbugs-maven-plugin</artifactId>
-					<version>${findbugs.version}</version>
 				</plugin>
 
 				<plugin>
@@ -498,27 +411,6 @@
 						<pushChanges>false</pushChanges>
 					</configuration>
 				</plugin>
-
-				<plugin>
-					<!-- mvn io.github.solven-eu.cleanthat:cleanthat-maven-plugin:cleanthat -->
-					<groupId>io.github.solven-eu.cleanthat</groupId>
-					<artifactId>cleanthat-maven-plugin</artifactId>
-					<version>1.7</version>
-					<executions>
-						<execution>
-							<id>Clean the code</id>
-							<goals>
-								<goal>cleanthat</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>Check the code is clean</id>
-							<goals>
-								<goal>check</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -529,59 +421,8 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<!-- -Dfindbugs.skip=true -->
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>net.revelc.code.formatter</groupId>
-				<artifactId>formatter-maven-plugin</artifactId>
-				<version>2.21.0</version>
-				<configuration>
-					<configFile>eclipse/eclipse_java_code_formatter.xml</configFile>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>io.github.solven-eu.pepper</groupId>
-						<artifactId>pepper-static</artifactId>
-						<version>${project.version}</version>
-						<scope>runtime</scope>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<id>format_eclipse</id>
-						<goals>
-							<goal>format</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<!-- http://code.revelc.net/impsort-maven-plugin/ -->
-				<groupId>net.revelc.code</groupId>
-				<artifactId>impsort-maven-plugin</artifactId>
-				<version>1.7.0</version>
-				<configuration>
-					<!-- Eclipse default -->
-					<groups>java.,javax.,org.,com.</groups>
-					<staticGroups>java,*</staticGroups>
-					<excludes>
-						<exclude>**/thrift/*.java</exclude>
-					</excludes>
-				</configuration>
-				<executions>
-					<execution>
-						<id>sort-imports</id>
-						<goals>
-							<goal>sort</goal><!-- runs at process-sources phase by default -->
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
 			<plugin>
@@ -618,112 +459,6 @@
 					<failOnError>false</failOnError>
 				</configuration>
 			</plugin>
-
-			<plugin>
-				<!-- Skip a row by adding '//NOPMD' at the end -->
-				<!-- http://pmd.sourceforge.net/pmd-4.3.0/suppressing.html -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>${maven-pmd-plugin.version}</version>
-				<configuration>
-					<!-- <includeTests>true</includeTests> -->
-					<indentSize>4</indentSize>
-					<printFailingErrors>true</printFailingErrors>
-
-					<!-- Code duplication: Lower is better. Default is 100 -->
-					<minimumTokens>60</minimumTokens>
-
-					<!-- Prevent [WARNING] Unable to locate Source XRef to link to - DISABLED -->
-					<linkXRef>false</linkXRef>
-
-					<!-- xml is required to run 'mvn pmd:check' -->
-					<format>xml</format>
-
-					<rulesets>
-						<ruleset>style/pepper.pmd.rulesets.xml</ruleset>
-					</rulesets>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>io.github.solven-eu.pepper</groupId>
-						<artifactId>pepper-static</artifactId>
-						<version>${project.version}</version>
-						<scope>runtime</scope>
-					</dependency>
-					<!-- Enables rules for XML, including pom.xml -->
-					<dependency>
-						<groupId>net.sourceforge.pmd</groupId>
-						<artifactId>pmd-xml</artifactId>
-						<version>${pmd.version}</version>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
-						<phase>compile</phase>
-						<goals>
-							<goal>check</goal>
-							<goal>cpd-check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<!-- https://maven.apache.org/plugins/maven-checkstyle-plugin/ -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>${maven-checkstyle-plugin.version}</version>
-				<dependencies>
-					<dependency>
-						<!-- This dependency holds the default configuration -->
-						<groupId>io.github.solven-eu.pepper</groupId>
-						<artifactId>pepper-static</artifactId>
-						<version>${project.version}</version>
-						<scope>runtime</scope>
-					</dependency>
-					<dependency>
-						<!-- more recent than brought by maven plugin -->
-						<groupId>com.puppycrawl.tools</groupId>
-						<artifactId>checkstyle</artifactId>
-						<version>${checkstyle.version}</version>
-					</dependency>
-				</dependencies>
-				<configuration>
-					<excludes>**/generated/**</excludes>
-				</configuration>
-				<executions>
-					<execution>
-						<id>check</id>
-						<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
-						<phase>validate</phase>
-						<configuration>
-							<configLocation>style/pepper.checkstyle.xml</configLocation>
-							<!--<configLocation>checkstyle/mitrust.checkstyle.xml</configLocation> -->
-							<encoding>UTF-8</encoding>
-							<consoleOutput>true</consoleOutput>
-							<failsOnError>true</failsOnError>
-							<!-- Prevent [WARNING] Unable to locate Source XRef to link to - DISABLED -->
-							<!-- only with goal checkstyle-aggregate or checkstyle generating a report -->
-							<!--<linkXRef>false</linkXRef> -->
-						</configuration>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>io.github.solven-eu.cleanthat</groupId>
-				<artifactId>cleanthat-maven-plugin</artifactId>
-				<!-- CleanThat should be executed only in the top-directory -->
-				<inherited>false</inherited>
-			</plugin>
 		</plugins>
 	</build>
-
-	<scm>
-		<!-- Only developerConnection was not set in parent pom as its own parent was not a SNAPSHOT -->
-		<developerConnection>${scm.developerConnection}</developerConnection>
-		<tag>HEAD</tag>
-	</scm>
 </project>

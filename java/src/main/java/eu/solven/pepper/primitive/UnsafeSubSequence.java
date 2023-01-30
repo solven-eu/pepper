@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,8 @@ package eu.solven.pepper.primitive;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Not thread-safe, Mutable, no .hashcode/.equals subsequence, but does not allocate any memory
@@ -96,14 +98,16 @@ public class UnsafeSubSequence implements CharSequence {
 		}
 	}
 
+	@SuppressFBWarnings("EQ_UNUSUAL")
 	@Override
 	public int hashCode() {
-		throw new RuntimeException("UNsafe");
+		throw new RuntimeException("Unsafe");
 	}
 
+	@SuppressFBWarnings("EQ_UNUSUAL")
 	@Override
 	public boolean equals(Object obj) {
-		throw new RuntimeException("UNsafe");
+		throw new RuntimeException("Unsafe");
 	}
 
 	@Override

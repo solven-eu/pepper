@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<!-- Import dependency management from Spring Boot -->
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.7.8</version>
+		<!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
+		<relativePath/>
+	</parent>
+
+	<groupId>io.github.solven-eu.pepper</groupId>
+	<artifactId>pepper-parent</artifactId>
+	<version>4.3-SNAPSHOT</version>
+
+	<packaging>pom</packaging>
+
+	<developers>
+		<developer>
+			<id>blacelle</id>
+			<name>Benoit Lacelle</name>
+			<email>benoit.lacelle at solven.eu</email>
+			<roles>
+				<role>Project lead</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<scm>
+		<!-- SCM is in properties as we can't configure it directly in profile -->
+		<!-- Do not add developperConnection as parent is not a SNAPSHOT -->
+		<connection>${scm.connection}</connection>
+		<tag>HEAD</tag>
+		<url>${scm.url}</url>
+	</scm>
+
+	<properties>
+		<!-- set encoding to something not platform dependent -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.build.timestamp.format>yyyyMMddHHmmssSSS</maven.build.timestamp.format>
+
+		<compiler.targetVersion>1.8</compiler.targetVersion>
+
+		<scm.developerConnection>scm:git:ssh://git@github.com/solven-eu/pepper.git</scm.developerConnection>
+		<scm.connection>scm:git:ssh://github.com/solven-eu/pepper.git</scm.connection>
+		<scm.url>https://github.com/solven-eu/pepper</scm.url>
+
+		<spotless.version>2.31.0</spotless.version>
+
+		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
+		<spotbugs.version>4.7.3.0</spotbugs.version>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-pmd-plugin -->
+		<maven-pmd-plugin.version>3.20.0</maven-pmd-plugin.version>
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.pmd/pmd -->
+		<pmd.version>6.54.0</pmd.version>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
+		<maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
+		<!-- https://mvnrepository.com/artifact/com.puppycrawl.tools/checkstyle -->
+		<checkstyle.version>10.6.0</checkstyle.version>
+
+		<!-- By default (i.e. in local environments), check for code formatting AFTER trying automatic fixes. -->
+		<!-- We suppose the developper would see the fixed and include them in his commit. -->
+		<!-- In the CI, we check BEFORE automatic fixes as the CI should report early invalid code -->
+		<staticChecks>process-sources</staticChecks>
+	</properties>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<!-- https://maven.apache.org/plugins/maven-source-plugin/ -->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<goals>
+								<goal>jar-no-fork</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<!--https://spotbugs.github.io/spotbugs-maven-plugin/index.html -->
+					<groupId>com.github.spotbugs</groupId>
+					<artifactId>spotbugs-maven-plugin</artifactId>
+					<version>${spotbugs.version}</version>
+					<configuration>
+						<excludeFilterFile>${maven.multiModuleProjectDirectory}/static/src/main/resources/style/pepper.spotbugs.xml</excludeFilterFile>
+					</configuration>
+					<executions>
+						<execution>
+							<id>check</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
+							<!-- default phase is verify, which is after tests. -->
+							<!-- We prefer to run static analysis before tests not to wait -->
+							<phase>${staticChecks}</phase>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<!-- https://maven.apache.org/plugins/maven-checkstyle-plugin/ -->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>${maven-checkstyle-plugin.version}</version>
+					<configuration>
+						<excludes>**/generated/**</excludes>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<!-- more recent than brought by maven plugin -->
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>${checkstyle.version}</version>
+						</dependency>
+					</dependencies>
+					<executions>
+						<execution>
+							<id>check</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
+							<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
+							<phase>${staticChecks}</phase>
+							<configuration>
+								<configLocation>${maven.multiModuleProjectDirectory}/static/src/main/resources/style/pepper.checkstyle.xml</configLocation>
+								<!--<configLocation>checkstyle/mitrust.checkstyle.xml</configLocation> -->
+								<encoding>UTF-8</encoding>
+								<consoleOutput>true</consoleOutput>
+								<failsOnError>true</failsOnError>
+								<!-- Prevent [WARNING] Unable to locate Source XRef to link to - DISABLED -->
+								<!-- only with goal checkstyle-aggregate or checkstyle generating a report -->
+								<!--<linkXRef>false</linkXRef> -->
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<!-- Skip a row by adding '//NOPMD' at the end -->
+					<!-- http://pmd.sourceforge.net/pmd-4.3.0/suppressing.html -->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-pmd-plugin</artifactId>
+					<version>${maven-pmd-plugin.version}</version>
+					<configuration>
+						<!-- <includeTests>true</includeTests> -->
+						<indentSize>4</indentSize>
+						<printFailingErrors>true</printFailingErrors>
+
+						<!-- Code duplication: Lower is better. Default is 100 -->
+						<minimumTokens>60</minimumTokens>
+
+						<!-- TODO Decrease to 4, then 3, until 1 -->
+						<failurePriority>5</failurePriority>
+
+						<!-- Prevent [WARNING] Unable to locate Source XRef to link to - DISABLED -->
+						<linkXRef>false</linkXRef>
+
+						<!-- xml is required to run 'mvn pmd:check' -->
+						<format>xml</format>
+
+						<rulesets>
+							<ruleset>${maven.multiModuleProjectDirectory}/static/src/main/resources/style/pepper.pmd.rulesets.xml</ruleset>
+						</rulesets>
+						<excludes>
+							<exclude>**/generated/**</exclude>
+						</excludes>
+					</configuration>
+					<dependencies>
+						<!-- the orginal version shipped with the plugin, 6.4.0, doesn't handle java11 -->
+						<dependency>
+							<groupId>net.sourceforge.pmd</groupId>
+							<artifactId>pmd-java</artifactId>
+							<version>${pmd.version}</version>
+						</dependency>
+						<!-- Enables rules for XML, including pom.xml -->
+						<dependency>
+							<groupId>net.sourceforge.pmd</groupId>
+							<artifactId>pmd-xml</artifactId>
+							<version>${pmd.version}</version>
+						</dependency>
+						<!-- maven-pmd-plugin relies by default on some version of PMD which -->
+						<!-- may be incompatible with custom PMD versions -->
+						<dependency>
+							<groupId>net.sourceforge.pmd</groupId>
+							<artifactId>pmd-core</artifactId>
+							<version>${pmd.version}</version>
+						</dependency>
+					</dependencies>
+					<executions>
+						<execution>
+							<goals>
+								<goal>check</goal>
+								<goal>cpd-check</goal>
+							</goals>
+							<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
+							<phase>${staticChecks}</phase>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<!-- mvn io.github.solven-eu.cleanthat:cleanthat-maven-plugin:cleanthat -->
+					<groupId>io.github.solven-eu.cleanthat</groupId>
+					<artifactId>cleanthat-maven-plugin</artifactId>
+					<version>1.8</version>
+					<configuration>
+						<skip>true</skip>
+					</configuration>
+					<executions>
+						<execution>
+							<id>Clean the code</id>
+							<goals>
+								<goal>cleanthat</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>Check the code is clean</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
+							<phase>${staticChecks}</phase>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<!-- mvn com.diffplug.spotless:spotless-maven-plugin:apply -->
+					<!-- mvn com.diffplug.spotless:spotless-maven-plugin:check -->
+					<groupId>com.diffplug.spotless</groupId>
+					<artifactId>spotless-maven-plugin</artifactId>
+					<version>${spotless.version}</version>
+					<configuration>
+						<!-- optional: limit format enforcement to just the files changed by this feature branch -->
+						<!--ratchetFrom>origin/master</ratchetFrom-->
+						<formats>
+							<!-- you can define as many formats as you want, each is independent -->
+							<format>
+								<!-- define the files to apply to -->
+								<includes>
+									<include>.gitignore</include>
+								</includes>
+								<!-- define the steps to apply to those files -->
+								<trimTrailingWhitespace/>
+								<endWithNewline/>
+								<indent>
+									<tabs>true</tabs>
+									<spacesPerTab>4</spacesPerTab>
+								</indent>
+							</format>
+						</formats>
+
+						<pom>
+							<includes>
+								<include>pom.xml</include>
+							</includes>
+
+							<!-- https://github.com/diffplug/spotless/tree/main/plugin-maven#sortpom -->
+							<sortPom>
+								<!-- We like empty elements, while plugin default configuration would expand them -->
+								<expandEmptyElements>false</expandEmptyElements>
+
+								<!-- https://github.com/Ekryd/sortpom/wiki/Parameters#for-both-the-sort-and-verify-goal -->
+								<!-- -1 means '\t' -->
+								<nrOfIndentSpace>-1</nrOfIndentSpace>
+							</sortPom>
+						</pom>
+
+						<markdown>
+							<endWithNewline/>
+							<indent>
+								<tabs>true</tabs>
+								<spacesPerTab>4</spacesPerTab>
+							</indent>
+							<includes>
+								<include>**/*.md</include>
+							</includes>
+
+							<flexmark/>
+						</markdown>
+
+						<!-- define a language-specific format -->
+						<java>
+							<importOrder>
+								<order>java,javax,org,com</order>
+							</importOrder>
+						</java>
+
+						<json>
+							<trimTrailingWhitespace/>
+							<endWithNewline/>
+							<indent>
+								<tabs>true</tabs>
+								<spacesPerTab>4</spacesPerTab>
+							</indent>
+
+							<includes>
+								<include>**/*.json</include>
+							</includes>
+
+							<gson/>
+						</json>
+						<!--yaml/-->
+					</configuration>
+
+					<executions>
+						<execution>
+							<id>applySpotless</id>
+							<goals>
+								<goal>apply</goal>
+							</goals>
+							<phase>process-sources</phase>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+
+			<!-- Apply formatters before checks -->
+			<plugin>
+				<groupId>io.github.solven-eu.cleanthat</groupId>
+				<artifactId>cleanthat-maven-plugin</artifactId>
+				<!-- CleanThat should be executed only in the top-directory -->
+				<inherited>false</inherited>
+			</plugin>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- Apply checks after formatters -->
+			<plugin>
+				<!-- https://maven.apache.org/plugins/maven-checkstyle-plugin/ -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<!-- Skip a row by adding '//NOPMD' at the end -->
+				<!-- http://pmd.sourceforge.net/pmd-4.3.0/suppressing.html -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<!-- -Dfindbugs.skip=true -->
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>${spotbugs.version}</version>
+			</plugin>
+
+			<plugin>
+				<!-- https://github.com/trautonen/coveralls-maven-plugin -->
+				<groupId>org.eluder.coveralls</groupId>
+				<artifactId>coveralls-maven-plugin</artifactId>
+				<version>4.3.0</version>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<!-- http://central.sonatype.org/pages/apache-maven.html#deploying-to-ossrh-with-apache-maven-introduction -->
+			<id>Sonatype</id>
+
+			<!--Requires in settings.xml: <settings> <servers> <server> <id>ossrh</id> <username>your-jira-id</username> <password>your-jira-pwd</password> </server> </servers> 
+				</settings> -->
+			<distributionManagement>
+				<repository>
+					<id>ossrh</id>
+					<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+				<snapshotRepository>
+					<id>ossrh</id>
+					<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+				</snapshotRepository>
+			</distributionManagement>
+
+			<build>
+				<plugins>
+					<!-- http://central.sonatype.org/pages/working-with-pgp-signatures.html -->
+					<!-- http://stackoverflow.com/questions/14114528/avoid-gpg-signing-prompt-when-using-maven-release-plugin -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<phase>verify</phase>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.4.1</version>
+						<configuration>
+							<!-- http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html -->
+							<doclint>none</doclint>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- https://github.com/sonatype/nexus-maven-plugins/tree/master/staging/maven-plugin -->
+					<!-- http://www.sonatype.org/nexus/2014/10/08/distribute-project-artifacts-in-maven-central-with-nexus-oss/ -->
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<!-- https://mvnrepository.com/artifact/org.sonatype.plugins/nexus-staging-maven-plugin -->
+						<!-- https://issues.sonatype.org/browse/NEXUS-31214 -->
+						<!-- 1.6.10 is broken (and 1.6.9 looks ill anyway) -->
+						<version>1.6.13</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>jdk9</id>
+			<activation>
+				<jdk>9</jdk>
+			</activation>
+			<properties>
+				<plexus-archiver.version>4.2.1</plexus-archiver.version>
+			</properties>
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.plexus</groupId>
+						<artifactId>plexus-archiver</artifactId>
+						<version>${plexus-archiver.version}</version>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
+			<build>
+				<pluginManagement>
+					<!-- https://stackoverflow.com/questions/36583118/is-maven-ready-for-jdk9 -->
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-assembly-plugin</artifactId>
+							<version>3.4.2</version>
+							<dependencies>
+								<dependency>
+									<groupId>org.codehaus.plexus</groupId>
+									<artifactId>plexus-archiver</artifactId>
+									<version>${plexus-archiver.version}</version>
+								</dependency>
+							</dependencies>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-jar-plugin</artifactId>
+							<version>3.3.0</version>
+							<dependencies>
+								<dependency>
+									<groupId>org.codehaus.plexus</groupId>
+									<artifactId>plexus-archiver</artifactId>
+									<version>${plexus-archiver.version}</version>
+								</dependency>
+							</dependencies>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-source-plugin</artifactId>
+							<version>3.2.1</version>
+							<dependencies>
+								<dependency>
+									<groupId>org.codehaus.plexus</groupId>
+									<artifactId>plexus-archiver</artifactId>
+									<version>${plexus-archiver.version}</version>
+								</dependency>
+							</dependencies>
+						</plugin>
+						<plugin>
+							<!-- https://github.com/trautonen/coveralls-maven-plugin -->
+							<groupId>org.eluder.coveralls</groupId>
+							<artifactId>coveralls-maven-plugin</artifactId>
+							<version>4.3.0</version>
+							<configuration>
+								<!-- As of 3.1.0, coveralls is not compatible with JDK9 -->
+								<!-- https://github.com/trautonen/coveralls-maven-plugin/issues/112 -->
+								<skip>true</skip>
+							</configuration>
+							<dependencies>
+								<!-- We need to ensure the plugin is functional, even if we want to skip its execution -->
+								<dependency>
+									<groupId>org.codehaus.plexus</groupId>
+									<artifactId>plexus-archiver</artifactId>
+									<version>${plexus-archiver.version}</version>
+								</dependency>
+							</dependencies>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+
+		<!-- ./mvnw net.revelc.code.formatter:formatter-maven-plugin:format -->
+		<!-- ./mvnw net.revelc.code:impsort-maven-plugin:sort -->
+		<profile>
+			<!-- Checks for compilation and tests, but not code quality -->
+			<!-- skip everything, test, quality, format,... -->
+			<!-- This profile is deprecated, and its usage should be replaced by -Pfast -->
+			<id>skipStyle</id>
+			<properties>
+				<!-- Code style -->
+				<!-- Skip static-analysis -->
+				<jacoco.skip>true</jacoco.skip>
+				<checkstyle.skip>true</checkstyle.skip>
+				<pmd.skip>true</pmd.skip>
+				<cpd.skip>true</cpd.skip>
+				<spotbugs.skip>true</spotbugs.skip>
+				<maven.javadoc.skip>true</maven.javadoc.skip>
+				<license.skip>true</license.skip>
+				<!-- Skip formatting by revelc -->
+				<formatter.skip>true</formatter.skip>
+				<impsort.skip>true</impsort.skip>
+				<cleanthat.skip>true</cleanthat.skip>
+				<skip.npm.style>true</skip.npm.style>
+
+				<!-- Dependency will be checked with style -->
+				<enforcer.skip>true</enforcer.skip>
+			</properties>
+		</profile>
+
+		<profile>
+			<!-- Used to recompile quickly only the core components -->
+			<id>fast</id>
+			<properties>
+				<!-- Code style -->
+				<checkstyle.skip>true</checkstyle.skip>
+				<pmd.skip>true</pmd.skip>
+				<cpd.skip>true</cpd.skip>
+				<spotbugs.skip>true</spotbugs.skip>
+				<maven.javadoc.skip>true</maven.javadoc.skip>
+				<license.skip>true</license.skip>
+				<formatter.skip>true</formatter.skip>
+				<impsort.skip>true</impsort.skip>
+				<cleanthat.skip>true</cleanthat.skip>
+				<skip.npm.style>true</skip.npm.style>
+
+				<!-- Dependency will be checked with style -->
+				<enforcer.skip>true</enforcer.skip>
+
+				<skipTests>true</skipTests>
+				<skipITs>true</skipITs>
+				<jacoco.skip>true</jacoco.skip>
+			</properties>
+		</profile>
+
+		<profile>
+			<!-- Checks for compilation and tests, but not code quality -->
+			<!-- mvn verify -PstyleOnly -->
+			<id>styleOnly</id>
+			<activation>
+				<property>
+					<name>styleOnly</name>
+				</property>
+			</activation>
+			<properties>
+				<!-- Skip tests -->
+				<maven.test.skip>true</maven.test.skip>
+				<!-- Skip jacoco as no tests -->
+				<jacoco.skip>true</jacoco.skip>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>circleci</id>
+			<activation>
+				<property>
+					<name>env.CIRCLECI</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<properties>
+				<!-- CircleCI machines seems to have a lot of cores, which would led to too many forks given available memory -->
+				<forkCount>1</forkCount>
+
+				<!-- In CI environments, we should check code formatting before trying to autofix it -->
+				<staticChecks>validate</staticChecks>
+				<!-- In CI, we should not auto-fix, but only checking/linting -->
+				<lintGoal>lint</lintGoal>
+			</properties>
+		</profile>
+	</profiles>
+</project>

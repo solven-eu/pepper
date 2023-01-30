@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -157,7 +157,9 @@ public class PepperFileHelper {
 			java.util.Enumeration<JarEntry> enumEntries = jar.entries();
 
 			File destDir = targetPath.toFile();
-			destDir.mkdirs();
+			if (destDir.mkdirs()) {
+				LOGGER.info("We succeeded .nkdirs() over {}", destDir);
+			}
 
 			while (enumEntries.hasMoreElements()) {
 				JarEntry jarEntry = enumEntries.nextElement();
@@ -171,7 +173,10 @@ public class PepperFileHelper {
 					}
 				} else {
 					// We may receive files without their parent directories
-					diskPath.getParent().toFile().mkdirs();
+					Path parent = diskPath.getParent();
+					if (parent.toFile().mkdirs()) {
+						LOGGER.info(".mkdirs() over {} succeeded", parent);
+					}
 
 					// Copy the file content to disk
 					try (java.io.InputStream is = jar.getInputStream(jarEntry)) {

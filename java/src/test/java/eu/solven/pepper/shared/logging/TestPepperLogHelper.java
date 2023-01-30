@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,9 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -90,44 +92,61 @@ public class TestPepperLogHelper {
 	}
 
 	@Test
+	public void testHuanRate_allTimeUnit() {
+		Stream.of(TimeUnit.values()).forEach(tu -> {
+			Assertions.assertThat(PepperLogHelper.humanRate(10, 10, tu).toString()).isNotEmpty();
+		});
+	}
+
+	@Test
 	public void testBigTimeLowRate() {
-		Assert.assertEquals("1#/days", PepperLogHelper.getNiceRate(10, 10, TimeUnit.DAYS).toString());
+		Assert.assertEquals("1#/days", PepperLogHelper.humanRate(10, 10, TimeUnit.DAYS).toString());
 	}
 
 	@Test
 	public void testBigTimeVeryLowRate() {
-		Assert.assertEquals("10#/sec", PepperLogHelper.getNiceRate(1, 100, TimeUnit.MILLISECONDS).toString());
+		Assert.assertEquals("10#/sec", PepperLogHelper.humanRate(1, 100, TimeUnit.MILLISECONDS).toString());
 	}
 
 	@Test
 	public void testBigTimeVeryLowRate1() {
-		Assert.assertEquals("30#/min", PepperLogHelper.getNiceRate(5, 10 * 1000, TimeUnit.MILLISECONDS).toString());
+		Assert.assertEquals("30#/min", PepperLogHelper.humanRate(5, 10 * 1000, TimeUnit.MILLISECONDS).toString());
 	}
 
 	@Test
 	public void testBigTimeHIghRate() {
-		Assert.assertEquals("2#/ms", PepperLogHelper.getNiceRate(Integer.MAX_VALUE, 10, TimeUnit.DAYS).toString());
+		Assert.assertEquals("2#/ms", PepperLogHelper.humanRate(Integer.MAX_VALUE, 10, TimeUnit.DAYS).toString());
 	}
 
 	@Test
 	public void testLowTimeLowRate() {
-		Assert.assertEquals("1#/ms", PepperLogHelper.getNiceRate(10, 10, TimeUnit.MILLISECONDS).toString());
+		Assert.assertEquals("1#/ms", PepperLogHelper.humanRate(10, 10, TimeUnit.MILLISECONDS).toString());
 	}
 
 	@Test
 	public void testLowTimeHighRate() {
 		Assert.assertEquals("214#/ns",
-				PepperLogHelper.getNiceRate(Integer.MAX_VALUE, 10, TimeUnit.MILLISECONDS).toString());
+				PepperLogHelper.humanRate(Integer.MAX_VALUE, 10, TimeUnit.MILLISECONDS).toString());
 	}
 
 	@Test
 	public void testRightUnderRatePerSecond() {
-		Assert.assertEquals("999#/sec", PepperLogHelper.getNiceRate(999, 1000, TimeUnit.MILLISECONDS).toString());
+		Assert.assertEquals("999#/sec", PepperLogHelper.humanRate(999, 1000, TimeUnit.MILLISECONDS).toString());
 	}
 
 	@Test
 	public void testZeroTime() {
-		Assert.assertEquals("999#/0SECONDS", PepperLogHelper.getNiceRate(999, 0, TimeUnit.SECONDS).toString());
+		Assert.assertEquals("999#/0SECONDS", PepperLogHelper.humanRate(999, 0, TimeUnit.SECONDS).toString());
+	}
+
+	@Test
+	public void testDoubleRate_1Percent_perSecond() {
+		Assert.assertEquals("864#/days", PepperLogHelper.humanRate(0.01, TimeUnit.SECONDS).toString());
+	}
+
+	@Test
+	public void testDoubleRate_1Million_perMicro() {
+		Assert.assertEquals("1000#/ns", PepperLogHelper.humanRate(1_000_000, TimeUnit.MICROSECONDS).toString());
 	}
 
 	@Test

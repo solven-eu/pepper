@@ -1,14 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
-		<artifactId>pepper-parent</artifactId>
+		<artifactId>aggregator-pepper</artifactId>
 		<version>4.3-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>pepper-serialization</artifactId>
 	<packaging>pom</packaging>
+
+	<modules>
+		<module>avro</module>
+		<!-- <module>parquet</module> -->
+		<module>arrow</module>
+
+		<!-- Beta: zero-copy CSV reader -->
+		<!-- We recommand https://github.com/deephaven/deephaven-csv -->
+		<!--module>csv</module-->
+	</modules>
 
 	<properties>
 		<avro.version>1.11.1</avro.version>
@@ -29,16 +40,6 @@
 		<!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
 		<arrow.version>10.0.0</arrow.version>
 	</properties>
-
-	<modules>
-		<module>avro</module>
-		<!-- <module>parquet</module> -->
-		<module>arrow</module>
-
-		<!-- Beta: zero-copy CSV reader -->
-		<!-- We recommand https://github.com/deephaven/deephaven-csv -->
-		<!--module>csv</module-->
-	</modules>
 
 	<dependencyManagement>
 		<dependencies>
