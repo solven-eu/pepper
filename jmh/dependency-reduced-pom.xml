@@ -11,17 +11,6 @@
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <skip>false</skip>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
@@ -71,7 +60,7 @@
     <dependency>
       <groupId>nl.jqno.equalsverifier</groupId>
       <artifactId>equalsverifier</artifactId>
-      <version>3.11</version>
+      <version>3.12.4</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>

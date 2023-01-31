@@ -287,9 +287,28 @@
 
 						<!-- define a language-specific format -->
 						<java>
+							<excludes>
+								<!-- TestCases needs to remains not formatted/cleaned -->
+								<exclude>**/do_not_format_me/**</exclude>
+							</excludes>
+
+							<removeUnusedImports/>
 							<importOrder>
-								<order>java,javax,org,com</order>
+								<file>${maven.multiModuleProjectDirectory}/static/src/main/resources/eclipse/eclipse.importorder</file>
+								<!--order>java,javax,org,com</order-->
 							</importOrder>
+
+							<eclipse>
+								<!-- https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter -->
+								<!-- <version>4.18.0</version>-->
+								<file>${maven.multiModuleProjectDirectory}/static/src/main/resources/eclipse/eclipse_java_code_formatter.xml</file>
+							</eclipse>
+
+							<licenseHeader>
+								<!-- https://github.com/diffplug/spotless/issues/1418 -->
+								<delimiter>(package )|(import )</delimiter>
+								<file>${maven.multiModuleProjectDirectory}/.cleanthat/spotless.license</file>
+							</licenseHeader>
 						</java>
 
 						<json>
