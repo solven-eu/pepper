@@ -15,7 +15,7 @@ formatters:
       file: "repository:/static/src/main/resources/eclipse/eclipse_java_code_formatter.xml"
   - id: "licenseHeader"
     parameters:
-      file: /.cleanthat/spotless.license
+      file: "repository:/.cleanthat/spotless.license"
 - format: "pom"
   includes:
   - "glob:**/pom.xml"
