@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>aggregator-pepper</artifactId>
-		<version>4.3</version>
+		<version>4.4-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>pepper-pgsql</artifactId>

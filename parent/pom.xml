@@ -8,12 +8,12 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.8</version>
 		<!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
-		<relativePath/>
+		<relativePath />
 	</parent>
 
 	<groupId>io.github.solven-eu.pepper</groupId>
 	<artifactId>pepper-parent</artifactId>
-	<version>4.3</version>
+	<version>4.4-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 
@@ -32,7 +32,7 @@
 		<!-- SCM is in properties as we can't configure it directly in profile -->
 		<!-- Do not add developperConnection as parent is not a SNAPSHOT -->
 		<connection>${scm.connection}</connection>
-		<tag>pepper-4.3</tag>
+		<tag>HEAD</tag>
 		<url>${scm.url}</url>
 	</scm>
 
@@ -248,8 +248,8 @@
 									<include>.gitignore</include>
 								</includes>
 								<!-- define the steps to apply to those files -->
-								<trimTrailingWhitespace/>
-								<endWithNewline/>
+								<trimTrailingWhitespace />
+								<endWithNewline />
 								<indent>
 									<tabs>true</tabs>
 									<spacesPerTab>4</spacesPerTab>
@@ -274,7 +274,7 @@
 						</pom>
 
 						<markdown>
-							<endWithNewline/>
+							<endWithNewline />
 							<indent>
 								<tabs>true</tabs>
 								<spacesPerTab>4</spacesPerTab>
@@ -283,7 +283,7 @@
 								<include>**/*.md</include>
 							</includes>
 
-							<flexmark/>
+							<flexmark />
 						</markdown>
 
 						<!-- define a language-specific format -->
@@ -293,7 +293,7 @@
 								<exclude>**/do_not_format_me/**</exclude>
 							</excludes>
 
-							<removeUnusedImports/>
+							<removeUnusedImports />
 							<importOrder>
 								<file>${maven.multiModuleProjectDirectory}/static/src/main/resources/eclipse/eclipse.importorder</file>
 								<!--order>java,javax,org,com</order-->
@@ -313,8 +313,8 @@
 						</java>
 
 						<json>
-							<trimTrailingWhitespace/>
-							<endWithNewline/>
+							<trimTrailingWhitespace />
+							<endWithNewline />
 							<indent>
 								<tabs>true</tabs>
 								<spacesPerTab>4</spacesPerTab>
@@ -324,7 +324,7 @@
 								<include>**/*.json</include>
 							</includes>
 
-							<gson/>
+							<gson />
 						</json>
 						<!--yaml/-->
 					</configuration>
