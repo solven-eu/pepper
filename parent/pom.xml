@@ -60,7 +60,7 @@
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
 		<maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
 		<!-- https://mvnrepository.com/artifact/com.puppycrawl.tools/checkstyle -->
-		<checkstyle.version>10.6.0</checkstyle.version>
+		<checkstyle.version>10.7.0</checkstyle.version>
 
 		<!-- By default (i.e. in local environments), check for code formatting AFTER trying automatic fixes. -->
 		<!-- We suppose the developper would see the fixed and include them in his commit. -->
