@@ -145,6 +145,7 @@
 				<plugin>
 					<!-- Skip a row by adding '//NOPMD' at the end -->
 					<!-- http://pmd.sourceforge.net/pmd-4.3.0/suppressing.html -->
+					<!-- mvn org.apache.maven.plugins:maven-pmd-plugin:check -->
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-pmd-plugin</artifactId>
 					<version>${maven-pmd-plugin.version}</version>

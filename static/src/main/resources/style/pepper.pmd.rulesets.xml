@@ -136,10 +136,4 @@
 	<!-- We consider it is sometimes clearer to break an AND condition in multiple ifs, typically to add comments between the steps -->
 	<!-- <exclude name="CollapsibleIfStatements" /> -->
 	<!-- </rule> -->
-
-	<!-- <rule ref="rulesets/java/unnecessary.xml"> -->
-	<!-- MAT introduced many final classes with final methods: keep final methods in case the final on class is removed -->
-	<!-- <exclude name="UnnecessaryFinalModifier" /> -->
-	<!-- </rule> -->
-
 </ruleset>
