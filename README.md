@@ -2,16 +2,16 @@
 
 Various Java utilities
 
-[![Build Status](https://travis-ci.org/cormoran-io/pepper.svg?branch=master)](https://travis-ci.org/cormoran-io/pepper)
-[![Coverage Status](https://coveralls.io/repos/github/cormoran-io/pepper/badge.svg?branch=master)](https://coveralls.io/github/cormoran-io/pepper?branch=master)
+[![Build Status](https://travis-ci.org/solven-eu/pepper.svg?branch=master)](https://travis-ci.org/solven-eu/pepper)
+[![Coverage Status](https://coveralls.io/repos/github/solven-eu/pepper/badge.svg?branch=master)](https://coveralls.io/github/solven-eu/pepper?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.solven-eu.pepper/pepper/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.solven-eu.pepper/pepper/badge.svg)
-[![Quality Gate](https://sonarqube.com/api/badges/gate?key=com.github.cormoran-io.pepper:pepper)](https://sonarqube.com/dashboard/index/com.github.cormoran-io.pepper:pepper)
-[![Technical debt ratio](https://sonarqube.com/api/badges/measure?key=com.github.cormoran-io.pepper:pepper&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard/index/com.github.cormoran-io.pepper:pepper)
-[![javadoc.io](https://javadoc-emblem.rhcloud.com/doc/com.github.cormoran-io.pepper/pepper/badge.svg)](http://www.javadoc.io/doc/com.github.cormoran-io.pepper/pepper)
-[![Issues](https://img.shields.io/github/issues/cormoran-io/pepper.svg)](https://github.com/revelc/pepper/issues)
-[![Forks](https://img.shields.io/github/forks/cormoran-io/pepper.svg)](https://github.com/cormoran-io/pepper/network)
-[![Stars](https://img.shields.io/github/stars/cormoran-io/pepper.svg)](https://github.com/cormoran-io/pepper/stargazers)
-[![MIT License](http://img.shields.io/badge/license-ASL-blue.svg)](https://github.com/cormoran-io/pepper/blob/master/LICENSE)
+[![Quality Gate](https://sonarqube.com/api/badges/gate?key=com.github.solven-eu.pepper:pepper)](https://sonarqube.com/dashboard/index/com.github.solven-eu.pepper:pepper)
+[![Technical debt ratio](https://sonarqube.com/api/badges/measure?key=com.github.solven-eu.pepper:pepper&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard/index/com.github.solven-eu.pepper:pepper)
+[![javadoc.io](https://javadoc-emblem.rhcloud.com/doc/com.github.solven-eu.pepper/pepper/badge.svg)](http://www.javadoc.io/doc/com.github.solven-eu.pepper/pepper)
+[![Issues](https://img.shields.io/github/issues/solven-eu/pepper.svg)](https://github.com/revelc/pepper/issues)
+[![Forks](https://img.shields.io/github/forks/solven-eu/pepper.svg)](https://github.com/solven-eu/pepper/network)
+[![Stars](https://img.shields.io/github/stars/solven-eu/pepper.svg)](https://github.com/solven-eu/pepper/stargazers)
+[![MIT License](http://img.shields.io/badge/license-ASL-blue.svg)](https://github.com/solven-eu/pepper/blob/master/LICENSE)
 
 # Maven
 

@@ -408,7 +408,8 @@
 						<!-- Prevent git to clone the whole repo which is quite slow -->
 						<!-- https://issues.apache.org/jira/browse/MRELEASE-777 -->
 						<localCheckout>true</localCheckout>
-						<pushChanges>false</pushChanges>
+						<!-- True, else tags, and the updaded SNAPSHOT are not pushed -->
+						<pushChanges>true</pushChanges>
 					</configuration>
 				</plugin>
 			</plugins>
