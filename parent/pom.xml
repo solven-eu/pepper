@@ -8,7 +8,7 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.8</version>
 		<!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
-		<relativePath/>
+		<relativePath />
 	</parent>
 
 	<groupId>io.github.solven-eu.pepper</groupId>
@@ -248,8 +248,8 @@
 									<include>.gitignore</include>
 								</includes>
 								<!-- define the steps to apply to those files -->
-								<trimTrailingWhitespace/>
-								<endWithNewline/>
+								<trimTrailingWhitespace />
+								<endWithNewline />
 								<indent>
 									<tabs>true</tabs>
 									<spacesPerTab>4</spacesPerTab>
@@ -267,6 +267,9 @@
 								<!-- We like empty elements, while plugin default configuration would expand them -->
 								<expandEmptyElements>false</expandEmptyElements>
 
+								<!-- https://github.com/Ekryd/sortpom/issues/75 -->
+								<spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+
 								<!-- https://github.com/Ekryd/sortpom/wiki/Parameters#for-both-the-sort-and-verify-goal -->
 								<!-- -1 means '\t' -->
 								<nrOfIndentSpace>-1</nrOfIndentSpace>
@@ -274,7 +277,7 @@
 						</pom>
 
 						<markdown>
-							<endWithNewline/>
+							<endWithNewline />
 							<indent>
 								<tabs>true</tabs>
 								<spacesPerTab>4</spacesPerTab>
@@ -283,7 +286,7 @@
 								<include>**/*.md</include>
 							</includes>
 
-							<flexmark/>
+							<flexmark />
 						</markdown>
 
 						<!-- define a language-specific format -->
@@ -293,7 +296,7 @@
 								<exclude>**/do_not_format_me/**</exclude>
 							</excludes>
 
-							<removeUnusedImports/>
+							<removeUnusedImports />
 							<importOrder>
 								<file>${maven.multiModuleProjectDirectory}/static/src/main/resources/eclipse/eclipse.importorder</file>
 								<!--order>java,javax,org,com</order-->
@@ -313,8 +316,8 @@
 						</java>
 
 						<json>
-							<trimTrailingWhitespace/>
-							<endWithNewline/>
+							<trimTrailingWhitespace />
+							<endWithNewline />
 							<indent>
 								<tabs>true</tabs>
 								<spacesPerTab>4</spacesPerTab>
@@ -324,7 +327,7 @@
 								<include>**/*.json</include>
 							</includes>
 
-							<gson/>
+							<gson />
 						</json>
 						<!--yaml/-->
 					</configuration>
