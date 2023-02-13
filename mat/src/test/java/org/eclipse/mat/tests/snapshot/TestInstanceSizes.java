@@ -145,7 +145,7 @@ public class TestInstanceSizes {
 				// System.out.println(className + " " + instanceSize);
 				className = fixArrayName(className);
 
-				if (className.startsWith("<") || className.equals("java.lang.Class"))
+				if (className.startsWith("<") || "java.lang.Class".equals(className))
 					continue;
 
 				Collection<IClass> classes = snapshot.getClassesByName(className, false);

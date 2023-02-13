@@ -307,12 +307,12 @@ public class AvroSchemaHelper {
 	 */
 	// Duplicated from org.apache.parquet.avro.AvroSchemaConverter
 	public static Schema getNonNull(Schema schema) {
-		if (schema.getType().equals(Schema.Type.UNION)) {
+		if (Schema.Type.UNION.equals(schema.getType())) {
 			List<Schema> schemas = schema.getTypes();
 			if (schemas.size() == 2) {
-				if (schemas.get(0).getType().equals(Schema.Type.NULL)) {
+				if (Schema.Type.NULL.equals(schemas.get(0).getType())) {
 					return schemas.get(1);
-				} else if (schemas.get(1).getType().equals(Schema.Type.NULL)) {
+				} else if (Schema.Type.NULL.equals(schemas.get(1).getType())) {
 					return schemas.get(0);
 				} else {
 					return schema;

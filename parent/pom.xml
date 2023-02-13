@@ -47,7 +47,7 @@
 		<scm.connection>scm:git:ssh://github.com/solven-eu/pepper.git</scm.connection>
 		<scm.url>https://github.com/solven-eu/pepper</scm.url>
 
-		<spotless.version>2.31.0</spotless.version>
+		<spotless.version>2.33.0</spotless.version>
 
 		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
 		<spotbugs.version>4.7.3.0</spotbugs.version>
@@ -210,7 +210,7 @@
 					<!-- mvn io.github.solven-eu.cleanthat:cleanthat-maven-plugin:cleanthat -->
 					<groupId>io.github.solven-eu.cleanthat</groupId>
 					<artifactId>cleanthat-maven-plugin</artifactId>
-					<version>1.9</version>
+					<version>2.2</version>
 					<configuration>
 						<skip>true</skip>
 					</configuration>
@@ -296,6 +296,8 @@
 								<exclude>**/do_not_format_me/**</exclude>
 							</excludes>
 
+							<cleanthat />
+
 							<removeUnusedImports />
 							<importOrder>
 								<file>${maven.multiModuleProjectDirectory}/static/src/main/resources/eclipse/eclipse.importorder</file>
@@ -352,12 +354,12 @@
 			</plugin>
 
 			<!-- Apply formatters before checks -->
-			<plugin>
-				<groupId>io.github.solven-eu.cleanthat</groupId>
-				<artifactId>cleanthat-maven-plugin</artifactId>
-				<!-- CleanThat should be executed only in the top-directory -->
-				<inherited>false</inherited>
-			</plugin>
+			<!--			<plugin>-->
+			<!--				<groupId>io.github.solven-eu.cleanthat</groupId>-->
+			<!--				<artifactId>cleanthat-maven-plugin</artifactId>-->
+			<!-- CleanThat should be executed only in the top-directory -->
+			<!--				<inherited>false</inherited>-->
+			<!--			</plugin>-->
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
@@ -548,8 +550,6 @@
 			</build>
 		</profile>
 
-		<!-- ./mvnw net.revelc.code.formatter:formatter-maven-plugin:format -->
-		<!-- ./mvnw net.revelc.code:impsort-maven-plugin:sort -->
 		<profile>
 			<!-- Checks for compilation and tests, but not code quality -->
 			<!-- skip everything, test, quality, format,... -->

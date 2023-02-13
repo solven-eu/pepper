@@ -95,21 +95,21 @@ public class GeneralSnapshotTests {
 	}
 
 	public GeneralSnapshotTests(String snapshotname, Stacks s) {
-		if (snapshotname.equals("allMethods")) {
+		if ("allMethods".equals(snapshotname)) {
 			snapshot = snapshot2(TestSnapshots.IBM_JDK6_32BIT_SYSTEM, "all");
 			hasMethods = Methods.ALL_METHODS;
-		} else if (snapshotname.equals("runningMethods")) {
+		} else if ("runningMethods".equals(snapshotname)) {
 			snapshot = snapshot2(TestSnapshots.IBM_JDK6_32BIT_SYSTEM, "running");
 			hasMethods = Methods.RUNNING_METHODS;
-		} else if (snapshotname.equals("framesOnly")) {
+		} else if ("framesOnly".equals(snapshotname)) {
 			snapshot = snapshot2(TestSnapshots.IBM_JDK6_32BIT_SYSTEM, "frames");
 			hasMethods = Methods.FRAMES_ONLY;
-		} else if (snapshotname.equals("noMethods")) {
+		} else if ("noMethods".equals(snapshotname)) {
 			snapshot = snapshot2(TestSnapshots.IBM_JDK6_32BIT_SYSTEM, "none");
 			hasMethods = Methods.NONE;
 		} else {
 			// DTFJ 1.5 cannot read javacore 1.4.2 dumps any more
-			assumeTrue(!snapshotname.equals(TestSnapshots.IBM_JDK142_32BIT_JAVA) || DTFJreadJavacore142);
+			assumeTrue(!TestSnapshots.IBM_JDK142_32BIT_JAVA.equals(snapshotname) || DTFJreadJavacore142);
 			snapshot = TestSnapshots.getSnapshot(snapshotname, false);
 			hasMethods = Methods.NONE;
 		}
@@ -262,7 +262,7 @@ public class GeneralSnapshotTests {
 		int methods = 0;
 		int methodsWithObjects = 0;
 		for (IClass cls : snapshot.getClasses()) {
-			if (cls.getName().contains("(") || cls.getName().equals("<stack frame>")) {
+			if (cls.getName().contains("(") || "<stack frame>".equals(cls.getName())) {
 				++methods;
 				if (cls.getObjectIds().length > 0)
 					++methodsWithObjects;

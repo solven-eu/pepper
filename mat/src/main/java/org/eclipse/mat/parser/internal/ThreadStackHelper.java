@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
 					HashMapIntObject<ArrayInt> line2locals = new HashMapIntObject<ArrayInt>();
 
 					line = in.readLine();
-					while (line != null && !line.equals("")) {
+					while (line != null && !"".equals(line)) {
 						lines.add(line.trim());
 						line = in.readLine();
 					}
@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
 					line = in.readLine();
 					if (line != null && line.trim().startsWith("locals")) {
 						line = in.readLine();
-						while (line != null && !line.equals("")) {
+						while (line != null && !"".equals(line)) {
 							int lineNr = readLineNumber(line);
 							if (lineNr >= 0) {
 								int objectId = readLocalId(line, snapshot);

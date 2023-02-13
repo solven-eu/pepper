@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.Assert;
@@ -63,7 +64,7 @@ public class TestPepperFileHelper {
 	@Test
 	public void testURISpecialCharacters() throws IOException, URISyntaxException {
 		// '@' is a special characters leading to issues when converting back and forth to URL
-		Path file = File.createTempFile("TestApexAgentHelper", "special@char").toPath();
+		Path file = Files.createTempFile("TestApexAgentHelper", "special@char").toFile().toPath();
 
 		URI asURI = file.toUri();
 		URL asURL = asURI.toURL();

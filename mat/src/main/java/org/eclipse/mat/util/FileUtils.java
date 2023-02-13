@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,7 +75,7 @@ public final class FileUtils {
 	 * @throws IOException
 	 */
 	public static File createTempDirectory(String prefix, File parent) throws IOException {
-		File tempFile = File.createTempFile(prefix, "", parent);
+		File tempFile = Files.createTempFile(parent.toPath(), prefix, "").toFile();
 		if (!tempFile.delete())
 			throw new IOException();
 		if (!tempFile.mkdir())

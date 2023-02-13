@@ -32,6 +32,7 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -276,7 +277,8 @@ public class TestSnapshots {
 	}
 
 	public static File createGeneratedName(String prefix, File directory) throws IOException {
-		File tempFile = File.createTempFile(prefix, "", directory);
+		File tempFile = (directory == null ? Files.createTempFile(prefix, "")
+				: Files.createTempFile(directory.toPath(), prefix, "")).toFile();
 		if (!tempFile.delete())
 			throw new IOException();
 		if (!tempFile.mkdir())

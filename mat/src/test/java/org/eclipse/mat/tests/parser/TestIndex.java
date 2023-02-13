@@ -28,6 +28,7 @@ import static org.junit.Assume.assumeTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
@@ -103,7 +104,7 @@ public class TestIndex {
 				ii[p][i] = i;
 			}
 		}
-		File indexFile = File.createTempFile("1toN", ".index");
+		File indexFile = Files.createTempFile("1toN", ".index").toFile();
 		try {
 			IndexWriter.IntArray1NWriter f = new IndexWriter.IntArray1NWriter(M, indexFile);
 			for (int j = 0; j < M; ++j) {
@@ -144,7 +145,7 @@ public class TestIndex {
 			}
 		}
 		int mx = Math.max(M, N + P);
-		File indexFile = File.createTempFile("Inbound", ".index");
+		File indexFile = Files.createTempFile("Inbound", ".index").toFile();
 		try {
 			IndexWriter.InboundWriter f = new IndexWriter.InboundWriter(mx, indexFile);
 			for (int j = 0; j < M; ++j) {
@@ -199,7 +200,7 @@ public class TestIndex {
 				ii[p][i] = r.nextLong();
 			}
 		}
-		File indexFile = File.createTempFile("LongOutbound", ".index");
+		File indexFile = Files.createTempFile("LongOutbound", ".index").toFile();
 		try {
 			IndexWriter.LongArray1NWriter f = new IndexWriter.LongArray1NWriter(M, indexFile);
 			for (int j = 0; j < M; ++j) {
@@ -241,7 +242,7 @@ public class TestIndex {
 				ii[p][i] = i;
 			}
 		}
-		File indexFile = File.createTempFile("1toN", ".index");
+		File indexFile = Files.createTempFile("1toN", ".index").toFile();
 		try {
 			IndexWriter.IntArray1NSortedWriter f = new IndexWriter.IntArray1NSortedWriter(M, indexFile);
 			for (int j = 0; j < M; ++j) {
@@ -281,7 +282,7 @@ public class TestIndex {
 				ii[p][i] = i;
 			}
 		}
-		File indexFile = File.createTempFile("1toN", ".index");
+		File indexFile = Files.createTempFile("1toN", ".index").toFile();
 		try {
 			IndexWriter.IntArray1NSortedWriter f = new IndexWriter.IntArray1NSortedWriter(M, indexFile);
 			for (int j = 0; j < M; ++j) {

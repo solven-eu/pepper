@@ -921,7 +921,7 @@ public class PrimitiveMapTests {
 
 		private void verifyEmpty(Map<K, V> subject) {
 			assert subject.isEmpty();
-			assert subject.size() == 0;
+			assert subject.isEmpty();
 			assert subject.keySet().isEmpty();
 			assert subject.values().isEmpty();
 			assert subject.entrySet().isEmpty();

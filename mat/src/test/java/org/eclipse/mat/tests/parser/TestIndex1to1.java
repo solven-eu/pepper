@@ -28,6 +28,7 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
@@ -97,7 +98,7 @@ public class TestIndex1to1 {
 	@Test
 	public void intIndex2() throws IOException {
 		assumeTrue(N < MAXELEMENTS2);
-		File indexFile = File.createTempFile("int1_", ".index");
+		File indexFile = Files.createTempFile("int1_", ".index").toFile();
 		long n = N;
 		int n2 = (int) Math.min(n, Integer.MAX_VALUE);
 		IndexWriter.IntIndexCollector ic = new IndexWriter.IntIndexCollector(n2, 31);
@@ -126,7 +127,7 @@ public class TestIndex1to1 {
 	@Test
 	public void intIndex3() throws IOException {
 		assumeTrue(N < MAXELEMENTS);
-		File indexFile = File.createTempFile("int1_", ".index");
+		File indexFile = Files.createTempFile("int1_", ".index").toFile();
 		final long n = N;
 		final int n2 = (int) Math.min(n, Integer.MAX_VALUE);
 		IndexWriter.IntIndexStreamer ic = new IndexWriter.IntIndexStreamer();
@@ -198,7 +199,7 @@ public class TestIndex1to1 {
 	@Test
 	public void intIndex5() throws IOException {
 		assumeTrue(N < MAXELEMENTS2);
-		File indexFile = File.createTempFile("int1_", ".index");
+		File indexFile = Files.createTempFile("int1_", ".index").toFile();
 		long n = N;
 		int n2 = (int) Math.min(n, Integer.MAX_VALUE);
 		IndexWriter.SizeIndexCollectorUncompressed ic = new IndexWriter.SizeIndexCollectorUncompressed(n2);
@@ -227,7 +228,7 @@ public class TestIndex1to1 {
 	@Test
 	public void intIndex6() throws IOException {
 		assumeTrue(N < MAXELEMENTS2);
-		File indexFile = File.createTempFile("int1_", ".index");
+		File indexFile = Files.createTempFile("int1_", ".index").toFile();
 		long n = N;
 		int n2 = (int) Math.min(n, Integer.MAX_VALUE);
 		IndexWriter.SizeIndexCollectorUncompressed ic = new IndexWriter.SizeIndexCollectorUncompressed(n2);

@@ -314,7 +314,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	@Override
 	public void handleNotification(Notification notification, Object handback) {
 		String type = notification.getType();
-		if (type.equals(PepperForOracleJVM.GARBAGE_COLLECTION_NOTIFICATION)) {
+		if (PepperForOracleJVM.GARBAGE_COLLECTION_NOTIFICATION.equals(type)) {
 			// retrieve the garbage collection notification information
 			CompositeData cd = (CompositeData) notification.getUserData();
 			PepperGarbageCollectionNotificationInfo info = PepperGarbageCollectionNotificationInfo.from(cd);

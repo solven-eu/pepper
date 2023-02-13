@@ -30,6 +30,7 @@ import java.lang.management.ManagementFactory;
 import java.nio.IntBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
@@ -189,7 +190,7 @@ public class PepperBufferHelper {
 	}
 
 	private static Optional<File> prepareIntArrayInFile(String suffix, long targetNbBytes) throws IOException {
-		File tmpFile = File.createTempFile("mat", suffix);
+		File tmpFile = Files.createTempFile("mat", suffix).toFile();
 		// We do not need the file to survive the JVM as the goal is just to spare heap
 		tmpFile.deleteOnExit();
 

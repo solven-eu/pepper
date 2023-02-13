@@ -155,7 +155,7 @@ public class TestApplication {
 			// do the cleanup only if all the tests succeeded
 			boolean succeed = true;
 			for (SingleTestResult entry : result.getTestData()) {
-				if (entry.getResult().equals("Failed")) {
+				if ("Failed".equals(entry.getResult())) {
 					succeed = false;
 					break;
 				}
