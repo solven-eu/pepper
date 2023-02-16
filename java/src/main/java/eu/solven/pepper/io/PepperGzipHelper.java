@@ -133,8 +133,7 @@ public class PepperGzipHelper {
 	public static void packToZip(final Path folder, final Path zipFilePath) throws IOException {
 		URI folderUri = folder.toUri();
 
-		try (OutputStream fos = java.nio.file.Files.newOutputStream(zipFilePath);
-				ZipOutputStream zos = new ZipOutputStream(fos)) {
+		try (OutputStream fos = Files.newOutputStream(zipFilePath); ZipOutputStream zos = new ZipOutputStream(fos)) {
 			// https://stackoverflow.com/questions/15968883/how-to-zip-a-folder-itself-using-java
 			Files.walk(folder).forEach(next -> {
 				URI nextUri = next.toUri();
@@ -177,8 +176,7 @@ public class PepperGzipHelper {
 	 * @throws IOException
 	 */
 	public static void packToGzip(final Path inputPath, final Path zipFilePath) throws IOException {
-		try (OutputStream fos = java.nio.file.Files.newOutputStream(zipFilePath);
-				GZIPOutputStream zos = new GZIPOutputStream(fos)) {
+		try (OutputStream fos = Files.newOutputStream(zipFilePath); GZIPOutputStream zos = new GZIPOutputStream(fos)) {
 			Files.copy(inputPath, zos);
 		}
 	}
