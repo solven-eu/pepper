@@ -26,22 +26,26 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.io.CharStreams;
-import com.google.common.io.Files;
 
 /**
  * Various utilities for GZip
@@ -126,34 +130,42 @@ public class PepperGzipHelper {
 	 *            a file-system path where to create a new archive
 	 * @throws IOException
 	 */
-	public static void packToZip(final File folder, final File zipFilePath) throws IOException {
-		try (OutputStream fos = java.nio.file.Files.newOutputStream(zipFilePath.toPath());
-				ZipOutputStream zos = new ZipOutputStream(fos)) {
+	public static void packToZip(final Path folder, final Path zipFilePath) throws IOException {
+		URI folderUri = folder.toUri();
+
+		try (OutputStream fos = Files.newOutputStream(zipFilePath); ZipOutputStream zos = new ZipOutputStream(fos)) {
 			// https://stackoverflow.com/questions/15968883/how-to-zip-a-folder-itself-using-java
-			Iterator<File> iterator = Files.fileTraverser().depthFirstPreOrder(folder).iterator();
+			Files.walk(folder).forEach(next -> {
+				URI nextUri = next.toUri();
 
-			while (iterator.hasNext()) {
-				File next = iterator.next();
-
-				if (next.isDirectory()) {
-					// https://stackoverflow.com/questions/204784/how-to-construct-a-relative-path-in-java-from-two-absolute-paths-or-urls
-					zos.putNextEntry(new ZipEntry(folder.toURI().relativize(next.toURI()).getPath() + "/"));
-					zos.closeEntry();
-				} else if (next.isFile()) {
-					LOGGER.debug("Adding {} in {}", next, zipFilePath);
-					zos.putNextEntry(new ZipEntry(folder.toURI().relativize(next.toURI()).getPath()));
-					Files.copy(next, zos);
-					zos.closeEntry();
+				try {
+					if (Files.isDirectory(next)) {
+						// https://stackoverflow.com/questions/204784/how-to-construct-a-relative-path-in-java-from-two-absolute-paths-or-urls
+						zos.putNextEntry(new ZipEntry(folderUri.relativize(nextUri).getPath() + "/"));
+						zos.closeEntry();
+					} else if (Files.exists(next)) {
+						LOGGER.debug("Adding {} in {}", next, zipFilePath);
+						zos.putNextEntry(new ZipEntry(folderUri.relativize(nextUri).getPath()));
+						Files.copy(next, zos);
+						zos.closeEntry();
+					}
+				} catch (IOException e) {
+					throw new UncheckedIOException("Issue while processing " + next + " into " + zipFilePath, e);
 				}
-			}
-		} catch (IOException e) {
+			});
+		} catch (RuntimeException e) {
 			// Delete this tmp file
-			if (zipFilePath.isFile() && !zipFilePath.delete()) {
-				LOGGER.debug("For some reason, we failed deleting {}", zipFilePath);
+			if (Files.exists(zipFilePath)) {
+				Files.delete(zipFilePath);
 			}
 
-			throw new IOException("Issue while writing in " + zipFilePath, e);
+			throw new IllegalStateException("Issue while writing in " + zipFilePath, e);
 		}
+	}
+
+	@Deprecated
+	public static void packToZip(final File folder, final File zipFilePath) throws IOException {
+		packToZip(folder.toPath(), zipFilePath.toPath());
 	}
 
 	/**
@@ -163,10 +175,35 @@ public class PepperGzipHelper {
 	 * @param zipFilePath
 	 * @throws IOException
 	 */
-	public static void packToGzip(final File inputPath, final File zipFilePath) throws IOException {
-		try (OutputStream fos = java.nio.file.Files.newOutputStream(zipFilePath.toPath());
-				GZIPOutputStream zos = new GZIPOutputStream(fos)) {
+	public static void packToGzip(final Path inputPath, final Path zipFilePath) throws IOException {
+		try (OutputStream fos = Files.newOutputStream(zipFilePath); GZIPOutputStream zos = new GZIPOutputStream(fos)) {
 			Files.copy(inputPath, zos);
+		}
+	}
+
+	@Deprecated
+	public static void packToGzip(final File inputPath, final File zipFilePath) throws IOException {
+		packToGzip(inputPath.toPath(), zipFilePath.toPath());
+	}
+
+	// https://stackoverflow.com/questions/10633595/java-zip-how-to-unzip-folder
+	@SuppressWarnings("PMD.AssignmentInOperand")
+	public static void unzip(InputStream is, Path targetDir) throws IOException {
+		targetDir = targetDir.toAbsolutePath();
+		try (ZipInputStream zipIn = new ZipInputStream(is)) {
+			for (ZipEntry ze; (ze = zipIn.getNextEntry()) != null;) {
+				Path resolvedPath = targetDir.resolve(ze.getName()).normalize();
+				if (!resolvedPath.startsWith(targetDir)) {
+					// see: https://snyk.io/research/zip-slip-vulnerability
+					throw new RuntimeException("Entry with an illegal path: " + ze.getName());
+				}
+				if (ze.isDirectory()) {
+					Files.createDirectories(resolvedPath);
+				} else {
+					Files.createDirectories(resolvedPath.getParent());
+					Files.copy(zipIn, resolvedPath);
+				}
+			}
 		}
 	}
 }
