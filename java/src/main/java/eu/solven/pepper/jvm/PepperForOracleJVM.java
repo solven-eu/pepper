@@ -55,6 +55,9 @@ public class PepperForOracleJVM {
 		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			// JDK9?
+			// https://stackoverflow.com/questions/53543062/replace-access-to-sun-misc-vm-for-jdk-11
+			// ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getMax() returns -1
+			// TODO Rely on -XX:MaxDirectMemorySize?
 			return 0;
 		}
 	}
