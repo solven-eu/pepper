@@ -26,6 +26,8 @@
 
 		<!-- The java-core code relying on pepper-agent -->
 		<module>java-with-agent</module>
+		
+		<module>map-path</module>
 
 		<!-- This project metadata, holding for instance deployment resources -->
 		<module>parent</module>
