@@ -297,6 +297,7 @@ public class MapPathHelper {
 	 * @param flatten
 	 * @return a recursive {@link Map} given a flatten {@link Map}.
 	 */
+	@SuppressWarnings("PMD.NullAssignment")
 	public static Map<String, Object> recurse(Map<String, ?> flatten) {
 		Configuration conf = Configuration.defaultConfiguration();
 		DocumentContext emptyJson = JsonPath.using(conf).parse("{}");

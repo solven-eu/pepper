@@ -14,7 +14,7 @@
 	<properties>
 		<jacoco.instruction.ratio>0.63</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
-		
+
 	</properties>
 
 	<dependencies>
@@ -23,7 +23,7 @@
 			<artifactId>pepper</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<!-- https://github.com/json-path/JsonPath -->
 			<groupId>com.jayway.jsonpath</groupId>
