@@ -208,71 +208,71 @@ public class MapPathHelper {
 	public static void set(DocumentContext context, String path, Object value) {
 		String parentPath;
 		String key;
-		Integer index;
+		int propertyIndex;
 		// parse the path ending
 		boolean endsWithBracket = path.endsWith("]");
 
 		if (endsWithBracket) {
+			// BEWARE This does not handle a potential '[' in the weirdProperty
 			int pos = path.lastIndexOf('[');
 			parentPath = path.substring(0, pos);
 
 			if ('\'' == path.charAt(path.length() - 2)) {
-				// BEWARE This does not handle '[]' in the weirdProperty
-
 				// A path like `$.k['weird.Property']`
 				key = path.substring(pos + 2, path.length() - 2);
-				index = null;
+				propertyIndex = Integer.MIN_VALUE;
 			} else {
 				// A path like `$.k[7]`
 				key = path.substring(pos + 1, path.length() - 1);
 				try {
-					index = Integer.parseInt(key);
-				} catch (NumberFormatException nfe) {
-					throw new RuntimeException("Unsupported value \"" + key
+					propertyIndex = Integer.parseInt(key);
+				} catch (NumberFormatException e) {
+					String msg = "Unsupported value \"" + key
 							+ "\" for index, only non-negative integers are expected; path: \""
 							+ path
-							+ "\"");
+							+ "\"";
+					throw new IllegalArgumentException(msg, e);
 				}
 			}
 		} else {
 			// A path like `$.k.property`
 			int pos = path.lastIndexOf('.');
 			if (pos < 0) {
-				throw new IllegalArgumentException(
-						"Invalid jsonPath: " + path + ". It seems nlt even to start with '$.'");
+				throw new IllegalArgumentException("Invalid jsonPath: " + path + ". It seems not to start with '$.'");
 			}
 			parentPath = path.substring(0, pos);
 			key = path.substring(pos + 1);
-			index = null;
+			propertyIndex = Integer.MIN_VALUE;
 		}
-		// ensure parent exists
+		ensureParentExists(context, parentPath, propertyIndex);
+
+		// set the value
+		if (propertyIndex == Integer.MIN_VALUE) {
+			context.put(parentPath, key, value);
+		} else {
+			List<Object> parent = context.read(parentPath);
+			if (propertyIndex < parent.size()) {
+				context.set(path, value);
+			} else {
+				for (int i = parent.size(); i < propertyIndex; i++) {
+					parent.add(null);
+				}
+				parent.add(value);
+			}
+		}
+	}
+
+	private static void ensureParentExists(DocumentContext context, String parentPath, Integer index) {
 		try {
 			context.read(parentPath);
 		} catch (PathNotFoundException e) {
 			// Programming by Exception
 			// Quite bad, but it does the job through JasonPath
-			if (index != null) {
-				set(context, parentPath, new ArrayList<>(index));
-			} else {
+			if (index == null) {
 				set(context, parentPath, new LinkedHashMap<>());
-			}
-		}
-		// set the value
-		if (index != null) {
-			List<Object> parent = context.read(parentPath);
-			if (index == parent.size()) {
-				parent.add(value);
-				// context.add(parentPath, value);
-			} else if (index < parent.size()) {
-				context.set(path, value);
 			} else {
-				for (int i = parent.size(); i < index; i++) {
-					parent.add(null);
-				}
-				parent.add(value);
+				set(context, parentPath, new ArrayList<>(index));
 			}
-		} else {
-			context.put(parentPath, key, value);
 		}
 	}
 
