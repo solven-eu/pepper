@@ -31,6 +31,8 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
@@ -94,12 +96,16 @@ public class MapPathHelper {
 	private static String toFlattenKeyFragment(Object k) {
 		String kAsString = String.valueOf(k);
 
-		if (kAsString.matches("[a-zA-Z0-9]*")) {
+		Pattern regex = Pattern.compile("[^a-zA-Z0-9_]");
+		Matcher matcher = regex.matcher(kAsString);
+		if (matcher.find()) {
+			// This is a complex name
+
+			String escaped = kAsString.replaceAll("(?:['\\[\\]])", "\\\\$0");
+			return "['" + escaped + "']";
+		} else {
 			// This is a simple name
 			return "." + kAsString;
-		} else {
-			// This is a complex name
-			return "['" + kAsString + "']";
 		}
 	}
 
@@ -213,13 +219,20 @@ public class MapPathHelper {
 		boolean endsWithBracket = path.endsWith("]");
 
 		if (endsWithBracket) {
-			// BEWARE This does not handle a potential '[' in the weirdProperty
 			int pos = path.lastIndexOf('[');
-			parentPath = path.substring(0, pos);
 
 			if ('\'' == path.charAt(path.length() - 2)) {
+				while ('\\' == path.charAt(pos - 1)) {
+					// This is an escaped '[': search for the previous one
+					pos = path.lastIndexOf('[', pos - 1);
+				}
+
 				// A path like `$.k['weird.Property']`
 				key = path.substring(pos + 2, path.length() - 2);
+
+				// Remove the escape character '\'
+				key = key.replaceAll("\\\\(?<escaped>.)", "$1");
+
 				propertyIndex = Integer.MIN_VALUE;
 			} else {
 				// A path like `$.k[7]`
@@ -234,6 +247,7 @@ public class MapPathHelper {
 					throw new IllegalArgumentException(msg, e);
 				}
 			}
+			parentPath = path.substring(0, pos);
 		} else {
 			// A path like `$.k.property`
 			int pos = path.lastIndexOf('.');
@@ -268,7 +282,7 @@ public class MapPathHelper {
 		} catch (PathNotFoundException e) {
 			// Programming by Exception
 			// Quite bad, but it does the job through JasonPath
-			if (index == null) {
+			if (index == Integer.MIN_VALUE) {
 				set(context, parentPath, new LinkedHashMap<>());
 			} else {
 				set(context, parentPath, new ArrayList<>(index));

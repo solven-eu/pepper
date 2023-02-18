@@ -362,4 +362,26 @@ public class TestMapPathHelper {
 		Assertions.assertThat(recursive)
 				.isEqualTo(ImmutableMap.<String, Object>builder().put("k", Arrays.asList(null, "v1")).build());
 	}
+
+	@Test
+	public void testFlatten_weirdKey() {
+		Map<String, ?> inputRecursive = ImmutableMap.<String, Object>builder()
+				.put("k1-_:()", "v1")
+				.put("k2[", "v2")
+				.put("k3]", "v3")
+				.put("a'b", "v4")
+				.build();
+
+		Map<String, Object> flatten = MapPathHelper.flatten(inputRecursive);
+		Assertions.assertThat(flatten)
+				.hasSize(4)
+				.containsEntry("$['k1-_:()']", "v1")
+				.containsEntry("$['k2\\[']", "v2")
+				.containsEntry("$['k3\\]']", "v3")
+				.containsEntry("$['a\\'b']", "v4");
+
+		Map<String, ?> backToRecursive = MapPathHelper.recurse(flatten);
+
+		Assert.assertEquals(inputRecursive, backToRecursive);
+	}
 }
