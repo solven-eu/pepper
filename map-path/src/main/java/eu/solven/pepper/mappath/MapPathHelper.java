@@ -74,17 +74,11 @@ public class MapPathHelper {
 	 * @see https://github.com/json-path/JsonPath#path-examples
 	 */
 	public static NavigableMap<String, Object> flatten(Map<?, ?> map) {
-		// Do not merge List in Set, to enable building back to recursive
-		boolean distinctOnCollection = false;
-
-		return flatten(Function.identity(), map, distinctOnCollection);
+		return flatten(Function.identity(), map);
 	}
 
 	public static NavigableMap<String, Object> flatten(Collection<?> collection) {
-		// Do not merge List in Set, to enable building back to recursive
-		boolean distinctOnCollection = false;
-
-		return flatten(Function.identity(), collection, distinctOnCollection);
+		return flatten(Function.identity(), collection);
 	}
 
 	/**
@@ -94,6 +88,10 @@ public class MapPathHelper {
 	 * @return
 	 */
 	private static String toFlattenKeyFragment(Object k) {
+		if (k == null) {
+			throw new IllegalArgumentException("Invalid null key");
+		}
+
 		String kAsString = String.valueOf(k);
 
 		Pattern regex = Pattern.compile("[^a-zA-Z0-9_]");
@@ -109,16 +107,25 @@ public class MapPathHelper {
 		}
 	}
 
-	public static NavigableMap<String, Object> flatten(Function<Object, Object> onValues,
-			Map<?, ?> map,
-			boolean distinctOnCollection) {
-		return innerFlatten(true, onValues, map, distinctOnCollection);
+	public static NavigableMap<String, Object> flattenAny(Function<Object, Object> onValues, Object any) {
+		if (any instanceof Map<?, ?>) {
+			return innerFlatten(true, onValues, (Map<?, ?>) any);
+		} else if (any instanceof Collection<?>) {
+			return innerFlatten(true, onValues, (Collection<?>) any);
+		} else {
+			// BEWARE: Should/could we handle Arrays, POJOs, etc?
+			throw new IllegalArgumentException("This is not a legal input: " + PepperLogHelper.getObjectAndClass(any));
+		}
+
+	}
+
+	public static NavigableMap<String, Object> flatten(Function<Object, Object> onValues, Map<?, ?> map) {
+		return innerFlatten(true, onValues, map);
 	}
 
 	private static NavigableMap<String, Object> innerFlatten(boolean root,
 			Function<Object, Object> onValues,
-			Map<?, ?> map,
-			boolean distinctOnCollection) {
+			Map<?, ?> map) {
 		NavigableMap<String, Object> flattenKeys = new TreeMap<>();
 		map.forEach((key, value) -> {
 			String flattenKeySuffix = toFlattenKeyFragment(key);
@@ -134,13 +141,13 @@ public class MapPathHelper {
 				flattenKeys.put(flattenKey, MARKER_NULL.get());
 			} else if (value instanceof Map<?, ?>) {
 				Map<?, ?> valueAsMap = (Map<?, ?>) value;
-				Map<String, Object> subFlattenKeys = innerFlatten(false, onValues, valueAsMap, distinctOnCollection);
+				Map<String, Object> subFlattenKeys = innerFlatten(false, onValues, valueAsMap);
 
 				// '.k' is appended the the path
 				subFlattenKeys.forEach((subKey, subValue) -> flattenKeys.put(flattenKey + subKey, subValue));
 			} else if (value instanceof List<?>) {
 				List<?> valueAsList = (List<?>) value;
-				Map<String, ?> subFlattenKeys = innerFlatten(false, onValues, valueAsList, distinctOnCollection);
+				Map<String, ?> subFlattenKeys = innerFlatten(false, onValues, valueAsList);
 
 				// '[i]' is appended the the path
 				subFlattenKeys.forEach((subKey, subValue) -> flattenKeys.put(flattenKey + subKey, subValue));
@@ -151,16 +158,13 @@ public class MapPathHelper {
 		return flattenKeys;
 	}
 
-	public static NavigableMap<String, Object> flatten(Function<Object, Object> onValues,
-			Iterable<?> list,
-			boolean distinctOnList) {
-		return innerFlatten(true, onValues, list, distinctOnList);
+	public static NavigableMap<String, Object> flatten(Function<Object, Object> onValues, Iterable<?> list) {
+		return innerFlatten(true, onValues, list);
 	}
 
 	private static NavigableMap<String, Object> innerFlatten(boolean root,
 			Function<Object, Object> onValues,
-			Iterable<?> list,
-			boolean distinctOnList) {
+			Iterable<?> list) {
 		NavigableMap<String, Object> flatten = new TreeMap<>();
 
 		int i = -1;
@@ -179,13 +183,13 @@ public class MapPathHelper {
 			if (o == null) {
 				flatten.put(flattenKey, MARKER_NULL.get());
 			} else if (o instanceof Map<?, ?>) {
-				Map<String, Object> flattenMap = innerFlatten(false, onValues, (Map<?, ?>) o, distinctOnList);
+				Map<String, Object> flattenMap = innerFlatten(false, onValues, (Map<?, ?>) o);
 
 				flattenMap.forEach((k, v) -> {
 					flatten.put(flattenKey + k, v);
 				});
 			} else if (o instanceof Collection<?>) {
-				Map<String, Object> flattenMap = innerFlatten(false, onValues, (Collection<?>) o, distinctOnList);
+				Map<String, Object> flattenMap = innerFlatten(false, onValues, (Collection<?>) o);
 
 				flattenMap.forEach((k, v) -> {
 					flatten.put(flattenKey + k, v);
@@ -211,7 +215,7 @@ public class MapPathHelper {
 	 */
 	// https://github.com/json-path/JsonPath/issues/83#issuecomment-728251374
 	// https://github.com/json-path/JsonPath/issues/83#issuecomment-1247614513
-	public static void set(DocumentContext context, String path, Object value) {
+	private static void setJsonPath(DocumentContext context, String path, Object value) {
 		String parentPath;
 		String key;
 		int propertyIndex;
@@ -276,16 +280,20 @@ public class MapPathHelper {
 		}
 	}
 
-	private static void ensureParentExists(DocumentContext context, String parentPath, Integer index) {
+	private static void ensureParentExists(DocumentContext context, String parentPath, int index) {
 		try {
-			context.read(parentPath);
+			Object parentContext = context.read(parentPath);
+			if (parentContext == null) {
+				// This may happen in some cases with arrays
+				throw new PathNotFoundException("Path led to null: " + parentPath);
+			}
 		} catch (PathNotFoundException e) {
 			// Programming by Exception
 			// Quite bad, but it does the job through JasonPath
 			if (index == Integer.MIN_VALUE) {
-				set(context, parentPath, new LinkedHashMap<>());
+				setJsonPath(context, parentPath, new LinkedHashMap<>());
 			} else {
-				set(context, parentPath, new ArrayList<>(index));
+				setJsonPath(context, parentPath, new ArrayList<>(index + 1));
 			}
 		}
 	}
@@ -312,9 +320,52 @@ public class MapPathHelper {
 			if (MARKER_NULL.get() == v) {
 				v = null;
 			}
-			set(emptyJson, k, v);
+			setJsonPath(emptyJson, k, v);
 		});
 
 		return emptyJson.json();
 	}
+
+	public static List<Object> split(String flatKey) {
+		// TODO How can this be achieve with JsonPath own code?
+		// CompiledPath path = (CompiledPath) PathCompiler.compile(flattenedKey);
+		// path.evaluate(flattenedKey, path, Configuration.defaultConfiguration());
+		// RootPathToken root = path.getRoot();
+		// PathToken next = root;
+		// while (null != (next = root.getNext())) {
+		// System.out.println(next.get);
+		// }
+
+		if (!flatKey.startsWith("$")) {
+			throw new IllegalArgumentException("We expect only rootKey. key=" + flatKey);
+		}
+
+		String splitExpression = "(?<easy>\\.[^\\.\\[]*)|(?<hard>\\['?[^'\\]]*'?\\])";
+		Matcher compiled = Pattern.compile(splitExpression).matcher(flatKey);
+
+		List<Object> paths = new ArrayList<>();
+
+		while (compiled.find()) {
+
+			String easy = compiled.group("easy");
+			String hard = compiled.group("hard");
+
+			if (easy != null) {
+				paths.add(easy.substring(".".length()));
+			} else if (hard.startsWith("['")) {
+				// We strip away the surrounding '
+				String betweenBrackets = hard.substring("['".length(), hard.length() - "']".length());
+
+				String unescaped = betweenBrackets.replaceAll("\\\\(?<escaped>.)", "$1");
+
+				paths.add(unescaped);
+			} else {
+				String indexAsString = hard.substring("[".length(), hard.length() - "]".length());
+				paths.add(Integer.parseInt(indexAsString));
+			}
+		}
+
+		return paths;
+	}
+
 }

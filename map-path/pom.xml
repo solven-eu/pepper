@@ -31,12 +31,6 @@
 		</dependency>
 
 		<dependency>
-			<!-- Provides an EventBus to diffuse Events to MetricsTowerControl -->
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
 			<version>3.0.1u2</version>
@@ -69,20 +63,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<!-- –Djacoco.skip=true -->
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<!-- LoggingMethodCallAnnotationMBeanExporter is a bunch of exception catching. Add * to hold anonymous classes -->
-						<exclude>eu/solven/pepper/server/monitoring/spring/LoggingMethodCallAnnotationMBeanExporter*</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

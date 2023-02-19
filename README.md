@@ -73,6 +73,20 @@ PepperProcessHelper enables tracking the memory consumption of a process (would 
 PepperProcessHelper.getProcessResidentMemory(processPID)
 ```
 
+#MapPath
+
+This module inspires itself from [xpath](https://en.wikipedia.org/wiki/XPath) and [jsonPath](https://github.com/json-path/JsonPath) to manipulate standard `java.util.Map`.
+
+See [map-path](./map-path)
+
+```xml
+<dependency>
+    <groupId>io.github.solven-eu.pepper</groupId>
+    <artifactId>map-path</artifactId>
+    <version>4.4</version>
+</dependency>
+```
+
 # Pepper-MAT
 
 A fork from Eclipse MAT for HeapDump analysis. It improves original MAT by lowering the heap required to prepare MAT index files, while keeping the produced indexes compatible with the original MAT.

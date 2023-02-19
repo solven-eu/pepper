@@ -25,6 +25,7 @@ package eu.solven.pepper.mappath;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -32,15 +33,11 @@ import java.util.NavigableMap;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 public class TestMapPathHelper {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TestMapPathHelper.class);
-
 	@Test
 	public void testFlattenKeys() {
 		{
@@ -189,81 +186,6 @@ public class TestMapPathHelper {
 		Assert.assertEquals(inputRecursive, backToRecursive);
 	}
 
-	// @Test
-	// public void testLooksRecursive_minimal() {
-	// Map<String, Object> flat = ImmutableMap.of("k1", "v1");
-	// Assertions.assertThat(MapPathHelper.looksRecursive(flat)).isTrue();
-	// }
-	//
-	// @Test
-	// public void testLooksRecursive_mapInput() {
-	// Map<String, Object> recursive = ImmutableMap.of("k1", ImmutableMap.of("k2", "v1"));
-	// Assertions.assertThat(MapPathHelper.looksRecursive(recursive)).isTrue();
-	// }
-	//
-	// @Test
-	// public void testLooksRecursive_mapOfList() {
-	// Map<String, ?> inputRecursive = ImmutableMap.of("k1", "v1", "k2", Collections.emptyList());
-	// Assertions.assertThat(MapPathHelper.looksRecursive(inputRecursive)).isTrue();
-	// }
-	//
-	// @Test
-	// public void testLooksRecursive_dottedKey() {
-	// Map<String, Object> flat = ImmutableMap.of("k1.k2", "v2");
-	// Assertions.assertThat(MapPathHelper.looksRecursive(flat)).isFalse();
-	// }
-	//
-	// @Test
-	// public void testLooksRecursive_minimalAndDotted() {
-	// Map<String, Object> flat = ImmutableMap.of("k1", "v1", "k2.k3", "v2");
-	// Assertions.assertThat(MapPathHelper.looksRecursive(flat)).isFalse();
-	// }
-	//
-	// @Test
-	// public void testLooksRecursive_dottedKey_mapValue() {
-	// Map<String, Object> mapValues = ImmutableMap.of("k1.k2", ImmutableMap.of());
-	// Assertions.assertThat(MapPathHelper.looksRecursive(mapValues)).isTrue();
-	// }
-	//
-	// @Test
-	// public void testLooksRecursive_Empty() {
-	// Map<String, ?> inputRecursive = ImmutableMap.of("k1", "v1", "k2", Collections.emptyMap());
-	// Assertions.assertThat(MapPathHelper.looksRecursive(inputRecursive)).isTrue();
-	// }
-	//
-	// @Test
-	// public void testLooksRecursive_Empty_Deeper() {
-	// Map<String, ?> inputRecursive =
-	// ImmutableMap.of("k1", "v1", "k2", ImmutableMap.of("k3", Collections.emptyMap()));
-	// Assertions.assertThat(MapPathHelper.looksRecursive(inputRecursive)).isTrue();
-	// }
-	//
-	// @Test
-	// public void testLooksRecursive_emptyKey() {
-	// Map<String, Object> flat = ImmutableMap.of("", "v");
-	// Assertions.assertThat(MapPathHelper.looksRecursive(flat)).isTrue();
-	// }
-	//
-	// @Test
-	// public void testLooksRecursive_nullKey() {
-	// Map<String, Object> flat = Collections.singletonMap(null, "v");
-	// Assertions.assertThat(MapPathHelper.looksRecursive(flat)).isTrue();
-	// }
-
-	// @Test
-	// public void test_flattenMultipleTimes_withDots() {
-	// Map<String, Object> recursive = ImmutableMap.of("k.1", ImmutableMap.of("k.2", "v1"));
-	// Map<String, Object> flat1 = MapPathHelper.flatten(recursive);
-	// // Flattening a flat structure should be a no-op, not a fail
-	// Map<String, Object> flat2 = MapPathHelper.flatten(flat1);
-	// Assertions.assertThat(flat2).isEqualTo(flat1);
-	// }
-
-	// @Test
-	// public void testSplit() {
-	// Assertions.assertThat(MapPathHelper.split("k..1.k..2")).containsExactly("k.1", "k.2");
-	// }
-
 	@Test
 	public void testRecursiveFromFlatten_withDotMiddle() {
 		Map<String, ?> inputRecursive = ImmutableMap.of("k.1", ImmutableMap.of("k.2", "someValue"));
@@ -296,16 +218,6 @@ public class TestMapPathHelper {
 		}
 	}
 
-	// @Test
-	// public void testRecursiveOverDots() {
-	// Map<String, Object> input = ImmutableMap.of("k.1", ImmutableMap.of("k.2", "v1"));
-	// Map<String, ?> recursiveOverDots = MapPathHelper.recursiveOverDots(input);
-	//
-	// Assertions.assertThat(recursiveOverDots)
-	// .isEqualTo(
-	// ImmutableMap.of("k", ImmutableMap.of("1", ImmutableMap.of("k", ImmutableMap.of("2", "v1")))));
-	// }
-
 	@Test
 	public void testOverIntermediateList() {
 		Map<String, List<String>> input = ImmutableMap.of("k", ImmutableList.of("a", "b"));
@@ -315,6 +227,19 @@ public class TestMapPathHelper {
 
 		Map<String, Object> back = MapPathHelper.recurse(flatten);
 		Assertions.assertThat(back).isEqualTo(input);
+	}
+
+	@Test
+	public void testRecurse_fromMisorderedList() {
+		// Linked to force the iteration order
+		Map<String, Object> flatten = new LinkedHashMap<>();
+		flatten.put("$.k[1].k2", "v2");
+		flatten.put("$.k[0].k2", "v1");
+
+		Map<String, Object> back = MapPathHelper.recurse(flatten);
+		Assertions.assertThat(back)
+				.isEqualTo(
+						ImmutableMap.of("k", Arrays.asList(ImmutableMap.of("k2", "v1"), ImmutableMap.of("k2", "v2"))));
 	}
 
 	@Test
@@ -392,18 +317,45 @@ public class TestMapPathHelper {
 				.put("k2[", "v2")
 				.put("k3]", "v3")
 				.put("a'b", "v4")
+				.put("a_b", "v5")
 				.build();
 
 		Map<String, Object> flatten = MapPathHelper.flatten(inputRecursive);
 		Assertions.assertThat(flatten)
-				.hasSize(4)
+				.hasSize(5)
 				.containsEntry("$['k1-_:()']", "v1")
 				.containsEntry("$['k2\\[']", "v2")
 				.containsEntry("$['k3\\]']", "v3")
-				.containsEntry("$['a\\'b']", "v4");
+				.containsEntry("$['a\\'b']", "v4")
+				.containsEntry("$.a_b", "v5");
 
 		Map<String, ?> backToRecursive = MapPathHelper.recurse(flatten);
 
 		Assert.assertEquals(inputRecursive, backToRecursive);
+	}
+
+	@Test
+	public void testFlatten_nullKey() {
+		Map<String, ?> inputRecursive = Collections.singletonMap(null, "v");
+
+		Assertions.assertThatThrownBy(() -> MapPathHelper.flatten(inputRecursive))
+				.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	public void testFlatten_nullKey_deep() {
+		Map<String, ?> inputRecursive = Collections.singletonMap("k", Collections.singletonMap(null, "v"));
+
+		Assertions.assertThatThrownBy(() -> MapPathHelper.flatten(inputRecursive))
+				.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	public void testSplit() {
+		Assertions.assertThat(MapPathHelper.split("$.a")).containsExactly("a");
+		Assertions.assertThat(MapPathHelper.split("$.a.b")).containsExactly("a", "b");
+		Assertions.assertThat(MapPathHelper.split("$.a[2].b")).containsExactly("a", 2, "b");
+		Assertions.assertThat(MapPathHelper.split("$[1][2]")).containsExactly(1, 2);
+		Assertions.assertThat(MapPathHelper.split("$['complex\\[property']")).containsExactly("complex[property");
 	}
 }
