@@ -374,7 +374,7 @@ public class MapPath {
 	public static String join(List<?> keys) {
 		StringBuilder path = new StringBuilder();
 
-		path.append("$");
+		path.append('$');
 
 		for (Object nextKey : keys) {
 			if (nextKey instanceof Integer) {
@@ -382,7 +382,7 @@ public class MapPath {
 					throw new IllegalArgumentException("Negative arrayIndex in " + keys);
 				}
 
-				path.append("[" + nextKey + "]");
+				path.append('[').append(nextKey).append(']');
 			} else {
 				path.append(toFlattenKeyFragment(nextKey));
 			}

@@ -73,7 +73,7 @@ PepperProcessHelper enables tracking the memory consumption of a process (would 
 PepperProcessHelper.getProcessResidentMemory(processPID)
 ```
 
-#MapPath
+# MapPath
 
 This module inspires itself from [xpath](https://en.wikipedia.org/wiki/XPath) and [jsonPath](https://github.com/json-path/JsonPath) to manipulate standard `java.util.Map`.
 
@@ -81,9 +81,9 @@ See [map-path](./map-path)
 
 ```xml
 <dependency>
-    <groupId>io.github.solven-eu.pepper</groupId>
-    <artifactId>map-path</artifactId>
-    <version>4.4</version>
+	<groupId>io.github.solven-eu.pepper</groupId>
+	<artifactId>map-path</artifactId>
+	<version>4.4</version>
 </dependency>
 ```
 

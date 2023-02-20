@@ -368,7 +368,8 @@ public class TestMapPath {
 		Map<String, ?> input = ImmutableMap.of("k", ImmutableMap.of());
 		NavigableMap<String, Object> flatten = MapPath.flatten(input);
 
-		Assertions.assertThat(flatten).isEmpty();;
+		Assertions.assertThat(flatten).isEmpty();
+		;
 	}
 
 }
