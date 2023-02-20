@@ -311,21 +311,23 @@ public class TestMapPath {
 	@Test
 	public void testFlatten_weirdKey() {
 		Map<String, ?> inputRecursive = ImmutableMap.<String, Object>builder()
-				.put("k1-_:()", "v1")
+				.put("k1:()", "v1")
 				.put("k2[", "v2")
 				.put("k3]", "v3")
 				.put("a'b", "v4")
 				.put("a_b", "v5")
+				.put("a-b", "v6")
 				.build();
 
 		Map<String, Object> flatten = MapPath.flatten(inputRecursive);
 		Assertions.assertThat(flatten)
-				.hasSize(5)
-				.containsEntry("$['k1-_:()']", "v1")
+				.hasSize(6)
+				.containsEntry("$['k1:()']", "v1")
 				.containsEntry("$['k2\\[']", "v2")
 				.containsEntry("$['k3\\]']", "v3")
 				.containsEntry("$['a\\'b']", "v4")
-				.containsEntry("$.a_b", "v5");
+				.containsEntry("$.a_b", "v5")
+				.containsEntry("$.a-b", "v6");
 
 		Map<String, ?> backToRecursive = MapPath.recurse(flatten);
 
@@ -351,6 +353,8 @@ public class TestMapPath {
 	@Test
 	public void testSplit() {
 		checkPath("$.a", new Object[] { "a" });
+		checkPath("$.a_b", new Object[] { "a_b" });
+		checkPath("$.a-b", new Object[] { "a-b" });
 		checkPath("$.a.b", new Object[] { "a", "b" });
 		checkPath("$.a[2].b", new Object[] { "a", 2, "b" });
 		checkPath("$[1][2]", new Object[] { 1, 2 });
@@ -371,5 +375,4 @@ public class TestMapPath {
 		Assertions.assertThat(flatten).isEmpty();
 		;
 	}
-
 }

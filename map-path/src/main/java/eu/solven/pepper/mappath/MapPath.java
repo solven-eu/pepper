@@ -97,7 +97,7 @@ public class MapPath {
 
 		String kAsString = String.valueOf(k);
 
-		Pattern regex = Pattern.compile("[^a-zA-Z0-9_]");
+		Pattern regex = Pattern.compile("[^a-zA-Z0-9_-]");
 		Matcher matcher = regex.matcher(kAsString);
 		if (matcher.find()) {
 			// This is a complex name
