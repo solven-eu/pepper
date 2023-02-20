@@ -109,3 +109,19 @@ https://www.gnu.org/software/gdb/
 
 Change groupId from `<groupId>com.github.cormoran-io.pepper</groupId>` to `<groupId>io.github.solven-eu.pepper</groupId>`
 Change imported package from `import cormoran.pepper.X` to `import eu.solven.pepper.X`
+
+# Release process
+
+## Tag and Publish
+
+Do not -DskipTests, else it will skip javadoc which is mandatory for sonatype
+Do not -T 8 else the prompt for GPG may be lost in the logs
+ 	
+	mvn release:clean release:prepare release:perform -DskipStyle -Darguments="-Dmaven.test.skip -DskipStyle -Dmaven.javadoc.skip=false"
+	git push --tags
+
+## In case of error:
+
+	mvn reset --hard HEAD~~
+	git tag -d pepper-XXX
+	git push --delete origin

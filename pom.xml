@@ -69,16 +69,6 @@
 	<!-- Add missing licenses -->
 	<!-- mvn com.mycila:license-maven-plugin:format -->
 
-	<!-- Make a release -->
-	<!-- Do not -DskipTests, else it will skip javadoc which is mandatory for sonatype -->
-	<!-- Do not -T 8 else the prompt for GPG may be lost in the logs -->
-	<!-- mvn release:clean release:prepare release:perform -DskipStyle -Darguments="-Dmaven.test.skip -DskipStyle -Dmaven.javadoc.skip=false" -->
-	<!-- git push \-\-tags -->
-
-	<!-- In case of error: -->
-	<!-- mvn reset \-\-hard HEAD~~ -->
-	<!-- mvn tag -d pepper-XXX -->
-
 	<!-- In case of 'gpg: signing failed: Timeout' -->
 	<!-- Configure GPG -->
 	<!-- https://central.sonatype.org/pages/working-with-pgp-signatures.html -->
