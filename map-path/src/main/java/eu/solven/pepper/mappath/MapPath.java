@@ -50,7 +50,7 @@ import eu.solven.pepper.logging.PepperLogHelper;
  *
  */
 @SuppressWarnings({ "PMD.GodClass", "PMD.AvoidDuplicateLiterals" })
-public class MapPathHelper {
+public class MapPath {
 	// This will be used to represent a null-reference as Value.
 	// In recursiveFromFlatten, it will used for comparison by reference
 	// It means the whole class is targetting same-JVM use.
@@ -60,11 +60,14 @@ public class MapPathHelper {
 		MARKER_NULL.set(nullMarker);
 	}
 
-	protected MapPathHelper() {
+	protected MapPath() {
 		// hidden
 	}
 
 	/**
+	 * This will turn a {@link Map} into a flat {@link Map} where each original value (whatever its depth) is associated
+	 * to its jsonpath
+	 * 
 	 * The key convention follows mostly (i.e. tries to be a subset of) JsonPath syntax.
 	 * 
 	 * @param map
@@ -366,6 +369,26 @@ public class MapPathHelper {
 		}
 
 		return paths;
+	}
+
+	public static String join(List<?> keys) {
+		StringBuilder path = new StringBuilder();
+
+		path.append("$");
+
+		for (Object nextKey : keys) {
+			if (nextKey instanceof Integer) {
+				if ((Integer) nextKey < 0) {
+					throw new IllegalArgumentException("Negative arrayIndex in " + keys);
+				}
+
+				path.append("[" + nextKey + "]");
+			} else {
+				path.append(toFlattenKeyFragment(nextKey));
+			}
+		}
+
+		return path.toString();
 	}
 
 }
