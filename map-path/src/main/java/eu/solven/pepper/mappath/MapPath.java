@@ -371,6 +371,14 @@ public class MapPath {
 		return paths;
 	}
 
+	/**
+	 * This will build a jsonPath given a {@link List} of properties. Typically {@link Integer} (as array index
+	 * property) are wrapped in brackets (e.g. `[i]`). Complex properties are wrapped in brackets with a single quote
+	 * (e.g. `['weird.property']`)
+	 * 
+	 * @param keys
+	 * @return a jsonPath chaining the input individual key.
+	 */
 	public static String join(List<?> keys) {
 		StringBuilder path = new StringBuilder();
 

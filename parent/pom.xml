@@ -47,7 +47,7 @@
 		<scm.connection>scm:git:ssh://github.com/solven-eu/pepper.git</scm.connection>
 		<scm.url>https://github.com/solven-eu/pepper</scm.url>
 
-		<spotless.version>2.33.0</spotless.version>
+		<spotless.version>2.34.0</spotless.version>
 
 		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
 		<spotbugs.version>4.7.3.0</spotbugs.version>
@@ -295,8 +295,22 @@
 								<!-- TestCases needs to remains not formatted/cleaned -->
 								<exclude>**/do_not_format_me/**</exclude>
 							</excludes>
-
-							<cleanthat />
+							
+							<cleanthat>
+								<sourceJdk>${maven.compiler.source}</sourceJdk>
+								<version>2.7</version>
+								<mutators>
+									<mutator>SafeAndConsensual</mutator>
+									<mutator>SafeButNotConsensual</mutator>
+								</mutators>
+								<includeDraft>true</includeDraft>
+								<excludedMutators>
+									<!-- https://github.com/javaparser/javaparser/issues/3930 -->
+									<excludedMutator>LambdaReturnsSingleStatement</excludedMutator>
+									<!-- Too much instable -->
+									<excludedMutator>UseDiamondOperator</excludedMutator>
+								</excludedMutators>
+							</cleanthat>
 
 							<removeUnusedImports />
 							<importOrder>
