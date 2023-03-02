@@ -190,7 +190,7 @@ public class TestSnapshots {
 	}
 
 	public static File getResourceFile(String name) {
-		final int BUFSIZE = 2048;
+		final int BUFSIZE = 2_048;
 		URL url = TestSnapshots.class.getClassLoader().getResource(name);
 		File file = null;
 		if (url == null) {

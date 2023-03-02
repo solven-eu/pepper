@@ -67,7 +67,7 @@ public class HprofParserHandlerImpl implements IHprofParserHandler {
 	private XSnapshotInfo info = new XSnapshotInfo();
 
 	/** constant pool cache */
-	private HashMapLongObject<String> constantPool = new HashMapLongObject<String>(10000);
+	private HashMapLongObject<String> constantPool = new HashMapLongObject<String>(10_000);
 	private Map<String, List<ClassImpl>> classesByName = new HashMap<String, List<ClassImpl>>();
 	private HashMapLongObject<ClassImpl> classesByAddress = new HashMapLongObject<ClassImpl>();
 	private HashMapLongObject<List<IClass>> classHierarchyByAddress = new HashMapLongObject<>();
@@ -257,7 +257,12 @@ public class HprofParserHandlerImpl implements IHprofParserHandler {
 		int clsid = 0;
 		// java.lang.Object for the superclass
 		List<ClassImpl> jlos = classesByName.get("java.lang.Object");
-		long jlo = jlos.isEmpty() ? 0 : jlos.get(0).getObjectAddress();
+		long jlo;
+		if (jlos.isEmpty()) {
+			jlo = 0;
+		} else {
+			jlo = jlos.get(0).getObjectAddress();
+		}
 
 		// create required (fake) classes for arrays
 		if (!requiredArrayClassIDs.isEmpty()) {
@@ -382,12 +387,20 @@ public class HprofParserHandlerImpl implements IHprofParserHandler {
 
 	private int alignUpToX(int n, int x) {
 		int r = n % x;
-		return r == 0 ? n : n + x - r;
+		if (r == 0) {
+			return n;
+		} else {
+			return n + x - r;
+		}
 	}
 
 	private long alignUpToX(long n, int x) {
 		long r = n % x;
-		return r == 0 ? n : n + x - r;
+		if (r == 0) {
+			return n;
+		} else {
+			return n + x - r;
+		}
 	}
 
 	@Override

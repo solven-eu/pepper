@@ -92,7 +92,11 @@ public class SimpleMonitor {
 		}
 
 		public boolean isProbablyCanceled() {
-			return counter++ % 5000 == 0 ? isCanceled() : false;
+			if (counter++ % 5_000 == 0) {
+				return isCanceled();
+			} else {
+				return false;
+			}
 		}
 
 		public void totalWorkDone(long work) {
@@ -103,7 +107,12 @@ public class SimpleMonitor {
 				return;
 
 			workDone = work;
-			int unitsWorked = isSmaller ? (int) (work * workPerUnit) : (int) (work / workPerUnit);
+			int unitsWorked;
+			if (isSmaller) {
+				unitsWorked = (int) (work * workPerUnit);
+			} else {
+				unitsWorked = (int) (work / workPerUnit);
+			}
 			int unitsToReport = unitsWorked - unitsReported;
 
 			if (unitsToReport > 0) {

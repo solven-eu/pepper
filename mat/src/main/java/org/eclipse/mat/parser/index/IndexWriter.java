@@ -77,8 +77,8 @@ public abstract class IndexWriter {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(IndexWriter.class);
 
-	public static final int PAGE_SIZE_INT = 1000000;
-	public static final int PAGE_SIZE_LONG = 500000;
+	public static final int PAGE_SIZE_INT = 1_000_000;
+	public static final int PAGE_SIZE_LONG = 500_000;
 	// Set this to true to test more code paths with smaller indices
 	private static final boolean TEST = false;
 	// How much to resize break points for large formats to make testing easier
@@ -114,7 +114,7 @@ public abstract class IndexWriter {
 		@Override
 		public void add(long id) {
 			if (identifiers == null) {
-				identifiers = new long[10000];
+				identifiers = new long[10_000];
 				size = 0;
 			}
 
@@ -218,7 +218,7 @@ public abstract class IndexWriter {
 		RawIdentifier guarantee;
 
 		boolean addedAfterSort = false;
-		Long2IntMap reverseCache = new Long2IntOpenHashMap(10000);
+		Long2IntMap reverseCache = new Long2IntOpenHashMap(10_000);
 
 		{
 			reverseCache.defaultReturnValue(-1);
@@ -285,7 +285,7 @@ public abstract class IndexWriter {
 				}
 
 				int asInt = (int) rank0Based;
-				if (reverseCache.size() == 10000) {
+				if (reverseCache.size() == 10_000) {
 					// Prevent the ache for growing too big
 					reverseCache.clear();
 				}
@@ -527,7 +527,11 @@ public abstract class IndexWriter {
 
 		@SuppressWarnings("unchecked")
 		public V get(int key) {
-			return (key >= elements.length) ? null : (V) elements[key];
+			if (key >= elements.length) {
+				return null;
+			} else {
+				return (V) elements[key];
+			}
 		}
 
 		public void put(int key, V value) {
@@ -733,7 +737,12 @@ public abstract class IndexWriter {
 		protected ArrayIntCompressed getPage(int page) {
 			ArrayIntCompressed array = pages.get(page);
 			if (array == null) {
-				int ps = page < page(size) ? pageSize : offset(size);
+				int ps;
+				if (page < page(size)) {
+					ps = pageSize;
+				} else {
+					ps = offset(size);
+				}
 				array = new ArrayIntCompressed(ps, 31 - mostSignificantBit, 0);
 				pages.put(page, array);
 			}
@@ -829,8 +838,13 @@ public abstract class IndexWriter {
 				out.writeLong(pageStart.get(jj));
 
 			out.writeInt(pageSize);
-			// Encoded size is the negative number of entries in the last page
-			int s = size <= FORMAT1_MAX_SIZE ? (int) size : -(int) ((size + pageSize - 1) % pageSize + 1);
+			int s;
+
+			if (size <= FORMAT1_MAX_SIZE) {
+				s = (int) size;
+			} else {
+				s = -(int) ((size + pageSize - 1) % pageSize + 1);
+			}
 			out.writeInt(s);
 
 			this.page = null;
@@ -956,7 +970,12 @@ public abstract class IndexWriter {
 					int objectId = identifier.reverse(current);
 
 					if (objectId >= 0) {
-						int jj = (current == pseudo) ? 0 : length++;
+						int jj;
+						if (current == pseudo) {
+							jj = 0;
+						} else {
+							jj = length++;
+						}
 						objectIds[jj] = objectId;
 					}
 
@@ -990,7 +1009,12 @@ public abstract class IndexWriter {
 		}
 
 		private long getHeader(int index) {
-			long header2Value = header2 != null ? (header2.get(index) & 0xffL) << 32 : 0;
+			long header2Value;
+			if (header2 != null) {
+				header2Value = (header2.get(index) & 0xffL) << 32;
+			} else {
+				header2Value = 0;
+			}
 
 			long headerValue = header.get(index) & 0xffffffffL;
 			return header2Value | headerValue;
@@ -1104,7 +1128,7 @@ public abstract class IndexWriter {
 			this.size = size;
 			this.indexFile = indexFile;
 
-			int requiredSegments = (size / 500000) + 1;
+			int requiredSegments = (size / 500_000) + 1;
 
 			int segments = 1;
 			while (segments < requiredSegments)
@@ -1151,7 +1175,7 @@ public abstract class IndexWriter {
 			header = new int[size];
 
 			DataOutputStream index =
-					new DataOutputStream(new BufferedOutputStream(new FileOutputStream(this.indexFile), 1024 * 256));
+					new DataOutputStream(new BufferedOutputStream(new FileOutputStream(this.indexFile), 1_024 * 256));
 
 			BitInputStream segmentIn = null;
 
@@ -1233,7 +1257,7 @@ public abstract class IndexWriter {
 				long segmentSize,
 				int segment,
 				int startIndex) throws IOException {
-			final int SUBSIZE = 500000 * 16;
+			final int SUBSIZE = 500_000 * 16;
 			if (!segmentFile.exists())
 				return;
 			if (segmentSize < SUBSIZE) {
@@ -1296,7 +1320,7 @@ public abstract class IndexWriter {
 					segmentIn = new BitInputStream(new FileInputStream(segmentFile));
 					try {
 						for (long ii = 0; ii < segmentSize; ii++) {
-							if (ii % 1000 == 0 && monitor.isCanceled())
+							if (ii % 1_000 == 0 && monitor.isCanceled())
 								throw new IProgressListener.OperationCanceledException();
 
 							boolean isPseudo = segmentIn.readBit() == 1;
@@ -1429,7 +1453,7 @@ public abstract class IndexWriter {
 
 			int endPseudo = fromIndex;
 
-			if ((toIndex - fromIndex) > 100000) {
+			if ((toIndex - fromIndex) > 100_000) {
 				BitField duplicates = new BitField(size);
 
 				int jj = fromIndex;
@@ -1725,7 +1749,12 @@ public abstract class IndexWriter {
 		protected ArrayLongCompressed getPage(int page) {
 			ArrayLongCompressed array = (ArrayLongCompressed) pages.get(page);
 			if (array == null) {
-				int ps = page < (size / pageSize) ? pageSize : size % pageSize;
+				int ps;
+				if (page < (size / pageSize)) {
+					ps = pageSize;
+				} else {
+					ps = size % pageSize;
+				}
 				array = new ArrayLongCompressed(ps, 63 - mostSignificantBit, 0);
 				pages.put(page, array);
 			}
@@ -1767,7 +1796,12 @@ public abstract class IndexWriter {
 			int noOfPages = size / pageSize + (size % pageSize > 0 ? 1 : 0);
 			for (int ii = 0; ii < noOfPages; ii++) {
 				ArrayLongCompressed a = (ArrayLongCompressed) pages.get(ii);
-				int len = (ii + 1) < noOfPages ? pageSize : (size % pageSize);
+				int len;
+				if ((ii + 1) < noOfPages) {
+					len = pageSize;
+				} else {
+					len = (size % pageSize);
+				}
 
 				if (a == null)
 					addAll(new long[len]);
@@ -2102,7 +2136,11 @@ public abstract class IndexWriter {
 
 	public static int mostSignificantBit(long x) {
 		long lead = x >>> 32;
-		return lead == 0x0 ? mostSignificantBit((int) x) : 32 + mostSignificantBit((int) lead);
+		if (lead == 0x0) {
+			return mostSignificantBit((int) x);
+		} else {
+			return 32 + mostSignificantBit((int) lead);
+		}
 	}
 
 	public static int lessSignificantBit(int x) {

@@ -76,7 +76,7 @@ public class Jdk9CharSequenceParsers {
 	 * @since 9
 	 */
 	@SuppressWarnings("PMD.CognitiveComplexity")
-	public static int parseInt(CharSequence s, int beginIndex, int endIndex, int radix) throws NumberFormatException {
+	public static int parseInt(CharSequence s, int beginIndex, int endIndex, int radix) {
 		s = Objects.requireNonNull(s);
 
 		if (beginIndex < 0 || beginIndex > endIndex || endIndex > s.length()) {
@@ -122,7 +122,11 @@ public class Jdk9CharSequenceParsers {
 				i++;
 				result -= digit;
 			}
-			return negative ? result : -result;
+			if (negative) {
+				return result;
+			} else {
+				return -result;
+			}
 		} else {
 			throw forInputString("");
 		}
@@ -156,7 +160,7 @@ public class Jdk9CharSequenceParsers {
 	 * @since 9
 	 */
 	@SuppressWarnings("PMD.CognitiveComplexity")
-	public static long parseLong(CharSequence s, int beginIndex, int endIndex, int radix) throws NumberFormatException {
+	public static long parseLong(CharSequence s, int beginIndex, int endIndex, int radix) {
 		s = Objects.requireNonNull(s);
 
 		if (beginIndex < 0 || beginIndex > endIndex || endIndex > s.length()) {
@@ -202,7 +206,11 @@ public class Jdk9CharSequenceParsers {
 				i++;
 				result -= digit;
 			}
-			return negative ? result : -result;
+			if (negative) {
+				return result;
+			} else {
+				return -result;
+			}
 		} else {
 			throw new NumberFormatException("");
 		}
@@ -239,8 +247,7 @@ public class Jdk9CharSequenceParsers {
 	 *             If the {@code String} does not contain a parsable {@code short}.
 	 */
 	// We change this method in order to accept a CharSequence
-	public static short parseShort(CharSequence s, int beginIndex, int endIndex, int radix)
-			throws NumberFormatException {
+	public static short parseShort(CharSequence s, int beginIndex, int endIndex, int radix) {
 		int i = parseInt(s, beginIndex, endIndex, radix);
 		if (i < Short.MIN_VALUE || i > Short.MAX_VALUE) {
 			throw new NumberFormatException(

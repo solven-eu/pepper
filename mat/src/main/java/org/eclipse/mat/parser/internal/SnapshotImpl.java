@@ -298,7 +298,7 @@ public final class SnapshotImpl implements ISnapshot {
 		this.dominatorTreeCalculated = indexManager.dominated() != null && indexManager.o2retained() != null
 				&& indexManager.dominator() != null;
 
-		this.objectCache = new HeapObjectCache(this, 1000);
+		this.objectCache = new HeapObjectCache(this, 1_000);
 
 		this.heapObjectReader.open(this);
 
@@ -796,8 +796,7 @@ public final class SnapshotImpl implements ISnapshot {
 	}
 
 	@Override
-	public long getMinRetainedSize(int[] objectIds, IProgressListener progressMonitor)
-			throws UnsupportedOperationException, SnapshotException {
+	public long getMinRetainedSize(int[] objectIds, IProgressListener progressMonitor) throws SnapshotException {
 		if (objectIds.length == 1) {
 			return getRetainedHeapSize(objectIds[0]);
 		}
@@ -818,8 +817,7 @@ public final class SnapshotImpl implements ISnapshot {
 	}
 
 	@Override
-	public int[] getMinRetainedSet(int[] objectIds, IProgressListener progressMonitor)
-			throws UnsupportedOperationException, SnapshotException {
+	public int[] getMinRetainedSet(int[] objectIds, IProgressListener progressMonitor) throws SnapshotException {
 		if (objectIds.length == 1) {
 			return getSingleObjectRetainedSet(objectIds[0]);
 		}
@@ -840,14 +838,14 @@ public final class SnapshotImpl implements ISnapshot {
 		// inline the stack functionality for performance reasons
 		// IntStack temp = new IntStack();
 		int tempSize = 0;
-		int tempCapacity = 10 * 1024;
+		int tempCapacity = 10 * 1_024;
 		int[] temp = new int[tempCapacity];
 
 		IIndexReader.IOne2OneIndex dominatorIdx = indexManager.dominator();
 		IIndexReader.IOne2ManyIndex dominated = indexManager.dominated();
 
 		int size = 0;
-		int capacity = 10 * 1024;
+		int capacity = 10 * 1_024;
 		int[] stack = new int[capacity];
 
 		int iterations = 0;
@@ -953,7 +951,7 @@ public final class SnapshotImpl implements ISnapshot {
 		 * For big objects sets use a boolean[] instead of SetInt to mark processed objects SetInt is too memory
 		 * expensive and on huge sets may lead to an OOMError Using the boolean[] is also faster on bigger sets.
 		 */
-		if (objectIds.length > 1000000)
+		if (objectIds.length > 1_000_000)
 			return getTopAncestorsWithBooleanCache(objectIds, listener);
 
 		/*
@@ -980,7 +978,7 @@ public final class SnapshotImpl implements ISnapshot {
 		// inline the stack functionality for performance reasons
 		// IntStack temp = new IntStack();
 		int tempSize = 0;
-		int tempCapacity = 10 * 1024;
+		int tempCapacity = 10 * 1_024;
 		int[] temp = new int[tempCapacity];
 
 		IIndexReader.IOne2OneIndex dominatorIdx = indexManager.dominator();
@@ -1071,7 +1069,7 @@ public final class SnapshotImpl implements ISnapshot {
 		// inline the stack functionality for performance reasons
 		// IntStack temp = new IntStack();
 		int tempSize = 0;
-		int tempCapacity = 10 * 1024;
+		int tempCapacity = 10 * 1_024;
 		int[] temp = new int[tempCapacity];
 
 		IIndexReader.IOne2OneIndex dominatorIdx = indexManager.dominator();
@@ -1318,7 +1316,7 @@ public final class SnapshotImpl implements ISnapshot {
 	}
 
 	@Override
-	public long getHeapSize(int[] objectIds) throws UnsupportedOperationException, SnapshotException {
+	public long getHeapSize(int[] objectIds) throws SnapshotException {
 		long total = 0;
 		IOne2OneIndex o2class = indexManager.o2class();
 		IOne2SizeIndex a2size = indexManager.a2size();

@@ -231,7 +231,12 @@ public class PositionInputStream extends FilterInputStream implements DataInput 
 
 	public int readIntArray(int[] a) throws IOException {
 		int len = a.length * 4;
-		byte[] b = len > readBuffer.length ? new byte[len] : readBuffer;
+		byte[] b;
+		if (len > readBuffer.length) {
+			b = new byte[len];
+		} else {
+			b = readBuffer;
+		}
 
 		if (read(b, 0, len) != len)
 			throw new IOException();
@@ -254,7 +259,12 @@ public class PositionInputStream extends FilterInputStream implements DataInput 
 
 	public int readLongArray(long[] a) throws IOException {
 		int len = a.length * 8;
-		byte[] b = len > readBuffer.length ? new byte[len] : readBuffer;
+		byte[] b;
+		if (len > readBuffer.length) {
+			b = new byte[len];
+		} else {
+			b = readBuffer;
+		}
 
 		if (read(b, 0, len) != len)
 			throw new IOException();

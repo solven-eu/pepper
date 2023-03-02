@@ -195,7 +195,7 @@ public class MultiplePathsFromGCRootsComputerImpl implements IMultiplePathsFromG
 
 		// used for the progress listener
 		int countVisitedObjects = 0;
-		final int steps = 1000;
+		final int steps = 1_000;
 		int reportFrequency = Math.max(10, numObjects / steps);
 
 		progressListener.beginTask(Messages.MultiplePathsFromGCRootsComputerImpl_FindingPaths, steps);

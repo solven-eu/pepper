@@ -306,7 +306,7 @@ public final class HashMapIntLong implements Serializable {
 			}
 
 			@Override
-			public Entry next() throws NoSuchElementException {
+			public Entry next() {
 				while (++i < used.length) {
 					if (used[i]) {
 						n++;
@@ -327,7 +327,7 @@ public final class HashMapIntLong implements Serializable {
 			}
 
 			@Override
-			public void remove() throws UnsupportedOperationException {
+			public void remove() {
 				throw new UnsupportedOperationException();
 			}
 		};

@@ -28,7 +28,7 @@ package org.eclipse.mat.collect;
 public class ArrayUtils {
 
 	private static final int USE_SELECTION = 12;
-	private static final int USE_RADIX = 1000000;
+	private static final int USE_RADIX = 1_000_000;
 
 	/**
 	 * Sorts the keys in an increasing order. Elements key[i] and values[i] are always swapped together in the
@@ -267,11 +267,15 @@ public class ArrayUtils {
 				radixsort(keys, values, left, right - left + 1);
 				break;
 			} else {
+				int[] i;
 				// split the array - the elements between i[0] and i[1] are
 				// equal.
-				// the elements on the left are smaller, on the right - bigger
-				int[] i = useMedian ? split(keys, values, left, right)
-						: split(keys, values, left, right, randomizedIndex(left, right));
+
+				if (useMedian) {
+					i = split(keys, values, left, right);
+				} else {
+					i = split(keys, values, left, right, randomizedIndex(left, right));
+				}
 
 				int sizeLeft = i[0] - left;
 				int sizeRight = right - i[1];
@@ -314,11 +318,15 @@ public class ArrayUtils {
 				radixsortDesc(keys, values, tmpKeys, tmpValues, left, right - left + 1);
 				break;
 			} else {
+				int[] i;
 				// split the array - the elements between i[0] and i[1] are
 				// equal.
-				// the elements on the left are bigger, on the right - smaller
-				int[] i = useMedian ? splitDesc(keys, values, left, right)
-						: splitDesc(keys, values, left, right, randomizedIndex(left, right));
+
+				if (useMedian) {
+					i = splitDesc(keys, values, left, right);
+				} else {
+					i = splitDesc(keys, values, left, right, randomizedIndex(left, right));
+				}
 
 				int sizeLeft = i[0] - left;
 				int sizeRight = right - i[1];

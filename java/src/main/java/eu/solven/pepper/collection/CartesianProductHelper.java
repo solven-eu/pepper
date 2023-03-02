@@ -686,7 +686,7 @@ public class CartesianProductHelper {
 		if (listOfSets.isEmpty()) {
 			return 0L;
 		} else {
-			return listOfSets.stream().mapToLong(s -> s.size()).reduce(1, (l, r) -> LongMath.checkedMultiply(l, r));
+			return listOfSets.stream().mapToLong(Set::size).reduce(1, (l, r) -> LongMath.checkedMultiply(l, r));
 		}
 	}
 

@@ -36,12 +36,12 @@ import org.junit.Test;
  */
 public class SortTest {
 
-	private static final int TIMEOUT1 = 10 * 18 * 1000;
-	private static final int TIMEOUT2 = 10 * 3 * 1000;
+	private static final int TIMEOUT1 = 10 * 18 * 1_000;
+	private static final int TIMEOUT2 = 10 * 3 * 1_000;
 	/* Using a full length test takes too long on the Hudson build machine */
 	private static final boolean longTest = false;
 	/* Bigger than ArrayUtils.USE_RADIX */
-	private static final int SHORTTEST = 2000001;
+	private static final int SHORTTEST = 2_000_001;
 
 	// A way of mapping the key to a value
 	public int val(int v) {
@@ -58,8 +58,13 @@ public class SortTest {
 	 */
 	@Test(timeout = TIMEOUT1)
 	public void testSort() {
-		// Generate random data
-		int n = longTest ? 29792349 : SHORTTEST;
+		int n;
+
+		if (longTest) {
+			n = 29_792_349;
+		} else {
+			n = SHORTTEST;
+		}
 		Random r = new Random(1);
 		int[] key0 = new int[n];
 		int[] key = new int[n];
@@ -95,8 +100,13 @@ public class SortTest {
 	 */
 	@Test(timeout = TIMEOUT2)
 	public void testSort2() {
-		// > 5000000 so that Quicksort is used
-		int n = longTest ? 6600001 : SHORTTEST;
+		int n;
+
+		if (longTest) {
+			n = 6_600_001;
+		} else {
+			n = SHORTTEST;
+		}
 		int[] key0 = new int[n];
 		int[] key = new int[n];
 		int[] value = new int[n];
@@ -125,8 +135,13 @@ public class SortTest {
 	 */
 	@Test(timeout = TIMEOUT2)
 	public void testSort3() {
-		// > 5000000 so that Quicksort is used
-		int n = longTest ? 5200001 : SHORTTEST;
+		int n;
+
+		if (longTest) {
+			n = 5_200_001;
+		} else {
+			n = SHORTTEST;
+		}
 		int[] key0 = new int[n];
 		int[] key = new int[n];
 		int[] value = new int[n];
@@ -154,8 +169,13 @@ public class SortTest {
 	 */
 	@Test(timeout = TIMEOUT2)
 	public void testSort4() {
-		// > 5000000 so that Quicksort is used
-		int n = longTest ? 5200001 : SHORTTEST;
+		int n;
+
+		if (longTest) {
+			n = 5_200_001;
+		} else {
+			n = SHORTTEST;
+		}
 		int[] key0 = new int[n];
 		int[] key = new int[n];
 		int[] value = new int[n];
@@ -181,8 +201,13 @@ public class SortTest {
 	 */
 	@Test(timeout = TIMEOUT2)
 	public void testSort5() {
-		// Generate random data
-		int n = longTest ? 29792349 : SHORTTEST;
+		int n;
+
+		if (longTest) {
+			n = 29_792_349;
+		} else {
+			n = SHORTTEST;
+		}
 		Random r = new Random(1);
 		int k = n;
 		int[] key0 = new int[n];
@@ -205,7 +230,12 @@ public class SortTest {
 	 */
 	@Test(timeout = TIMEOUT1)
 	public void testSortDesc() {
-		int n = longTest ? 29792349 : SHORTTEST;
+		int n;
+		if (longTest) {
+			n = 29_792_349;
+		} else {
+			n = SHORTTEST;
+		}
 		Random r = new Random(1);
 		long[] key0 = new long[n];
 		long[] key = new long[n];
@@ -241,8 +271,13 @@ public class SortTest {
 	 */
 	@Test(timeout = TIMEOUT2)
 	public void testSortDesc2() {
-		// > 5000000 so that Quicksort is used
-		int n = longTest ? 6600001 : SHORTTEST;
+		int n;
+
+		if (longTest) {
+			n = 6_600_001;
+		} else {
+			n = SHORTTEST;
+		}
 		long[] key0 = new long[n];
 		long[] key = new long[n];
 		int[] value = new int[n];
@@ -272,8 +307,13 @@ public class SortTest {
 	 */
 	@Test(timeout = TIMEOUT2)
 	public void testSortDesc3() {
-		// > 5000000 so that Quicksort is used
-		int n = longTest ? 5200001 : SHORTTEST;
+		int n;
+
+		if (longTest) {
+			n = 5_200_001;
+		} else {
+			n = SHORTTEST;
+		}
 		long[] key0 = new long[n];
 		long[] key = new long[n];
 		int[] value = new int[n];
@@ -300,8 +340,13 @@ public class SortTest {
 	 */
 	@Test(timeout = TIMEOUT2)
 	public void testSortDesc4() {
-		// > 5000000 so that Quicksort is used
-		int n = longTest ? 5200001 : SHORTTEST;
+		int n;
+
+		if (longTest) {
+			n = 5_200_001;
+		} else {
+			n = SHORTTEST;
+		}
 		long[] key0 = new long[n];
 		long[] key = new long[n];
 		int[] value = new int[n];
@@ -326,7 +371,12 @@ public class SortTest {
 	 */
 	@Test(timeout = TIMEOUT2)
 	public void testSortDesc5() {
-		int n = longTest ? 29792349 : SHORTTEST;
+		int n;
+		if (longTest) {
+			n = 29_792_349;
+		} else {
+			n = SHORTTEST;
+		}
 		Random r = new Random(1);
 		long[] key0 = new long[n];
 		long[] key = new long[n];

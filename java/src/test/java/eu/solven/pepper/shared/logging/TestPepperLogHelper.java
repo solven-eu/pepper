@@ -63,7 +63,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void getPercentage() {
-		Assert.assertEquals("10%", PepperLogHelper.getNicePercentage(100, 1000).toString());
+		Assert.assertEquals("10%", PepperLogHelper.getNicePercentage(100, 1_000).toString());
 	}
 
 	@Test
@@ -73,12 +73,12 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void getSmallPercentage() {
-		Assert.assertEquals("0.3%", PepperLogHelper.getNicePercentage(3, 1000).toString());
+		Assert.assertEquals("0.3%", PepperLogHelper.getNicePercentage(3, 1_000).toString());
 	}
 
 	@Test
 	public void getVerySmallPercentage() {
-		Assert.assertEquals("0.03%", PepperLogHelper.getNicePercentage(3, 10000).toString());
+		Assert.assertEquals("0.03%", PepperLogHelper.getNicePercentage(3, 10_000).toString());
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void getProgressAboveMax() {
-		Assert.assertEquals("1000%", PepperLogHelper.getNicePercentage(1000, 100).toString());
+		Assert.assertEquals("1000%", PepperLogHelper.getNicePercentage(1_000, 100).toString());
 	}
 
 	@Test
@@ -110,7 +110,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testBigTimeVeryLowRate1() {
-		Assert.assertEquals("30#/min", PepperLogHelper.humanRate(5, 10 * 1000, TimeUnit.MILLISECONDS).toString());
+		Assert.assertEquals("30#/min", PepperLogHelper.humanRate(5, 10 * 1_000, TimeUnit.MILLISECONDS).toString());
 	}
 
 	@Test
@@ -131,7 +131,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testRightUnderRatePerSecond() {
-		Assert.assertEquals("999#/sec", PepperLogHelper.humanRate(999, 1000, TimeUnit.MILLISECONDS).toString());
+		Assert.assertEquals("999#/sec", PepperLogHelper.humanRate(999, 1_000, TimeUnit.MILLISECONDS).toString());
 	}
 
 	@Test
@@ -151,24 +151,24 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testPercentageNoDecimals() {
-		Assert.assertEquals("100370%", PepperLogHelper.getNicePercentage(123456, 123).toString());
+		Assert.assertEquals("100370%", PepperLogHelper.getNicePercentage(123_456, 123).toString());
 	}
 
 	@Test
 	public void testPercentage() {
-		Assert.assertEquals("100370%", PepperLogHelper.getNicePercentage(123456, 123).toString());
+		Assert.assertEquals("100370%", PepperLogHelper.getNicePercentage(123_456, 123).toString());
 
-		Assert.assertEquals("0.09%", PepperLogHelper.getNicePercentage(123, 123456).toString());
+		Assert.assertEquals("0.09%", PepperLogHelper.getNicePercentage(123, 123_456).toString());
 	}
 
 	@Test
 	public void testPercentage2() {
-		Assert.assertEquals("9.80%", PepperLogHelper.getNicePercentage(98, 1000).toString());
+		Assert.assertEquals("9.80%", PepperLogHelper.getNicePercentage(98, 1_000).toString());
 	}
 
 	@Test
 	public void testPercentage3() {
-		Assert.assertEquals("9.81%", PepperLogHelper.getNicePercentage(981, 10000).toString());
+		Assert.assertEquals("9.81%", PepperLogHelper.getNicePercentage(981, 10_000).toString());
 	}
 
 	@Test
@@ -178,12 +178,12 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testGetNiceTimeSecondsAndMillis() {
-		Assert.assertEquals("9sec 600ms", PepperLogHelper.humanDuration(9600).toString());
+		Assert.assertEquals("9sec 600ms", PepperLogHelper.humanDuration(9_600).toString());
 	}
 
 	@Test
 	public void testGetNiceTimeSecondsAndMillis_NoHundredsInMillis() {
-		Assert.assertEquals("9sec 60ms", PepperLogHelper.humanDuration(9060).toString());
+		Assert.assertEquals("9sec 60ms", PepperLogHelper.humanDuration(9_060).toString());
 	}
 
 	@Test
@@ -319,17 +319,17 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testGetNiceDouble_MediumAndVeryPrecise() {
-		Assert.assertEquals("12.35", PepperLogHelper.getNiceDouble(12.3456789123).toString());
+		Assert.assertEquals("12.35", PepperLogHelper.getNiceDouble(12.345_678_912_3).toString());
 	}
 
 	@Test
 	public void testGetNiceDouble_MediumAndVeryPrecise_Negative() {
-		Assert.assertEquals("-12.35", PepperLogHelper.getNiceDouble(-12.3456789123).toString());
+		Assert.assertEquals("-12.35", PepperLogHelper.getNiceDouble(-12.345_678_912_3).toString());
 	}
 
 	@Test
 	public void testGetNiceDouble_BigAndPrecise() {
-		Assert.assertEquals("123456789.12", PepperLogHelper.getNiceDouble(123456789.123456789D).toString());
+		Assert.assertEquals("123456789.12", PepperLogHelper.getNiceDouble(123_456_789.123_456_789D).toString());
 	}
 
 	@Test
@@ -339,7 +339,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testGetNiceDouble_veryNearZero() {
-		Assert.assertEquals("0.00000000012", PepperLogHelper.getNiceDouble(0.000000000123456789D).toString());
+		Assert.assertEquals("0.00000000012", PepperLogHelper.getNiceDouble(0.000_000_000_123_456_789D).toString());
 	}
 
 	@Test

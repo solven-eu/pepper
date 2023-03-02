@@ -33,9 +33,9 @@ import org.eclipse.mat.collect.SetLong;
 import org.junit.Test;
 
 public class SetLongTest {
-	private static final int KEYS = 3000;
+	private static final int KEYS = 3_000;
 	private static final int INITIAL_SIZE = 30;
-	private static final int COUNT = 10000;
+	private static final int COUNT = 10_000;
 
 	/**
 	 * Basic test - no unexpected ArrayIndexOutOfBoundsException

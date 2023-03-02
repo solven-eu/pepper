@@ -47,7 +47,7 @@ public class ObjectMarker {
 	IProgressListener progressListener;
 	private static final boolean DEBUG = Boolean.getBoolean("mat.debug");
 	private static final boolean USELOCAL = Boolean.getBoolean("mat.useLocal");
-	private static final int MIN_LOCALITY = 1000000;
+	private static final int MIN_LOCALITY = 1_000_000;
 
 	public ObjectMarker(int[] roots,
 			boolean[] bits,
@@ -71,7 +71,7 @@ public class ObjectMarker {
 	public int markSingleThreaded() throws IProgressListener.OperationCanceledException {
 		int count = 0;
 		int size = 0;
-		int[] data = new int[10 * 1024]; // start with 10k
+		int[] data = new int[10 * 1_024]; // start with 10k
 		int rootsToProcess = 0;
 
 		for (int rootId : roots) {
@@ -148,7 +148,7 @@ public class ObjectMarker {
 
 		/* a stack of int structure */
 		int size = 0; // # of elements in the stack
-		int[] data = new int[10 * 1024]; // data for the stack - start with 10k
+		int[] data = new int[10 * 1_024]; // data for the stack - start with 10k
 
 		/* first put all "roots" in the stack, and mark them as processed */
 		for (int rootId : roots) {
@@ -264,7 +264,7 @@ public class ObjectMarker {
 			if (newDone > 0) {
 				int k = ticksLeft * newDone / (newDone + size());
 				// Make sure we don't report progress too often
-				if (k < totalWork / 1000)
+				if (k < totalWork / 1_000)
 					k = 0;
 				if (k > 0) {
 					worked += k;
@@ -385,7 +385,12 @@ public class ObjectMarker {
 		Thread[] threads = new Thread[numberOfThreads];
 
 		for (int i = 0; i < numberOfThreads; i++) {
-			DfsThread dfsthread = USELOCAL ? new LocalDfsThread(rootsStack, locality) : new DfsThread(rootsStack);
+			DfsThread dfsthread;
+			if (USELOCAL) {
+				dfsthread = new LocalDfsThread(rootsStack, locality);
+			} else {
+				dfsthread = new DfsThread(rootsStack);
+			}
 			dfsthreads[i] = dfsthread;
 			Thread thread = new Thread(dfsthread, "ObjectMarkerThread-" + (i + 1));
 			thread.start();
@@ -408,7 +413,7 @@ public class ObjectMarker {
 	public class DfsThread implements Runnable {
 
 		int size = 0;
-		int[] data = new int[10 * 1024]; // start with 10k
+		int[] data = new int[10 * 1_024]; // start with 10k
 		IntStack rootsStack;
 
 		public DfsThread(IntStack roots) {
@@ -472,16 +477,16 @@ public class ObjectMarker {
 	public class LocalDfsThread extends DfsThread {
 		private static final int RESERVED =
 				MultiThreadedRootStack.RESERVED_WAITING - MultiThreadedRootStack.RESERVED_RUNNING;
-		static final int MAXSTACK = 100 * 1024;
+		static final int MAXSTACK = 100 * 1_024;
 		int localRange;
 		final int localRangeLimit;
 		SoftReference<int[]> sr;
 		double scaleUp = 0.005;
 		MultiThreadedRootStack rootsStack;
-		QueueInt queue = new QueueInt(1024);
+		QueueInt queue = new QueueInt(1_024);
 
 		public LocalDfsThread(MultiThreadedRootStack roots) {
-			this(roots, 1000000);
+			this(roots, 1_000_000);
 		}
 
 		public LocalDfsThread(MultiThreadedRootStack roots, int range) {
@@ -558,7 +563,7 @@ public class ObjectMarker {
 							/* end stack.pop */
 
 							// See if other threads need work
-							if (check || checkCount++ >= 10000) {
+							if (check || checkCount++ >= 10_000) {
 								checkCount = 0;
 								check = true;
 								if (queue.size() > 0 && queue.size() + size > RESERVED) {
@@ -654,7 +659,7 @@ public class ObjectMarker {
 				if (DEBUG)
 					System.out.println("Set local range=" + localRange);
 				// set trigger
-				sr = new SoftReference<int[]>(new int[1024]);
+				sr = new SoftReference<int[]>(new int[1_024]);
 			} else if (sr.get() != null) {
 				if (localRange < bits.length && scaleUp > 0.0) {
 					// Increase slowly
@@ -675,7 +680,7 @@ public class ObjectMarker {
 				if (DEBUG)
 					System.out.println("Decreased local range=" + localRange + " " + scaleUp);
 				// reset trigger
-				sr = new SoftReference<int[]>(new int[1024]);
+				sr = new SoftReference<int[]>(new int[1_024]);
 			}
 		}
 	}

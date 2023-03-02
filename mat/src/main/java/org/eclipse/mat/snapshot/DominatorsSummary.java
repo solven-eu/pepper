@@ -417,7 +417,15 @@ public final class DominatorsSummary {
 				c2 = ((ClassloaderDominatorRecord) o2).getDominatorCount();
 			}
 
-			return c1 > c2 ? 1 : c1 == c2 ? 0 : -1;
+			if (c1 > c2) {
+				return 1;
+			} else {
+				if (c1 == c2) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
 		}
 
 	};
@@ -439,7 +447,15 @@ public final class DominatorsSummary {
 				c2 = ((ClassloaderDominatorRecord) o2).getDominatedCount();
 			}
 
-			return c1 > c2 ? 1 : c1 == c2 ? 0 : -1;
+			if (c1 > c2) {
+				return 1;
+			} else {
+				if (c1 == c2) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
 		}
 
 	};
@@ -461,7 +477,15 @@ public final class DominatorsSummary {
 				c2 = ((ClassloaderDominatorRecord) o2).getDominatedNetSize();
 			}
 
-			return c1 > c2 ? 1 : c1 == c2 ? 0 : -1;
+			if (c1 > c2) {
+				return 1;
+			} else {
+				if (c1 == c2) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
 		}
 
 	};
@@ -481,7 +505,15 @@ public final class DominatorsSummary {
 				c1 = ((ClassloaderDominatorRecord) o1).getDominatorNetSize();
 				c2 = ((ClassloaderDominatorRecord) o2).getDominatorNetSize();
 			}
-			return c1 > c2 ? 1 : c1 == c2 ? 0 : -1;
+			if (c1 > c2) {
+				return 1;
+			} else {
+				if (c1 == c2) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
 		}
 
 	};
@@ -502,7 +534,15 @@ public final class DominatorsSummary {
 				c1 = ((ClassloaderDominatorRecord) o1).getDominatedRetainedSize();
 				c2 = ((ClassloaderDominatorRecord) o2).getDominatedRetainedSize();
 			}
-			return c1 > c2 ? 1 : c1 == c2 ? 0 : -1;
+			if (c1 > c2) {
+				return 1;
+			} else {
+				if (c1 == c2) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
 
 		}
 
@@ -524,7 +564,15 @@ public final class DominatorsSummary {
 				c1 = ((ClassloaderDominatorRecord) o1).getDominatorRetainedSize();
 				c2 = ((ClassloaderDominatorRecord) o2).getDominatorRetainedSize();
 			}
-			return c1 > c2 ? 1 : c1 == c2 ? 0 : -1;
+			if (c1 > c2) {
+				return 1;
+			} else {
+				if (c1 == c2) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
 		}
 
 	};

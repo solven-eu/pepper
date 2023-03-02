@@ -60,10 +60,10 @@ public class PepperParserHelperTest {
 	public void parseDouble_random() {
 		Random r = new Random(0);
 
-		IntStream.range(0, 10000).forEach(i -> {
-			double d = r.nextInt(1000) * r.nextDouble();
+		IntStream.range(0, 10_000).forEach(i -> {
+			double d = r.nextInt(1_000) * r.nextDouble();
 
-			Assert.assertEquals(d, PepperParserHelper.parseDouble(Double.toString(d)), 0.00000001D);
+			Assert.assertEquals(d, PepperParserHelper.parseDouble(Double.toString(d)), 0.000_000_01D);
 		});
 	}
 

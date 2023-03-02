@@ -46,7 +46,6 @@ import java.lang.management.ThreadMXBean;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -274,12 +273,9 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		Optional<StackTraceElement> matching = Thread.getAllStackTraces()
 				.values()
 				.stream()
-				.flatMap(steArray -> Stream.of(steArray))
-				.filter(ste -> Arrays.asList(".surefire.", ".failsafe.", ".junit.")
-						.stream()
-						.filter(name -> ste.getClassName().contains(name))
-						.findAny()
-						.isPresent())
+				.flatMap(Stream::of)
+				.filter(ste -> Stream.of(".surefire.", ".failsafe.", ".junit.")
+						.anyMatch(name -> ste.getClassName().contains(name)))
 				.findAny();
 
 		matching.ifPresent(ste -> LOGGER.info("We have detected a unit-test with: {}", ste));
@@ -328,7 +324,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	public void onThrowable(Throwable t) {
 		Throwables.getCausalChain(t)
 				.stream()
-				.filter(someT -> someT instanceof OutOfMemoryError)
+				.filter(OutOfMemoryError.class::isInstance)
 				.findAny()
 				.ifPresent(this::onOutOfMemoryError);
 	}
@@ -945,7 +941,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	}
 
 	public long getDirectMemory() {
-		return directMemoryStatus().map(bp -> bp.getMemoryUsed()).orElse(-1L);
+		return directMemoryStatus().map(BufferPoolMXBean::getMemoryUsed).orElse(-1L);
 	}
 
 	@ManagedAttribute

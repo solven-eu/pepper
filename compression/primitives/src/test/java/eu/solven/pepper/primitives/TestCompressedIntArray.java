@@ -37,7 +37,7 @@ public class TestCompressedIntArray {
 
 	@Test
 	public void testGrowingBy1() {
-		int size = 1024 * 1024;
+		int size = 1_024 * 1_024;
 
 		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size));
 
@@ -49,7 +49,7 @@ public class TestCompressedIntArray {
 
 	@Test
 	public void testManyVerySmall() {
-		int size = 1024 * 1024;
+		int size = 1_024 * 1_024;
 
 		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size).map(i -> i % 16));
 
@@ -61,9 +61,9 @@ public class TestCompressedIntArray {
 
 	@Test
 	public void testManySmall() {
-		int size = 1024 * 1024;
+		int size = 1_024 * 1_024;
 
-		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size).map(i -> i % 1024));
+		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size).map(i -> i % 1_024));
 
 		LOGGER.info("testManySmall CompressedSize: {}",
 				PepperLogHelper.humanBytes(PepperFootprintHelper.deepSize(array)));
@@ -73,7 +73,7 @@ public class TestCompressedIntArray {
 
 	@Test
 	public void testManyRandom() {
-		int size = 1024 * 1024;
+		int size = 1_024 * 1_024;
 		Random r = new Random(0);
 
 		ConstantBitsIntArray array = ConstantBitsIntArray.fromIntStream(IntStream.range(0, size).map(i -> r.nextInt()));

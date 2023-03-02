@@ -76,7 +76,11 @@ public class PrimitiveArrayImpl extends AbstractArrayImpl implements IPrimitiveA
 	@Override
 	public Object getValueAt(int index) {
 		Object data = getValueArray(index, 1);
-		return data != null ? Array.get(data, 0) : null;
+		if (data != null) {
+			return Array.get(data, 0);
+		} else {
+			return null;
+		}
 	}
 
 	@Override

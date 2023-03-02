@@ -127,7 +127,7 @@ public class DominatorTree {
 			outboundIndex.unload();
 
 			IProgressListener progressListener = this.monitor.nextMonitor();
-			progressListener.beginTask(Messages.DominatorTree_ComputingDominators, n / 1000);
+			progressListener.beginTask(Messages.DominatorTree_ComputingDominators, n / 1_000);
 
 			/*
 			 * Reallocate just before use.
@@ -167,7 +167,7 @@ public class DominatorTree {
 				}
 				bucket[compressedParent.get(w)] = -1;
 				// }
-				if (i % 1000 == 0) {
+				if (i % 1_000 == 0) {
 					if (progressListener.isCanceled())
 						throw new IProgressListener.OperationCanceledException();
 					progressListener.worked(1);
@@ -234,7 +234,7 @@ public class DominatorTree {
 
 		}
 
-		private void dfs(int root) throws UnsupportedOperationException {
+		private void dfs(int root) {
 			IProgressListener progressListener = this.monitor.nextMonitor();
 			progressListener.beginTask(Messages.DominatorTree_DepthFirstSearch,
 					snapshot.getSnapshotInfo().getNumberOfObjects() >> 16);
@@ -244,7 +244,7 @@ public class DominatorTree {
 			// currentElementStack - for v, successorsStack - for the successors
 			// array,
 			// currentSuccessorStack - for the index in the array
-			int capacity = 2047; // capacity for the arrays - allows resize up to 2047<<20
+			int capacity = 2_047; // capacity for the arrays - allows resize up to 2047<<20
 			int size = 0; // one size for all arrays
 			int[] currentElementStack = new int[capacity];
 			int[] currentSuccessorStack = new int[capacity];
@@ -380,14 +380,14 @@ public class DominatorTree {
 			int numberOfObjects = snapshot.getSnapshotInfo().getNumberOfObjects();
 
 			IProgressListener progressListener = this.monitor.nextMonitor();
-			progressListener.beginTask(Messages.DominatorTree_CreateDominatorsIndexFile, numberOfObjects / 1000);
+			progressListener.beginTask(Messages.DominatorTree_CreateDominatorsIndexFile, numberOfObjects / 1_000);
 
 			for (int i = -1; i < numberOfObjects; i++) {
 				int[] successors = tree.getSuccessorsArr(i);
 				tree.sortByTotalSize(successors);
 				writer.log(i + 1, successors);
 
-				if (i % 1000 == 0) {
+				if (i % 1_000 == 0) {
 					if (progressListener.isCanceled())
 						throw new IProgressListener.OperationCanceledException();
 					progressListener.worked(1);
@@ -401,7 +401,7 @@ public class DominatorTree {
 		}
 
 		public class FlatDominatorTree {
-			private static final int TEMP_ARR_LENGTH = 1000000;
+			private static final int TEMP_ARR_LENGTH = 1_000_000;
 
 			int[] dom;
 			int[] elements;
@@ -504,7 +504,7 @@ public class DominatorTree {
 						new IndexWriter.LongIndexCollector(dump.getSnapshotInfo().getNumberOfObjects(),
 								IndexWriter.mostSignificantBit(dump.getSnapshotInfo().getUsedHeapSize()));
 
-				int capacity = 2047; // capacity for the arrays - allows resize up to 2047<<20
+				int capacity = 2_047; // capacity for the arrays - allows resize up to 2047<<20
 				int size = 0;
 				int[] stack = new int[capacity];
 				SuccessorsEnum[] succStack = new SuccessorsEnum[capacity];
@@ -517,7 +517,7 @@ public class DominatorTree {
 
 				IProgressListener progressListener = Calculator.this.monitor.nextMonitor();
 				progressListener.beginTask(Messages.DominatorTree_CalculateRetainedSizes,
-						dump.getSnapshotInfo().getNumberOfObjects() / 1000);
+						dump.getSnapshotInfo().getNumberOfObjects() / 1_000);
 				int counter = 0;
 
 				while (size > 0) {
@@ -553,7 +553,7 @@ public class DominatorTree {
 
 						if (currentEntry >= 0) {
 							retained.set(currentEntry, ts[currentEntry + 2]);
-							if (++counter % 1000 == 0) {
+							if (++counter % 1_000 == 0) {
 								if (progressListener.isCanceled())
 									throw new IProgressListener.OperationCanceledException();
 								progressListener.worked(1);

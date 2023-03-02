@@ -45,25 +45,25 @@ public class TestPepperStreamHelper {
 		List<List<Integer>> spot = new ArrayList<>();
 
 		long nbDone = PepperStreamHelper.consumeByPartition(() -> new LinkedBlockingQueue<>(),
-				IntStream.range(0, 12345).mapToObj(Integer::valueOf),
+				IntStream.range(0, 12_345).mapToObj(Integer::valueOf),
 				c -> spot.add(Lists.newArrayList(c)));
 
-		Assert.assertEquals(12345, nbDone);
+		Assert.assertEquals(12_345, nbDone);
 
 		Set<Integer> consumedSizes = spot.stream().map(Collection::size).collect(Collectors.toSet());
 
-		Assert.assertEquals(ImmutableSet.of(12345), consumedSizes);
+		Assert.assertEquals(ImmutableSet.of(12_345), consumedSizes);
 	}
 
 	@Test
 	public void testPartitionConsume_limit100() {
 		List<List<Integer>> spot = new ArrayList<>();
 
-		long nbDone = PepperStreamHelper.consumeByPartition(IntStream.range(0, 12345).mapToObj(Integer::valueOf),
+		long nbDone = PepperStreamHelper.consumeByPartition(IntStream.range(0, 12_345).mapToObj(Integer::valueOf),
 				c -> spot.add(Lists.newArrayList(c)),
 				100);
 
-		Assert.assertEquals(12345, nbDone);
+		Assert.assertEquals(12_345, nbDone);
 
 		Set<Integer> consumedSizes = spot.stream().map(Collection::size).collect(Collectors.toSet());
 
@@ -76,11 +76,11 @@ public class TestPepperStreamHelper {
 		Queue<List<Integer>> spot = new ConcurrentLinkedQueue<>();
 
 		long nbDone =
-				PepperStreamHelper.consumeByPartition(IntStream.range(0, 12345).parallel().mapToObj(Integer::valueOf),
+				PepperStreamHelper.consumeByPartition(IntStream.range(0, 12_345).parallel().mapToObj(Integer::valueOf),
 						c -> spot.add(Lists.newArrayList(c)),
 						100);
 
-		Assert.assertEquals(12345, nbDone);
+		Assert.assertEquals(12_345, nbDone);
 
 		Set<Integer> consumedSizes = spot.stream().map(Collection::size).collect(Collectors.toSet());
 
@@ -90,7 +90,7 @@ public class TestPepperStreamHelper {
 
 	@Test
 	public void testPartitionConsume_limit100_parallel_large() {
-		int problemSize = 100 * 1000 * 1000;
+		int problemSize = 100 * 1_000 * 1_000;
 
 		boolean[] checked;
 		{

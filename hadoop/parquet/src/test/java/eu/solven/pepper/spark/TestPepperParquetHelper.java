@@ -96,7 +96,7 @@ public class TestPepperParquetHelper {
 
 			Map<String, ?> asMapAgain =
 					factory.stream(path.toUri()).map(AvroTranscodingHelper.toJavaMap(asMap)).findAny().get();
-			Assert.assertArrayEquals(doubles, (double[]) asMapAgain.get("k"), 0.0001D);
+			Assert.assertArrayEquals(doubles, (double[]) asMapAgain.get("k"), 0.000_1D);
 		}
 	}
 
@@ -116,7 +116,7 @@ public class TestPepperParquetHelper {
 					Stream.of(ImmutableMap.of("k", doubles)).map(AvroTranscodingHelper.toGenericRecord(schema)));
 
 			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path.toUri(), asMap).findAny().get();
-			Assert.assertArrayEquals(doubles, (float[]) asMapAgain.get("k"), 0.0001F);
+			Assert.assertArrayEquals(doubles, (float[]) asMapAgain.get("k"), 0.000_1F);
 		}
 	}
 

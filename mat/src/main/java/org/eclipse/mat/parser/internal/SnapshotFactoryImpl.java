@@ -108,8 +108,12 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 				}
 			}
 		} catch (IOException ignore_and_reparse) {
-			String text = ignore_and_reparse.getMessage() != null ? ignore_and_reparse.getMessage()
-					: ignore_and_reparse.getClass().getName();
+			String text;
+			if (ignore_and_reparse.getMessage() != null) {
+				text = ignore_and_reparse.getMessage();
+			} else {
+				text = ignore_and_reparse.getClass().getName();
+			}
 			String message = MessageUtil.format(Messages.SnapshotFactoryImpl_Error_ReparsingHeapDump, text);
 			listener.sendUserMessage(Severity.WARNING, message, ignore_and_reparse);
 			listener.subTask(message);
@@ -247,14 +251,14 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 	 */
 	private void validateIndices(PreliminaryIndexImpl pidx, IProgressListener listener) {
 		final int maxIndex = pidx.identifiers.size();
-		listener.beginTask(Messages.SnapshotFactoryImpl_ValidatingIndices, maxIndex / 1000 + 1);
+		listener.beginTask(Messages.SnapshotFactoryImpl_ValidatingIndices, maxIndex / 1_000 + 1);
 		long prevAddress = -1;
 		int nObjs = 0;
 		int nObjsFromClass = 0;
 		int nCls = 0;
 		// Look at each object
 		for (int i = 0; i < maxIndex; ++i) {
-			if (i % 1000 == 0) {
+			if (i % 1_000 == 0) {
 				if (listener.isCanceled()) {
 					throw new IProgressListener.OperationCanceledException();
 				}
@@ -341,7 +345,12 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 						}
 					}
 					if (outs[0] != clsId) {
-						long address = outs[0] >= 0 && outs[0] < maxIndex ? pidx.identifiers.get(outs[0]) : -1;
+						long address;
+						if (outs[0] >= 0 && outs[0] < maxIndex) {
+							address = pidx.identifiers.get(outs[0]);
+						} else {
+							address = -1;
+						}
 						String desc = objDesc(pidx, i);
 						listener.sendUserMessage(Severity.ERROR,
 								MessageUtil.format(Messages.SnapshotFactoryImpl_InvalidFirstOutbound,

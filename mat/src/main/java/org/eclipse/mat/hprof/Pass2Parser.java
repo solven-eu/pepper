@@ -77,7 +77,7 @@ public class Pass2Parser extends AbstractParser {
 			while (curPos < fileSize) {
 				if (monitor.isProbablyCanceled())
 					throw new IProgressListener.OperationCanceledException();
-				monitor.totalWorkDone(curPos / 1000);
+				monitor.totalWorkDone(curPos / 1_000);
 
 				int record = in.readUnsignedByte();
 
@@ -126,7 +126,7 @@ public class Pass2Parser extends AbstractParser {
 		long segmentsEndPos = segmentStartPos + length;
 
 		while (segmentStartPos < segmentsEndPos) {
-			long workDone = segmentStartPos / 1000;
+			long workDone = segmentStartPos / 1_000;
 			if (this.monitor.getWorkDone() < workDone) {
 				if (this.monitor.isProbablyCanceled())
 					throw new IProgressListener.OperationCanceledException();

@@ -39,9 +39,9 @@ public class JolBenchmarksTest {
 
 	private static void distinctHigherRadices() {
 		int valuesPerRadix = 1 << 16;
-		int distance = 2000;
+		int distance = 2_000;
 		Roaring64NavigableMap bitmap = new Roaring64NavigableMap();
-		long[] radices = new long[1024];
+		long[] radices = new long[1_024];
 		for (int i = 0; i < radices.length; ++i) {
 			radices[i] = ((long) i) << 48;
 		}
@@ -71,8 +71,8 @@ public class JolBenchmarksTest {
 	}
 
 	private static void sameHigherRadix() {
-		int numValues = (1 << 16) * 1024;
-		int distance = 2000;
+		int numValues = (1 << 16) * 1_024;
+		int distance = 2_000;
 		Roaring64NavigableMap bitmap = new Roaring64NavigableMap();
 
 		long x = 0L;

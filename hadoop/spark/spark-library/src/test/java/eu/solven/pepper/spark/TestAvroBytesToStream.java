@@ -62,7 +62,7 @@ import eu.solven.pepper.avro.AvroTranscodingHelper;
 public class TestAvroBytesToStream {
 	// https://github.com/FasterXML/jackson-dataformats-binary/blob/master/avro/src/test/java/com/fasterxml/jackson/dataformat/avro/MapTest.java
 
-	private final static String MAP_OR_NULL_SCHEMA_JSON =
+	private static final String MAP_OR_NULL_SCHEMA_JSON =
 			SchemaBuilder.map().values(Schema.create(Schema.Type.STRING)).toString();
 
 	private final AvroMapper MAPPER = getMapper();
@@ -156,7 +156,7 @@ public class TestAvroBytesToStream {
 		Assert.assertEquals(ImmutableSet.of("DoubleArray"), singleOutput.keySet());
 		Assert.assertArrayEquals(new double[] { 1D, 2D, 3D },
 				(double[]) singleOutput.values().iterator().next(),
-				0.0001D);
+				0.000_1D);
 	}
 
 	@Test
@@ -186,6 +186,6 @@ public class TestAvroBytesToStream {
 		Assert.assertEquals(ImmutableSet.of("DoubleArray"), singleOutput.keySet());
 		Assert.assertArrayEquals(new double[] { 1D, 2D, 3D },
 				(double[]) singleOutput.values().iterator().next(),
-				0.0001D);
+				0.000_1D);
 	}
 }

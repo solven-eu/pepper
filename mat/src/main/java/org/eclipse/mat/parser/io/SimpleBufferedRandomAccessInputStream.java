@@ -37,7 +37,7 @@ public class SimpleBufferedRandomAccessInputStream extends InputStream {
 	private long real_pos;
 
 	public SimpleBufferedRandomAccessInputStream(RandomAccessFile in) throws IOException {
-		this(in, 2 * 4096);
+		this(in, 2 * 4_096);
 	}
 
 	public SimpleBufferedRandomAccessInputStream(RandomAccessFile in, int bufsize) throws IOException {

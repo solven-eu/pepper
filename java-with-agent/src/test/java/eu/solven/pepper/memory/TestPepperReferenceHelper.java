@@ -85,7 +85,7 @@ public class TestPepperReferenceHelper {
 
 	@Test
 	public void testDictionarisationOnNotFinal_high_cardinality() {
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 10_000; i++) {
 			NotFinalField left = new NotFinalField("Youpi" + i);
 
 			PepperReferenceHelper.internalize(left);
@@ -98,7 +98,7 @@ public class TestPepperReferenceHelper {
 
 	@Test
 	public void testDictionarisationOnNotFinal_veryhigh_cardinality() {
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < 100_000; i++) {
 			NotFinalField left = new NotFinalField("Youpi" + i);
 
 			PepperReferenceHelper.internalize(left);
@@ -135,7 +135,7 @@ public class TestPepperReferenceHelper {
 
 	@Test
 	public void testDictionarizeArray_high_cardinality() {
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < 100_000; i++) {
 			Object[] array = new Object[] { "Youpi" + i };
 
 			PepperReferenceHelper.internalizeArray(array);
@@ -174,7 +174,7 @@ public class TestPepperReferenceHelper {
 	@Test
 	public void testShareReference_List() {
 		List<String> beforeIntern =
-				IntStream.range(0, 1000).map(i -> i % 3).mapToObj(i -> "String_" + i).collect(Collectors.toList());
+				IntStream.range(0, 1_000).map(i -> i % 3).mapToObj(i -> "String_" + i).collect(Collectors.toList());
 
 		long sizeBefore = PepperFootprintHelper.deepSize(beforeIntern);
 

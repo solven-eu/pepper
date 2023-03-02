@@ -319,7 +319,7 @@ public final class HashMapLongObject<E> implements Serializable {
 			}
 
 			@Override
-			public E next() throws NoSuchElementException {
+			public E next() {
 				while (++i < used.length) {
 					if (used[i]) {
 						n++;
@@ -330,7 +330,7 @@ public final class HashMapLongObject<E> implements Serializable {
 			}
 
 			@Override
-			public void remove() throws UnsupportedOperationException {
+			public void remove() {
 				throw new UnsupportedOperationException();
 			}
 		};
@@ -352,7 +352,7 @@ public final class HashMapLongObject<E> implements Serializable {
 			}
 
 			@Override
-			public Entry<E> next() throws NoSuchElementException {
+			public Entry<E> next() {
 				while (++i < used.length) {
 					if (used[i]) {
 						n++;
@@ -373,7 +373,7 @@ public final class HashMapLongObject<E> implements Serializable {
 			}
 
 			@Override
-			public void remove() throws UnsupportedOperationException {
+			public void remove() {
 				throw new UnsupportedOperationException();
 			}
 		};

@@ -33,7 +33,7 @@ import org.eclipse.mat.tests.regression.Difference;
 import org.eclipse.mat.util.MessageUtil;
 
 public class BinaryComparator implements IComparator {
-	private final static int BUFFSIZE = 1024;
+	private static final int BUFFSIZE = 1_024;
 	private byte baselineBuffer[] = new byte[BUFFSIZE];
 	private byte testBuffer[] = new byte[BUFFSIZE];
 
@@ -41,7 +41,7 @@ public class BinaryComparator implements IComparator {
 
 	@Override
 	public List<Difference> compare(File baseline, File testFile) throws Exception {
-		String testName = baseline.getName().substring(0, baseline.getName().lastIndexOf("."));
+		String testName = baseline.getName().substring(0, baseline.getName().lastIndexOf('.'));
 		System.out.println(MessageUtil.format("Comparing: {0}", testName));
 
 		List<Difference> differences = new ArrayList<Difference>();

@@ -35,7 +35,7 @@ public class CompressedArraysTest {
 	@Test
 	public void testIntArrayCompressed() {
 		Random rand = new Random(SEED);
-		int INTS = 1024;
+		int INTS = 1_024;
 		int TESTS = 10;
 		for (int i = 1; i <= INTS; i++) {
 			for (int j = 0; j < TESTS; j++) {
@@ -58,7 +58,7 @@ public class CompressedArraysTest {
 	@Test
 	public void testLongArrayCompressed() {
 		Random rand = new Random(SEED);
-		int LONGS = 1024;
+		int LONGS = 1_024;
 		int TESTS = 10;
 		for (int i = 1; i <= LONGS; i++) {
 			for (int j = 0; j < TESTS; j++) {
@@ -84,7 +84,7 @@ public class CompressedArraysTest {
 	@Test
 	public void testIntAndLongArrayCompressed() {
 		Random rand = new Random(SEED);
-		int INTS = 1024;
+		int INTS = 1_024;
 		int TESTS = 10;
 		for (int i = 1; i <= INTS; i++) {
 			for (int j = 0; j < TESTS; j++) {
@@ -110,7 +110,7 @@ public class CompressedArraysTest {
 	@Test
 	public void testLongAndIntArrayCompressed() {
 		Random rand = new Random(SEED);
-		int INTS = 1024;
+		int INTS = 1_024;
 		int TESTS = 10;
 		for (int i = 1; i <= INTS; i++) {
 			for (int j = 0; j < TESTS; j++) {

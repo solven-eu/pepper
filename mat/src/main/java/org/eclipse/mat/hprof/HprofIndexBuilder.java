@@ -71,16 +71,16 @@ public class HprofIndexBuilder implements IIndexBuilder {
 		HprofPreferences.HprofStrictness strictnessPreference = HprofPreferences.getCurrentStrictness();
 
 		SimpleMonitor monitor = new SimpleMonitor(MessageUtil.format(Messages.HprofIndexBuilder_Parsing,
-				new Object[] { file.getAbsolutePath() }), listener, new int[] { 500, 1500 });
+				new Object[] { file.getAbsolutePath() }), listener, new int[] { 500, 1_500 });
 
-		listener.beginTask(MessageUtil.format(Messages.HprofIndexBuilder_Parsing, file.getName()), 3000);
+		listener.beginTask(MessageUtil.format(Messages.HprofIndexBuilder_Parsing, file.getName()), 3_000);
 
 		IHprofParserHandler handler = new HprofParserHandlerImpl();
 		handler.beforePass1(preliminary.getSnapshotInfo());
 
 		SimpleMonitor.Listener mon = (SimpleMonitor.Listener) monitor.nextMonitor();
 		mon.beginTask(MessageUtil.format(Messages.HprofIndexBuilder_Scanning, new Object[] { file.getAbsolutePath() }),
-				(int) (file.length() / 1000));
+				(int) (file.length() / 1_000));
 		Pass1Parser pass1 = new Pass1Parser(handler, mon, strictnessPreference);
 		Serializable id = preliminary.getSnapshotInfo().getProperty("$runtimeId");
 		String dumpNrToRead;
@@ -102,7 +102,7 @@ public class HprofIndexBuilder implements IIndexBuilder {
 		mon.beginTask(
 				MessageUtil.format(Messages.HprofIndexBuilder_ExtractingObjects,
 						new Object[] { file.getAbsolutePath() }),
-				(int) (file.length() / 1000));
+				(int) (file.length() / 1_000));
 
 		Pass2Parser pass2 = new Pass2Parser(handler, mon, strictnessPreference);
 		pass2.read(file, dumpNrToRead);

@@ -75,7 +75,12 @@ public class MultiplePathsFromGCRootsClassRecord {
 				new HashMapIntObject<MultiplePathsFromGCRootsClassRecord>();
 		for (int[] path : paths) {
 			if (path != null) {
-				int newIndex = fromRoots ? path.length - nextLevel - 1 : nextLevel;
+				int newIndex;
+				if (fromRoots) {
+					newIndex = path.length - nextLevel - 1;
+				} else {
+					newIndex = nextLevel;
+				}
 				// check if one of the ends is reached
 				if (newIndex < 0 || newIndex >= path.length) {
 					continue;
@@ -127,7 +132,12 @@ public class MultiplePathsFromGCRootsClassRecord {
 		{
 			distinctObjects = new SetInt();
 			for (int[] path : paths) {
-				int index = fromRoots ? path.length - level - 1 : level;
+				int index;
+				if (fromRoots) {
+					index = path.length - level - 1;
+				} else {
+					index = level;
+				}
 				distinctObjects.add(path[index]);
 			}
 		}

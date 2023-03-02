@@ -74,8 +74,7 @@ public class TestVirtualMachineWithoutToolsJar {
 	}
 
 	@Test
-	public void testSameVMClass()
-			throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
+	public void testSameVMClass() throws NoSuchFieldException, IllegalAccessException {
 		Assert.assertSame(VirtualMachineWithoutToolsJar.findVirtualMachineClass().get(),
 				VirtualMachineWithoutToolsJar.findVirtualMachineClass().get());
 	}

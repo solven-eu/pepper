@@ -70,7 +70,7 @@ public class CreateCollectionDump {
 	// Collections
 	// //////////////////////////////////////////////////////////////
 
-	public static abstract class CollectionTestData {
+	public abstract static class CollectionTestData {
 		private static final int SAMEHASH = 256;
 		public static final int COUNT = SAMEHASH * 4 / 3;
 		String values[];

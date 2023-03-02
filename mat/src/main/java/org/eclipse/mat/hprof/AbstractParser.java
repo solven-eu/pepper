@@ -145,7 +145,11 @@ import org.slf4j.LoggerFactory;
 	}
 
 	protected long readID() throws IOException {
-		return idSize == 4 ? 0x0FFFFFFFFL & in.readInt() : in.readLong();
+		if (idSize == 4) {
+			return 0x0FFFFFFFFL & in.readInt();
+		} else {
+			return in.readLong();
+		}
 	}
 
 	protected Object readValue(ISnapshot snapshot) throws IOException {
@@ -157,7 +161,11 @@ import org.slf4j.LoggerFactory;
 		switch (type) {
 		case IObject.Type.OBJECT:
 			long id = readID();
-			return id == 0 ? null : new ObjectReference(snapshot, id);
+			if (id == 0) {
+				return null;
+			} else {
+				return new ObjectReference(snapshot, id);
+			}
 		case IObject.Type.BOOLEAN:
 			return in.readByte() != 0;
 		case IObject.Type.CHAR:
@@ -225,7 +233,7 @@ import org.slf4j.LoggerFactory;
 	/**
 	 * It seems the HPROF file writes the length field as an unsigned int.
 	 */
-	private final static long MAX_UNSIGNED_4BYTE_INT = 4294967296L;
+	private static final long MAX_UNSIGNED_4BYTE_INT = 4294967296L;
 
 	/**
 	 * It seems the HPROF spec only allows 4 bytes for record length, so a record length greater than 4GB will be

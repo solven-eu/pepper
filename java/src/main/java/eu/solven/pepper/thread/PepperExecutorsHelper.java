@@ -67,12 +67,12 @@ import com.google.common.util.concurrent.MoreExecutors;
 public class PepperExecutorsHelper {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperExecutorsHelper.class);
 
-	public static final int DEFAULT_LOG_ON_SLOW_QUEUE_MS = 1000;
+	public static final int DEFAULT_LOG_ON_SLOW_QUEUE_MS = 1_000;
 
 	// See TransactionManager.addAll: We split on task of size 1024, so the
 	// maximum nice partition size is 1023
 	@Deprecated
-	public static final int DEFAULT_PARTITION_TASK_SIZE = 1023;
+	public static final int DEFAULT_PARTITION_TASK_SIZE = 1_023;
 
 	public static final int DEFAULT_MINIMUM_QUEUE_SIZE = 16;
 

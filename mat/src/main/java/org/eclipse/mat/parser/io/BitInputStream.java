@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class BitInputStream implements Flushable, Closeable {
-	public final static int DEFAULT_BUFFER_SIZE = 16 * 1024;
+	public static final int DEFAULT_BUFFER_SIZE = 16 * 1_024;
 
 	private InputStream is;
 	private int current;

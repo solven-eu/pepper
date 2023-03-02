@@ -29,7 +29,7 @@ import org.eclipse.mat.internal.Messages;
 /**
  * Describes a garbage collection root.
  */
-abstract public class GCRootInfo implements Serializable {
+public abstract class GCRootInfo implements Serializable {
 	private static final long serialVersionUID = 2L;
 
 	/**
@@ -87,23 +87,23 @@ abstract public class GCRootInfo implements Serializable {
 		/**
 		 * An object which has a finalize method, but has not been finalized and is not yet on the finalizer queue
 		 */
-		int UNFINALIZED = 1024;
+		int UNFINALIZED = 1_024;
 		/**
 		 * An object which is unreachable from any other root, but has been marked as a root by MAT to retain objects
 		 * which otherwise would not be included in the analysis
 		 *
 		 * @since 1.0
 		 */
-		int UNREACHABLE = 2048;
+		int UNREACHABLE = 2_048;
 		/**
 		 * A Java stack frame containing references to Java locals
 		 *
 		 * @since 1.0
 		 */
-		int JAVA_STACK_FRAME = 4096;
+		int JAVA_STACK_FRAME = 4_096;
 	}
 
-	private final static String[] TYPE_STRING = new String[] { Messages.GCRootInfo_Unkown, //
+	private static final String[] TYPE_STRING = new String[] { Messages.GCRootInfo_Unkown, //
 			Messages.GCRootInfo_SystemClass, //
 			Messages.GCRootInfo_JNILocal, //
 			Messages.GCRootInfo_JNIGlobal, //

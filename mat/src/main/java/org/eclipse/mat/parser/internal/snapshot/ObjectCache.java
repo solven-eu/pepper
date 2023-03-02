@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.eclipse.mat.collect.HashMapIntObject;
 
-abstract public class ObjectCache<E> {
+public abstract class ObjectCache<E> {
 	static class Entry<E> {
 		E object;
 		int key;

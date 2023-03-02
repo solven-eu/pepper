@@ -40,7 +40,12 @@ public abstract class Units {
 		}
 
 		public static Storage of(final long number) {
-			final long n = number > 0 ? -number : number;
+			long n;
+			if (number > 0) {
+				n = -number;
+			} else {
+				n = number;
+			}
 			if (n > -(1L << 10)) {
 				return BYTE;
 			} else if (n > -(1L << 20)) {
@@ -70,10 +75,15 @@ public abstract class Units {
 		}
 
 		public static Plain of(final long number) {
-			final long n = number > 0 ? -number : number;
-			if (n > -1000) {
+			long n;
+			if (number > 0) {
+				n = -number;
+			} else {
+				n = number;
+			}
+			if (n > -1_000) {
 				return BASE;
-			} else if (n > -1000000) {
+			} else if (n > -1_000_000) {
 				return THOUSANDS;
 			} else {
 				return MILLIONS;
@@ -82,7 +92,11 @@ public abstract class Units {
 
 		public String format(long number) {
 			String f = nf.format((double) number / divider);
-			return symbol != null ? f + symbol : f;
+			if (symbol != null) {
+				return f + symbol;
+			} else {
+				return f;
+			}
 		}
 	}
 

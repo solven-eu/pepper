@@ -63,7 +63,7 @@ public class DoubleParsingBenchmark {
 	public static class SharedCounters {
 		StringToDouble jdk = s -> Double.parseDouble(s.toString());
 		StringToDouble javolution = s -> TypeFormat.parseDouble(s);
-		StringToDouble apex = s -> PepperParserHelper.parseDouble(s);
+		StringToDouble apex = PepperParserHelper::parseDouble;
 	}
 
 	@Benchmark
@@ -156,7 +156,7 @@ public class DoubleParsingBenchmark {
 		new Runner(opts).run();
 	}
 
-	public static final int NB_ITERATIONS = 1000000;
+	public static final int NB_ITERATIONS = 1_000_000;
 
 	/**
 	 * Enable running the JMH test in a plain JVM, in order to collect Jit data for JitWatch

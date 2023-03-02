@@ -263,9 +263,7 @@ public class AvroTranscodingHelper {
 				|| singleField.schema().getType() == Type.UNION && singleField.schema()
 						.getTypes()
 						.stream()
-						.filter(s -> s.getType() == Type.DOUBLE || s.getType() == Type.FLOAT)
-						.findAny()
-						.isPresent();
+						.anyMatch(s -> s.getType() == Type.DOUBLE || s.getType() == Type.FLOAT);
 	}
 
 	/**

@@ -87,7 +87,7 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 	/**
 	 * Do not maintain more than this amount of active tasks
 	 */
-	public static final int CACHE_MAX_SIZE = 1000;
+	public static final int CACHE_MAX_SIZE = 1_000;
 
 	/**
 	 * Frequency at which we check for long tasks
@@ -150,9 +150,9 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 	}
 
 	protected void onActiveTaskRemoval(RemovalNotification<TaskStartEvent, LocalDateTime> removal) {
-		if (removal.getCause().equals(RemovalCause.EXPIRED)) {
+		if (removal.getCause() == RemovalCause.EXPIRED) {
 			logOnFarTooMuchLongTask(removal.getKey());
-		} else if (removal.getCause().equals(RemovalCause.EXPLICIT)) {
+		} else if (removal.getCause() == RemovalCause.EXPLICIT) {
 			logOnEndEvent(removal.getKey());
 		}
 	}

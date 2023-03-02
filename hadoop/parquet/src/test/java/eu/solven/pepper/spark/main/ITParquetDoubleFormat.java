@@ -71,10 +71,10 @@ public class ITParquetDoubleFormat {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ITParquetDoubleFormat.class);
 
 	public static final int NB_DOUBLES = 512;
-	public static final int NB_ROWS = 1000;
+	public static final int NB_ROWS = 1_000;
 
 	@Test
-	public void testOriginalToListDouble() throws IllegalArgumentException, IOException {
+	public void testOriginalToListDouble() throws IOException {
 		TestReadWrite.ensureAndAssumeHadoopEnvForTests();
 
 		// We test 3 schema: List of Doubles, double[] primitive array, and N columns of double
@@ -160,7 +160,7 @@ public class ITParquetDoubleFormat {
 	public void testOriginalToListDouble(Supplier<String> testName,
 			Supplier<double[]> doubleSupplier,
 			Consumer<Builder<GenericRecord>> configSchema,
-			Map<String, ?> schemaAsMap) throws IllegalArgumentException, IOException {
+			Map<String, ?> schemaAsMap) throws IOException {
 
 		// Schema schema = ApexParquetHelper.makeSimpleSchema(ImmutableMap.of("doubles", new double[NB_DOUBLES]));
 		Schema schema;

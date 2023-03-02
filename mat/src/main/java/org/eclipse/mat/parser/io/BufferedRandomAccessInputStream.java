@@ -52,7 +52,7 @@ public class BufferedRandomAccessInputStream extends InputStream {
 	Page current;
 
 	public BufferedRandomAccessInputStream(RandomAccessFile in) throws IOException {
-		this(in, 1024);
+		this(in, 1_024);
 	}
 
 	public BufferedRandomAccessInputStream(RandomAccessFile in, int bufsize) throws IOException {
@@ -109,7 +109,12 @@ public class BufferedRandomAccessInputStream extends InputStream {
 		long key = pos / bufsize;
 
 		SoftReference<Page> r = pages.get(key);
-		Page p = r == null ? null : r.get();
+		Page p;
+		if (r == null) {
+			p = null;
+		} else {
+			p = r.get();
+		}
 
 		if (p != null)
 			return p;

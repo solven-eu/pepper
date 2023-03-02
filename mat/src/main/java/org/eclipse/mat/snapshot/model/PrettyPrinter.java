@@ -96,7 +96,12 @@ public final class PrettyPrinter {
 						.iterator()
 						.next()
 						.resolveValue("HI_BYTE_SHIFT"); //$NON-NLS-1$
-				int bigEndian = o instanceof Integer && (Integer) o == 8 ? 1 : 0;
+				int bigEndian;
+				if (o instanceof Integer && (Integer) o == 8) {
+					bigEndian = 1;
+				} else {
+					bigEndian = 0;
+				}
 				return byteArrayAsString(charArray, offset, count, limit, bigEndian);
 			} else {
 				return arrayAsString(charArray, offset, count, limit);
@@ -121,8 +126,13 @@ public final class PrettyPrinter {
 			return null;
 
 		int length = charArray.getLength();
+		int contentToRead;
 
-		int contentToRead = count <= limit ? count : limit;
+		if (count <= limit) {
+			contentToRead = count;
+		} else {
+			contentToRead = limit;
+		}
 		if (contentToRead > length - offset)
 			contentToRead = length - offset;
 
@@ -166,8 +176,13 @@ public final class PrettyPrinter {
 			return null;
 
 		int length = byteArray.getLength();
+		int contentToRead;
 
-		int contentToRead = count <= limit ? count : limit;
+		if (count <= limit) {
+			contentToRead = count;
+		} else {
+			contentToRead = limit;
+		}
 		if (contentToRead > length - offset)
 			contentToRead = length - offset;
 
@@ -211,8 +226,13 @@ public final class PrettyPrinter {
 			return null;
 
 		int length = byteArray.getLength();
+		int contentToRead;
 
-		int contentToRead = count <= limit ? count * 2 : limit * 2;
+		if (count <= limit) {
+			contentToRead = count * 2;
+		} else {
+			contentToRead = limit * 2;
+		}
 		if (contentToRead > length - offset * 2)
 			contentToRead = length - offset * 2;
 

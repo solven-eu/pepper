@@ -373,6 +373,5 @@ public class TestMapPath {
 		NavigableMap<String, Object> flatten = MapPath.flatten(input);
 
 		Assertions.assertThat(flatten).isEmpty();
-		;
 	}
 }

@@ -164,10 +164,10 @@ public class TestPepperMetricsTowerControl {
 
 		ExecutorService es = PepperExecutorsHelper.newShrinkableFixedThreadPool(64,
 				"benchApexMetricsTowerControl",
-				1000,
+				1_000,
 				PepperExecutorsHelper.TIMEOUT_POLICY_1_HOUR);
 
-		for (int i = 0; i < 1000000; i++) {
+		for (int i = 0; i < 1_000_000; i++) {
 			es.execute(() -> {
 				try (AutoCloseableTaskStartEvent startEvent = TaskStartEvent.post(eventBus::post, mtc, "Test")) {
 					// Nothing to do, but to close the startEvent

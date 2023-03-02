@@ -41,7 +41,11 @@ class StackFrameImpl implements IStackFrame {
 
 	@Override
 	public int[] getLocalObjectsIds() {
-		return localObjectIds == null ? new int[0] : localObjectIds;
+		if (localObjectIds == null) {
+			return new int[0];
+		} else {
+			return localObjectIds;
+		}
 	}
 
 	@Override

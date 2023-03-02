@@ -68,7 +68,7 @@ public class TestPepperMemoryHelper {
 	// We observe this in Windows10/FR
 	@Test
 	public void testParseMemory_EndsKo_WeirdEncoding() {
-		Assert.assertEquals(68204 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("68�204 Ko"));
+		Assert.assertEquals(68_204 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("68�204 Ko"));
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class TestPepperMemoryHelper {
 	// happens on tasklist.exe in Windows
 	@Test
 	public void testParseMemory_windows() {
-		Assert.assertEquals(107940 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("107,940 K"));
+		Assert.assertEquals(107_940 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("107,940 K"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -101,8 +101,8 @@ public class TestPepperMemoryHelper {
 	@Test
 	public void testMemoryToString() {
 		Assert.assertEquals("123B", PepperMemoryHelper.memoryAsString(123));
-		Assert.assertEquals("1K206B", PepperMemoryHelper.memoryAsString(1230));
-		Assert.assertEquals("1M177K", PepperMemoryHelper.memoryAsString(1230000));
-		Assert.assertEquals("1G149M", PepperMemoryHelper.memoryAsString(1230000000));
+		Assert.assertEquals("1K206B", PepperMemoryHelper.memoryAsString(1_230));
+		Assert.assertEquals("1M177K", PepperMemoryHelper.memoryAsString(1_230_000));
+		Assert.assertEquals("1G149M", PepperMemoryHelper.memoryAsString(1_230_000_000));
 	}
 }

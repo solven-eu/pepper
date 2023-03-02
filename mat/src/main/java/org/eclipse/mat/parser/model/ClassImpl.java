@@ -146,7 +146,7 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 	}
 
 	@Override
-	public int[] getObjectIds() throws UnsupportedOperationException, SnapshotException {
+	public int[] getObjectIds() throws SnapshotException {
 		try {
 			return source.getIndexManager().c2objects().getObjectsOf(this.cacheEntry);
 		} catch (IOException e) {
@@ -301,7 +301,11 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 	@Override
 	public ClassImpl getSuperClass() {
 		try {
-			return superClassAddress != 0 ? (ClassImpl) this.source.getObject(superClassId) : null;
+			if (superClassAddress != 0) {
+				return (ClassImpl) this.source.getObject(superClassId);
+			} else {
+				return null;
+			}
 		} catch (SnapshotException e) {
 			throw new RuntimeException(e);
 		}
@@ -320,7 +324,15 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 	public int compareTo(ClassImpl other) {
 		final long myAddress = getObjectAddress();
 		final long otherAddress = other.getObjectAddress();
-		return myAddress > otherAddress ? 1 : myAddress == otherAddress ? 0 : -1;
+		if (myAddress > otherAddress) {
+			return 1;
+		} else {
+			if (myAddress == otherAddress) {
+				return 0;
+			} else {
+				return -1;
+			}
+		}
 	}
 
 	/**
@@ -342,7 +354,11 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<IClass> getSubclasses() {
-		return subClasses != null ? subClasses : Collections.EMPTY_LIST;
+		if (subClasses != null) {
+			return subClasses;
+		} else {
+			return Collections.EMPTY_LIST;
+		}
 	}
 
 	@Override
@@ -412,7 +428,11 @@ public class ClassImpl extends AbstractObjectImpl implements IClass, Comparable<
 		if (className.equals(this.name))
 			return true;
 
-		return hasSuperClass() ? ((ClassImpl) source.getObject(this.superClassId)).doesExtend(className) : false;
+		if (hasSuperClass()) {
+			return ((ClassImpl) source.getObject(this.superClassId)).doesExtend(className);
+		} else {
+			return false;
+		}
 	}
 
 	@Override

@@ -48,7 +48,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(value = Parameterized.class)
 public class TestIndex1to1 {
 	// Size of array
-	long N = 600000;
+	long N = 600_000;
 	// Increase this for the huge tests
 	long MAXELEMENTS = 30000000L;
 	long MAXELEMENTS2 = 30000000L;
@@ -66,9 +66,9 @@ public class TestIndex1to1 {
 				{ IndexWriter.PAGE_SIZE_INT * 2 },
 				{ IndexWriter.PAGE_SIZE_INT * 2 + 1 },
 				// medium
-				{ 1000 },
+				{ 1_000 },
 				// <2G refs
-				{ 3000 * 600000 },
+				{ 3_000 * 600_000 },
 				// 2G refs
 				{ Integer.MAX_VALUE }, });
 	}

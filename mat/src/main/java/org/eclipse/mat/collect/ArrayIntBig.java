@@ -68,7 +68,12 @@ public final class ArrayIntBig implements Serializable {
 	 */
 	public final void addAll(int[] elements) {
 		int free = length & 0x3FF;
-		int bite = free == 0 ? 0 : Math.min(elements.length, 0x400 - free);
+		int bite;
+		if (free == 0) {
+			bite = 0;
+		} else {
+			bite = Math.min(elements.length, 0x400 - free);
+		}
 		if (bite > 0) {
 			System.arraycopy(elements, 0, pages.get(length >> 10), length & 0x3FF, bite);
 			length += bite;
@@ -91,7 +96,7 @@ public final class ArrayIntBig implements Serializable {
 	 * @return int at index
 	 * @throws IndexOutOfBoundsException
 	 */
-	public final int get(int index) throws IndexOutOfBoundsException {
+	public final int get(int index) {
 		if (index >= length) {
 			throw new IndexOutOfBoundsException();
 		}

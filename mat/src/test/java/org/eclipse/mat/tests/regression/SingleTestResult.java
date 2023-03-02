@@ -45,7 +45,11 @@ import java.util.List;
 	}
 
 	public List<Difference> getDifferences() {
-		return differences == null ? new ArrayList<Difference>(0) : differences;
+		if (differences == null) {
+			return new ArrayList<Difference>(0);
+		} else {
+			return differences;
+		}
 	}
 
 	public boolean isSuccessful() {

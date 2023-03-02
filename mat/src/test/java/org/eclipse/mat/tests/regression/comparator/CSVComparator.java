@@ -36,7 +36,7 @@ public class CSVComparator implements IComparator {
 
 	@Override
 	public List<Difference> compare(File baseline, File testFile) throws Exception {
-		String testName = baseline.getName().substring(0, baseline.getName().lastIndexOf("."));
+		String testName = baseline.getName().substring(0, baseline.getName().lastIndexOf('.'));
 
 		System.out.println(MessageUtil.format("Comparing: {0}", testName));
 
@@ -51,15 +51,15 @@ public class CSVComparator implements IComparator {
 		BufferedReader baselineReader = null;
 		BufferedReader testFileReader = null;
 		try {
-			baselineReader = new BufferedReader(new FileReader(baseline.getAbsolutePath()), 1024);
-			testFileReader = new BufferedReader(new FileReader(testFile.getAbsolutePath()), 1024);
+			baselineReader = new BufferedReader(new FileReader(baseline.getAbsolutePath()), 1_024);
+			testFileReader = new BufferedReader(new FileReader(testFile.getAbsolutePath()), 1_024);
 
 			String baseLine;
 			String testLine;
 			int lineNumber = 1;
 			while ((baseLine = baselineReader.readLine()) != null) {
 				if (!(baseLine).equals(testLine = testFileReader.readLine())) {
-					differences.add(new Difference(new Integer(lineNumber).toString(), baseLine, testLine));
+					differences.add(new Difference(Integer.toString(lineNumber), baseLine, testLine));
 				}
 				if (differences.size() == 10) // add only first 10 differences
 					break;

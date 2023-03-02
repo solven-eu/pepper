@@ -118,7 +118,11 @@ public class SnapshotInfo implements Serializable {
 
 	private static String prefix(String path) {
 		int p = path.lastIndexOf('.');
-		return p >= 0 ? path.substring(0, p + 1) : path + '.';
+		if (p >= 0) {
+			return path.substring(0, p + 1);
+		} else {
+			return path + '.';
+		}
 	}
 
 	/**
@@ -188,7 +192,11 @@ public class SnapshotInfo implements Serializable {
 	 * @return creation date, or <code>null</code> if the creation date is not known
 	 */
 	public Date getCreationDate() {
-		return creationDate != null ? new Date(creationDate.getTime()) : null;
+		if (creationDate != null) {
+			return new Date(creationDate.getTime());
+		} else {
+			return null;
+		}
 	}
 
 	/**

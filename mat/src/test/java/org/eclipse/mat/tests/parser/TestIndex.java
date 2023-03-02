@@ -48,9 +48,9 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(value = Parameterized.class)
 public class TestIndex {
 	// Number of arrays
-	int M = 6000;
+	int M = 6_000;
 	// Size of array
-	int N = 600000;
+	int N = 600_000;
 	// Variation in size
 	int P = 6;
 	// Increase this for the huge tests
@@ -78,13 +78,13 @@ public class TestIndex {
 				{ IndexWriter.PAGE_SIZE_INT * 2, 1, 0 },
 				{ IndexWriter.PAGE_SIZE_INT * 2 + 1, 1, 0 },
 				// medium
-				{ 100, 1000, 11 },
+				{ 100, 1_000, 11 },
 				// <2G refs
-				{ 3000, 600000, 11 },
+				{ 3_000, 600_000, 11 },
 				// >2G <4G refs
-				{ 6000, 600000, 11 },
+				{ 6_000, 600_000, 11 },
 				// >4G refs
-				{ 9000, 600000, 11 }, });
+				{ 9_000, 600_000, 11 }, });
 	}
 
 	public TestIndex(int m, int n, int p) {

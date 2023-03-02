@@ -135,7 +135,7 @@ public class DominatorTreeTest {
 		}
 	}
 
-	private String name(int id, ISnapshot snapshot) throws UnsupportedOperationException, SnapshotException {
+	private String name(int id, ISnapshot snapshot) throws SnapshotException {
 		String nodeClass = snapshot.getClassOf(id).getName();
 		return nodeClass.substring(nodeClass.length() - 2);
 	}

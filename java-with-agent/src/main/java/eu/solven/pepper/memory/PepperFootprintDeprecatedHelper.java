@@ -60,7 +60,7 @@ public class PepperFootprintDeprecatedHelper implements IPepperMemoryConstants {
 	public static final int JVM_BYTES_PER_CHAR = 2;
 	public static final int JVM_STRING_HEADER = 45;
 
-	private static final int KB = 1024;
+	private static final int KB = 1_024;
 
 	protected PepperFootprintDeprecatedHelper() {
 		// hidden

@@ -88,10 +88,7 @@ public class ParserRegistry {
 
 	public static List<Parser> matchParser(String name) {
 		return parsers.stream()
-				.filter(p -> Arrays.stream(p.snapshotFormat.getFileExtensions())
-						.filter(ext -> name.endsWith(ext))
-						.findAny()
-						.isPresent())
+				.filter(p -> Arrays.stream(p.snapshotFormat.getFileExtensions()).anyMatch(name::endsWith))
 				.collect(Collectors.toList());
 	}
 

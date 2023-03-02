@@ -44,7 +44,7 @@ import org.eclipse.mat.tests.TestSnapshots;
 import org.junit.Test;
 
 public class PrimitiveMapTests {
-	private static final int NUM_VALUES = 10000;
+	private static final int NUM_VALUES = 10_000;
 
 	// //////////////////////////////////////////////////////////////
 	// HashMapIntLong
@@ -168,7 +168,11 @@ public class PrimitiveMapTests {
 			}
 
 			boolean replace = delegate.put(key, value);
-			return replace ? retValue : null;
+			if (replace) {
+				return retValue;
+			} else {
+				return null;
+			}
 		}
 
 		@Override
@@ -186,7 +190,11 @@ public class PrimitiveMapTests {
 			}
 
 			boolean removed = delegate.remove((Integer) key);
-			return removed ? retValue : null;
+			if (removed) {
+				return retValue;
+			} else {
+				return null;
+			}
 		}
 
 		@Override
@@ -631,8 +639,8 @@ public class PrimitiveMapTests {
 			// make sure we have at least one via equals
 			if (ii == 20) {
 				ii++;
-				keys[ii] = new Integer(keys[ii - 1]);
-				values[ii] = new Long(values[ii - 1]);
+				keys[ii] = Integer.valueOf(keys[ii - 1]);
+				values[ii] = Long.valueOf(values[ii - 1]);
 			}
 		}
 
@@ -749,7 +757,11 @@ public class PrimitiveMapTests {
 			}
 
 			boolean replace = delegate.put(key, value);
-			return replace ? retValue : null;
+			if (replace) {
+				return retValue;
+			} else {
+				return null;
+			}
 		}
 
 		@Override
@@ -768,7 +780,11 @@ public class PrimitiveMapTests {
 			}
 
 			boolean removed = delegate.remove((K) key);
-			return removed ? retValue : null;
+			if (removed) {
+				return retValue;
+			} else {
+				return null;
+			}
 		}
 
 		@Override
@@ -839,7 +855,7 @@ public class PrimitiveMapTests {
 		@Override
 		public Long remove(Object key) {
 			if (key instanceof Integer) {
-				key = new Integer((Integer) key);
+				key = Integer.valueOf((Integer) key);
 			}
 			return super.remove(key);
 		}

@@ -41,7 +41,7 @@ public class CommonNameResolver {
 	public static class StringResolver implements IClassSpecificNameResolver {
 		@Override
 		public String resolve(IObject obj) throws SnapshotException {
-			return PrettyPrinter.objectAsString(obj, 1024);
+			return PrettyPrinter.objectAsString(obj, 1_024);
 		}
 	}
 
@@ -62,9 +62,9 @@ public class CommonNameResolver {
 
 			if (charArray.getType() == IObject.Type.BYTE) {
 				// Java 9 compact strings
-				return PrettyPrinter.objectAsString(obj, 1024);
+				return PrettyPrinter.objectAsString(obj, 1_024);
 			} else {
-				return PrettyPrinter.arrayAsString(charArray, 0, count, 1024);
+				return PrettyPrinter.arrayAsString(charArray, 0, count, 1_024);
 			}
 		}
 	}
@@ -74,7 +74,11 @@ public class CommonNameResolver {
 		@Override
 		public String resolve(IObject obj) throws SnapshotException {
 			IObject name = (IObject) obj.resolveValue("name");
-			return name != null ? name.getClassSpecificName() : null;
+			if (name != null) {
+				return name.getClassSpecificName();
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -104,7 +108,11 @@ public class CommonNameResolver {
 		@Override
 		public String resolve(IObject heapObject) throws SnapshotException {
 			Object value = heapObject.resolveValue("value");
-			return value != null ? String.valueOf(value) : null;
+			if (value != null) {
+				return String.valueOf(value);
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -113,7 +121,11 @@ public class CommonNameResolver {
 		@Override
 		public String resolve(IObject heapObject) throws SnapshotException {
 			Integer value = (Integer) heapObject.resolveValue("value");
-			return value != null ? Boolean.toString(value != 0) : null;
+			if (value != null) {
+				return Boolean.toString(value != 0);
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -122,7 +134,11 @@ public class CommonNameResolver {
 		@Override
 		public String resolve(IObject heapObject) throws SnapshotException {
 			IObject value = (IObject) heapObject.resolveValue("value");
-			return value != null ? ClassSpecificNameResolverRegistry.resolve(value) : null;
+			if (value != null) {
+				return ClassSpecificNameResolverRegistry.resolve(value);
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -131,7 +147,11 @@ public class CommonNameResolver {
 		@Override
 		public String resolve(IObject heapObject) throws SnapshotException {
 			IObject value = (IObject) heapObject.resolveValue("pair.reference");
-			return value != null ? ClassSpecificNameResolverRegistry.resolve(value) : null;
+			if (value != null) {
+				return ClassSpecificNameResolverRegistry.resolve(value);
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -140,7 +160,7 @@ public class CommonNameResolver {
 		@Override
 		public String resolve(IObject heapObject) throws SnapshotException {
 			IPrimitiveArray charArray = (IPrimitiveArray) heapObject;
-			return PrettyPrinter.arrayAsString(charArray, 0, charArray.getLength(), 1024);
+			return PrettyPrinter.arrayAsString(charArray, 0, charArray.getLength(), 1_024);
 		}
 	}
 
@@ -149,7 +169,7 @@ public class CommonNameResolver {
 		@Override
 		public String resolve(IObject heapObject) throws SnapshotException {
 			IPrimitiveArray arr = (IPrimitiveArray) heapObject;
-			byte[] value = (byte[]) arr.getValueArray(0, Math.min(arr.getLength(), 1024));
+			byte[] value = (byte[]) arr.getValueArray(0, Math.min(arr.getLength(), 1_024));
 			if (value == null)
 				return null;
 
@@ -197,7 +217,11 @@ public class CommonNameResolver {
 				builder.append("#");
 				builder.append(ref.getClassSpecificName());
 			}
-			return builder.length() > 0 ? builder.toString() : null;
+			if (builder.length() > 0) {
+				return builder.toString();
+			} else {
+				return null;
+			}
 		}
 	}
 

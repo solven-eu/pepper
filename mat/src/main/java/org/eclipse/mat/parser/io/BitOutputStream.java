@@ -31,7 +31,7 @@ import org.eclipse.mat.parser.internal.Messages;
 
 public class BitOutputStream implements Flushable, Closeable {
 
-	public final static int DEFAULT_BUFFER_SIZE = 16 * 1024;
+	public static final int DEFAULT_BUFFER_SIZE = 16 * 1_024;
 
 	private OutputStream os;
 	private int current;
@@ -40,7 +40,7 @@ public class BitOutputStream implements Flushable, Closeable {
 	private int pos;
 	private int avail;
 
-	final static int TEMP_BUFFER_SIZE = 128;
+	static final int TEMP_BUFFER_SIZE = 128;
 	private byte[] tempBuffer = new byte[TEMP_BUFFER_SIZE];
 
 	public BitOutputStream(final OutputStream os) {

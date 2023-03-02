@@ -146,7 +146,7 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 	 * @since 1.0
 	 */
 	@Override
-	abstract public long getUsedHeapSize();
+	public abstract long getUsedHeapSize();
 
 	@Override
 	public long getRetainedHeapSize() {
@@ -220,7 +220,12 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 	@Override
 	public final Object resolveValue(String name) throws SnapshotException {
 		int p = name.indexOf('.');
-		String n = p < 0 ? name : name.substring(0, p);
+		String n;
+		if (p < 0) {
+			n = name;
+		} else {
+			n = name.substring(0, p);
+		}
 		Field f = internalGetField(n);
 		if (f == null || f.getValue() == null)
 			return null;
@@ -333,7 +338,11 @@ public abstract class AbstractObjectImpl implements IObject, Serializable {
 	 * @since 1.0
 	 */
 	protected static long alignUpTo8(long n) {
-		return n % 8 == 0 ? n : n + 8 - n % 8;
+		if (n % 8 == 0) {
+			return n;
+		} else {
+			return n + 8 - n % 8;
+		}
 	}
 
 }

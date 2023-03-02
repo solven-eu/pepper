@@ -47,7 +47,7 @@ public class ClassLoaderImpl extends InstanceImpl implements IClassLoader {
 
 	public static final String NO_LABEL = "__none__";
 
-	private volatile transient List<IClass> definedClasses = null;
+	private transient volatile List<IClass> definedClasses = null;
 
 	/**
 	 * Constructs a class loader object.

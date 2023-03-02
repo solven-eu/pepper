@@ -34,7 +34,7 @@ public class TestPepperMathHelper {
 
 	@Test
 	public void testNextFloat() {
-		Assert.assertEquals(1F, PepperMathHelper.nextFloat(1F), 0.000001F);
+		Assert.assertEquals(1F, PepperMathHelper.nextFloat(1F), 0.000_001F);
 	}
 
 	@Test

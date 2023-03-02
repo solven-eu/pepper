@@ -410,7 +410,7 @@ import org.eclipse.mat.util.SilentProgressListener;
 		return answer;
 	}
 
-	private static abstract class NewObjectIterator {
+	private abstract static class NewObjectIterator {
 		int nextIndex = -1;
 		int[] $map;
 
@@ -432,7 +432,7 @@ import org.eclipse.mat.util.SilentProgressListener;
 		abstract int[] getMap();
 	}
 
-	private static abstract class NewObjectIntIterator extends NewObjectIterator implements IteratorInt {
+	private abstract static class NewObjectIntIterator extends NewObjectIterator implements IteratorInt {
 		@Override
 		public int next() {
 			int answer = doGetNextInt(nextIndex);
@@ -728,6 +728,10 @@ import org.eclipse.mat.util.SilentProgressListener;
 		boolean chooseAsRoot = (outbounds[ii] & 0xff) > 0 && (pass == passes - 1
 				|| (inbounds[ii] & 0xff) > 1 && (outbounds[ii] & 0xff) - (inbounds[ii] & 0xff) >= passes - pass - 2);
 
-		return chooseAsRoot ? ii : -1;
+		if (chooseAsRoot) {
+			return ii;
+		} else {
+			return -1;
+		}
 	}
 }

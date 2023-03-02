@@ -170,7 +170,12 @@ public abstract class IndexReader {
 		@Override
 		protected ArrayIntCompressed getPage(int page) {
 			SoftReference<ArrayIntCompressed> ref = pages.get(page);
-			ArrayIntCompressed array = ref == null ? null : ref.get();
+			ArrayIntCompressed array;
+			if (ref == null) {
+				array = null;
+			} else {
+				array = ref.get();
+			}
 			if (array == null) {
 				synchronized (LOCK) {
 					ref = pages.get(page);
@@ -243,7 +248,12 @@ public abstract class IndexReader {
 		@Override
 		protected ArrayIntLongCompressed getPage(int page) {
 			SoftReference<ArrayIntCompressed> ref = pages.get(page);
-			ArrayIntCompressed array = ref == null ? null : ref.get();
+			ArrayIntCompressed array;
+			if (ref == null) {
+				array = null;
+			} else {
+				array = ref.get();
+			}
 			if (array instanceof ArrayIntLongCompressed) {
 				return (ArrayIntLongCompressed) array;
 			} else {
@@ -634,7 +644,12 @@ public abstract class IndexReader {
 		@Override
 		protected ArrayLongCompressed getPage(int page) {
 			SoftReference<ArrayLongCompressed> ref = (SoftReference<ArrayLongCompressed>) pages.get(page);
-			ArrayLongCompressed array = ref == null ? null : ref.get();
+			ArrayLongCompressed array;
+			if (ref == null) {
+				array = null;
+			} else {
+				array = ref.get();
+			}
 			if (array == null) {
 				synchronized (LOCK) {
 					ref = (SoftReference<ArrayLongCompressed>) pages.get(page);
