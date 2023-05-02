@@ -164,7 +164,7 @@ public class TestPepperMetricsTowerControl {
 
 		ExecutorService es = PepperExecutorsHelper.newShrinkableFixedThreadPool(64,
 				"benchApexMetricsTowerControl",
-				1_000,
+				1000,
 				PepperExecutorsHelper.TIMEOUT_POLICY_1_HOUR);
 
 		for (int i = 0; i < 1_000_000; i++) {

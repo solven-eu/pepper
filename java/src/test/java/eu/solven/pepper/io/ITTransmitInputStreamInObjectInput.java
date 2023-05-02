@@ -58,7 +58,7 @@ public class ITTransmitInputStreamInObjectInput {
 		byte[] byteArray = baos.toByteArray();
 
 		// Process in parallel to stress even more the classes
-		IntStream.range(0, 100 * 1_000).parallel().unordered().forEach(i -> {
+		IntStream.range(0, 100 * 1000).parallel().unordered().forEach(i -> {
 			try (ObjectInput ois = PepperObjectInputHelper
 					.wrapToHandleInputStream(new ObjectInputStream(new ByteArrayInputStream(byteArray)))) {
 				InputStream is = (InputStream) ois.readObject();

@@ -55,7 +55,7 @@ import com.google.common.util.concurrent.AtomicLongMap;
 @SuppressWarnings("PMD.GodClass")
 public final class PepperObjectGraphWalker {
 
-	private static final int MISS_COUNT = 1_000;
+	private static final int MISS_COUNT = 1000;
 	private static final Logger LOGGER = LoggerFactory.getLogger(PepperObjectGraphWalker.class);
 	private static final String VERBOSE_DEBUG_LOGGING = "org.ehcache.sizeof.verboseDebugLogging";
 

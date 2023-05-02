@@ -101,7 +101,7 @@ public class TestPepperMemoryHelper {
 	@Test
 	public void testMemoryToString() {
 		Assert.assertEquals("123B", PepperMemoryHelper.memoryAsString(123));
-		Assert.assertEquals("1K206B", PepperMemoryHelper.memoryAsString(1_230));
+		Assert.assertEquals("1K206B", PepperMemoryHelper.memoryAsString(1230));
 		Assert.assertEquals("1M177K", PepperMemoryHelper.memoryAsString(1_230_000));
 		Assert.assertEquals("1G149M", PepperMemoryHelper.memoryAsString(1_230_000_000));
 	}

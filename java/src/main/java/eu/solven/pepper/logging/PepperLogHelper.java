@@ -58,7 +58,7 @@ public class PepperLogHelper {
 	 */
 	protected static final int BARRIER_FOR_SIZE_IN_LOG = 10;
 
-	public static final int THOUSAND = 1_000;
+	public static final int THOUSAND = 1000;
 	public static final int TEN_F = 10;
 
 	private static final String DAYS_PREFIX = "days";

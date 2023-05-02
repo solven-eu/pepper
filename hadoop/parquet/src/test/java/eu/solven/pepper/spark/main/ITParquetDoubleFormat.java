@@ -71,7 +71,7 @@ public class ITParquetDoubleFormat {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ITParquetDoubleFormat.class);
 
 	public static final int NB_DOUBLES = 512;
-	public static final int NB_ROWS = 1_000;
+	public static final int NB_ROWS = 1000;
 
 	@Test
 	public void testOriginalToListDouble() throws IOException {

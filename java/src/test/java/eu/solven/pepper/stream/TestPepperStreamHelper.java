@@ -90,7 +90,7 @@ public class TestPepperStreamHelper {
 
 	@Test
 	public void testPartitionConsume_limit100_parallel_large() {
-		int problemSize = 100 * 1_000 * 1_000;
+		int problemSize = 100 * 1000 * 1000;
 
 		boolean[] checked;
 		{

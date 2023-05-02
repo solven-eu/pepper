@@ -71,7 +71,7 @@ public class TestPepperExecutorsHelper {
 				2,
 				PepperExecutorsHelper.makeRejectedExecutionHandler(1, TimeUnit.SECONDS));
 
-		for (int i = 0; i < 1_000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			ListenableFuture<Object> future = es.submit(() -> {
 				Thread.sleep(1);
 				return new Object();
@@ -93,11 +93,11 @@ public class TestPepperExecutorsHelper {
 	@Test
 	public void testManyTasksBigPool() throws InterruptedException {
 		ListeningExecutorService es = PepperExecutorsHelper.newShrinkableFixedThreadPool("Test",
-				1_000,
+				1000,
 				PepperExecutorsHelper.makeRejectedExecutionHandler(1, TimeUnit.MINUTES));
 
 		List<Supplier<Object>> runnables = new ArrayList<>();
-		for (int i = 0; i < 10 * 1_000; i++) {
+		for (int i = 0; i < 10 * 1000; i++) {
 			runnables.add(() -> {
 				int coucou = 2;
 
@@ -118,7 +118,7 @@ public class TestPepperExecutorsHelper {
 		ListeningExecutorService es = PepperExecutorsHelper.newShrinkableFixedThreadPool("Test");
 
 		List<Supplier<Object>> runnables = new ArrayList<>();
-		for (int i = 0; i < 10 * 1_000; i++) {
+		for (int i = 0; i < 10 * 1000; i++) {
 			runnables.add(() -> {
 				int coucou = 2;
 
@@ -139,7 +139,7 @@ public class TestPepperExecutorsHelper {
 		ListeningExecutorService es = PepperExecutorsHelper.newShrinkableFixedThreadPool("Test");
 
 		List<Runnable> runnables = new ArrayList<>();
-		for (int i = 0; i < 10 * 1_000; i++) {
+		for (int i = 0; i < 10 * 1000; i++) {
 			runnables.add(() -> {
 				int coucou = 2;
 

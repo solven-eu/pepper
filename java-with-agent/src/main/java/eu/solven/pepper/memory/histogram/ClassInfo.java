@@ -58,7 +58,6 @@ public class ClassInfo implements Serializable {
 	private final String source;
 
 	ClassInfo(Scanner sc, boolean jrockit) {
-		super();
 
 		sc.next();
 		if (jrockit) {

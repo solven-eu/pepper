@@ -63,7 +63,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void getPercentage() {
-		Assert.assertEquals("10%", PepperLogHelper.getNicePercentage(100, 1_000).toString());
+		Assert.assertEquals("10%", PepperLogHelper.getNicePercentage(100, 1000).toString());
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void getSmallPercentage() {
-		Assert.assertEquals("0.3%", PepperLogHelper.getNicePercentage(3, 1_000).toString());
+		Assert.assertEquals("0.3%", PepperLogHelper.getNicePercentage(3, 1000).toString());
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void getProgressAboveMax() {
-		Assert.assertEquals("1000%", PepperLogHelper.getNicePercentage(1_000, 100).toString());
+		Assert.assertEquals("1000%", PepperLogHelper.getNicePercentage(1000, 100).toString());
 	}
 
 	@Test
@@ -110,7 +110,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testBigTimeVeryLowRate1() {
-		Assert.assertEquals("30#/min", PepperLogHelper.humanRate(5, 10 * 1_000, TimeUnit.MILLISECONDS).toString());
+		Assert.assertEquals("30#/min", PepperLogHelper.humanRate(5, 10 * 1000, TimeUnit.MILLISECONDS).toString());
 	}
 
 	@Test
@@ -131,7 +131,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testRightUnderRatePerSecond() {
-		Assert.assertEquals("999#/sec", PepperLogHelper.humanRate(999, 1_000, TimeUnit.MILLISECONDS).toString());
+		Assert.assertEquals("999#/sec", PepperLogHelper.humanRate(999, 1000, TimeUnit.MILLISECONDS).toString());
 	}
 
 	@Test
@@ -163,7 +163,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testPercentage2() {
-		Assert.assertEquals("9.80%", PepperLogHelper.getNicePercentage(98, 1_000).toString());
+		Assert.assertEquals("9.80%", PepperLogHelper.getNicePercentage(98, 1000).toString());
 	}
 
 	@Test
@@ -178,12 +178,12 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testGetNiceTimeSecondsAndMillis() {
-		Assert.assertEquals("9sec 600ms", PepperLogHelper.humanDuration(9_600).toString());
+		Assert.assertEquals("9sec 600ms", PepperLogHelper.humanDuration(9600).toString());
 	}
 
 	@Test
 	public void testGetNiceTimeSecondsAndMillis_NoHundredsInMillis() {
-		Assert.assertEquals("9sec 60ms", PepperLogHelper.humanDuration(9_060).toString());
+		Assert.assertEquals("9sec 60ms", PepperLogHelper.humanDuration(9060).toString());
 	}
 
 	@Test

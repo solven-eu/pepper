@@ -48,7 +48,7 @@ public class PepperTimeHelper {
 	/**
 	 * How many times occurrences has to be captured before logging about an outlier?
 	 */
-	protected static final long NB_OCCURENCES_FOR_INFO = 1_000;
+	protected static final long NB_OCCURENCES_FOR_INFO = 1000;
 
 	@VisibleForTesting
 	public static final AtomicLong NB_LOG_FOR_OUTLIER = new AtomicLong();

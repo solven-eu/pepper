@@ -45,7 +45,7 @@ public class TestWriteLargeAvro {
 
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(ImmutableMap.of("key", 1));
 
-		int nbRows1 = 1_000 * 1_000;
+		int nbRows1 = 1000 * 1000;
 		Stream<GenericRecord> stream = IntStream.range(0, nbRows1)
 				.mapToObj(i -> ImmutableMap.of("key", i))
 				.map(AvroStreamHelper.toGenericRecord(schema));
