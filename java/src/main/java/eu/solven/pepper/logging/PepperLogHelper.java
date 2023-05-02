@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.annotations.Beta;
-import com.google.common.base.Ascii;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 
