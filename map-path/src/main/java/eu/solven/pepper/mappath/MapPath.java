@@ -34,10 +34,13 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
+import com.jayway.jsonpath.Option;
 
 import eu.solven.pepper.logging.PepperLogHelper;
 
@@ -51,6 +54,8 @@ import eu.solven.pepper.logging.PepperLogHelper;
  */
 @SuppressWarnings({ "PMD.GodClass", "PMD.AvoidDuplicateLiterals" })
 public class MapPath {
+	private static final Logger LOGGER = LoggerFactory.getLogger(MapPath.class);
+
 	// This will be used to represent a null-reference as Value.
 	// In recursiveFromFlatten, it will used for comparison by reference
 	// It means the whole class is targetting same-JVM use.
@@ -148,9 +153,9 @@ public class MapPath {
 
 				// '.k' is appended the the path
 				subFlattenKeys.forEach((subKey, subValue) -> flattenKeys.put(flattenKey + subKey, subValue));
-			} else if (value instanceof List<?>) {
-				List<?> valueAsList = (List<?>) value;
-				Map<String, ?> subFlattenKeys = innerFlatten(false, onValues, valueAsList);
+			} else if (value instanceof Iterable<?>) {
+				Iterable<?> valueAsIterable = (Iterable<?>) value;
+				Map<String, ?> subFlattenKeys = innerFlatten(false, onValues, valueAsIterable);
 
 				// '[i]' is appended the the path
 				subFlattenKeys.forEach((subKey, subValue) -> flattenKeys.put(flattenKey + subKey, subValue));
@@ -191,7 +196,7 @@ public class MapPath {
 				flattenMap.forEach((k, v) -> {
 					flatten.put(flattenKey + k, v);
 				});
-			} else if (o instanceof Collection<?>) {
+			} else if (o instanceof Iterable<?>) {
 				Map<String, Object> flattenMap = innerFlatten(false, onValues, (Collection<?>) o);
 
 				flattenMap.forEach((k, v) -> {
@@ -284,15 +289,16 @@ public class MapPath {
 	}
 
 	private static void ensureParentExists(DocumentContext context, String parentPath, int index) {
-		try {
-			Object parentContext = context.read(parentPath);
-			if (parentContext == null) {
-				// This may happen in some cases with arrays
-				throw new PathNotFoundException("Path led to null: " + parentPath);
-			}
-		} catch (PathNotFoundException e) {
-			// Programming by Exception
-			// Quite bad, but it does the job through JasonPath
+		boolean parentNeedsCreation = false;
+
+		Object parentContext = context.read(parentPath);
+		if (parentContext == null) {
+			// This may happen in some cases with arrays
+			parentNeedsCreation = true;
+			LOGGER.debug("Path led to null: {}", parentPath);
+		}
+
+		if (parentNeedsCreation) {
 			if (index == Integer.MIN_VALUE) {
 				setJsonPath(context, parentPath, new LinkedHashMap<>());
 			} else {
@@ -311,6 +317,10 @@ public class MapPath {
 	@SuppressWarnings("PMD.NullAssignment")
 	public static Map<String, Object> recurse(Map<String, ?> flatten) {
 		Configuration conf = Configuration.defaultConfiguration();
+
+		// This will prevent tons of exceptions, leading to slowness in .ensureParentExists
+		conf = conf.addOptions(Option.SUPPRESS_EXCEPTIONS);
+
 		DocumentContext emptyJson = JsonPath.using(conf).parse("{}");
 
 		flatten.forEach((k, v) -> {

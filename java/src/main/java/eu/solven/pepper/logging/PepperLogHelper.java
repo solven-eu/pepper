@@ -399,6 +399,13 @@ public class PepperLogHelper {
 		return nbPerDay + "#/" + DAYS_PREFIX;
 	}
 
+	/**
+	 * This will create a lazy Object with a .toString, which will prevent producing a too large output
+	 * 
+	 * @param toString
+	 * @param limitChars
+	 * @return
+	 */
 	public static Object getFirstChars(Object toString, int limitChars) {
 		if (toString == null) {
 			// Stick to default behavior for null objects
@@ -406,13 +413,12 @@ public class PepperLogHelper {
 		}
 		return lazyToString(() -> {
 			String asString = toString.toString();
+
+			// Relates with Ascii.truncate
 			if (asString.length() <= limitChars) {
 				return asString;
 			} else {
-				return "'" + asString.substring(0, limitChars)
-						+ "...("
-						+ (asString.length() - limitChars)
-						+ " more chars)'";
+				return asString.substring(0, limitChars) + "...(" + (asString.length() - limitChars) + " more chars)";
 			}
 		});
 	}

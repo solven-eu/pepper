@@ -23,6 +23,7 @@
 package eu.solven.pepper.mappath;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -36,6 +37,7 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 public class TestMapPath {
 	@Test
@@ -300,6 +302,28 @@ public class TestMapPath {
 	}
 
 	@Test
+	public void testOverIntermediateList_NullValue() {
+		Map<String, ?> input = ImmutableMap.of("k",
+				ImmutableList.of("a",
+						ImmutableMap.of("k2",
+								ImmutableList.of("b",
+										ImmutableMap.of("k3",
+												Arrays.asList("c", null, Collections.singletonMap("k4", null)))))));
+		Map<String, Object> flatten = MapPath.flatten(input);
+
+		Assertions.assertThat(flatten)
+				.containsEntry("$.k[0]", "a")
+				.containsEntry("$.k[1].k2[0]", "b")
+				.containsEntry("$.k[1].k2[1].k3[0]", "c")
+				.containsEntry("$.k[1].k2[1].k3[1]", null)
+				.containsEntry("$.k[1].k2[1].k3[2].k4", null)
+				.hasSize(5);
+
+		Map<String, Object> back = MapPath.recurse(flatten);
+		Assertions.assertThat(back).isEqualTo(input);
+	}
+
+	@Test
 	public void testFlattenWithGapInList() {
 		Map<String, ?> flattenWithGapInList = ImmutableMap.<String, String>builder().put("$.k[1]", "v1").build();
 
@@ -332,6 +356,19 @@ public class TestMapPath {
 		Map<String, ?> backToRecursive = MapPath.recurse(flatten);
 
 		Assert.assertEquals(inputRecursive, backToRecursive);
+	}
+
+	@Test
+	public void testOverSet() {
+		Map<String, Collection<String>> input = ImmutableMap.of("k", ImmutableSet.of("a", "b"));
+		NavigableMap<String, Object> flatten = MapPath.flatten(input);
+
+		Assertions.assertThat(flatten).hasSize(2).containsEntry("$.k[0]", "a").containsEntry("$.k[1]", "b");
+
+		Map<String, Object> back = MapPath.recurse(flatten);
+
+		// We parsed back the Set as a List
+		Assertions.assertThat(back).isEqualTo(ImmutableMap.of("k", ImmutableList.of("a", "b")));
 	}
 
 	@Test
@@ -373,5 +410,22 @@ public class TestMapPath {
 		NavigableMap<String, Object> flatten = MapPath.flatten(input);
 
 		Assertions.assertThat(flatten).isEmpty();
+	}
+
+	@Test
+	public void testFlatten_mapArrayMapMap() {
+		Map<String, ?> input = ImmutableMap.of("k1", Arrays.asList(ImmutableMap.of("k2", ImmutableMap.of("k3", "v"))));
+		NavigableMap<String, Object> flatten = MapPath.flatten(input);
+
+		Assertions.assertThat(flatten).containsEntry("$.k1[0].k2.k3", "v").hasSize(1);
+	}
+
+	@Test
+	public void testFlatten_mapArrayMapComplexMap() {
+		Map<String, ?> input =
+				ImmutableMap.of("k1", Arrays.asList(ImmutableMap.of("k2_suffix", ImmutableMap.of("k3", "v"))));
+		NavigableMap<String, Object> flatten = MapPath.flatten(input);
+
+		Assertions.assertThat(flatten).containsEntry("$.k1[0].k2_suffix.k3", "v").hasSize(1);
 	}
 }

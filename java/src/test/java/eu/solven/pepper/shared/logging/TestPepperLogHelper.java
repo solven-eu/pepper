@@ -235,7 +235,7 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testLimitChars() {
-		Assert.assertEquals("'12345...(4 more chars)'", PepperLogHelper.getFirstChars("123456789", 5).toString());
+		Assert.assertEquals("12345...(4 more chars)", PepperLogHelper.getFirstChars("123456789", 5).toString());
 	}
 
 	@Test
