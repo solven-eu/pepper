@@ -24,9 +24,9 @@ package eu.solven.pepper.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.OptionalLong;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -70,7 +70,7 @@ public class TestPepperProcessHelper {
 	// Without -X on pmap, we receive only the 'whole' memory, whatever it means
 	@Test
 	public void testMemoryOnLinux_MissingDashX() throws IOException {
-		String macMemoryOutput = Arrays.asList(" total 65512K").stream().collect(Collectors.joining("\n"));
+		String macMemoryOutput = Stream.of(" total 65512K").collect(Collectors.joining("\n"));
 
 		long nbBytes =
 				PepperProcessHelper
@@ -84,7 +84,7 @@ public class TestPepperProcessHelper {
 	public void testMemoryOnLinux_WithDashX() throws IOException {
 		// RSS is generally the second figure
 		String macMemoryOutput =
-				Arrays.asList("total kB         4824728  390544  377152").stream().collect(Collectors.joining("\n"));
+				Stream.of("total kB         4824728  390544  377152").collect(Collectors.joining("\n"));
 
 		long nbBytes =
 				PepperProcessHelper

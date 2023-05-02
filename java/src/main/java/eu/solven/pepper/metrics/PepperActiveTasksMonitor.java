@@ -87,7 +87,7 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 	/**
 	 * Do not maintain more than this amount of active tasks
 	 */
-	public static final int CACHE_MAX_SIZE = 1_000;
+	public static final int CACHE_MAX_SIZE = 1000;
 
 	/**
 	 * Frequency at which we check for long tasks

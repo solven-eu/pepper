@@ -297,7 +297,7 @@ public class TestPepperCartesianProductHelper {
 
 	@Test
 	public void testSizeHuge() {
-		long problemSize = 2_000;
+		long problemSize = 2000;
 		Set<?> asSet = LongStream.range(0, problemSize).mapToObj(Long::valueOf).collect(Collectors.toSet());
 
 		long expectedSize = problemSize * problemSize * problemSize;

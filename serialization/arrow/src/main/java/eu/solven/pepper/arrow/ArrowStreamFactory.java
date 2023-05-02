@@ -62,7 +62,7 @@ import eu.solven.pepper.stream.PepperStreamHelper;
  *
  */
 public class ArrowStreamFactory implements IArrowStreamFactory {
-	private static final int PARTITION_TARGET_SIZE = 1_024;
+	private static final int PARTITION_TARGET_SIZE = 1024;
 
 	@Override
 	public Stream<Map<String, ?>> stream(URI uri) throws IOException {

@@ -174,7 +174,7 @@ public class TestPepperReferenceHelper {
 	@Test
 	public void testShareReference_List() {
 		List<String> beforeIntern =
-				IntStream.range(0, 1_000).map(i -> i % 3).mapToObj(i -> "String_" + i).collect(Collectors.toList());
+				IntStream.range(0, 1000).map(i -> i % 3).mapToObj(i -> "String_" + i).collect(Collectors.toList());
 
 		long sizeBefore = PepperFootprintHelper.deepSize(beforeIntern);
 

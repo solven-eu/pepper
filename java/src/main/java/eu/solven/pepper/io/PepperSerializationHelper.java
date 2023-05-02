@@ -84,11 +84,11 @@ public class PepperSerializationHelper {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperSerializationHelper.class);
 
-	private static final int KB = 1_024;
+	private static final int KB = 1024;
 
 	// Excel accepts only 32,767 chars per cell: we accept up to 4 MDX in a row
 	// https://support.office.com/en-us/article/Excel-specifications-and-limits-16c69c74-3d6a-4aaf-ba35-e6eb276e8eaa
-	public static final int MAX_CHARS_PER_COLUMN = 8_192;
+	public static final int MAX_CHARS_PER_COLUMN = 8192;
 
 	public static final char MAP_KEY_VALUE_SEPARATOR = '=';
 

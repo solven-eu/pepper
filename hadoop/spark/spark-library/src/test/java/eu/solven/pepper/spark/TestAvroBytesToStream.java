@@ -156,7 +156,7 @@ public class TestAvroBytesToStream {
 		Assert.assertEquals(ImmutableSet.of("DoubleArray"), singleOutput.keySet());
 		Assert.assertArrayEquals(new double[] { 1D, 2D, 3D },
 				(double[]) singleOutput.values().iterator().next(),
-				0.000_1D);
+				0.0001D);
 	}
 
 	@Test
@@ -186,6 +186,6 @@ public class TestAvroBytesToStream {
 		Assert.assertEquals(ImmutableSet.of("DoubleArray"), singleOutput.keySet());
 		Assert.assertArrayEquals(new double[] { 1D, 2D, 3D },
 				(double[]) singleOutput.values().iterator().next(),
-				0.000_1D);
+				0.0001D);
 	}
 }

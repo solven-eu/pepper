@@ -68,7 +68,7 @@ public class JmxAttributesDumper {
 	public static final int PASSWORD_INDEX = 3;
 
 	private static final String DEFAULT_USERNAME = "username";
-	public static final int DEFAULT_JMX_PORT = 8_050;
+	public static final int DEFAULT_JMX_PORT = 8050;
 
 	public static final String QFS_REFRESH_OPERATION_NAME = "Refresh underlying MBeans";
 

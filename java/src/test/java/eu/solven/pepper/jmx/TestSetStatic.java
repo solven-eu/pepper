@@ -141,7 +141,7 @@ public class TestSetStatic {
 		// Do the modification
 		setSTatic.setStatic(TestSetStatic.class.getName(), "DOUBLE_STATIC", newValue);
 
-		Assert.assertEquals(initialDouble + 1D, DOUBLE_STATIC_FINAL, 0.000_1D);
+		Assert.assertEquals(initialDouble + 1D, DOUBLE_STATIC_FINAL, 0.0001D);
 	}
 
 	@Test
