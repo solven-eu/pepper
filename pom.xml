@@ -103,7 +103,7 @@
 		<guava.version>31.1-jre</guava.version>
 
 		<!-- https://mvnrepository.com/artifact/org.jooq/jool -->
-		<jool.version>0.9.14</jool.version>
+		<jool.version>0.9.15</jool.version>
 
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
