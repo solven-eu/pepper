@@ -265,7 +265,6 @@ public class TestMapPath {
 		Assertions.assertThat(flatten).hasSize(2).containsEntry("$.k[0]", "a").containsEntry("$.k[1]", null);
 
 		Map<String, Object> back = MapPath.recurse(flatten);
-		// The trailing null is removed
 		Assertions.assertThat(back).isEqualTo(input);
 	}
 
@@ -277,7 +276,6 @@ public class TestMapPath {
 		Assertions.assertThat(flatten).hasSize(2).containsEntry("$.k[0]", null).containsEntry("$.k[1]", "a");
 
 		Map<String, Object> back = MapPath.recurse(flatten);
-		// The trailing null is removed
 		Assertions.assertThat(back).isEqualTo(input);
 	}
 
@@ -427,5 +425,25 @@ public class TestMapPath {
 		NavigableMap<String, Object> flatten = MapPath.flatten(input);
 
 		Assertions.assertThat(flatten).containsEntry("$.k1[0].k2_suffix.k3", "v").hasSize(1);
+	}
+
+	@Test
+	public void testList_reversedOrder() {
+		Map<String, ?> input = ImmutableMap.of("k",
+				Arrays.asList(ImmutableMap.of("k", "a"),
+						ImmutableMap.of("k", "b"),
+						ImmutableMap.of("k", "c"),
+						ImmutableMap.of("k", "d")));
+		NavigableMap<String, Object> flatten = MapPath.flatten(input);
+
+		Assertions.assertThat(flatten)
+				.containsEntry("$.k[0].k", "a")
+				.containsEntry("$.k[1].k", "b")
+				.containsEntry("$.k[2].k", "c")
+				.containsEntry("$.k[3].k", "d")
+				.hasSize(4);
+
+		Map<String, Object> back = MapPath.recurse(flatten);
+		Assertions.assertThat(back).isEqualTo(input);
 	}
 }
