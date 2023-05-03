@@ -361,7 +361,7 @@
 					<!-- Usage: mvn com.mycila:license-maven-plugin:format -->
 					<groupId>com.mycila</groupId>
 					<artifactId>license-maven-plugin</artifactId>
-					<version>4.1</version>
+					<version>4.2</version>
 					<configuration>
 						<header>com/mycila/maven/plugin/license/templates/MIT.txt</header>
 						<properties>
