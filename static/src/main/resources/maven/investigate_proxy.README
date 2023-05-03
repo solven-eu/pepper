@@ -1,0 +1,41 @@
+
+# JDK8+111 disables (by default) `BASIC` for Proxy
+One may encounter Proxy issues with resent JDK
+
+https://confluence.atlassian.com/kb/basic-authentication-fails-for-outgoing-proxy-in-java-8u111-909643110.html
+
+http://www.oracle.com/technetwork/java/javase/8u111-relnotes-3124969.html
+
+> In some environments, certain authentication schemes may be undesirable when proxying HTTPS. Accordingly, the Basic authentication scheme has been deactivated, by default, in the Oracle Java Runtime .. Now, proxies requiring Basic authentication when setting up a tunnel for HTTPS will no longer succeed by default. If required, this authentication scheme can be reactivated by removing Basic from the jdk.http.auth.tunneling.disabledSchemes networking property, or by setting a system property of the same name to "" ( empty ) on the command line.
+
+You can then:
+
+    -Djdk.http.auth.tunneling.disabledSchemes=""
+    
+see also https://youtrack.jetbrains.com/issue/IDEA-185083
+
+# NTLM Proxy
+
+In case of NTLM proxy, the default mvn wagon may not be functional. An alternative is to rely on the lightweight http wagon:
+
+```
+<build>
+
+  [...]
+  <extensions>
+    <extension>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http-lightweight</artifactId>
+      <version>3.5.3</version>
+    </extension>
+  </extensions>
+
+```
+
+see https://maven.apache.org/guides/mini/guide-using-extensions.html
+see https://maven.apache.org/guides/mini/guide-wagon-providers.html
+see https://mvnrepository.com/artifact/org.apache.maven.wagon/wagon-http-lightweight
+
+# Documentation about proxy
+
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file
