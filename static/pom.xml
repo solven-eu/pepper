@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-parent</artifactId>
-		<version>4.5</version>
+		<version>4.6-SNAPSHOT</version>
 
 		<!-- This has the parent (instead of aggregator) as parent to be used as jar in maven-plugins -->
 		<relativePath>../parent</relativePath>
