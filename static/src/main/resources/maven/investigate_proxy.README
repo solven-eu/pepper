@@ -36,6 +36,23 @@ see https://maven.apache.org/guides/mini/guide-using-extensions.html
 see https://maven.apache.org/guides/mini/guide-wagon-providers.html
 see https://mvnrepository.com/artifact/org.apache.maven.wagon/wagon-http-lightweight
 
+In some  cases, the proxy expect the password not to be defined/left empty to let NTLM do its work:
+
+```
+   <proxy>
+      <id>example-proxy</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>proxy.example.com</host>
+      <port>8080</port>
+      <username>proxyuser</username>
+      <password>somepassword</password>
+      <nonProxyHosts>www.google.com|*.example.com</nonProxyHosts>
+    </proxy>
+```
+
+see https://maven.apache.org/guides/mini/guide-proxies.html
+
 # Documentation about proxy
 
 https://developer.mozilla.org/en-US/docs/Web/HTTP/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file
