@@ -76,4 +76,112 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<!-- We duplicate Spotless configuration in order to have specific licensing configuration for MAT -->
+				<!-- This is quite important as many of these files are copied from MAT, which has its own license -->
+				<plugin>
+					<!-- mvn com.diffplug.spotless:spotless-maven-plugin:apply -->
+					<!-- mvn com.diffplug.spotless:spotless-maven-plugin:check -->
+					<groupId>com.diffplug.spotless</groupId>
+					<artifactId>spotless-maven-plugin</artifactId>
+					<version>${spotless.version}</version>
+					<configuration>
+						<!-- optional: limit format enforcement to just the files changed by this feature branch -->
+						<!--ratchetFrom>origin/master</ratchetFrom-->
+						<formats>
+							<!-- you can define as many formats as you want, each is independent -->
+							<format>
+								<!-- define the files to apply to -->
+								<includes>
+									<include>.gitignore</include>
+								</includes>
+								<!-- define the steps to apply to those files -->
+								<trimTrailingWhitespace />
+								<endWithNewline />
+								<indent>
+									<tabs>true</tabs>
+									<spacesPerTab>4</spacesPerTab>
+								</indent>
+							</format>
+						</formats>
+
+						<pom>
+							<includes>
+								<include>pom.xml</include>
+							</includes>
+
+							<!-- https://github.com/diffplug/spotless/tree/main/plugin-maven#sortpom -->
+							<sortPom>
+								<!-- We like empty elements, while plugin default configuration would expand them -->
+								<expandEmptyElements>false</expandEmptyElements>
+
+								<!-- https://github.com/Ekryd/sortpom/issues/75 -->
+								<spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+
+								<!-- https://github.com/Ekryd/sortpom/wiki/Parameters#for-both-the-sort-and-verify-goal -->
+								<!-- -1 means '\t' -->
+								<nrOfIndentSpace>-1</nrOfIndentSpace>
+							</sortPom>
+						</pom>
+
+						<markdown>
+							<endWithNewline />
+							<indent>
+								<tabs>true</tabs>
+								<spacesPerTab>4</spacesPerTab>
+							</indent>
+							<includes>
+								<include>**/*.md</include>
+							</includes>
+
+							<flexmark />
+						</markdown>
+
+						<!-- define a language-specific format -->
+						<java>
+							<excludes>
+								<!-- TestCases needs to remains not formatted/cleaned -->
+								<exclude>**/do_not_format_me/**</exclude>
+							</excludes>
+
+							<licenseHeader>
+								<!-- https://github.com/diffplug/spotless/issues/1418 -->
+								<delimiter>(package )|(import )</delimiter>
+								<file>${maven.multiModuleProjectDirectory}/.cleanthat/mat.license</file>
+							</licenseHeader>
+						</java>
+
+						<json>
+							<trimTrailingWhitespace />
+							<endWithNewline />
+							<indent>
+								<tabs>true</tabs>
+								<spacesPerTab>4</spacesPerTab>
+							</indent>
+
+							<includes>
+								<include>**/*.json</include>
+							</includes>
+
+							<gson />
+						</json>
+						<!--yaml/-->
+					</configuration>
+
+					<executions>
+						<execution>
+							<id>applySpotless</id>
+							<goals>
+								<goal>apply</goal>
+							</goals>
+							<phase>process-sources</phase>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>
