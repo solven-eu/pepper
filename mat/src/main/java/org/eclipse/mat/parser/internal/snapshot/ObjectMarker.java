@@ -1,25 +1,17 @@
-/**
- * The MIT License
- * Copyright (c) 2008-2013 Benoit Lacelle - SOLVEN
+/*******************************************************************************
+ * Copyright (c) 2008, 2023 SAP AG, IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * SPDX-License-Identifier: EPL-2.0
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ * Contributors:
+ *    SAP AG - initial API and implementation
+ *    IBM Corporation - additional debug information
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
+ *******************************************************************************/
 package org.eclipse.mat.parser.internal.snapshot;
 
 import java.lang.ref.SoftReference;
@@ -71,7 +63,7 @@ public class ObjectMarker {
 	public int markSingleThreaded() throws IProgressListener.OperationCanceledException {
 		int count = 0;
 		int size = 0;
-		int[] data = new int[10 * 1_024]; // start with 10k
+		int[] data = new int[10 * 1024]; // start with 10k
 		int rootsToProcess = 0;
 
 		for (int rootId : roots) {
@@ -148,7 +140,7 @@ public class ObjectMarker {
 
 		/* a stack of int structure */
 		int size = 0; // # of elements in the stack
-		int[] data = new int[10 * 1_024]; // data for the stack - start with 10k
+		int[] data = new int[10 * 1024]; // data for the stack - start with 10k
 
 		/* first put all "roots" in the stack, and mark them as processed */
 		for (int rootId : roots) {
@@ -264,7 +256,7 @@ public class ObjectMarker {
 			if (newDone > 0) {
 				int k = ticksLeft * newDone / (newDone + size());
 				// Make sure we don't report progress too often
-				if (k < totalWork / 1_000)
+				if (k < totalWork / 1000)
 					k = 0;
 				if (k > 0) {
 					worked += k;
@@ -413,7 +405,7 @@ public class ObjectMarker {
 	public class DfsThread implements Runnable {
 
 		int size = 0;
-		int[] data = new int[10 * 1_024]; // start with 10k
+		int[] data = new int[10 * 1024]; // start with 10k
 		IntStack rootsStack;
 
 		public DfsThread(IntStack roots) {
@@ -477,13 +469,13 @@ public class ObjectMarker {
 	public class LocalDfsThread extends DfsThread {
 		private static final int RESERVED =
 				MultiThreadedRootStack.RESERVED_WAITING - MultiThreadedRootStack.RESERVED_RUNNING;
-		static final int MAXSTACK = 100 * 1_024;
+		static final int MAXSTACK = 100 * 1024;
 		int localRange;
 		final int localRangeLimit;
 		SoftReference<int[]> sr;
 		double scaleUp = 0.005;
 		MultiThreadedRootStack rootsStack;
-		QueueInt queue = new QueueInt(1_024);
+		QueueInt queue = new QueueInt(1024);
 
 		public LocalDfsThread(MultiThreadedRootStack roots) {
 			this(roots, 1_000_000);
@@ -659,7 +651,7 @@ public class ObjectMarker {
 				if (DEBUG)
 					System.out.println("Set local range=" + localRange);
 				// set trigger
-				sr = new SoftReference<int[]>(new int[1_024]);
+				sr = new SoftReference<int[]>(new int[1024]);
 			} else if (sr.get() != null) {
 				if (localRange < bits.length && scaleUp > 0.0) {
 					// Increase slowly
@@ -680,7 +672,7 @@ public class ObjectMarker {
 				if (DEBUG)
 					System.out.println("Decreased local range=" + localRange + " " + scaleUp);
 				// reset trigger
-				sr = new SoftReference<int[]>(new int[1_024]);
+				sr = new SoftReference<int[]>(new int[1024]);
 			}
 		}
 	}

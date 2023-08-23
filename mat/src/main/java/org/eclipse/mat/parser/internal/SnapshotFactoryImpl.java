@@ -1,25 +1,17 @@
-/**
- * The MIT License
- * Copyright (c) 2008-2013 Benoit Lacelle - SOLVEN
+/*******************************************************************************
+ * Copyright (c) 2008, 2023 SAP AG, IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * SPDX-License-Identifier: EPL-2.0
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ * Contributors:
+ *    SAP AG - initial API and implementation
+ *    IBM Corporation - additional debug information
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
+ *******************************************************************************/
 package org.eclipse.mat.parser.internal;
 
 import java.io.File;
@@ -251,14 +243,14 @@ public class SnapshotFactoryImpl implements SnapshotFactory.Implementation {
 	 */
 	private void validateIndices(PreliminaryIndexImpl pidx, IProgressListener listener) {
 		final int maxIndex = pidx.identifiers.size();
-		listener.beginTask(Messages.SnapshotFactoryImpl_ValidatingIndices, maxIndex / 1_000 + 1);
+		listener.beginTask(Messages.SnapshotFactoryImpl_ValidatingIndices, maxIndex / 1000 + 1);
 		long prevAddress = -1;
 		int nObjs = 0;
 		int nObjsFromClass = 0;
 		int nCls = 0;
 		// Look at each object
 		for (int i = 0; i < maxIndex; ++i) {
-			if (i % 1_000 == 0) {
+			if (i % 1000 == 0) {
 				if (listener.isCanceled()) {
 					throw new IProgressListener.OperationCanceledException();
 				}

@@ -1,25 +1,17 @@
-/**
- * The MIT License
- * Copyright (c) 2008-2013 Benoit Lacelle - SOLVEN
+/*******************************************************************************
+ * Copyright (c) 2008, 2023 SAP AG, IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * SPDX-License-Identifier: EPL-2.0
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ * Contributors:
+ *    SAP AG - initial API and implementation
+ *    IBM Corporation - additional debug information
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
+ *******************************************************************************/
 package org.eclipse.mat.parser.internal;
 
 import java.io.IOException;
@@ -127,7 +119,7 @@ public class DominatorTree {
 			outboundIndex.unload();
 
 			IProgressListener progressListener = this.monitor.nextMonitor();
-			progressListener.beginTask(Messages.DominatorTree_ComputingDominators, n / 1_000);
+			progressListener.beginTask(Messages.DominatorTree_ComputingDominators, n / 1000);
 
 			/*
 			 * Reallocate just before use.
@@ -167,7 +159,7 @@ public class DominatorTree {
 				}
 				bucket[compressedParent.get(w)] = -1;
 				// }
-				if (i % 1_000 == 0) {
+				if (i % 1000 == 0) {
 					if (progressListener.isCanceled())
 						throw new IProgressListener.OperationCanceledException();
 					progressListener.worked(1);
@@ -244,7 +236,7 @@ public class DominatorTree {
 			// currentElementStack - for v, successorsStack - for the successors
 			// array,
 			// currentSuccessorStack - for the index in the array
-			int capacity = 2_047; // capacity for the arrays - allows resize up to 2047<<20
+			int capacity = 2047; // capacity for the arrays - allows resize up to 2047<<20
 			int size = 0; // one size for all arrays
 			int[] currentElementStack = new int[capacity];
 			int[] currentSuccessorStack = new int[capacity];
@@ -380,14 +372,14 @@ public class DominatorTree {
 			int numberOfObjects = snapshot.getSnapshotInfo().getNumberOfObjects();
 
 			IProgressListener progressListener = this.monitor.nextMonitor();
-			progressListener.beginTask(Messages.DominatorTree_CreateDominatorsIndexFile, numberOfObjects / 1_000);
+			progressListener.beginTask(Messages.DominatorTree_CreateDominatorsIndexFile, numberOfObjects / 1000);
 
 			for (int i = -1; i < numberOfObjects; i++) {
 				int[] successors = tree.getSuccessorsArr(i);
 				tree.sortByTotalSize(successors);
 				writer.log(i + 1, successors);
 
-				if (i % 1_000 == 0) {
+				if (i % 1000 == 0) {
 					if (progressListener.isCanceled())
 						throw new IProgressListener.OperationCanceledException();
 					progressListener.worked(1);
@@ -504,7 +496,7 @@ public class DominatorTree {
 						new IndexWriter.LongIndexCollector(dump.getSnapshotInfo().getNumberOfObjects(),
 								IndexWriter.mostSignificantBit(dump.getSnapshotInfo().getUsedHeapSize()));
 
-				int capacity = 2_047; // capacity for the arrays - allows resize up to 2047<<20
+				int capacity = 2047; // capacity for the arrays - allows resize up to 2047<<20
 				int size = 0;
 				int[] stack = new int[capacity];
 				SuccessorsEnum[] succStack = new SuccessorsEnum[capacity];
@@ -517,7 +509,7 @@ public class DominatorTree {
 
 				IProgressListener progressListener = Calculator.this.monitor.nextMonitor();
 				progressListener.beginTask(Messages.DominatorTree_CalculateRetainedSizes,
-						dump.getSnapshotInfo().getNumberOfObjects() / 1_000);
+						dump.getSnapshotInfo().getNumberOfObjects() / 1000);
 				int counter = 0;
 
 				while (size > 0) {
@@ -553,7 +545,7 @@ public class DominatorTree {
 
 						if (currentEntry >= 0) {
 							retained.set(currentEntry, ts[currentEntry + 2]);
-							if (++counter % 1_000 == 0) {
+							if (++counter % 1000 == 0) {
 								if (progressListener.isCanceled())
 									throw new IProgressListener.OperationCanceledException();
 								progressListener.worked(1);

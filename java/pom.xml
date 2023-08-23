@@ -28,7 +28,7 @@
 			<artifactId>spring-beans</artifactId>
 		</dependency>
 		<dependency>
-			<!-- Used by GCInspector for @ManagedAttribute -->
+			<!-- Used by SetStaticMBean for @ManagedResource -->
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>

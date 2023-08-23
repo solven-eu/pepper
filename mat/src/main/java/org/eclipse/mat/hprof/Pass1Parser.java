@@ -1,25 +1,17 @@
-/**
- * The MIT License
- * Copyright (c) 2008-2016 Benoit Lacelle - SOLVEN
+/*******************************************************************************
+ * Copyright (c) 2008, 2023 SAP AG, IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * SPDX-License-Identifier: EPL-2.0
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ * Contributors:
+ *    SAP AG - initial API and implementation
+ *    IBM Corporation - additional debug information
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
+ *******************************************************************************/
 package org.eclipse.mat.hprof;
 
 import java.io.BufferedInputStream;
@@ -108,7 +100,7 @@ public class Pass1Parser extends AbstractParser {
 			while (curPos < fileSize) {
 				if (monitor.isProbablyCanceled())
 					throw new IProgressListener.OperationCanceledException();
-				monitor.totalWorkDone(curPos / 1_000);
+				monitor.totalWorkDone(curPos / 1000);
 
 				int record = in.readUnsignedByte();
 
@@ -171,7 +163,7 @@ public class Pass1Parser extends AbstractParser {
 					break;
 				case Constants.Record.HEAP_DUMP:
 				case Constants.Record.HEAP_DUMP_SEGMENT:
-					long dumpTime = date + (timeWrap + timeOffset) / 1_000;
+					long dumpTime = date + (timeWrap + timeOffset) / 1000;
 					if (dumpMatches(currentDumpNr, dumpNrToRead)) {
 						if (!foundDump) {
 							handler.addProperty(IHprofParserHandler.CREATION_DATE, String.valueOf(dumpTime));
@@ -319,7 +311,7 @@ public class Pass1Parser extends AbstractParser {
 		long segmentsEndPos = segmentStartPos + length;
 
 		while (segmentStartPos < segmentsEndPos) {
-			long workDone = segmentStartPos / 1_000;
+			long workDone = segmentStartPos / 1000;
 			if (this.monitor.getWorkDone() < workDone) {
 				if (this.monitor.isProbablyCanceled())
 					throw new IProgressListener.OperationCanceledException();
@@ -680,7 +672,6 @@ public class Pass1Parser extends AbstractParser {
 				String methodSignature,
 				String sourceFile,
 				long classSerNum) {
-			super();
 			this.frameId = frameId;
 			this.lineNr = lineNr;
 			this.method = method;
@@ -720,7 +711,6 @@ public class Pass1Parser extends AbstractParser {
 		private long[] frameIds;
 
 		public StackTrace(long serialNr, long threadSerialNr, long[] frameIds) {
-			super();
 			this.frameIds = frameIds;
 			this.threadSerialNr = threadSerialNr;
 		}
@@ -747,7 +737,6 @@ public class Pass1Parser extends AbstractParser {
 		private int type;
 
 		public JavaLocal(long objectId, int lineNumber, int type) {
-			super();
 			this.lineNumber = lineNumber;
 			this.objectId = objectId;
 			this.type = type;

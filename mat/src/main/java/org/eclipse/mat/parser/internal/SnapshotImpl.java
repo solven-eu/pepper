@@ -1,25 +1,17 @@
-/**
- * The MIT License
- * Copyright (c) 2008-2013 Benoit Lacelle - SOLVEN
+/*******************************************************************************
+ * Copyright (c) 2008, 2023 SAP AG, IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * SPDX-License-Identifier: EPL-2.0
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ * Contributors:
+ *    SAP AG - initial API and implementation
+ *    IBM Corporation - additional debug information
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
+ *******************************************************************************/
 package org.eclipse.mat.parser.internal;
 
 import java.io.BufferedInputStream;
@@ -298,7 +290,7 @@ public final class SnapshotImpl implements ISnapshot {
 		this.dominatorTreeCalculated = indexManager.dominated() != null && indexManager.o2retained() != null
 				&& indexManager.dominator() != null;
 
-		this.objectCache = new HeapObjectCache(this, 1_000);
+		this.objectCache = new HeapObjectCache(this, 1000);
 
 		this.heapObjectReader.open(this);
 
@@ -838,14 +830,14 @@ public final class SnapshotImpl implements ISnapshot {
 		// inline the stack functionality for performance reasons
 		// IntStack temp = new IntStack();
 		int tempSize = 0;
-		int tempCapacity = 10 * 1_024;
+		int tempCapacity = 10 * 1024;
 		int[] temp = new int[tempCapacity];
 
 		IIndexReader.IOne2OneIndex dominatorIdx = indexManager.dominator();
 		IIndexReader.IOne2ManyIndex dominated = indexManager.dominated();
 
 		int size = 0;
-		int capacity = 10 * 1_024;
+		int capacity = 10 * 1024;
 		int[] stack = new int[capacity];
 
 		int iterations = 0;
@@ -978,7 +970,7 @@ public final class SnapshotImpl implements ISnapshot {
 		// inline the stack functionality for performance reasons
 		// IntStack temp = new IntStack();
 		int tempSize = 0;
-		int tempCapacity = 10 * 1_024;
+		int tempCapacity = 10 * 1024;
 		int[] temp = new int[tempCapacity];
 
 		IIndexReader.IOne2OneIndex dominatorIdx = indexManager.dominator();
@@ -1069,7 +1061,7 @@ public final class SnapshotImpl implements ISnapshot {
 		// inline the stack functionality for performance reasons
 		// IntStack temp = new IntStack();
 		int tempSize = 0;
-		int tempCapacity = 10 * 1_024;
+		int tempCapacity = 10 * 1024;
 		int[] temp = new int[tempCapacity];
 
 		IIndexReader.IOne2OneIndex dominatorIdx = indexManager.dominator();

@@ -1,25 +1,17 @@
-/**
- * The MIT License
- * Copyright (c) 2008-2010 Benoit Lacelle - SOLVEN
+/*******************************************************************************
+ * Copyright (c) 2008, 2023 SAP AG, IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * SPDX-License-Identifier: EPL-2.0
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ * Contributors:
+ *    SAP AG - initial API and implementation
+ *    IBM Corporation - additional debug information
+ *    Netflix (Jason Koch) - refactors for increased performance and concurrency
+ *******************************************************************************/
 package org.eclipse.mat.snapshot.model;
 
 import java.io.Serializable;
@@ -87,20 +79,20 @@ public abstract class GCRootInfo implements Serializable {
 		/**
 		 * An object which has a finalize method, but has not been finalized and is not yet on the finalizer queue
 		 */
-		int UNFINALIZED = 1_024;
+		int UNFINALIZED = 1024;
 		/**
 		 * An object which is unreachable from any other root, but has been marked as a root by MAT to retain objects
 		 * which otherwise would not be included in the analysis
 		 *
 		 * @since 1.0
 		 */
-		int UNREACHABLE = 2_048;
+		int UNREACHABLE = 2048;
 		/**
 		 * A Java stack frame containing references to Java locals
 		 *
 		 * @since 1.0
 		 */
-		int JAVA_STACK_FRAME = 4_096;
+		int JAVA_STACK_FRAME = 4096;
 	}
 
 	private static final String[] TYPE_STRING = new String[] { Messages.GCRootInfo_Unkown, //
