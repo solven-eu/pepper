@@ -44,7 +44,7 @@
 			<!--https://github.com/wrandelshofer/FastDoubleParser -->
 			<groupId>ch.randelshofer</groupId>
 			<artifactId>fastdoubleparser</artifactId>
-			<version>0.3.0</version>
+			<version>0.9.0</version>
 		</dependency>
 
 		<dependency>
