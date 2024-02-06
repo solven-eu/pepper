@@ -24,7 +24,7 @@ package eu.solven.pepper.primitive;
 
 import com.google.common.base.CharMatcher;
 
-import ch.randelshofer.fastdoubleparser.FastDoubleParser;
+import ch.randelshofer.fastdoubleparser.JavaDoubleParser;
 
 /**
  * Try to provide faster primitive faster than FLoat.parseFLoat and Double.parseDouble, even if these method are
@@ -70,7 +70,7 @@ public class PepperParserHelper {
 	 * @deprecated Prefer https://github.com/wrandelshofer/FastDoubleParser
 	 */
 	public static double parseDouble(CharSequence s) {
-		return FastDoubleParser.parseDouble(s);
+		return JavaDoubleParser.parseDouble(s);
 	}
 
 	/**

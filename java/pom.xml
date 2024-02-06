@@ -23,11 +23,6 @@
 			<artifactId>spring-core</artifactId>
 		</dependency>
 		<dependency>
-			<!-- Used by GCInspector for InitializingBean -->
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-		</dependency>
-		<dependency>
 			<!-- Used by SetStaticMBean for @ManagedResource -->
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -44,7 +39,9 @@
 			<!--https://github.com/wrandelshofer/FastDoubleParser -->
 			<groupId>ch.randelshofer</groupId>
 			<artifactId>fastdoubleparser</artifactId>
-			<version>0.3.0</version>
+			<version>1.0.0</version>
+			<!-- Optional as this is used only by deprecated methods -->
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>

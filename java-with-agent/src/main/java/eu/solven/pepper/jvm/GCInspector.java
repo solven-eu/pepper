@@ -99,6 +99,7 @@ import eu.solven.pepper.memory.histogram.HeapHistogram;
 import eu.solven.pepper.memory.histogram.IHeapHistogram;
 import eu.solven.pepper.thread.IThreadDumper;
 import eu.solven.pepper.thread.PepperThreadDumper;
+import eu.solven.pepper.util.PepperEnvHelper;
 import eu.solven.pepper.util.PepperTimeHelper;
 
 /**
@@ -265,22 +266,13 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		}
 	}
 
+	/**
+	 * 
+	 * @deprecated Use {@link PepperEnvHelper#inUnitTest()}
+	 */
+	@Deprecated
 	public static boolean inUnitTest() {
-		// In maven: org.apache.maven.surefire.booter.ForkedBooter.exit(ForkedBooter.java:144)
-		// Bean disposing is expected to be done in the main thead: does this main thread comes from junit or surefire?
-		// SpringBootTest close the AppContext in a different thread, through an ApplicationShutdownHooks
-
-		Optional<StackTraceElement> matching = Thread.getAllStackTraces()
-				.values()
-				.stream()
-				.flatMap(Stream::of)
-				.filter(ste -> Stream.of(".surefire.", ".failsafe.", ".junit.")
-						.anyMatch(name -> ste.getClassName().contains(name)))
-				.findAny();
-
-		matching.ifPresent(ste -> LOGGER.info("We have detected a unit-test with: {}", ste));
-
-		return matching.isPresent();
+		return PepperEnvHelper.inUnitTest();
 	}
 
 	/**
