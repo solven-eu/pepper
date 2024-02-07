@@ -44,7 +44,7 @@
 		<!-- <version>3.1.2</version> -->
 		<!-- <version>3.1.6</version> -->
 		<!-- Indeed, moved to org.codehaus.commons.compiler.InternalCompilerException -->
-		<janino.version>3.0.16</janino.version>
+		<janino.version>3.1.12</janino.version>
 	</properties>
 
 	<dependencyManagement>
