@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle - SOLVEN
+ * Copyright (c) 2014-2024 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -62,7 +62,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.ListenerNotFoundException;
