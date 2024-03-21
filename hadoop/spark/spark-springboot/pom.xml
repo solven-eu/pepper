@@ -109,7 +109,7 @@
 						<!-- application ClassLoader, while it is exactly what's done by SparkSubmit -->
 						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-maven-plugin</artifactId>
-						<version>2.7.12</version>
+						<version>3.2.4</version>
 					</dependency>
 				</dependencies>
 			</plugin>
