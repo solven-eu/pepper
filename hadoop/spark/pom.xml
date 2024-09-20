@@ -29,7 +29,7 @@
 		<scala.shortVersion>2.11</scala.shortVersion>
 		<scala.version>2.11</scala.version>
 		<!-- https://mvnrepository.com/artifact/org.scala-lang/scala-reflect -->
-		<scala-lang.version>2.11.12</scala-lang.version>
+		<scala-lang.version>2.13.15</scala-lang.version>
 
 		<!-- Most Spark distribution has this quite old Guava: as it easily leads -->
 		<!-- to conflicts, we make sure we compile locally with this library -->
