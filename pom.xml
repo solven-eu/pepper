@@ -100,7 +100,7 @@
 		<!-- https://github.com/google/guava/releases -->
 		<!-- https://github.com/google/guava/wiki/Compatibility -->
 		<!-- Guava for JDK6 drops at 28.1-jre -->
-		<guava.version>31.1-jre</guava.version>
+		<guava.version>33.3.1-jre</guava.version>
 
 		<!-- https://mvnrepository.com/artifact/org.jooq/jool -->
 		<jool.version>0.9.15</jool.version>
