@@ -77,9 +77,8 @@ public class CloseableIntBuffer implements AutoCloseable {
 			cleanerClass.getMethod("clean").invoke(cleaner);
 		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
-			LOGGER.trace("Ouch", e);
 			// JDK9?
-			return;
+			LOGGER.trace("Ouch", e);
 		}
 	}
 

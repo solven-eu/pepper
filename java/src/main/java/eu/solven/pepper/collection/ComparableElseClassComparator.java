@@ -49,6 +49,7 @@ public class ComparableElseClassComparator implements Comparator<Comparable<?>> 
 	}
 
 	@Override
+	@SuppressWarnings("PMD.UnnecessaryCast")
 	public int compare(Comparable<?> o1, Comparable<?> o2) {
 		if (o1 == null || o2 == null) {
 			return Objects.compare(o1, o2, nullComparator);
@@ -59,7 +60,7 @@ public class ComparableElseClassComparator implements Comparator<Comparable<?>> 
 			return c1.getName().compareTo(c2.getName());
 		}
 
-		return ((Comparable) o1).compareTo((Comparable) o2);
+		return ((Comparable) o1).compareTo(o2);
 	}
 
 }

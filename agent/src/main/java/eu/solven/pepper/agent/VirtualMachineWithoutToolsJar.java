@@ -72,8 +72,8 @@ public class VirtualMachineWithoutToolsJar {
 	// Switched to true if incompatible JVM, or attach failed
 	private static final AtomicBoolean WILL_NOT_WORK = new AtomicBoolean(false);
 
-	private static final AtomicReference<Class<?>> JVM_VIRTUAL_MACHINE_CLASS = new AtomicReference<Class<?>>();
-	private static final AtomicReference<Object> JVM_VIRTUAL_MACHINE = new AtomicReference<Object>();
+	private static final AtomicReference<Class<?>> JVM_VIRTUAL_MACHINE_CLASS = new AtomicReference<>();
+	private static final AtomicReference<Object> JVM_VIRTUAL_MACHINE = new AtomicReference<>();
 
 	// https://stackoverflow.com/questions/2591083/getting-java-version-at-runtime
 	// https://stackoverflow.com/questions/5103121/how-to-find-the-jvm-version-from-a-program
@@ -406,7 +406,7 @@ public class VirtualMachineWithoutToolsJar {
 		final Method methodForInputStream = vmClass.getMethod(methodName, Object[].class);
 
 		LOGGER.info("About to invoke {} on {}", methodName, vmClass);
-		return (InputStream) methodForInputStream.invoke(virtualMachine, new Object[] { argument });
+		return (InputStream) methodForInputStream.invoke(virtualMachine, (Object) argument);
 	}
 
 	private static String getJavaVendor() {

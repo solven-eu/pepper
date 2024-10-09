@@ -59,7 +59,7 @@ import com.google.common.math.LongMath;
  * @author Benoit Lacelle
  *
  */
-@SuppressWarnings({ "PMD.GodClass" })
+@SuppressWarnings({ "PMD.GodClass", "PMD.CouplingBetweenObjects" })
 @Beta
 public class CartesianProductHelper {
 
@@ -686,7 +686,7 @@ public class CartesianProductHelper {
 		if (listOfSets.isEmpty()) {
 			return 0L;
 		} else {
-			return listOfSets.stream().mapToLong(Set::size).reduce(1, (l, r) -> LongMath.checkedMultiply(l, r));
+			return listOfSets.stream().mapToLong(Set::size).reduce(1, LongMath::checkedMultiply);
 		}
 	}
 

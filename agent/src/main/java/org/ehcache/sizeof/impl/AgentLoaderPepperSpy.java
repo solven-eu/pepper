@@ -57,7 +57,7 @@ public class AgentLoaderPepperSpy {
 			LOGGER.info("Initializing Agent to provide a reference to {}", Instrumentation.class.getName());
 
 			// Load the agent as first try
-			AgentLoaderPepperSpy.loadAgent();
+			loadAgent();
 		}
 		Field f = AgentLoader.class.getDeclaredField("instrumentation");
 

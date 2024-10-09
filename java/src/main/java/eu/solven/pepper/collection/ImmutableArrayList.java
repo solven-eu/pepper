@@ -72,7 +72,7 @@ public final class ImmutableArrayList<T> extends AbstractList<T> {
 
 		int result = 1;
 		for (int index : indexes) {
-			result = HASHCODE_CONSTANT * result;
+			result *= HASHCODE_CONSTANT;
 			if (array[index] != null) {
 				result += array[index].hashCode();
 			}

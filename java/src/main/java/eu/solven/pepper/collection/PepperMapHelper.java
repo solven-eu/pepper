@@ -45,12 +45,13 @@ import eu.solven.pepper.logging.PepperLogHelper;
  * @author Benoit Lacelle
  *
  */
-@SuppressWarnings({ "PMD.GodClass", "PMD.AvoidDuplicateLiterals" })
+@SuppressWarnings({ "PMD.GodClass", "PMD.AvoidDuplicateLiterals", "PMD.CouplingBetweenObjects" })
 public class PepperMapHelper {
 	protected PepperMapHelper() {
 		// hidden
 	}
 
+	@SuppressWarnings("PMD.GenericsNaming")
 	public static <K1, V, K2 extends K1> Map<K1, V> transcodeColumns(BiMap<?, ? extends K2> mapping, Map<K1, V> map) {
 		// https://stackoverflow.com/questions/24630963/java-8-nullpointerexception-in-collectors-tomap
 		return map.entrySet().stream().collect(LinkedHashMap::new, (m, e) -> {

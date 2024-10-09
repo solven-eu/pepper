@@ -17,9 +17,6 @@
 		<jacoco.instruction.ratio>0.36</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.25</jacoco.branch.ratio>
 
-		<!-- Enable wider compatibility -->
-		<compiler.targetVersion>1.6</compiler.targetVersion>
-
 		<sizeof.version>0.4.3</sizeof.version>
 	</properties>
 
