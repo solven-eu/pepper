@@ -53,7 +53,7 @@ public class PepperFootprintDeprecatedHelper implements IPepperMemoryConstants {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperFootprintDeprecatedHelper.class);
 
 	private static final ReflectionSizeOf REFLECTION_SIZE_OF = new ReflectionSizeOf();
-	private static final Double AUTOBOXED_ZERO = Double.valueOf(0D);
+	private static final Double AUTOBOXED_ZERO = 0D;
 
 	// http://java-performance.info/overview-of-memory-saving-techniques-java/
 	public static final int JVM_MEMORY_CHUNK = 8;
@@ -172,7 +172,7 @@ public class PepperFootprintDeprecatedHelper implements IPepperMemoryConstants {
 		Objects.requireNonNull(instrumentation);
 
 		if (object == null) {
-			return;
+			LOGGER.trace("null");
 		} else {
 			// http://stackoverflow.com/questions/4930781/how-do-hashcode-and-identityhashcode-work-at-the-back-end
 			// see FastHashCode in

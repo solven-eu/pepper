@@ -115,12 +115,17 @@ public class RunParquetToCsvAsSpringBootFromToAbfss {
 					.config("spark.master", "local[*]")
 					// Enable Hive support for ABFSS
 					.enableHiveSupport();
-			try (SparkSession spark = sparkSessionBuilder.getOrCreate()) {
-
-				try (JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext())) {
-					LOGGER.info("TODO");
-				}
-			}
+			runSpark(sparkSessionBuilder);
 		};
+	}
+
+	@SuppressWarnings("PMD.UnusedLocalVariable")
+	private void runSpark(SparkSession.Builder sparkSessionBuilder) {
+		try (SparkSession spark = sparkSessionBuilder.getOrCreate()) {
+
+			try (JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext())) {
+				LOGGER.info("TODO");
+			}
+		}
 	}
 }

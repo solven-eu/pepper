@@ -31,6 +31,14 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<dependency>
+			<!-- Used in GCInspector -->
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<!-- Optional to make it easier to comply with Spring5 and Spring6 -->
+			<optional>true</optional>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.openjdk.jol/jol-core -->
 		<dependency>
 			<groupId>org.openjdk.jol</groupId>

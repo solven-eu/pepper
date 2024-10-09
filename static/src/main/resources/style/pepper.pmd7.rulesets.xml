@@ -83,11 +83,6 @@
 			<property name="minimum" value="10" />
 		</properties>
 	</rule>
-	<rule ref="category/java/design.xml/CognitiveComplexity">
-		<properties>
-			<property name="reportLevel" value="25" />
-		</properties>
-	</rule>
 	<rule ref="category/java/design.xml/NcssCount">
 		<!-- NCSS replaced ExcessiveMethodLength -->
 		<!-- https://pmd.github.io/latest/pmd_rules_java_design.html#ncsscount -->
@@ -98,6 +93,16 @@
 			
 			<property name="classReportLevel" value="1500" />
 			<property name="ncssOptions" value="" />
+		</properties>
+	</rule>
+	<rule ref="category/java/design.xml/CognitiveComplexity">
+		<properties>
+			<property name="reportLevel" value="25" />
+		</properties>
+	</rule>
+	<rule ref="category/java/design.xml/CouplingBetweenObjects">
+		<properties>
+			<property name="threshold" value="30" />
 		</properties>
 	</rule>
 	<rule ref="category/java/documentation.xml">

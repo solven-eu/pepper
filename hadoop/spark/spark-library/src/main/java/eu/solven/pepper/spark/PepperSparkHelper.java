@@ -80,7 +80,7 @@ public class PepperSparkHelper {
 			BiMap<String, String> inputToOutputColumnMapping) throws IOException {
 		// We write IndexedRecord instead of Map<?,?> as it is implied by the schema: a schema holding a Map would not
 		// defines the fields
-		DatumWriter<IndexedRecord> userDatumWriter = new SpecificDatumWriter<IndexedRecord>(outputSchema);
+		DatumWriter<IndexedRecord> userDatumWriter = new SpecificDatumWriter<>(outputSchema);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -106,8 +106,7 @@ public class PepperSparkHelper {
 		return outputSchema.getFields()
 				.stream()
 				.map(f -> columnMapping.inverse().getOrDefault(f.name(), f.name()))
-				.collect(
-						Collectors.toMap(fName -> columnMapping.getOrDefault(fName, fName), fName -> row.getAs(fName)));
+				.collect(Collectors.toMap(fName -> columnMapping.getOrDefault(fName, fName), row::getAs));
 	}
 
 	private static IndexedRecord mapToIndexedRecord(Schema schema, Map<?, ?> row) {

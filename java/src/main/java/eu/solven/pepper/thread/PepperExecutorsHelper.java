@@ -64,6 +64,7 @@ import com.google.common.util.concurrent.MoreExecutors;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("PMD.CouplingBetweenObjects")
 public class PepperExecutorsHelper {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperExecutorsHelper.class);
 
@@ -133,7 +134,7 @@ public class PepperExecutorsHelper {
 	public static ListeningExecutorService newSingleThreadExecutor(String threadNamePrefix,
 			int queueCapacity,
 			RejectedExecutionHandler rejectedExecutionHandler) {
-		final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(queueCapacity);
+		final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>(queueCapacity);
 
 		// Inspired by Executors.newSingleThreadExecutor
 		return MoreExecutors.listeningDecorator(new ThreadPoolExecutor(1,
@@ -222,7 +223,7 @@ public class PepperExecutorsHelper {
 			String threadNamePrefix,
 			int queueCapacity,
 			RejectedExecutionHandler rejectedExecutionHandler) {
-		final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(queueCapacity);
+		final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>(queueCapacity);
 
 		ThreadPoolExecutor tpExecutor = new ThreadPoolExecutor(nbThreads,
 				nbThreads,
@@ -300,23 +301,17 @@ public class PepperExecutorsHelper {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T> List<? extends ListenableFuture<T>> invokeAll(Collection<? extends Supplier<? extends T>> tasks,
 			ListeningExecutorService executorService) throws InterruptedException {
-		Collection<Callable<T>> callables = Collections2.transform(tasks, PepperExecutorsHelper.supplierToCallable());
+		Collection<Callable<T>> callables = Collections2.transform(tasks, supplierToCallable());
 
 		return (List) executorService.invokeAll(callables);
 	}
 
 	private static <T> Function<Callable<? extends T>, Callable<T>> callableToCallable() {
-		return input -> () -> input.call();
+		return input -> input::call;
 	}
 
 	private static <T> Function<Supplier<? extends T>, Callable<T>> supplierToCallable() {
-		return new Function<Supplier<? extends T>, Callable<T>>() {
-
-			@Override
-			public Callable<T> apply(final Supplier<? extends T> input) {
-				return () -> input.get();
-			}
-		};
+		return input -> input::get;
 	}
 
 	/**

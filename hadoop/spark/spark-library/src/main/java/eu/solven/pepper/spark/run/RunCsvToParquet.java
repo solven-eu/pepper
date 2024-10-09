@@ -71,6 +71,7 @@ public class RunCsvToParquet {
 		csvToParquet(tmpPath, tmpParquetPath);
 	}
 
+	@SuppressWarnings("PMD.UnusedLocalVariable")
 	public static void csvToParquet(Path csvPath, Path parquetTargetPath) throws FileNotFoundException, IOException {
 		LOGGER.info("About to convert {} into folder {}", csvPath, parquetTargetPath);
 

@@ -51,22 +51,23 @@ public final class HeapHistogram implements IHeapHistogram, Serializable {
 	private static final long serialVersionUID = 2163916067335213382L;
 	private static final Logger LOGGER = LoggerFactory.getLogger(HeapHistogram.class);
 
+	private static final int DECIMAL_RADIX = 10;
+
 	private final List<ClassInfo> classes;
 	private final List<ClassInfo> permGenClasses;
-	private long totalHeapBytes;
-	private long totalHeapInstances;
-	private long totalPermGenBytes;
-	private long totalPermgenInstances;
-	private boolean sourceDisplayed;
-
-	private static final int DECIMAL_RADIX = 10;
+	long totalHeapBytes = 0L;
 
 	HeapHistogram(InputStream in, boolean jrockit) {
 		final Scanner sc = new Scanner(in, JMAP_CHARSET.toString());
 		final List<ClassInfo> classInfos = scan(sc, jrockit);
 
-		classes = new ArrayList<ClassInfo>();
-		permGenClasses = new ArrayList<ClassInfo>();
+		classes = new ArrayList<>();
+		permGenClasses = new ArrayList<>();
+
+		long totalHeapInstances = 0L;
+		long totalPermGenBytes = 0L;
+		long totalPermgenInstances = 0L;
+		boolean sourceDisplayed = false;
 
 		for (final ClassInfo classInfo : classInfos) {
 			if (classInfo.isPermGen()) {
@@ -128,7 +129,7 @@ public final class HeapHistogram implements IHeapHistogram, Serializable {
 	}
 
 	private List<ClassInfo> scan(Scanner sc, boolean jrockit) {
-		final Map<String, ClassInfo> classInfoMap = new HashMap<String, ClassInfo>();
+		final Map<String, ClassInfo> classInfoMap = new HashMap<>();
 		sc.useRadix(DECIMAL_RADIX);
 
 		skipHeader(sc, jrockit);

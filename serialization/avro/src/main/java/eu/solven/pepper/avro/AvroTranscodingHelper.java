@@ -329,7 +329,7 @@ public class AvroTranscodingHelper {
 			// value is useful to interpret raw bytes or complex types
 			Object recordValue = indexedRecord.get(i);
 
-			Object cleanValue = AvroTranscodingHelper.toJdk(recordValue, () -> exampleValue);
+			Object cleanValue = toJdk(recordValue, () -> exampleValue);
 			asMap.put(fieldName, cleanValue);
 		}
 
@@ -363,7 +363,7 @@ public class AvroTranscodingHelper {
 				if (field == null) {
 					LOGGER.trace("We received a Map with a key which does not exist in the schema: " + key);
 				} else {
-					record.set(key, AvroTranscodingHelper.toAvro(field, value));
+					record.set(key, toAvro(field, value));
 				}
 			});
 

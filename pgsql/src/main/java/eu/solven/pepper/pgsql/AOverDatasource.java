@@ -44,8 +44,6 @@ import org.jooq.tools.jdbc.JDBCUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.VisibleForTesting;
-
 import eu.solven.pepper.logging.PepperLogHelper;
 import eu.solven.pepper.time.PepperDateHelper;
 
@@ -59,9 +57,9 @@ import eu.solven.pepper.time.PepperDateHelper;
 public abstract class AOverDatasource<T extends org.jooq.Table<?>> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AOverDatasource.class);
 
-	@VisibleForTesting
+	// @VisibleForTesting
 	protected final AtomicLong nbWarnings = new AtomicLong();
-	@VisibleForTesting
+	// @VisibleForTesting
 	protected final AtomicReference<OffsetDateTime> unitTestsNow = new AtomicReference<>();
 
 	protected final Supplier<Connection> datasource;
@@ -72,12 +70,12 @@ public abstract class AOverDatasource<T extends org.jooq.Table<?>> {
 
 	protected abstract T t();
 
-	@VisibleForTesting
+	// @VisibleForTesting
 	public long getNbWarnings() {
 		return nbWarnings.get();
 	}
 
-	@VisibleForTesting
+	// @VisibleForTesting
 	public void setUnitTestsNow(OffsetDateTime now) {
 		this.unitTestsNow.set(now);
 	}

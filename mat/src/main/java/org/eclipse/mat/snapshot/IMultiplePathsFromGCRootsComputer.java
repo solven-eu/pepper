@@ -33,8 +33,7 @@ public interface IMultiplePathsFromGCRootsComputer {
 	 * @return MultiplePathsFromGCRootsRecord[] one record for each group of paths starting from the same GC root
 	 * @throws SnapshotException
 	 */
-	public MultiplePathsFromGCRootsRecord[] getPathsByGCRoot(IProgressListener progressListener)
-			throws SnapshotException;
+	MultiplePathsFromGCRootsRecord[] getPathsByGCRoot(IProgressListener progressListener) throws SnapshotException;
 
 	/**
 	 * Calculates (if not yet calculated) and returns all the paths. Each element in the Object[] is an int[]
@@ -45,6 +44,6 @@ public interface IMultiplePathsFromGCRootsComputer {
 	 * @return Object[] - each element in the array is an int[] representing a path
 	 * @throws SnapshotException
 	 */
-	public Object[] getAllPaths(IProgressListener progressListener) throws SnapshotException;
+	Object[] getAllPaths(IProgressListener progressListener) throws SnapshotException;
 
 }

@@ -107,5 +107,12 @@
 			<artifactId>log4j-over-slf4j</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<!-- ReflectionUtils -->
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

@@ -257,7 +257,7 @@ public class AvroSchemaHelper {
 	}
 
 	public static Map<String, Object> exampleMap(Schema schema) {
-		return schema.getFields().stream().collect(Collectors.toMap(f -> f.name(), f -> exampleValue(f.schema())));
+		return schema.getFields().stream().collect(Collectors.toMap(Field::name, f -> exampleValue(f.schema())));
 	}
 
 	public static Object exampleValue(Schema schema) {
@@ -288,7 +288,7 @@ public class AvroSchemaHelper {
 		} else if (nonNullSchema.getType() == Type.RECORD) {
 			List<Field> fields = nonNullSchema.getFields();
 
-			return fields.stream().collect(Collectors.toMap(f -> f.name(), f -> exampleValue(f.schema())));
+			return fields.stream().collect(Collectors.toMap(Field::name, f -> exampleValue(f.schema())));
 		} else if (nonNullSchema.getType() == Type.BYTES) {
 			// Is it legit?
 			return IPepperSchemaConstants.SOME_LOCALDATE;

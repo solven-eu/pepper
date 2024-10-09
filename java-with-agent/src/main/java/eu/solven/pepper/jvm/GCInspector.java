@@ -92,7 +92,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import eu.solven.pepper.agent.VirtualMachineWithoutToolsJar;
 import eu.solven.pepper.jmx.PepperJMXHelper;
 import eu.solven.pepper.logging.PepperLogHelper;
-import eu.solven.pepper.memory.IPepperMemoryConstants;
 import eu.solven.pepper.memory.PepperMemoryHelper;
 import eu.solven.pepper.memory.histogram.HeapHistogram;
 import eu.solven.pepper.memory.histogram.IHeapHistogram;
@@ -111,7 +110,8 @@ import eu.solven.pepper.util.PepperTimeHelper;
 @SuppressWarnings({ "PMD.AvoidDuplicateLiterals",
 		"PMD.GodClass",
 		"PMD.ConsecutiveLiteralAppends",
-		"PMD.ExcessiveClassLength" })
+		"PMD.ExcessiveClassLength",
+		"PMD.CouplingBetweenObjects" })
 @ManagedResource
 public class GCInspector implements NotificationListener, InitializingBean, DisposableBean, IGCInspector {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GCInspector.class);
@@ -250,7 +250,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	protected void addShutdownHook() {
 		Runtime.getRuntime()
 				.addShutdownHook(
-						new Thread(() -> executeDuringShutdown(), this.getClass().getSimpleName() + "-ShutdownHook"));
+						new Thread(this::executeDuringShutdown, this.getClass().getSimpleName() + "-ShutdownHook"));
 	}
 
 	protected void executeDuringShutdown() {
@@ -498,6 +498,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		appendSize(sb, nonHeapUsedAfter);
 	}
 
+	@SuppressWarnings("PMD.ConsecutiveAppendsShouldReuse")
 	protected void appendDetailsAboutMove(StringBuilder sb, long totalAfterMinusbefore, long totalHeapUsedBefore) {
 		sb.append('=');
 		appendSize(sb, totalHeapUsedBefore);
@@ -567,8 +568,9 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		return heapGCNotifReference.getAndSet(immutableCurrentHeapByThread);
 	}
 
+	@SuppressWarnings("PMD.MagicNumber")
 	protected String getCurrentMemoryStatusMessage() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(32);
 
 		appendCPU(sb);
 
@@ -629,16 +631,18 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		// Add information about DirectMemory
 		{
 			directMemoryStatus().ifPresent(directMemoryBean -> {
-				sb.append("; ");
-				sb.append("DirectMemory").append(": ");
+				sb.append("; ").append("DirectMemory").append(": ");
 				long directMemoryUsed = directMemoryBean.getMemoryUsed();
 				additionalMemory.addAndGet(directMemoryUsed);
 				appendSize(sb, directMemoryUsed);
 				sb.append(" over max=");
 				long maxDirectMemory = PepperForOracleJVM.maxDirectMemory();
 				appendSize(sb, maxDirectMemory);
-				sb.append(" - ").append(PepperLogHelper.getNicePercentage(directMemoryUsed, maxDirectMemory));
-				sb.append(" (allocationCount=").append(directMemoryBean.getCount()).append(')');
+				sb.append(" - ")
+						.append(PepperLogHelper.getNicePercentage(directMemoryUsed, maxDirectMemory))
+						.append(" (allocationCount=")
+						.append(directMemoryBean.getCount())
+						.append(')');
 			});
 		}
 
@@ -646,8 +650,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		// threads
 		{
 			long nbLiveThreads = THREAD_MBEAN.getThreadCount();
-			sb.append(" LiveThreadCount=");
-			sb.append(nbLiveThreads);
+			sb.append(" LiveThreadCount=").append(nbLiveThreads);
 
 			long threadMemory = nbLiveThreads * getMemoryPerThread();
 			additionalMemory.addAndGet(threadMemory);
@@ -912,7 +915,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 			return PepperMemoryHelper.memoryAsLong(xss.get());
 		} else {
 			// https://stackoverflow.com/questions/6020619/where-to-find-default-xss-value-for-sun-oracle-jvm
-			return IPepperMemoryConstants.MB;
+			return MB;
 		}
 	}
 

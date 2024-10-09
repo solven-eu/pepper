@@ -314,7 +314,7 @@ public class MapPath {
 	 * @param flatten
 	 * @return a recursive {@link Map} given a flatten {@link Map}.
 	 */
-	@SuppressWarnings("PMD.NullAssignment")
+	@SuppressWarnings({ "PMD.NullAssignment", "PMD.CompareObjectsWithEquals" })
 	public static Map<String, Object> recurse(Map<String, ?> flatten) {
 		Configuration conf = Configuration.defaultConfiguration();
 

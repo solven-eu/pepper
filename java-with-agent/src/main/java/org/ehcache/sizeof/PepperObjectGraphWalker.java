@@ -110,17 +110,18 @@ public final class PepperObjectGraphWalker {
 	@SuppressWarnings({ "PMD.NPathComplexity",
 			"PMD.ExcessiveMethodLength",
 			"PMD.CognitiveComplexity",
-			"PMD.CompareObjectsWithEquals" })
+			"PMD.CompareObjectsWithEquals",
+			"PMD.MagicNumber" })
 	public void walk(Object... root) {
 		final StringBuilder traversalDebugMessage;
 		if (USE_VERBOSE_DEBUG_LOGGING && LOGGER.isDebugEnabled()) {
-			traversalDebugMessage = new StringBuilder();
+			traversalDebugMessage = new StringBuilder(32);
 		} else {
 			traversalDebugMessage = null;
 		}
 
 		Deque<Object> toVisit = new ArrayDeque<>();
-		IdentityHashMap<Object, Object> visited = new IdentityHashMap<>();
+		Map<Object, Object> visited = new IdentityHashMap<>();
 
 		if (root != null) {
 			if (traversalDebugMessage != null) {

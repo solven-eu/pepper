@@ -25,6 +25,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+
+		<dependency>
 			<!-- https://stackoverflow.com/questions/1829904/is-there-a-way-to-ignore-a-single-findbugs-warning -->
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>

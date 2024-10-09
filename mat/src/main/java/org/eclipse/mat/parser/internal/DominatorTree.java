@@ -258,7 +258,7 @@ public class DominatorTree {
 				currentSuccessor = currentSuccessorStack[size - 1];
 
 				if (semi[v] == 0) {
-					n = n + 1;
+					n += 1;
 					semi[v] = n;
 					vertex[n] = v;
 					label[v] = v;

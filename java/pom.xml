@@ -21,15 +21,15 @@
 			<!-- Used in PepperFileHelper -->
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-            <!-- Optional to make it easier to comply with Spring5 and Spring6 -->
-            <optional>true</optional>
+			<!-- Optional to make it easier to comply with Spring5 and Spring6 -->
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<!-- Used by SetStaticMBean for @ManagedResource -->
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<!-- Optional to make it easier to comply with Spring5 and Spring6 -->
-            <optional>true</optional>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -37,7 +37,7 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<!-- Optional as Guava is a quite large library -->
-            <optional>true</optional>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/ch.randelshofer/fastdoubleparser -->

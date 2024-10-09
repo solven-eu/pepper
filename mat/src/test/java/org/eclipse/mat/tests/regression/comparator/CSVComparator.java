@@ -55,7 +55,7 @@ public class CSVComparator implements IComparator {
 				}
 				if (differences.size() == 10) // add only first 10 differences
 					break;
-				lineNumber = lineNumber + 1;
+				lineNumber += 1;
 			}
 
 			if (!differences.isEmpty())

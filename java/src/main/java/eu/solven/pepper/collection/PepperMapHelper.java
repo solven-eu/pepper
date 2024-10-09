@@ -183,14 +183,12 @@ public class PepperMapHelper {
 		}
 	}
 
-	public static <T> T getRequiredAs(Object mapOrList, Object firstKey, Object... moreKeys) {
-		T value = rawGetAs(mapOrList, Lists.asList(firstKey, moreKeys));
+	public static <T> T getRequiredAs(final Object mapOrList, Object mainKey, Object... subKeys) {
+		List<Object> allKeys = checkNullMap(mapOrList, mainKey, subKeys);
 
-		if (value == null) {
-			throw new IllegalStateException("keys=" + Lists.asList(firstKey, moreKeys) + " led to a 'null");
-		} else {
-			return value;
-		}
+		return digForValue(mapOrList, allKeys, (currentKey, rawValue) -> {
+			return (T) rawValue;
+		});
 	}
 
 	public static Optional<String> getOptionalString(Object mapOrList, Object firstKey, Object... moreKeys) {
@@ -198,20 +196,23 @@ public class PepperMapHelper {
 	}
 
 	public static Optional<String> getOptionalString(Object mapOrList, List<?> keys) {
-		Object value = rawGetAs(mapOrList, keys);
+		Optional<Object> optValue = getOptionalAs(mapOrList, keys);
 
-		if (value == null) {
-			return Optional.empty();
-		} else if (value instanceof String) {
-			String valueString = value.toString();
-			if (valueString.isEmpty()) {
-				return Optional.empty();
+		if (optValue.isPresent()) {
+			Object rawNotNull = optValue.get();
+			if (rawNotNull instanceof String) {
+				String valueString = rawNotNull.toString();
+				if (valueString.isEmpty()) {
+					return Optional.empty();
+				} else {
+					return Optional.of(valueString);
+				}
 			} else {
-				return Optional.of(valueString);
+				throw new IllegalArgumentException(
+						"keys=" + keys + " led to not-a-string: " + PepperLogHelper.getObjectAndClass(rawNotNull));
 			}
 		} else {
-			throw new IllegalArgumentException(
-					"keys=" + keys + " led to not-a-string: " + PepperLogHelper.getObjectAndClass(value));
+			return Optional.empty();
 		}
 	}
 
@@ -250,14 +251,6 @@ public class PepperMapHelper {
 			}
 
 			return checkNonNullString(currentKey, rawValue);
-		});
-	}
-
-	public static <T> T getRequiredAs(final Object mapOrList, String mainKey, String... subKeys) {
-		List<Object> allKeys = checkNullMap(mapOrList, mainKey, subKeys);
-
-		return digForValue(mapOrList, allKeys, (currentKey, rawValue) -> {
-			return (T) rawValue;
 		});
 	}
 

@@ -146,6 +146,7 @@ public class PepperLogHelper {
 		return humanBytes(size);
 	}
 
+	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 	public static Object getObjectAndClass(Object o) {
 		return lazyToString(() -> {
 			if (o == null) {
@@ -234,6 +235,7 @@ public class PepperLogHelper {
 		});
 	}
 
+	@SuppressWarnings("PMD.UnnecessaryBoxing")
 	public static Object getNiceDouble(Double value) {
 		if (value == null) {
 			return "null";
@@ -258,7 +260,7 @@ public class PepperLogHelper {
 
 	@SuppressWarnings("PMD.CognitiveComplexity")
 	public static Object humanDuration(long time, TimeUnit timeUnit) {
-		return PepperLogHelper.lazyToString(() -> {
+		return lazyToString(() -> {
 			long timeInMs = timeUnit.toMillis(time);
 
 			if (timeInMs >= TimeUnit.DAYS.toMillis(1)) {
