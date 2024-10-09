@@ -107,7 +107,7 @@
 
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
-		<errorprone.version>2.18.0</errorprone.version>
+		<errorprone.version>2.33.0</errorprone.version>
 
 		<awaitility.version>4.0.3</awaitility.version>
 		<equals.verifier.version>3.14.2</equals.verifier.version>
