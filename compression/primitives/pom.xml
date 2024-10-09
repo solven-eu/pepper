@@ -13,7 +13,7 @@
 
 	<properties>
 		<roaringbitmap.version>0.9.44</roaringbitmap.version>
-		<fastpfor.version>0.1.12</fastpfor.version>
+		<fastpfor.version>0.2.1</fastpfor.version>
 		<fastutil.version>8.5.14</fastutil.version>
 
 		<!-- TODO -->
