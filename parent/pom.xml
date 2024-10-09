@@ -47,7 +47,7 @@
 		<scm.connection>scm:git:ssh://github.com/solven-eu/pepper.git</scm.connection>
 		<scm.url>https://github.com/solven-eu/pepper</scm.url>
 
-		<spotless.version>2.36.0</spotless.version>
+		<spotless.version>2.43.0</spotless.version>
 		<cleanthat.version>2.14</cleanthat.version>
 
 		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
