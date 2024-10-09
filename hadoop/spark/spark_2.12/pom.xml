@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-spark-parent</artifactId>
-		<version>4.6-SNAPSHOT</version>
+		<version>4.6</version>
 	</parent>
 
 	<artifactId>pepper-spark_2.12</artifactId>
