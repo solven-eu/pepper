@@ -21,17 +21,23 @@
 			<!-- Used in PepperFileHelper -->
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
+			<!-- Optional to make it easier to comply with Spring5 and Spring6 -->
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<!-- Used by SetStaticMBean for @ManagedResource -->
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
+			<!-- Optional to make it easier to comply with Spring5 and Spring6 -->
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
 			<!-- Provides an EventBus to diffuse Events to MetricsTowerControl -->
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
+			<!-- Optional as Guava is a quite large library -->
+			<optional>true</optional>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/ch.randelshofer/fastdoubleparser -->
@@ -39,7 +45,7 @@
 			<!--https://github.com/wrandelshofer/FastDoubleParser -->
 			<groupId>ch.randelshofer</groupId>
 			<artifactId>fastdoubleparser</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 			<!-- Optional as this is used only by deprecated methods -->
 			<optional>true</optional>
 		</dependency>

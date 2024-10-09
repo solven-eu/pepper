@@ -130,6 +130,7 @@ public class PepperGzipHelper {
 	 *            a file-system path where to create a new archive
 	 * @throws IOException
 	 */
+	@SuppressWarnings("PMD.ExceptionAsFlowControl")
 	public static void packToZip(final Path folder, final Path zipFilePath) throws IOException {
 		URI folderUri = folder.toUri();
 
@@ -187,7 +188,7 @@ public class PepperGzipHelper {
 	}
 
 	// https://stackoverflow.com/questions/10633595/java-zip-how-to-unzip-folder
-	@SuppressWarnings("PMD.AssignmentInOperand")
+	@SuppressWarnings({ "PMD.AssignmentInOperand", "PMD.AvoidReassigningLoopVariables" })
 	public static void unzip(InputStream is, Path targetDir) throws IOException {
 		targetDir = targetDir.toAbsolutePath();
 		try (ZipInputStream zipIn = new ZipInputStream(is)) {

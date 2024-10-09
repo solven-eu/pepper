@@ -47,7 +47,7 @@ public class ConstantBitsIntArray implements IReadableIntArray {
 
 	protected transient int[] varyingIndexes;
 
-	@SuppressWarnings("PMD.CognitiveComplexity")
+	@SuppressWarnings({ "PMD.CognitiveComplexity", "PMD.UselessParentheses" })
 	protected ConstantBitsIntArray(int... input) {
 		length = input.length;
 		int intLength = input.length;
@@ -113,9 +113,9 @@ public class ConstantBitsIntArray implements IReadableIntArray {
 				}
 			}
 		}
-
 	}
 
+	@SuppressWarnings("PMD.UselessParentheses")
 	@Override
 	public int getInt(int index) {
 		int output = constantBitMask;
@@ -164,6 +164,7 @@ public class ConstantBitsIntArray implements IReadableIntArray {
 		return someLong | (1 << longBitIndex);
 	}
 
+	@SuppressWarnings("PMD.UselessParentheses")
 	private int indexVaryingToIndexLong(int index, int nbVarying) {
 		return Ints.checkedCast((index * nbVarying) / 64);
 	}

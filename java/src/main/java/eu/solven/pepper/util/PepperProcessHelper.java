@@ -119,7 +119,7 @@ public class PepperProcessHelper {
 		// SImplify output by redirecting all stream in the same place
 		memoryBuilder.redirectErrorStream(true);
 
-		LOGGER.debug("About to execute {}", PepperProcessHelper.getCommandAsString(memoryBuilder.command()));
+		LOGGER.debug("About to execute {}", getCommandAsString(memoryBuilder.command()));
 
 		int osFlag;
 		if (SystemUtils.IS_OS_LINUX) {
@@ -152,13 +152,14 @@ public class PepperProcessHelper {
 	@SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.CognitiveComplexity" })
 	@VisibleForTesting
 	protected static OptionalLong extractMemory(int osFlag, InputStream inputStream) throws IOException {
+		AtomicReference<String> lastLineRef = new AtomicReference<>("");
+
 		LineProcessor<String> processor = new LineProcessor<String>() {
-			AtomicReference<String> lastLine = new AtomicReference<>("");
 
 			@Override
 			public boolean processLine(String line) throws IOException {
 				if (!line.isEmpty()) {
-					lastLine.set(line);
+					lastLineRef.set(line);
 				}
 
 				if (osFlag == OS_MARKER_MAC) {
@@ -177,7 +178,7 @@ public class PepperProcessHelper {
 
 			@Override
 			public String getResult() {
-				return lastLine.get();
+				return lastLineRef.get();
 			}
 		};
 

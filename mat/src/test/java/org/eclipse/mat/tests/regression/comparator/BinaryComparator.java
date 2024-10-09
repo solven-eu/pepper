@@ -92,13 +92,13 @@ public class BinaryComparator implements IComparator {
 				int baselineOffset = 0;
 				while (baselineOffset < BUFFSIZE && (readBaseline =
 						baselineStream.read(baselineBuffer, baselineOffset, BUFFSIZE - baselineOffset)) >= 0) {
-					baselineOffset = baselineOffset + readBaseline;
+					baselineOffset += readBaseline;
 				}
 
 				int testOffset = 0;
 				while (testOffset < BUFFSIZE
 						&& (readTest = testStream.read(testBuffer, testOffset, BUFFSIZE - testOffset)) >= 0) {
-					testOffset = testOffset + readTest;
+					testOffset += readTest;
 				}
 				if (baselineOffset != testOffset)
 					return false;

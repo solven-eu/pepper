@@ -175,15 +175,16 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 	}
 
 	protected void logOnEndEvent(TaskStartEvent startEvent) {
-		Optional<TaskEndEvent> endEvent = startEvent.getEndEvent();
+		Optional<TaskEndEvent> optEndEvent = startEvent.getEndEvent();
 
-		if (!endEvent.isPresent()) {
+		if (!optEndEvent.isPresent()) {
 			LOGGER.info("We closed {} without an endEvent ?!", startEvent);
 		} else {
-			long timeInMs = endEvent.get().durationInMs();
+			TaskEndEvent endEvent = optEndEvent.get();
+			long timeInMs = endEvent.durationInMs();
 
 			long longRunningInMillis = TimeUnit.SECONDS.toMillis(longRunningCheckSeconds);
-			Object lazyToString = PepperLogHelper.lazyToString(() -> endEvent.get().startEvent.toStringNoStack());
+			Object lazyToString = PepperLogHelper.lazyToString(endEvent.startEvent::toStringNoStack);
 			Object niceTime = PepperLogHelper.humanDuration(timeInMs);
 			if (timeInMs > factorForTooOld * longRunningInMillis) {
 				LOGGER.info("After {}, end of very-long {}", niceTime, lazyToString);
@@ -239,7 +240,7 @@ public class PepperActiveTasksMonitor implements IActiveTasksMonitor, Initializi
 
 	protected void scheduleLogLongRunningTasks() {
 		ScheduledFuture<?> cancelMe = scheduledFuture.getAndSet(logLongRunningES
-				.scheduleWithFixedDelay(() -> logLongRunningTasks(), 1, longRunningCheckSeconds, TimeUnit.SECONDS));
+				.scheduleWithFixedDelay(this::logLongRunningTasks, 1, longRunningCheckSeconds, TimeUnit.SECONDS));
 
 		if (cancelMe != null) {
 			// Cancel the task with previous delay

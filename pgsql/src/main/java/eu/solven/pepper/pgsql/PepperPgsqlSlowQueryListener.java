@@ -45,7 +45,7 @@ public class PepperPgsqlSlowQueryListener extends DefaultExecuteListener {
 
 	private static final long LOG_WARN_SECONDS = 5;
 
-	private StopWatch watch;
+	private transient StopWatch watch;
 
 	@Override
 	public void executeStart(ExecuteContext ctx) {

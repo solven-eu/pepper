@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,8 +51,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
-
-import eu.solven.pepper.thread.PepperExecutorsHelper;
 
 public class TestAvroStreamHelper {
 
@@ -162,7 +161,7 @@ public class TestAvroStreamHelper {
 
 		InputStream is =
 				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroTranscodingHelper.toGenericRecord(schema)),
-						() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToFile"));
+						() -> Executors.newSingleThreadExecutor());
 
 		byte[] bytes = ByteStreams.toByteArray(is);
 
@@ -182,7 +181,7 @@ public class TestAvroStreamHelper {
 		byte[] bytes;
 		try (InputStream is =
 				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroTranscodingHelper.toGenericRecord(schema)),
-						() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
+						() -> Executors.newSingleThreadExecutor())) {
 			bytes = ByteStreams.toByteArray(is);
 		}
 
@@ -202,7 +201,7 @@ public class TestAvroStreamHelper {
 		byte[] bytes;
 		try (InputStream is =
 				AvroStreamHelper.toInputStream(Stream.of(singleMap).map(AvroTranscodingHelper.toGenericRecord(schema)),
-						() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
+						() -> Executors.newSingleThreadExecutor())) {
 			bytes = ByteStreams.toByteArray(is);
 		}
 
@@ -223,7 +222,7 @@ public class TestAvroStreamHelper {
 		byte[] bytes;
 		try (InputStream is = AvroStreamHelper.toInputStream(
 				Stream.of(singleMap).map(AvroTranscodingHelper.toGenericRecord(schemaWrite)),
-				() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
+				() -> Executors.newSingleThreadExecutor())) {
 			bytes = ByteStreams.toByteArray(is);
 		}
 
@@ -246,7 +245,7 @@ public class TestAvroStreamHelper {
 		byte[] bytes;
 		try (InputStream is = AvroStreamHelper.toInputStream(
 				Stream.of(singleMap).map(AvroTranscodingHelper.toGenericRecord(schemaWrite)),
-				() -> PepperExecutorsHelper.newSingleThreadExecutor("testAvroToByteArray_LocalDate"))) {
+				() -> Executors.newSingleThreadExecutor())) {
 			bytes = ByteStreams.toByteArray(is);
 		}
 
@@ -282,7 +281,7 @@ public class TestAvroStreamHelper {
 			try (InputStream is = AvroStreamHelper.toInputStream(
 					Stream.of(Collections.singletonMap("fieldName", someValue))
 							.map(AvroTranscodingHelper.toGenericRecord(record)),
-					() -> PepperExecutorsHelper.newSingleThreadExecutor("testAllTypes"))) {
+					() -> Executors.newSingleThreadExecutor())) {
 				bytes = ByteStreams.toByteArray(is);
 			}
 
@@ -330,7 +329,7 @@ public class TestAvroStreamHelper {
 			try (InputStream is = AvroStreamHelper.toInputStream(
 					Stream.of(ImmutableMap.of("fieldName", someValue))
 							.map(AvroTranscodingHelper.toGenericRecord(record)),
-					() -> PepperExecutorsHelper.newSingleThreadExecutor("testAllTypes_UnionNull"))) {
+					() -> Executors.newSingleThreadExecutor())) {
 				bytes = ByteStreams.toByteArray(is);
 			}
 

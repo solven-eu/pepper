@@ -28,6 +28,12 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core_2.11 -->
 		<dependency>
 			<groupId>org.apache.spark</groupId>

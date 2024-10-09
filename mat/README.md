@@ -18,12 +18,12 @@ Original repo: https://git.eclipse.org/c/mat/org.eclipse.mat.git
 ### How to sync https://github.com/blacelle/org.eclipse.mat
 
 ```
-   git clone git@github.com:blacelle/org.eclipse.mat.git
-   cd org.eclipse.mat
-   git remote add eclipse	https://git.eclipse.org/r/mat/org.eclipse.mat.git
-   git fetch eclipse
-   git push origin eclipse/master:master
-   git push origin --tags
+git clone git@github.com:blacelle/org.eclipse.mat.git
+cd org.eclipse.mat
+git remote add eclipse	https://git.eclipse.org/r/mat/org.eclipse.mat.git
+git fetch eclipse
+git push origin eclipse/master:master
+git push origin --tags
 ```
 
 # Usage

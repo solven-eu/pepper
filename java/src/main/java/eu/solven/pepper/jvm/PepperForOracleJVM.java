@@ -51,7 +51,7 @@ public class PepperForOracleJVM {
 			// return sun.misc.VM.maxDirectMemory();
 			Class<?> vm = Class.forName("sun.misc.VM");
 
-			return ((Long) vm.getMethod("maxDirectMemory").invoke(null)).longValue();
+			return (Long) vm.getMethod("maxDirectMemory").invoke(null);
 		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			// JDK9?

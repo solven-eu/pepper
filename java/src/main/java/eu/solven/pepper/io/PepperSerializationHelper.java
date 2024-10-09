@@ -164,7 +164,8 @@ public class PepperSerializationHelper {
 	 */
 	public static Map<String, Object> convertToMap(CharSequence asString) {
 		Map<String, String> mapStringString = convertToMapStringString(asString);
-		return ImmutableMap.copyOf(Maps.transformValues(mapStringString, input -> convertStringToObject(input)));
+		return ImmutableMap
+				.copyOf(Maps.transformValues(mapStringString, PepperSerializationHelper::convertStringToObject));
 	}
 
 	public static Map<String, String> convertToMapStringString(CharSequence asString) {
@@ -198,7 +199,7 @@ public class PepperSerializationHelper {
 		Map<String, String> mapStringString = convertToMapStringString(asString);
 
 		// Convert value from String to List of String
-		return Maps.transformValues(mapStringString, value -> convertToListString(value));
+		return Maps.transformValues(mapStringString, PepperSerializationHelper::convertToListString);
 	}
 
 	public static Set<?> convertToSet(CharSequence asString) {
@@ -229,9 +230,7 @@ public class PepperSerializationHelper {
 
 	public static List<Object> convertToList(CharSequence asString, char separator) {
 		List<String> stringList = convertToListString(asString, separator);
-		return ImmutableList.copyOf(Lists.transform(stringList, (input) -> {
-			return convertStringToObject(input);
-		}));
+		return ImmutableList.copyOf(Lists.transform(stringList, PepperSerializationHelper::convertStringToObject));
 	}
 
 	public static List<String> convertToListString(CharSequence asString, char separator) {
@@ -448,6 +447,7 @@ public class PepperSerializationHelper {
 	}
 
 	@Beta
+	@SuppressWarnings("PMD.UnusedLocalVariable")
 	public static void appendLineInCSVFile(FileOutputStream outputFileIS, Iterable<?> row) throws IOException {
 		// Use a filelock to prevent several process having their rows being interlaced
 		try (java.nio.channels.FileLock lock = outputFileIS.getChannel().lock()) {

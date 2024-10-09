@@ -108,7 +108,7 @@ public class PepperReferenceHelper {
 	 */
 	public static void internalizeFields(Object data) {
 		if (data == null) {
-			return;
+			LOGGER.trace("null ref");
 		} else if (data instanceof Object[]) {
 			internalizeArray((Object[]) data);
 		} else {
@@ -212,7 +212,7 @@ public class PepperReferenceHelper {
 
 		// First encounter of given class
 		// CopyOnWriteArrayList as some Field may be removed later
-		final List<Field> preparingFields = new CopyOnWriteArrayList<Field>();
+		final List<Field> preparingFields = new CopyOnWriteArrayList<>();
 
 		ReflectionUtils.doWithFields(clazz, field -> {
 			// Make accessible as we will read and write it

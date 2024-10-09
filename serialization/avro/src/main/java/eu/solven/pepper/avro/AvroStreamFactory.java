@@ -127,10 +127,10 @@ public class AvroStreamFactory implements IAvroStreamFactory {
 
 	protected IGenericRecordConsumer prepareRecordConsumer(Schema schema, OutputStream outputStream)
 			throws IOException {
-		DatumWriter<GenericRecord> datumWriter = new GenericDatumWriter<GenericRecord>(schema);
+		DatumWriter<GenericRecord> datumWriter = new GenericDatumWriter<>(schema);
 
 		@SuppressWarnings("PMD.CloseResource")
-		DataFileWriter<GenericRecord> rawWriter = new DataFileWriter<GenericRecord>(datumWriter);
+		DataFileWriter<GenericRecord> rawWriter = new DataFileWriter<>(datumWriter);
 		@SuppressWarnings("PMD.CloseResource")
 		DataFileWriter<GenericRecord> dataFileWriter = rawWriter.create(schema, outputStream);
 

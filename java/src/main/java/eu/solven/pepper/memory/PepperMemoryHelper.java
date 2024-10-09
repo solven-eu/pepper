@@ -101,11 +101,11 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 			}
 
 			if (lastChar == 'k' || lastChar == 'K') {
-				multiplier = IPepperMemoryConstants.KB;
+				multiplier = KB;
 			} else if (lastChar == 'm' || lastChar == 'M') {
-				multiplier = IPepperMemoryConstants.MB;
+				multiplier = MB;
 			} else if (lastChar == 'g' || lastChar == 'G') {
-				multiplier = IPepperMemoryConstants.GB;
+				multiplier = GB;
 			} else {
 				throw new IllegalArgumentException(
 						"Can not parse " + targetMax + ". It should end by a digit or one of 'k', 'm','g'");
@@ -130,28 +130,28 @@ public class PepperMemoryHelper implements IPepperMemoryConstants {
 
 		int unitsDone = 0;
 		if (unitsDone < 2) {
-			long gb = leftBytes / IPepperMemoryConstants.GB;
+			long gb = leftBytes / GB;
 			if (gb > 0) {
 				unitsDone++;
 				string += gb + "G";
-				leftBytes -= gb * IPepperMemoryConstants.GB;
+				leftBytes -= gb * GB;
 			}
 		}
 
 		if (unitsDone < 2) {
-			long mb = leftBytes / IPepperMemoryConstants.MB;
+			long mb = leftBytes / MB;
 			if (mb > 0) {
 				unitsDone++;
 				string += mb + "M";
-				leftBytes -= mb * IPepperMemoryConstants.MB;
+				leftBytes -= mb * MB;
 			}
 		}
 		if (unitsDone < 2) {
-			long kb = leftBytes / IPepperMemoryConstants.KB;
+			long kb = leftBytes / KB;
 			if (kb > 0) {
 				unitsDone++;
 				string += kb + "K";
-				leftBytes -= kb * IPepperMemoryConstants.KB;
+				leftBytes -= kb * KB;
 			}
 		}
 

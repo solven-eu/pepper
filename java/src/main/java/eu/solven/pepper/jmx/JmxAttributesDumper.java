@@ -128,7 +128,7 @@ public class JmxAttributesDumper {
 	}
 
 	public JMXConnector openConnector(PepperBasicConnectionDTO connectionDetails) throws IOException {
-		Map<String, String[]> env = new HashMap<String, String[]>();
+		Map<String, String[]> env = new HashMap<>();
 
 		String userName = connectionDetails.userName;
 		if (!Strings.isNullOrEmpty(userName)) {

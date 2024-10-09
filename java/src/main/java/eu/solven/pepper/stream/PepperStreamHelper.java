@@ -55,6 +55,7 @@ import com.google.common.collect.Streams;
  * @author Benoit Lacelle
  *
  */
+@SuppressWarnings("PMD.CouplingBetweenObjects")
 public class PepperStreamHelper {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperStreamHelper.class);

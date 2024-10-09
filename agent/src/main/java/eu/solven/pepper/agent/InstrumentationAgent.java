@@ -53,7 +53,7 @@ public class InstrumentationAgent {
 
 	// Ensure we do a single attemps, else we may receive issue like:
 	// java.lang.UnsatisfiedLinkError: Native Library ...\jre\bin\attach.dll already loaded in another classloader
-	protected static final AtomicReference<Accessor> DEFAULT_ATTEMPT = new AtomicReference<Accessor>();
+	protected static final AtomicReference<Accessor> DEFAULT_ATTEMPT = new AtomicReference<>();
 
 	protected InstrumentationAgent() {
 		// hidden

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Pepper" xmlns="http://pmd.sf.net/ruleset/1.0.0" xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd" xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd">
+
+	<!-- https://pmd.github.io/pmd-6.8.0/pmd_rules_java.html -->
+	<description>Nearly all PMD rules, except those considered not relevant by Pepper</description>
+
+	<!-- https://pmd.github.io/pmd/pmd_rules_java_codestyle.html -->
+	<rule ref="category/java/bestpractices.xml">
+		<exclude name="ConstantsInInterface" />
+		<exclude name="GuardLogStatement" />
+		<exclude name="AvoidReassigningParameters" />
+	</rule>
+	<rule ref="category/java/bestpractices.xml/LooseCoupling">
+		<properties>
+			<!-- https://github.com/pmd/pmd/issues/4622 -->
+			<property name="allowedTypes" value="org.springframework.http.HttpHeaders,java.util.Properties" />
+		</properties>
+	</rule>
+	<rule ref="category/java/codestyle.xml">
+		<!-- Excluded to be later configured -->
+		<exclude name="LongVariable" />
+		<!-- Might be interesting to re-introduce to prevent single-char variable -->
+		<exclude name="ShortVariable" />
+		<exclude name="ShortMethodName" />
+		<exclude name="ShortClassName" />
+		<exclude name="MethodArgumentCouldBeFinal" />
+		<exclude name="LocalVariableCouldBeFinal" />
+		<exclude name="OnlyOneReturn" />
+		<exclude name="AtLeastOneConstructor" />
+		<exclude name="CommentDefaultAccessModifier" />
+		<exclude name="UnnecessaryLocalBeforeReturn" />
+		<!-- TODO Clear this exclusion -->
+		<exclude name="ConfusingTernary" />
+		<exclude name="CallSuperInConstructor" />
+		<!-- TODO DO not exclude this https://github.com/pmd/pmd/issues/2847 -->
+		<exclude name="UseExplicitTypes" />
+	</rule>
+	<!-- https://pmd.github.io/latest/pmd_rules_java_codestyle.html#longvariable -->
+	<rule ref="category/java/codestyle.xml/LongVariable">
+		<properties>
+			<property name="minimum" value="50" />
+		</properties>
+	</rule>
+	<rule ref="category/java/design.xml">
+		<!-- 'Removed misconfigured rule: LoosePackageCoupling cause: No packages or classes specified' -->
+		<exclude name="LoosePackageCoupling" />
+		<!-- https://pmd.github.io/latest/pmd_rules_java_design.html#lawofdemeter -->
+		<exclude name="LawOfDemeter" />
+		<!-- PMD requires private contructors -->
+		<exclude name="UseUtilityClass" />
+		<exclude name="AvoidCatchingGenericException" />
+		<!-- TODO Clear this exclusion -->
+		<exclude name="CyclomaticComplexity" />
+		<exclude name="AvoidThrowingRawExceptionTypes" />
+		<exclude name="NPathComplexity" />
+		<exclude name="SimplifyBooleanReturns" />
+		<exclude name="TooManyMethods" />
+		<exclude name="ExcessiveImports" />
+		<exclude name="NcssCount" />
+		<exclude name="DataClass" />
+		<exclude name="UseObjectForClearerAPI" />
+		<exclude name="ExcessiveParameterList" />
+	</rule>
+	<rule ref="category/java/design.xml/NPathComplexity">
+		<properties>
+			<!-- TODO Lower this value -->
+			<property name="reportLevel" value="1000" />
+		</properties>
+	</rule>
+	<rule ref="category/java/design.xml/TooManyMethods">
+		<properties>
+			<property name="maxmethods" value="50" />
+		</properties>
+	</rule>
+	<rule ref="category/java/design.xml/ExcessiveImports">
+		<properties>
+			<property name="minimum" value="200" />
+		</properties>
+	</rule>
+	<!-- Sync with checkstyle:ParameterNumber -->
+	<rule ref="category/java/design.xml/ExcessiveParameterList">
+		<properties>
+			<property name="minimum" value="10" />
+		</properties>
+	</rule>
+	<rule ref="category/java/design.xml/NcssCount">
+		<!-- NCSS replaced ExcessiveMethodLength -->
+		<!-- https://pmd.github.io/latest/pmd_rules_java_design.html#ncsscount -->
+		<!-- https://pmd.github.io/latest/pmd_rules_java_design.html#excessivemethodlength -->
+		<properties>
+			<!-- Sync with: checkstyle:MethodLength -->
+			<property name="methodReportLevel" value="100" />
+			
+			<property name="classReportLevel" value="1500" />
+			<property name="ncssOptions" value="" />
+		</properties>
+	</rule>
+	<rule ref="category/java/design.xml/CognitiveComplexity">
+		<properties>
+			<property name="reportLevel" value="25" />
+		</properties>
+	</rule>
+	<rule ref="category/java/design.xml/CouplingBetweenObjects">
+		<properties>
+			<property name="threshold" value="30" />
+		</properties>
+	</rule>
+	<rule ref="category/java/documentation.xml">
+		<exclude name="CommentRequired" />
+		<exclude name="CommentSize" />
+	</rule>
+	<rule ref="category/java/documentation.xml/CommentSize">
+		<properties>
+			<property name="maxLines" value="50" />
+			<property name="maxLineLength" value="300" />
+		</properties>
+	</rule>
+	<rule ref="category/java/errorprone.xml">
+		<exclude name="AvoidLiteralsInIfCondition" />
+		<exclude name="AvoidCatchingThrowable" />
+		<exclude name="AvoidCatchingNPE" />
+	</rule>
+	<rule ref="category/java/multithreading.xml">
+		<exclude name="DoNotUseThreads" />
+		<exclude name="UseConcurrentHashMap" />
+	</rule>
+	<rule ref="category/java/performance.xml">
+		<exclude name="UseStringBufferForStringAppends" />
+		<!-- TODO Investigate if you could remove this rule -->
+		<exclude name="AvoidInstantiatingObjectsInLoops" />
+		<exclude name="RedundantFieldInitializer" />
+	</rule>
+	<rule ref="category/java/security.xml" />
+
+</ruleset>

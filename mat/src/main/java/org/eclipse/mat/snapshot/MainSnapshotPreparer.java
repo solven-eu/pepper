@@ -22,8 +22,6 @@ import javax.management.MalformedObjectNameException;
 import org.eclipse.mat.SnapshotException;
 import org.eclipse.mat.util.ConsoleProgressListener;
 
-import eu.solven.pepper.jvm.GCInspector;
-
 /**
  * Typically used to parse a heap-dump. While trying to diminish the heap of mat: -XX:+HeapDumpOnOutOfMemoryError
  * -XX:HeapDumpPath=/disk2/dumps
@@ -34,7 +32,7 @@ import eu.solven.pepper.jvm.GCInspector;
 public class MainSnapshotPreparer {
 	public static void main(String[] args)
 			throws SnapshotException, MalformedObjectNameException, InstanceNotFoundException {
-		new GCInspector().afterPropertiesSet();
+		// new GCInspector().afterPropertiesSet();
 
 		if (args.length < 1) {
 			throw new IllegalArgumentException("We miss a first argument being the path to the file to analyze");

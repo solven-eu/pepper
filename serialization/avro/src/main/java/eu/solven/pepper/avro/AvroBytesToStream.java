@@ -45,7 +45,7 @@ public class AvroBytesToStream implements IBinaryToAvroStream {
 
 	@Override
 	public Stream<GenericRecord> stream(InputStream inputStream) throws IOException {
-		SpecificDatumReader<GenericRecord> specificDatumReader = new SpecificDatumReader<GenericRecord>();
+		SpecificDatumReader<GenericRecord> specificDatumReader = new SpecificDatumReader<>();
 		DataFileStream<GenericRecord> dataFileStream = new DataFileStream<>(inputStream, specificDatumReader);
 
 		return StreamSupport.stream(dataFileStream.spliterator(), false).onClose(() -> {

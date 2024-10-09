@@ -308,6 +308,11 @@ public class TestPepperLogHelper {
 	}
 
 	@Test
+	public void testGetNiceDouble_notNull() {
+		Assert.assertEquals("1.2", PepperLogHelper.getNiceDouble(1.2D).toString());
+	}
+
+	@Test
 	public void testGetNiceDouble_NaN() {
 		Assert.assertEquals("NaN", PepperLogHelper.getNiceDouble(Double.NaN).toString());
 	}

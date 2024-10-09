@@ -77,7 +77,7 @@ public class PepperJMXHelper {
 	}
 
 	public static String convertToString(String asString) {
-		if (asString == null || asString.isEmpty() || PepperJMXHelper.JMX_DEFAULT_STRING.equals(asString)) {
+		if (asString == null || asString.isEmpty() || JMX_DEFAULT_STRING.equals(asString)) {
 			// If the user left the default JMX String, we consider he expects a
 			// full-range search
 			return STANDARD_DEFAULT_STRING;
@@ -187,7 +187,7 @@ public class PepperJMXHelper {
 
 		// We accept to break ordering, and prefer return a user-friendly order
 		try {
-			cleanerMap = new TreeMap<S, T>(asMap);
+			cleanerMap = new TreeMap<>(asMap);
 		} catch (RuntimeException e) {
 			// TreeMap ctor could fail if the key is not comparable (e.g. if the
 			// key is itself a Map)
@@ -274,15 +274,15 @@ public class PepperJMXHelper {
 	}
 
 	public static int convertToLimit(int limit) {
-		if (limit == PepperJMXHelper.JMX_DEFAULT_INT) {
-			return PepperJMXHelper.DEFAULT_LIMIT;
+		if (limit == JMX_DEFAULT_INT) {
+			return DEFAULT_LIMIT;
 		} else {
 			return limit;
 		}
 	}
 
 	public static URL convertToURL(String url) throws MalformedURLException {
-		url = PepperJMXHelper.convertToString(url);
+		url = convertToString(url);
 
 		if (Strings.isNullOrEmpty(url)) {
 			return null;
@@ -299,7 +299,7 @@ public class PepperJMXHelper {
 	}
 
 	public static Path convertToPath(String path) {
-		path = PepperJMXHelper.convertToString(path);
+		path = convertToString(path);
 
 		if (Strings.isNullOrEmpty(path)) {
 			return null;

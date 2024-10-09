@@ -318,14 +318,14 @@ public class TestPepperMapHelper {
 		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 124)).isEmpty();
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testGetRequiredAs_missing_depth2() {
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		PepperMapHelper.getRequiredAs(map, 123, "key2");
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testGetRequiredAs_missing_depth1() {
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 

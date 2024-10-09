@@ -33,5 +33,5 @@ public interface IClassSpecificNameResolver {
 	 * @return name for snapshot object
 	 * @throws SnapshotException
 	 */
-	public String resolve(IObject object) throws SnapshotException;
+	String resolve(IObject object) throws SnapshotException;
 }

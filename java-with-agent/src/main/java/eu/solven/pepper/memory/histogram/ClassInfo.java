@@ -37,7 +37,7 @@ import eu.solven.pepper.memory.IPepperMemoryConstants;
  */
 public class ClassInfo implements Serializable {
 	private static final long serialVersionUID = 6283636454450216347L;
-	private static Map<Character, String> arrayTypes = new HashMap<Character, String>();
+	private static Map<Character, String> arrayTypes = new HashMap<>();
 	static {
 		arrayTypes.put('Z', "boolean");
 		arrayTypes.put('C', "char");

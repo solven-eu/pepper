@@ -83,7 +83,7 @@ public abstract class IndexWriter {
 	private static final long INBOUND_MAX_KEY1 = Integer.MAX_VALUE >>> TESTSCALE;
 
 	public interface KeyWriter {
-		public void storeKey(int index, Serializable key);
+		void storeKey(int index, Serializable key);
 	}
 
 	public static interface Identifier extends IIndexReader.IOne2LongIndex {
