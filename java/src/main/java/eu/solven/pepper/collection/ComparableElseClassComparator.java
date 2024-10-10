@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2023 Benoit Lacelle - SOLVEN
+ * Copyright (c) 2023-2024 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
