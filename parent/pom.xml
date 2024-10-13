@@ -6,14 +6,14 @@
 		<!-- Import dependency management from Spring Boot -->
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.18</version>
+		<version>3.3.4</version>
 		<!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
 		<relativePath />
 	</parent>
 
 	<groupId>io.github.solven-eu.pepper</groupId>
 	<artifactId>pepper-parent</artifactId>
-	<version>4.7-SNAPSHOT</version>
+	<version>5.0-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 
@@ -56,7 +56,7 @@
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-pmd-plugin -->
 		<maven-pmd-plugin.version>3.25.0</maven-pmd-plugin.version>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.pmd/pmd -->
-		<pmd.version>7.3.0</pmd.version>
+		<pmd.version>7.6.0</pmd.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
 		<maven-checkstyle-plugin.version>3.2.2</maven-checkstyle-plugin.version>
@@ -92,7 +92,7 @@
 					<artifactId>spotbugs-maven-plugin</artifactId>
 					<version>${spotbugs.version}</version>
 					<configuration>
-						<excludeFilterFile>${maven.multiModuleProjectDirectory}/static/src/main/resources/style/pepper.spotbugs.xml</excludeFilterFile>
+						<excludeFilterFile>${maven.multiModuleProjectDirectory}/resources/src/main/resources/style/pepper.spotbugs.xml</excludeFilterFile>
 					</configuration>
 					<executions>
 						<execution>
@@ -131,7 +131,7 @@
 							<!-- default phase is verify, which is after tests. We prefer to run static analysis before tests not to wait -->
 							<phase>${staticChecks}</phase>
 							<configuration>
-								<configLocation>${maven.multiModuleProjectDirectory}/static/src/main/resources/style/pepper.checkstyle.xml</configLocation>
+								<configLocation>${maven.multiModuleProjectDirectory}/resources/src/main/resources/style/pepper.checkstyle.xml</configLocation>
 								<!--<configLocation>checkstyle/mitrust.checkstyle.xml</configLocation> -->
 								<consoleOutput>true</consoleOutput>
 								<failsOnError>true</failsOnError>
@@ -167,7 +167,7 @@
 						<format>xml</format>
 
 						<rulesets>
-							<ruleset>${maven.multiModuleProjectDirectory}/static/src/main/resources/style/pepper.pmd7.rulesets.xml</ruleset>
+							<ruleset>${maven.multiModuleProjectDirectory}/resources/src/main/resources/style/pepper.pmd7.rulesets.xml</ruleset>
 						</rulesets>
 						<excludes>
 							<exclude>**/generated/**</exclude>
@@ -313,14 +313,15 @@
 
 							<!--							<removeUnusedImports />-->
 							<importOrder>
-								<file>${maven.multiModuleProjectDirectory}/static/src/main/resources/eclipse/eclipse.importorder</file>
+								<file>${maven.multiModuleProjectDirectory}/resources/src/main/resources/eclipse/eclipse.importorder</file>
 								<!--order>java,javax,org,com</order-->
 							</importOrder>
 
 							<eclipse>
-								<!-- https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter -->
+								<!--
+                                https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter -->
 								<!-- <version>4.18.0</version>-->
-								<file>${maven.multiModuleProjectDirectory}/static/src/main/resources/eclipse/eclipse_java_code_formatter.xml</file>
+								<file>${maven.multiModuleProjectDirectory}/resources/src/main/resources/eclipse/eclipse_java_code_formatter.xml</file>
 							</eclipse>
 
 							<licenseHeader>
@@ -582,7 +583,8 @@
 				<formatter.skip>true</formatter.skip>
 				<impsort.skip>true</impsort.skip>
 				<cleanthat.skip>true</cleanthat.skip>
-				<skip.npm.style>true</skip.npm.style>
+                <skip.npm.style>true</skip.npm.style>
+                <spotless.skip>true</spotless.skip>
 
 				<!-- Dependency will be checked with style -->
 				<enforcer.skip>true</enforcer.skip>
@@ -604,6 +606,7 @@
 				<impsort.skip>true</impsort.skip>
 				<cleanthat.skip>true</cleanthat.skip>
 				<skip.npm.style>true</skip.npm.style>
+                <spotless.skip>true</spotless.skip>
 
 				<!-- Dependency will be checked with style -->
 				<enforcer.skip>true</enforcer.skip>

@@ -154,7 +154,7 @@ public class PepperProcessHelper {
 	protected static OptionalLong extractMemory(int osFlag, InputStream inputStream) throws IOException {
 		AtomicReference<String> lastLineRef = new AtomicReference<>("");
 
-		LineProcessor<String> processor = new LineProcessor<String>() {
+		LineProcessor<String> processor = new LineProcessor<>() {
 
 			@Override
 			public boolean processLine(String line) throws IOException {

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-parent</artifactId>
-		<version>4.7-SNAPSHOT</version>
+		<version>5.0-SNAPSHOT</version>
 		<relativePath>parent</relativePath>
 	</parent>
 
@@ -16,7 +16,7 @@
 
 	<modules>
 		<!-- static resources like the Checkstyle sheet -->
-		<module>static</module>
+		<module>resources</module>
 
 		<!-- Holds the java-agent enabling Instrumentation -->
 		<module>agent</module>
@@ -32,29 +32,18 @@
 		<!-- This project metadata, holding for instance deployment resources -->
 		<module>parent</module>
 
-		<!-- Port Eclipse MAT in an autonomous module -->
-		<!-- Not official module as it does not comply with quality standards yet -->
-		<module>mat</module>
-
 		<!-- Some JMH benchmarks, especially for Double parsing -->
 		<module>jmh</module>
 
 		<module>unittest</module>
 
 		<module>serialization</module>
-		<module>compression</module>
-
-		<!-- <module>spark</module> -->
 
 		<!-- Hadoop module, defining context for multiple modules (e.g. Spark, Parquet,..) -->
 		<module>hadoop</module>
 
 		<!-- Helps integration of a PostgreSQL database -->
 		<module>pgsql</module>
-
-		<!-- a JConsole plugin to facilitate tracking of off-heap -->
-		<!-- Excluded as it is an experimental project -->
-		<!-- <module>buffermonitor</module> -->
 	</modules>
 
 	<scm>
@@ -155,38 +144,6 @@
 
 	<!-- dependencies AFTER dependencyManagement -->
 	<dependencies>
-		<!-- Always added, to facilitate tests -->
-		<dependency>
-			<groupId>org.awaitility</groupId>
-			<artifactId>awaitility</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>nl.jqno.equalsverifier</groupId>
-			<artifactId>equalsverifier</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.checkerframework</groupId>
-			<artifactId>checker-qual</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
 
 		<!-- Always added, to facilitate logging, as it is used by all modules -->
 		<!-- Do not add logback, as the library user may prefer another logging framework -->

@@ -38,6 +38,8 @@ public class TestInstrumentAgent {
 	public static final boolean IS_JDK_9 = "9".equals(System.getProperty("java.specification.version"));
 	public static final boolean IS_JDK_11 = "11".equals(System.getProperty("java.specification.version"));
 	public static final boolean IS_JDK_12 = "12".equals(System.getProperty("java.specification.version"));
+	public static final boolean IS_JDK_17 = "17".equals(System.getProperty("java.specification.version"));
+	public static final boolean IS_JDK_21 = "21".equals(System.getProperty("java.specification.version"));
 
 	@Test
 	public void test_ctor() {

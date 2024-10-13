@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>aggregator-pepper</artifactId>
-		<version>4.7-SNAPSHOT</version>
+		<version>5.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>pepper-serialization</artifactId>
@@ -15,27 +15,10 @@
 		<module>avro</module>
 		<!-- <module>parquet</module> -->
 		<module>arrow</module>
-
-		<!-- Beta: zero-copy CSV reader -->
-		<!-- We recommand https://github.com/deephaven/deephaven-csv -->
-		<!--module>csv</module-->
 	</modules>
 
 	<properties>
-		<avro.version>1.11.1</avro.version>
-
-		<!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
-		<arrow.version>0.17.1</arrow.version>
-		<!-- <parquet.version>1.12.0</parquet.version> -->
-
-		<!-- <hadoop.version>3.3.0</hadoop.version> -->
-
-		<!-- Most Spark distribution has this quite old Guava: as it easily leads -->
-		<!-- to conflicts, we make sure we compile locally with this library -->
-		<!-- <guava.version>14.0.1</guava.version> -->
-		<!-- However Hqdoop 3.3.X requires recent Guava -->
-		<!-- i.e. Preconditions in org.apache.hadoop.fs.ChecksumFileSystem.setConf(Configuration) -->
-		<!-- <guava.version>31.0.1-jre</guava.version> -->
+		<avro.version>1.12.0</avro.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->
 		<arrow.version>17.0.0</arrow.version>

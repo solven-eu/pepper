@@ -62,6 +62,9 @@ public abstract class AOverDatasource<T extends org.jooq.Table<?>> {
 	// @VisibleForTesting
 	protected final AtomicReference<OffsetDateTime> unitTestsNow = new AtomicReference<>();
 
+	/**
+	 * Consider using a {@link CountingConnectionWrapper}
+	 */
 	protected final Supplier<Connection> datasource;
 
 	public AOverDatasource(Supplier<Connection> datasource) {

@@ -5,10 +5,10 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>aggregator-pepper</artifactId>
-		<version>4.7-SNAPSHOT</version>
+		<version>5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pepper-with-agent</artifactId>
+	<artifactId>with-agent</artifactId>
 	<packaging>jar</packaging>
 
 	<description>This holds pepper feature dependending on pepper-agent, for security reasons.</description>
@@ -27,7 +27,7 @@
 
 		<dependency>
 			<groupId>io.github.solven-eu.pepper</groupId>
-			<artifactId>pepper-agent</artifactId>
+			<artifactId>agent</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

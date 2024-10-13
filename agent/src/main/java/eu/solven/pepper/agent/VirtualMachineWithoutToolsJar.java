@@ -54,7 +54,7 @@ import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider.Accessor;
  *
  * @author Benoit Lacelle
  */
-// https://github.com/javamelody/javamelody/blob/master/javamelody-core/src/main/java/net/bull/javamelody/VirtualMachine.java
+// https://github.com/javamelody/javamelody/blob/master/javamelody-core/src/main/java/net/bull/javamelody/internal/model/VirtualMachine.java
 @SuppressWarnings({ "PMD.AvoidSynchronizedAtMethodLevel", "PMD.GodClass" })
 public class VirtualMachineWithoutToolsJar {
 	private static final int JDK_9_VERSION = 9;
@@ -129,6 +129,7 @@ public class VirtualMachineWithoutToolsJar {
 				|| javaVendor.contains("AdoptOpenJDK")
 				|| javaVendor.contains("Apple")
 				|| javaVendor.contains("Eclipse Foundation")
+				|| javaVendor.contains("Eclipse Adoptium")
 				|| isJRockit();
 	}
 
@@ -192,17 +193,18 @@ public class VirtualMachineWithoutToolsJar {
 			MalformedURLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		if (WILL_NOT_WORK.get()) {
 			return Optional.absent();
-		} else if (!IS_VIRTUAL_MACHINE_ELIGIBLE) {
-			// We do not even try loading the VirtualMachine if it is not eligible (jdk9+ and lack of explicit property)
-			LOGGER.warn(
-					"VirtualMachine is not eligible. java.vendor={} java.spec={} '-Djdk.attach.allowAttachSelf=true'={}",
-					getJavaVendor(),
-					getJavaSpecification(),
-					isAllowAttachSelf());
-			WILL_NOT_WORK.set(true);
-
-			return Optional.absent();
 		}
+		// else if (!IS_VIRTUAL_MACHINE_ELIGIBLE) {
+		// // We do not even try loading the VirtualMachine if it is not eligible (jdk9+ and lack of explicit property)
+		// LOGGER.warn(
+		// "VirtualMachine is not eligible. java.vendor={} java.spec={} '-Djdk.attach.allowAttachSelf=true'={}",
+		// getJavaVendor(),
+		// getJavaSpecification(),
+		// isAllowAttachSelf());
+		// WILL_NOT_WORK.set(true);
+		//
+		// return Optional.absent();
+		// }
 
 		// https://github.com/openjdk-mirror/jdk7u-jdk/blob/master/src/share/classes/sun/tools/attach/HotSpotVirtualMachine.java
 		// https://github.com/openjdk-mirror/jdk7u-jdk/blob/master/src/windows/classes/sun/tools/attach/WindowsVirtualMachine.java
@@ -297,7 +299,7 @@ public class VirtualMachineWithoutToolsJar {
 	 * @return An {@link java.util.Optional} {@link InputStream} of the heapHistogram
 	 */
 	public static Optional<InputStream> heapHisto(final boolean allObjectsElseLive) {
-		Optional<InputStream> asInputStream = getJvmVirtualMachine().transform(new Function<Object, InputStream>() {
+		Optional<InputStream> asInputStream = getJvmVirtualMachine().transform(new Function<>() {
 
 			@Override
 			public InputStream apply(Object vm) {
@@ -327,7 +329,7 @@ public class VirtualMachineWithoutToolsJar {
 			throw new IllegalArgumentException("Can not write heap-dump as file already exists: " + absoluteFile);
 		}
 
-		Optional<InputStream> asInputStream = getJvmVirtualMachine().transform(new Function<Object, InputStream>() {
+		Optional<InputStream> asInputStream = getJvmVirtualMachine().transform(new Function<>() {
 
 			@Override
 			public InputStream apply(Object vm) {

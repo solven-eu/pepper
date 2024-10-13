@@ -49,7 +49,7 @@ public class UnsafeNavigableMapListValueComparator
 		return NavigableMapListValueComparator.staticCompare(o1, o2, KEY_COMPARATOR, LIST_VALUES_COMPARATOR);
 	}
 
-	protected static final Comparator<Object> KEY_COMPARATOR = new Comparator<Object>() {
+	protected static final Comparator<Object> KEY_COMPARATOR = new Comparator<>() {
 
 		@SuppressWarnings({ "unchecked", "rawtypes", "PMD.CompareObjectsWithEquals" })
 		@Override
@@ -69,7 +69,7 @@ public class UnsafeNavigableMapListValueComparator
 		}
 	};
 
-	protected static final Comparator<List<?>> LIST_VALUES_COMPARATOR = new Comparator<List<?>>() {
+	protected static final Comparator<List<?>> LIST_VALUES_COMPARATOR = new Comparator<>() {
 
 		@Override
 		public int compare(List<?> key, List<?> key2) {

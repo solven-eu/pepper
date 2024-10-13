@@ -29,7 +29,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,13 +66,14 @@ public class PepperTestHelper {
 	public static boolean assumeDomainIsAvailable(URL url) {
 		try {
 			URLConnection connection = url.openConnection();
-			Assume.assumeNotNull(connection);
+			Assumptions.assumeFalse(connection == null, "null URLConnection");
 			// We check some data from the connection as we may receive a not connection connection
-			Assume.assumeNotNull(connection.getContentType());
+			Assumptions.assumeFalse(null == connection.getContentType());
 
 			return true;
 		} catch (RuntimeException | IOException e) {
-			Assume.assumeNoException("Internet is not available", e);
+			LOGGER.trace("Internet is not available", e);
+			Assumptions.abort("Internet is not available");
 			return false;
 		}
 	}

@@ -368,7 +368,7 @@ public class PepperExecutorsHelper {
 			int partitionSize) {
 		final Iterator<List<T>> underlyingIterator = Iterators.partition(input, partitionSize);
 
-		return new AbstractIterator<Supplier<V>>() {
+		return new AbstractIterator<>() {
 
 			@Override
 			protected Supplier<V> computeNext() {
@@ -393,7 +393,7 @@ public class PepperExecutorsHelper {
 			int partitionSize) {
 		final UnmodifiableIterator<List<T>> underlyingIterator = Iterators.partition(input, partitionSize);
 
-		return new AbstractIterator<Runnable>() {
+		return new AbstractIterator<>() {
 
 			@Override
 			protected Runnable computeNext() {

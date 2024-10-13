@@ -73,6 +73,8 @@ PepperProcessHelper enables tracking the memory consumption of a process (would 
 PepperProcessHelper.getProcessResidentMemory(processPID)
 ```
 
+It were useful to investigate memory issues in [Heroku](https://devcenter.heroku.com/articles/getting-started-with-java).
+
 # MapPath
 
 This module inspires itself from [xpath](https://en.wikipedia.org/wiki/XPath) and [jsonPath](https://github.com/json-path/JsonPath) to manipulate standard `java.util.Map`.
@@ -87,42 +89,17 @@ See [map-path](./map-path)
 </dependency>
 ```
 
-# Pepper-MAT
-
-A fork from Eclipse MAT for HeapDump analysis. It improves original MAT by lowering the heap required to prepare MAT index files, while keeping the produced indexes compatible with the original MAT.
-
-Original work:
-https://git.eclipse.org/c/mat/org.eclipse.mat.git
-
-Additional way to fetch a HeapDump:
-https://schwartzdaniel.com/how-to-take-a-java-heapdump-without-downtime/
-The point of this way is GDB produce a dump much faster than the JVM. Then, a new JVM can be started and the original JVM can be reloaded in a different machine.
-https://www.gnu.org/software/gdb/
-
-- gdb –pid=$PID
-- (gdb) gcore /tmp/jvm.core
-- (gdb) detach
-- (gdb) quit
-- jmap -dump:format=b,file=jvm.hprof /usr/bin/java /tmp/jvm.core
-
 # Upgrade from 2.X to 3.X
 
 Change groupId from `<groupId>com.github.cormoran-io.pepper</groupId>` to `<groupId>io.github.solven-eu.pepper</groupId>`
 Change imported package from `import cormoran.pepper.X` to `import eu.solven.pepper.X`
 
-# Release process
+# Deprecated
 
-## Tag and Publish
+## MAT
 
-Do not -DskipTests, else it will skip javadoc which is mandatory for sonatype
-Do not -T 8 else the prompt for GPG may be lost in the logs
+We use to maintain a fork of [MAT](https://github.com/eclipse-mat/mat), dedicated to huge Heap-Analysis. This is still available in [4.x MAT](https://github.com/solven-eu/pepper/tree/4.x/mat)
 
-        mvn release:clean release:prepare release:perform -DskipStyle -Darguments="-Dmaven.test.skip -DskipStyle -Dmaven.javadoc.skip=false"
-        git push --follow-tags
+## Spark
 
-## In case of error:
-
-        mvn reset --hard HEAD~~
-        git tag -d pepper-XXX
-        git push --delete origin
-
+We use to maintain a set of projects demonstrating how to prepare a Spark-based job, as a SpringBoot application, workarounding various issues like excluding some libraries already provided by the Hadoop ecosystem. This is still available in [4.x Spark](https://github.com/solven-eu/pepper/blob/4.x/hadoop/spark/spark-springboot/README.MD)

@@ -143,7 +143,7 @@ public class ParquetStreamFactory extends AvroStreamFactory {
 	}
 
 	protected Stream<GenericRecord> toStream(ParquetReader<GenericRecord> reader) {
-		Iterator<GenericRecord> iterator = new AbstractIterator<GenericRecord>() {
+		Iterator<GenericRecord> iterator = new AbstractIterator<>() {
 
 			@Override
 			protected GenericRecord computeNext() {
