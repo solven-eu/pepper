@@ -471,7 +471,7 @@
 						<!-- https://mvnrepository.com/artifact/org.sonatype.plugins/nexus-staging-maven-plugin -->
 						<!-- https://issues.sonatype.org/browse/NEXUS-31214 -->
 						<!-- 1.6.10 is broken (and 1.6.9 looks ill anyway) -->
-						<version>1.6.13</version>
+						<version>1.7.0</version>
 						<extensions>true</extensions>
 						<configuration>
 							<serverId>ossrh</serverId>
