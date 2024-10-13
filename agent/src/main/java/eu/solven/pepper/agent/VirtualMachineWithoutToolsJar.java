@@ -81,7 +81,9 @@ public class VirtualMachineWithoutToolsJar {
 	public static final boolean IS_JDK_11 = "11".equals(System.getProperty(ENV_JAVA_SPECIFICATION_VERSION));
 
 	public static final boolean IS_JDK_9_OR_LATER = isJdk9OrLater();
-	public static final boolean IS_VIRTUAL_MACHINE_ELIGIBLE = !isJdk9OrLater() || isAllowAttachSelf();
+	public static final boolean IS_VIRTUAL_MACHINE_ELIGIBLE =
+			// !isJdk9OrLater() ||
+			isAllowAttachSelf();
 
 	protected VirtualMachineWithoutToolsJar() {
 		// hidden
@@ -111,7 +113,7 @@ public class VirtualMachineWithoutToolsJar {
 	}
 
 	// https://stackoverflow.com/questions/56787777/virtualmachine-attachpid-fails-with-java-io-ioexception-can-not-attach-to-cur
-	private static boolean isAllowAttachSelf() {
+	public static boolean isAllowAttachSelf() {
 		String allowAttachSelf = System.getProperty("jdk.attach.allowAttachSelf");
 
 		return "true".equals(allowAttachSelf);
@@ -221,7 +223,7 @@ public class VirtualMachineWithoutToolsJar {
 				} finally {
 					if (JVM_VIRTUAL_MACHINE.get() == null) {
 						LOGGER.warn(
-								"Issue while loading VirtualMachine. java.vendor={} java.spec={} '-Djdk.attach.allowAttachSelf=true'={}",
+								"Issue while loading VirtualMachine. java.vendor={} java.spec={} '-Djdk.attach.allowAttachSelf'={}",
 								getJavaVendor(),
 								getJavaSpecification(),
 								isAllowAttachSelf());
@@ -267,28 +269,24 @@ public class VirtualMachineWithoutToolsJar {
 	 * @throws InvocationTargetException
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
 	 */
-	public static synchronized void detach()
-			throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+	public static synchronized void detach() {
 		// Ensure VirtualMachine reference will not be used anymore
 		Object localRef = JVM_VIRTUAL_MACHINE.getAndSet(null);
 		if (localRef != null) {
 			// We have an attached VirtualMachine : detach it
-			final Method detachMethod = localRef.getClass().getMethod("detach");
-			detachMethod.invoke(localRef);
+			// Can not use `localRef.getClass()` as the actual impl may be not visible through modules
+			// (e.g.
+			// https://github.com/AdoptOpenJDK/openjdk-jdk11/blob/master/src/jdk.attach/aix/classes/sun/tools/attach/AttachProviderImpl.java)
+			try {
+				Method detachMethod = Class.forName("com.sun.tools.attach.VirtualMachine").getMethod("detach");
+				detachMethod.invoke(localRef);
+			} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalAccessException
+					| InvocationTargetException e) {
+				throw new IllegalStateException(e);
+			}
 		}
-	}
-
-	/**
-	 * Dump an histogram of the objects in the heap. This could refers Object which are electable for GC, but not GCed
-	 * yet
-	 *
-	 * @return The output histogram as produced by 'jmap -histo'
-	 */
-	public static Optional<InputStream> heapHisto() {
-		// We follow the default behavior: all objects in heap (even those dead)
-		boolean allObjectsElseLive = true;
-		return heapHisto(allObjectsElseLive);
 	}
 
 	/**
@@ -298,26 +296,8 @@ public class VirtualMachineWithoutToolsJar {
 	 *            of a full-GC)
 	 * @return An {@link java.util.Optional} {@link InputStream} of the heapHistogram
 	 */
-	public static Optional<InputStream> heapHisto(final boolean allObjectsElseLive) {
-		Optional<InputStream> asInputStream = getJvmVirtualMachine().transform(new Function<>() {
-
-			@Override
-			public InputStream apply(Object vm) {
-				if (!allObjectsElseLive) {
-					LOGGER.warn(".heapHisto with allObjectsElseLive=false will trigger a full-GC");
-				}
-				try {
-					return invokeForInputStream(vm, "heapHisto", ALL_OBJECTS_OPTION);
-				} catch (Throwable e) {
-					throw new RuntimeException("Issue on invoking 'heapHisto -all'", e);
-				}
-			}
-
-		});
-
-		return asInputStream;
-	}
-
+	// https://github.com/javamelody/javamelody/blob/master/javamelody-core/src/main/java/net/bull/javamelody/internal/model/VirtualMachine.java#L163
+	// public static Optional<InputStream> heapHisto(final boolean allObjectsElseLive) {
 	/**
 	 *
 	 * @param allObjectsElseLive
@@ -405,7 +385,8 @@ public class VirtualMachineWithoutToolsJar {
 
 		// https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr014.html#BABJIIHH
 		// http://docs.oracle.com/javase/7/docs/technotes/tools/share/jmap.html
-		final Method methodForInputStream = vmClass.getMethod(methodName, Object[].class);
+		final Method methodForInputStream =
+				Class.forName("com.sun.tools.attach.VirtualMachine").getMethod(methodName, Object[].class);
 
 		LOGGER.info("About to invoke {} on {}", methodName, vmClass);
 		return (InputStream) methodForInputStream.invoke(virtualMachine, (Object) argument);

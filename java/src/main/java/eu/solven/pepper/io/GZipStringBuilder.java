@@ -185,16 +185,14 @@ public class GZipStringBuilder implements Appendable {
 	 * Clear the content of this {@link StringBuilder}
 	 */
 	public void clear() {
-		synchronized (this) {
-			charBuffer = new char[DEFAULT_BUFFER_LENGTH];
-			count = 0;
-			try {
-				os.close();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			baos.reset();
+		charBuffer = new char[DEFAULT_BUFFER_LENGTH];
+		count = 0;
+		try {
+			os.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
+		baos.reset();
 	}
 
 	@Override

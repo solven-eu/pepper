@@ -57,7 +57,8 @@ public class TestPepperJMXHelper {
 	@Test
 	public void testSearchWithTemplate() {
 		Assertions.assertEquals(Maps.newHashMap(), PepperJMXHelper.convertToMap(PepperJMXHelper.JMX_DEFAULT_STRING));
-		Assertions.assertEquals(Lists.newArrayList(), PepperJMXHelper.convertToList(PepperJMXHelper.JMX_DEFAULT_STRING));
+		Assertions.assertEquals(Lists.newArrayList(),
+				PepperJMXHelper.convertToList(PepperJMXHelper.JMX_DEFAULT_STRING));
 		Assertions.assertEquals(Sets.newHashSet(), PepperJMXHelper.convertToSet(PepperJMXHelper.JMX_DEFAULT_STRING));
 
 		Assertions.assertEquals(Collections.singletonMap("key", "value"), PepperJMXHelper.convertToMap("key=value"));

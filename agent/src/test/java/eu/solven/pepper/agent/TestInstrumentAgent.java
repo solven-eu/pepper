@@ -23,16 +23,17 @@
 package eu.solven.pepper.agent;
 
 import java.lang.instrument.Instrumentation;
-import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 
 public class TestInstrumentAgent {
-	protected static final Logger LOGGER = Logger.getLogger(TestInstrumentAgent.class.getName());
+	protected static final Logger LOGGER = LoggerFactory.getLogger(TestInstrumentAgent.class);
 
 	// https://stackoverflow.com/questions/2591083/getting-java-version-at-runtime
 	public static final boolean IS_JDK_9 = "9".equals(System.getProperty("java.specification.version"));

@@ -94,12 +94,12 @@ public class TestSetStatic {
 	@Test
 	public void testSetStatic_ConstructorOverString()
 			throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
-		SetStaticMBean setSTatic = new SetStaticMBean();
+		SetStaticMBean setStatic = new SetStaticMBean();
 
 		ClassWithCharSequenceContructor initial = CTOR_STATIC_FINAL;
 
 		// Do the modification
-		setSTatic.setStatic(TestSetStatic.class.getName(), "CTOR_STATIC_FINAL", "123");
+		setStatic.setStatic(TestSetStatic.class.getName(), "CTOR_STATIC_FINAL", "123");
 
 		// Check the test is not trivial
 		Assertions.assertNotSame(initial, CTOR_STATIC_FINAL);
@@ -160,6 +160,8 @@ public class TestSetStatic {
 		List<String> pathesWithSlahesAndDotClassSuffix =
 				setSTatic.getResourcesFor(this.getClass().getName().replace('.', '/') + ".class");
 		Assertions.assertEquals(1, pathesWithSlahesAndDotClassSuffix.size());
-		org.assertj.core.api.Assertions.assertThat(pathesWithSlahesAndDotClassSuffix.get(0)).startsWith("file:/").endsWith(".class");
+		org.assertj.core.api.Assertions.assertThat(pathesWithSlahesAndDotClassSuffix.get(0))
+				.startsWith("file:/")
+				.endsWith(".class");
 	}
 }

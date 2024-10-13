@@ -86,7 +86,8 @@ public class TestPepperCartesianProductHelper {
 				Collection<? extends Map<?, ?>> input = Arrays.asList(ImmutableMap.of(A, M, B, N));
 				Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
 				Assertions.assertEquals(1, result.size());
-				org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setM, B, setN));
+				org.assertj.core.api.Assertions.assertThat((Set) result)
+						.contains((Map) ImmutableMap.of(A, setM, B, setN));
 			}
 		}
 	}

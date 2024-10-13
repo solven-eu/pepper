@@ -22,8 +22,6 @@
  */
 package eu.solven.pepper.jvm;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Map;
 
 import eu.solven.pepper.memory.IPepperMemoryConstants;
@@ -42,18 +40,6 @@ public interface IGCInspector extends IPepperMemoryConstants {
 	long BARRIER_FOR_SIZE_IN_LOG = 10;
 
 	String getAndLogCurrentMemoryStatus();
-
-	String getHeapHistogram() throws IOException;
-
-	/**
-	 * Save a heap-dump in given map. It is comparable to jmap
-	 * (http://docs.oracle.com/javase/7/docs/technotes/tools/share/jmap.html)
-	 *
-	 * @param path
-	 * @return the output of the command
-	 * @throws IOException
-	 */
-	String saveHeapDump(Path path) throws IOException;
 
 	/**
 	 *

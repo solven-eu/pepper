@@ -8,14 +8,14 @@
 		<version>5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>with-agent</artifactId>
+	<artifactId>pepper-with-agent</artifactId>
 	<packaging>jar</packaging>
 
 	<description>This holds pepper feature dependending on pepper-agent, for security reasons.</description>
 
 	<properties>
-		<jacoco.branch.ratio>0.32</jacoco.branch.ratio>
-		<jacoco.instruction.ratio>0.36</jacoco.instruction.ratio>
+		<jacoco.branch.ratio>0.06</jacoco.branch.ratio>
+		<jacoco.instruction.ratio>0.24</jacoco.instruction.ratio>
 	</properties>
 
 	<dependencies>

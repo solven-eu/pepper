@@ -22,10 +22,8 @@
  */
 package eu.solven.pepper.jvm;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -44,15 +42,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 
-import eu.solven.pepper.agent.VirtualMachineWithoutToolsJar;
-import eu.solven.pepper.io.PepperFileHelper;
 import eu.solven.pepper.memory.IPepperMemoryConstants;
 import eu.solven.pepper.thread.IThreadDumper;
-import eu.solven.pepper.unittest.ILogDisabler;
-import eu.solven.pepper.unittest.PepperTestHelper;
 
 public class TestGCInspector implements IPepperMemoryConstants {
 
@@ -150,43 +143,6 @@ public class TestGCInspector implements IPepperMemoryConstants {
 	}
 
 	@Test
-	public void testGetHeapHistogram() throws Exception {
-		GCInspector gcInspector = new GCInspector(Mockito.mock(IThreadDumper.class));
-
-		// It appears that even under windows, the separator is '\n', not System.lineSeparator()
-		List<String> asList;
-		try (ILogDisabler logDisabler = PepperTestHelper.disableLog(VirtualMachineWithoutToolsJar.class)) {
-			asList = Splitter.on("\n").splitToList(gcInspector.getHeapHistogram());
-		}
-
-		if (VirtualMachineWithoutToolsJar.IS_VIRTUAL_MACHINE_ELIGIBLE) {
-			// Check we have many rows
-			org.assertj.core.api.Assertions.assertThat(asList).hasSizeGreaterThan(5);
-		} else {
-			LOGGER.warn("heap.histo with java9+ requires '-Djdk.attach.allowAttachSelf=true'");
-			org.assertj.core.api.Assertions.assertThat(asList).hasSize(1).contains("Heap Histogram is not available");
-		}
-	}
-
-	@Test
-	public void testSaveHeap() throws Exception {
-		GCInspector gcInspector = new GCInspector(Mockito.mock(IThreadDumper.class));
-
-		Path heapFile = PepperFileHelper.createTempPath("testSaveHeap", ".hprof", true);
-
-		String outputMsg = gcInspector.saveHeapDump(heapFile);
-
-		if (VirtualMachineWithoutToolsJar.IS_VIRTUAL_MACHINE_ELIGIBLE) {
-			org.assertj.core.api.Assertions.assertThat(outputMsg).startsWith("Heap dump file created");
-
-			// Check we have written data
-			Assertions.assertTrue(heapFile.toFile().length() > 0);
-		} else {
-			org.assertj.core.api.Assertions.assertThat(outputMsg).startsWith("Heap Dump is not available");
-		}
-	}
-
-	@Test
 	public void testTriggerFullGC() throws Exception {
 		AtomicInteger nbBackToNormal = new AtomicInteger();
 
@@ -231,24 +187,6 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		// Log again: still OK
 		gcInspector.logIfMemoryOverCap();
 		Assertions.assertEquals(1, nbBackToNormal.get());
-	}
-
-	@Test
-	public void limitedHeapHisto() {
-		String firstRows = GCInspector.getHeapHistogramAsString(5);
-
-		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
-			LOGGER.error("HeapHistogram in JDK9: {}", firstRows);
-			Assertions.assertEquals(1, firstRows.split(System.lineSeparator()).length);
-		} else {
-
-			// We have skipped the initial empty row
-			// +1 as we added the last rows
-			Assertions.assertEquals(5 + 1, firstRows.split(System.lineSeparator()).length);
-
-			// The last row looks like: Total 1819064 141338008
-			Assertions.assertTrue(firstRows.split(System.lineSeparator())[5].startsWith("Total "));
-		}
 	}
 
 	// We check the getters and setters are valid according to Spring

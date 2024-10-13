@@ -22,10 +22,6 @@
  */
 package eu.solven.pepper.shared.util;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
@@ -39,7 +35,6 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
-import eu.solven.pepper.io.PepperFileHelper;
 import eu.solven.pepper.io.PepperSerializationHelper;
 
 public class TestPepperSerializationHelper {
@@ -87,47 +82,6 @@ public class TestPepperSerializationHelper {
 	}
 
 	@Test
-	public void testAppendLineInCSV() throws IOException {
-		Path tmpFile = PepperFileHelper.createTempPath("apex.test", ".csv", true);
-
-		PepperSerializationHelper.appendLineInCSVFile(tmpFile, Arrays.asList("col1", "col2"));
-
-		// handle null value
-		PepperSerializationHelper.appendLineInCSVFile(tmpFile, Arrays.asList("value1", null));
-	}
-
-	@Test
-	public void testAppendLineInFileOutputStream() throws IOException {
-		Path tmpFile = PepperFileHelper.createTempPath("apex.test", ".csv", true);
-
-		FileOutputStream fos = new FileOutputStream(tmpFile.toFile());
-
-		PepperSerializationHelper.appendLineInCSVFile(fos, Arrays.asList("col1", "col2"));
-
-		// handle null value
-		PepperSerializationHelper.appendLineInCSVFile(fos, Arrays.asList("value1", null));
-	}
-
-	@Test
-	public void testEscapeDoubleQuotesMax() throws IOException {
-		StringWriter sw = new StringWriter();
-
-		PepperSerializationHelper.rawAppendLineInCSVFile(sw, Arrays.asList("In\"Middle", null, "\"Wrapped\""), true, 5);
-
-		Assertions.assertEquals("\"In\"\"M\";;\"Wrapp\"", sw.toString());
-	}
-
-	@Test
-	public void testEscapeDoubleQuotesNoMax() throws IOException {
-		StringWriter sw = new StringWriter();
-
-		PepperSerializationHelper
-				.rawAppendLineInCSVFile(sw, Arrays.asList("In\"Middle", null, "\"Wrapped\""), true, Integer.MAX_VALUE);
-
-		Assertions.assertEquals("\"In\"\"Middle\";;\"Wrapped\"", sw.toString());
-	}
-
-	@Test
 	public void testMD5_utf8_md5() throws NoSuchAlgorithmException {
 		String md5 = PepperSerializationHelper.toMD5("Youpi", Charsets.UTF_8, MessageDigest.getInstance("MD5"));
 		Assertions.assertEquals("c2dd8be8874b1200530e72bcb5d416da", md5);
@@ -157,7 +111,8 @@ public class TestPepperSerializationHelper {
 	@Test
 	public void testSafeToObject_LocalDate() {
 		Object object = LocalDate.now();
-		Assertions.assertEquals(object, PepperSerializationHelper.safeToObject(LocalDate.class, object.toString()).get());
+		Assertions.assertEquals(object,
+				PepperSerializationHelper.safeToObject(LocalDate.class, object.toString()).get());
 	}
 
 	@Test

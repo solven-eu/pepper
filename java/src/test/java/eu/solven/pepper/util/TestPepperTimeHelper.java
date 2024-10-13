@@ -39,7 +39,8 @@ public class TestPepperTimeHelper {
 		// First call: this is a max
 		String simpleName = getClass().getSimpleName();
 		{
-			Assertions.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 0, simpleName, "methodName"));
+			Assertions
+					.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 0, simpleName, "methodName"));
 
 			Assertions.assertEquals(1L, nb.get());
 			Assertions.assertEquals(0L, max.get());
@@ -47,7 +48,8 @@ public class TestPepperTimeHelper {
 
 		// Second call: 1 > 0
 		{
-			Assertions.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 1, simpleName, "methodName"));
+			Assertions
+					.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 1, simpleName, "methodName"));
 
 			Assertions.assertEquals(2L, nb.get());
 			Assertions.assertEquals(1L, max.get());
@@ -55,7 +57,8 @@ public class TestPepperTimeHelper {
 
 		// Third call: 1 == 1
 		{
-			Assertions.assertFalse(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 1, simpleName, "methodName"));
+			Assertions.assertFalse(
+					PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 1, simpleName, "methodName"));
 
 			Assertions.assertEquals(3L, nb.get());
 			Assertions.assertEquals(1L, max.get());
@@ -63,14 +66,16 @@ public class TestPepperTimeHelper {
 
 		// Third call: 0 < 1
 		{
-			Assertions.assertFalse(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 0, simpleName, "methodName"));
+			Assertions.assertFalse(
+					PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 0, simpleName, "methodName"));
 
 			Assertions.assertEquals(4L, nb.get());
 			Assertions.assertEquals(1L, max.get());
 		}
 
 		{
-			Assertions.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 2, simpleName, "methodName"));
+			Assertions
+					.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 2, simpleName, "methodName"));
 
 			Assertions.assertEquals(5L, nb.get());
 			Assertions.assertEquals(2L, max.get());

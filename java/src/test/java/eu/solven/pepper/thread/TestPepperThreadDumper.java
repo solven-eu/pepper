@@ -61,7 +61,9 @@ public class TestPepperThreadDumper {
 			if (td.hasFooter(ti)) {
 				org.assertj.core.api.Assertions.assertThat(writer.toString()).isNotEmpty();
 			} else {
-				org.assertj.core.api.Assertions.assertThat(writer.toString()).withFailMessage(td.getThreadDumpAsString(true)).isEmpty();
+				org.assertj.core.api.Assertions.assertThat(writer.toString())
+						.withFailMessage(td.getThreadDumpAsString(true))
+						.isEmpty();
 			}
 		}
 

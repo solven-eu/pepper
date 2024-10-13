@@ -22,17 +22,6 @@
  */
 package eu.solven.pepper.jvm;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.management.BufferPoolMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -43,8 +32,6 @@ import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
@@ -89,12 +76,9 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AtomicLongMap;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import eu.solven.pepper.agent.VirtualMachineWithoutToolsJar;
 import eu.solven.pepper.jmx.PepperJMXHelper;
 import eu.solven.pepper.logging.PepperLogHelper;
 import eu.solven.pepper.memory.PepperMemoryHelper;
-import eu.solven.pepper.memory.histogram.HeapHistogram;
-import eu.solven.pepper.memory.histogram.IHeapHistogram;
 import eu.solven.pepper.thread.IThreadDumper;
 import eu.solven.pepper.thread.PepperThreadDumper;
 import eu.solven.pepper.util.PepperEnvHelper;
@@ -808,78 +792,10 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		LOGGER.info("Thread Dump: {}", threadDumpAsString);
 	}
 
+	// https://github.com/javamelody/javamelody/blob/master/javamelody-core/src/main/java/net/bull/javamelody/internal/model/VirtualMachine.java#L163
 	protected void printHeapHistogram(int nbRows) {
-		String threadDumpAsString = getHeapHistogramAsString(nbRows);
-
-		LOGGER.info("HeapHistogram: {}{}", System.lineSeparator(), threadDumpAsString);
-	}
-
-	public static String getHeapHistogramAsString(int nbRows) {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-		// Do not query monitors and synchronizers are they are not the cause of
-		// a FullGC: we prevent not to freeze the JVM collecting these monitors
-		streamHeapHistogram(os, nbRows);
-
-		// The bytes are for the default charset, possibly not UTF-8
-		try {
-			return os.toString(Charset.defaultCharset().name());
-		} catch (UnsupportedEncodingException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
-
-	public static void streamHeapHistogram(OutputStream os, int nbRows) {
-		Optional<InputStream> optIS = VirtualMachineWithoutToolsJar.heapHisto().toJavaUtil();
-
-		if (optIS.isPresent()) {
-			try (Reader reader = new InputStreamReader(optIS.get(), IHeapHistogram.JMAP_CHARSET);
-					BufferedReader br = new BufferedReader(reader);
-					BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, IHeapHistogram.JMAP_CHARSET))) {
-
-				boolean firstRow = true;
-
-				// We want to write the last Jmap histo row as it holds a resumee
-				AtomicReference<String> lastSkippedRow = new AtomicReference<>();
-
-				int nbWritten = 0;
-
-				// Read a limit number of rows
-				while (true) {
-					String nextLine = br.readLine();
-					if (nextLine == null) {
-						break;
-					} else if (!nextLine.isEmpty()) {
-
-						if (nbWritten < nbRows) {
-							// We are inside bounds
-
-							if (firstRow) {
-								firstRow = !firstRow;
-							} else {
-								bw.newLine();
-							}
-
-							bw.write(nextLine);
-							nbWritten++;
-						} else {
-							// We are out of bounds: register current row as we want to write the last row
-							lastSkippedRow.set(nextLine);
-						}
-					}
-				}
-
-				// Write the last row as it holds an overview of the heap
-				if (lastSkippedRow.get() != null) {
-					bw.newLine();
-					bw.write(lastSkippedRow.get());
-				}
-			} catch (IOException e) {
-				throw new UncheckedIOException(e);
-			}
-		} else {
-			LOGGER.warn("VirtualMachine is not available for HeapHisto");
-		}
+		String threadDumpAsString = "";
+		LOGGER.debug("HeapHistogram: {}{}", System.lineSeparator(), threadDumpAsString);
 	}
 
 	/**
@@ -1117,22 +1033,6 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	@Override
 	public String getAllThreadsSmart(boolean withoutMonitors) {
 		return pepperThreadDumper.getSmartThreadDumpAsString(!withoutMonitors);
-	}
-
-	@ManagedOperation
-	@Override
-	public String getHeapHistogram() throws IOException {
-		return HeapHistogram.createHeapHistogramAsString();
-	}
-
-	@Override
-	public String saveHeapDump(Path path) throws IOException {
-		return HeapHistogram.saveHeapDump(path.toFile());
-	}
-
-	@ManagedOperation
-	public String saveHeapDump(String path) throws IOException {
-		return saveHeapDump(PepperJMXHelper.convertToPath(path));
 	}
 
 	@ManagedOperation

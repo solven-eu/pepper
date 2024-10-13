@@ -68,21 +68,21 @@ public class PepperProcessHelper {
 	@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 	public static long getPidOfProcess(Process p) {
 		// In jdk9: ProcessHandle.current().pid()
-		synchronized (PepperProcessHelper.class) {
-			long pid = -1;
+		// synchronized (PepperProcessHelper.class) {
+		long pid = -1;
 
-			try {
-				if (isUnixProcess(p.getClass().getName())) {
-					Field f = p.getClass().getDeclaredField("pid");
-					f.setAccessible(true);
-					pid = f.getLong(p);
-					f.setAccessible(false);
-				}
-			} catch (RuntimeException | ReflectiveOperationException e) {
-				pid = -1;
+		try {
+			if (isUnixProcess(p.getClass().getName())) {
+				Field f = p.getClass().getDeclaredField("pid");
+				f.setAccessible(true);
+				pid = f.getLong(p);
+				f.setAccessible(false);
 			}
-			return pid;
+		} catch (RuntimeException | ReflectiveOperationException e) {
+			pid = -1;
 		}
+		return pid;
+		// }
 	}
 
 	// Used to prevent Sonar complaining about not using instanceof

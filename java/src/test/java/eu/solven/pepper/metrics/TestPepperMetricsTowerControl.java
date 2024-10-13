@@ -140,8 +140,8 @@ public class TestPepperMetricsTowerControl {
 
 			NavigableMap<Date, String> activeTasks = mtc.getActiveTasks();
 
-			// Check thetre is a stack
-			Assertions.assertTrue(activeTasks.toString().contains("org.junit.runners.model."));
+			// Check the is a stack
+			org.assertj.core.api.Assertions.assertThat(activeTasks.toString()).contains("org.junit.jupiter.");
 		} finally {
 			mtc.setDoRememberStack(false);
 		}

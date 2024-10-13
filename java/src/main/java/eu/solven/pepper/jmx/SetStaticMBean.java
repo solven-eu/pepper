@@ -45,7 +45,9 @@ import com.google.common.annotations.Beta;
 import eu.solven.pepper.io.PepperSerializationHelper;
 
 /**
- * This MBean enables the modification of primitive static variables, like DEBUG modes
+ * This MBean enables the modification of primitive static variables, like DEBUG modes.
+ * 
+ * Does not work with `private final` fields
  *
  * @author Benoit Lacelle
  *
@@ -54,10 +56,7 @@ import eu.solven.pepper.io.PepperSerializationHelper;
 public class SetStaticMBean {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(SetStaticMBean.class);
 
-	// THere might be a way to change private final fields... but it seems not
-	// to work on a unit-test :|
-	protected boolean forceForPrivateFinal = true;
-
+	@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 	@ManagedOperation
 	public void setStatic(String className, String fieldName, String newValueAsString)
 			throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
@@ -82,8 +81,13 @@ public class SetStaticMBean {
 			Optional<?> asObject = PepperSerializationHelper.safeToObject(fieldType, newValueAsString);
 
 			if (asObject.isPresent()) {
+				{
+					// https://stackoverflow.com/questions/3301635/change-private-static-final-field-using-java-reflection
+					field.setAccessible(true);
+				}
+
 				// Instantiation succeeded
-				field.set(null, asObject.get());
+				ReflectionUtils.setField(field, null, asObject.get());
 				return;
 			}
 
@@ -108,19 +112,7 @@ public class SetStaticMBean {
 	}
 
 	private Field getField(Class<?> classToSet, String fieldName) throws NoSuchFieldException, IllegalAccessException {
-		Field field = ReflectionUtils.findField(classToSet, fieldName);
-
-		if (forceForPrivateFinal) {
-			// http://stackoverflow.com/questions/3301635/change-private-static-final-field-using-java-reflection
-			ReflectionUtils.makeAccessible(field);
-
-			// It may not work for primitive fields
-			Field modifiersField = Field.class.getDeclaredField("modifiers");
-			ReflectionUtils.makeAccessible(modifiersField);
-			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-		}
-
-		return field;
+		return ReflectionUtils.findField(classToSet, fieldName);
 	}
 
 	@SuppressWarnings("PMD.AvoidReassigningLoopVariables")

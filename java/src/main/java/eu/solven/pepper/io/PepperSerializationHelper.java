@@ -22,22 +22,15 @@
  */
 package eu.solven.pepper.io;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
-import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -58,14 +51,12 @@ import org.springframework.util.SerializationUtils;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.CharMatcher;
-import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Splitter.MapSplitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
@@ -338,121 +329,6 @@ public class PepperSerializationHelper {
 		}
 
 		return Optional.empty();
-	}
-
-	@Beta
-	// TODO
-	public static Object toDoubleLowDigits(Object value) {
-		// if (value instanceof Float || value instanceof Double) {
-		// //
-		// http://stackoverflow.com/questions/703396/how-to-nicely-format-floating-numbers-to-string-without-unnecessary-decimal-0
-		//
-		//
-		// double asDouble = ((Number) value).doubleValue();
-		//
-		// if (asDouble >= 1) {
-		// // Get ride of decimals
-		// return (double) ((long) asDouble);
-		// } else {
-		// String asString = String.format("%f", asDouble);
-		//
-		// int indexOfDot = asString.indexOf('.');
-		// if (indexOfDot == -1) {
-		// return asDouble;
-		// } else {
-		// int notZeroOrDot = 0;
-		// for (int i = 0 ; i < )
-		//
-		// if (asString.length() > indexOfDot + 4)
-		// }
-		// if (asString.)
-		//
-		// String subString = asString.substring(0, + 4);
-		//
-		// return Double.parseDouble(Double.toString(asDouble));
-		// }
-		// } else {
-		// return super.cleanValue(value);
-		// }
-		// TODO Auto-generated method stub
-		return value;
-	}
-
-	/**
-	 * Easy way to append a single CSV row in a file
-	 *
-	 * @param file
-	 * @param row
-	 * @throws IOException
-	 */
-	// synchronized to prevent interlaced rows
-	// TODO: one lock per actual file
-	@Beta
-	public static void appendLineInCSVFile(Path file, Iterable<?> row) throws IOException {
-		synchronized (PepperSerializationHelper.class) {
-			try (BufferedWriter newBufferedWriter =
-					Files.newBufferedWriter(file, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
-				appendLineInCSVFile(newBufferedWriter, row);
-			}
-		}
-	}
-
-	@Beta
-	public static void appendLineInCSVFile(Writer writer, Iterable<?> row) throws IOException {
-		// Ensure the writer is buffered
-		try (BufferedWriter bufferedWriter = new BufferedWriter(writer) {
-			@Override
-			public void close() throws IOException {
-				// Skip closing as we received a Writer from somewhere else
-				super.flush();
-			}
-		}) {
-			// By default, we wrap in quotes
-			rawAppendLineInCSVFile(bufferedWriter, row, true, MAX_CHARS_PER_COLUMN);
-			// Prepare the next line
-			bufferedWriter.newLine();
-		}
-	}
-
-	@Beta
-	public static void rawAppendLineInCSVFile(Writer writer,
-			Iterable<?> row,
-			final boolean wrapInQuotes,
-			final int maxLength) throws IOException {
-		// Get ride of null references
-		Iterable<CharSequence> asString = Iterables.transform(row, OBJECT_TO_QUOTED_STRING);
-
-		asString = Iterables.transform(asString, input -> {
-
-			if (input == null || maxLength < 0) {
-				// No transformation
-				return input;
-			} else if (!wrapInQuotes && input.length() > maxLength) {
-				// simple SubSequence
-				return input.subSequence(0, maxLength);
-			} else {
-				// We do '-2' to prevent an overflow if maxLength == Integer.MAX_VALUE
-				if (wrapInQuotes && input.length() - 2 > maxLength) {
-					// SubSequence between quotes
-					return "\"" + input.subSequence(1, maxLength + 1) + '\"';
-				} else {
-					return input;
-				}
-			}
-
-		});
-
-		// Append the row
-		Joiner.on(';').appendTo(writer, asString);
-	}
-
-	@Beta
-	@SuppressWarnings("PMD.UnusedLocalVariable")
-	public static void appendLineInCSVFile(FileOutputStream outputFileIS, Iterable<?> row) throws IOException {
-		// Use a filelock to prevent several process having their rows being interlaced
-		try (java.nio.channels.FileLock lock = outputFileIS.getChannel().lock()) {
-			appendLineInCSVFile(new OutputStreamWriter(outputFileIS, Charsets.UTF_8), row);
-		}
 	}
 
 	public static List<String> parseList(String asString) {

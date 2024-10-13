@@ -65,7 +65,8 @@ public class TestPepperMemoryMeter {
 
 	@Test
 	public void testImmutableMapWeight() {
-		org.assertj.core.api.Assertions.assertThat(PepperFootprintHelper.deepSize(ImmutableMap.of("key", "Value"))).isBetween(100L, 250L);
+		org.assertj.core.api.Assertions.assertThat(PepperFootprintHelper.deepSize(ImmutableMap.of("key", "Value")))
+				.isBetween(100L, 250L);
 	}
 
 	@Test
