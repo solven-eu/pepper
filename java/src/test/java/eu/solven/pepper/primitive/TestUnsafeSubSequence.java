@@ -22,15 +22,15 @@
  */
 package eu.solven.pepper.primitive;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestUnsafeSubSequence {
 	@Test
 	public void testShiftedSubSequence() {
 		UnsafeSubSequence sub = new UnsafeSubSequence("abcde", 1, 4);
 
-		Assert.assertEquals("bcd", sub.toString());
-		Assert.assertEquals("c", sub.subSequence(1, 2).toString());
+		Assertions.assertEquals("bcd", sub.toString());
+		Assertions.assertEquals("c", sub.subSequence(1, 2).toString());
 	}
 }

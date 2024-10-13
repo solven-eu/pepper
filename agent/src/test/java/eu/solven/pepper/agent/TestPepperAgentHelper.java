@@ -22,13 +22,13 @@
  */
 package eu.solven.pepper.agent;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestPepperAgentHelper {
 
 	@Test
 	public void testPID() {
-		Assert.assertTrue(Integer.parseInt(PepperAgentHelper.getPIDForAgent()) > 0);
+		Assertions.assertTrue(Integer.parseInt(PepperAgentHelper.getPIDForAgent()) > 0);
 	}
 }

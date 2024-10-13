@@ -24,8 +24,8 @@ package eu.solven.pepper.primitive;
 
 import java.util.function.LongToIntFunction;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.SetMultimap;
@@ -62,8 +62,8 @@ public class TestCormoranBitPacking {
 		int left = CormoranBitPacking.unpackOrderedLeft(Long.MAX_VALUE >> 1);
 		int right = CormoranBitPacking.unpackOrderedRight(Long.MAX_VALUE >> 1);
 
-		Assert.assertTrue(left > 0);
-		Assert.assertTrue(right > 0);
+		Assertions.assertTrue(left > 0);
+		Assertions.assertTrue(right > 0);
 	}
 
 	@Test
@@ -71,8 +71,8 @@ public class TestCormoranBitPacking {
 		int left = CormoranBitPacking.unpackOrderedLeft(Integer.MAX_VALUE + 1L);
 		int right = CormoranBitPacking.unpackOrderedRight(Integer.MAX_VALUE + 1L);
 
-		Assert.assertEquals(1, left);
-		Assert.assertEquals(0, right);
+		Assertions.assertEquals(1, left);
+		Assertions.assertEquals(0, right);
 	}
 
 	private void checkStandard(int left, int right) {
@@ -104,7 +104,7 @@ public class TestCormoranBitPacking {
 		long leftFromPack = unpackFirst.applyAsInt(pack);
 		long rightFromPack = unpackSecond.applyAsInt(pack);
 
-		Assert.assertEquals(left, leftFromPack);
-		Assert.assertEquals(right, rightFromPack);
+		Assertions.assertEquals(left, leftFromPack);
+		Assertions.assertEquals(right, rightFromPack);
 	}
 }

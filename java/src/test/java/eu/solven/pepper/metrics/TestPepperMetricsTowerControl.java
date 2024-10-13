@@ -33,8 +33,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalNotification;
@@ -60,10 +60,10 @@ public class TestPepperMetricsTowerControl {
 		eventBus.post(new OutOfMemoryError("Unit-Test forcing an OOM"));
 
 		// 1 for FailureEvent
-		// Assert.assertEquals(1, mtc.metricRegistry.getCounters().size());
+		// Assertions.assertEquals(1, mtc.metricRegistry.getCounters().size());
 		//
 		// // 1 for SizeMetricEvent
-		// Assert.assertEquals(1, mtc.getMetricsAsString().size());
+		// Assertions.assertEquals(1, mtc.getMetricsAsString().size());
 	}
 
 	@Test
@@ -75,14 +75,14 @@ public class TestPepperMetricsTowerControl {
 		PepperActiveTasksMonitor mtc = makePepperMetricsTowerControl();
 		eventBus.register(mtc);
 
-		Assert.assertEquals(0, mtc.getActiveTasksSize());
+		Assertions.assertEquals(0, mtc.getActiveTasksSize());
 
 		TaskStartEvent se = new TaskStartEvent(this, "test");
 		eventBus.post(se);
-		Assert.assertEquals(1, mtc.getActiveTasksSize());
+		Assertions.assertEquals(1, mtc.getActiveTasksSize());
 
 		eventBus.post(new TaskEndEvent(se));
-		Assert.assertEquals(0, mtc.getActiveTasksSize());
+		Assertions.assertEquals(0, mtc.getActiveTasksSize());
 	}
 
 	@Test
@@ -96,19 +96,19 @@ public class TestPepperMetricsTowerControl {
 
 		TaskStartEvent se = new TaskStartEvent(this, "test");
 		eventBus.post(se);
-		Assert.assertEquals(1, mtc.getActiveTasks().size());
+		Assertions.assertEquals(1, mtc.getActiveTasks().size());
 
 		// Invalidate something which does not exist
-		Assert.assertFalse(mtc.invalidateActiveTasks("not-existing"));
+		Assertions.assertFalse(mtc.invalidateActiveTasks("not-existing"));
 
 		// Invalidate something that exists
 		boolean invalidateResult = mtc.invalidateActiveTasks(se.toStringNoStack());
-		Assert.assertTrue(invalidateResult);
-		Assert.assertEquals(0, mtc.getActiveTasks().size());
+		Assertions.assertTrue(invalidateResult);
+		Assertions.assertEquals(0, mtc.getActiveTasks().size());
 
 		// Check things goes well when ending an invalidated event
 		eventBus.post(new TaskEndEvent(se));
-		Assert.assertEquals(0, mtc.getActiveTasks().size());
+		Assertions.assertEquals(0, mtc.getActiveTasks().size());
 	}
 
 	@Test
@@ -141,7 +141,7 @@ public class TestPepperMetricsTowerControl {
 			NavigableMap<Date, String> activeTasks = mtc.getActiveTasks();
 
 			// Check thetre is a stack
-			Assert.assertTrue(activeTasks.toString().contains("org.junit.runners.model."));
+			Assertions.assertTrue(activeTasks.toString().contains("org.junit.runners.model."));
 		} finally {
 			mtc.setDoRememberStack(false);
 		}
@@ -183,28 +183,28 @@ public class TestPepperMetricsTowerControl {
 	public void testLogLongRunningWithProgress() {
 		PepperActiveTasksMonitor mtc = makePepperMetricsTowerControl();
 
-		Assert.assertEquals(0, mtc.getActiveTasksSize());
+		Assertions.assertEquals(0, mtc.getActiveTasksSize());
 
 		AtomicLong progress = new AtomicLong();
 		TaskStartEvent se = new TaskStartEvent(this, Collections.emptyMap(), () -> progress.get(), "test");
 
-		Assert.assertTrue(mtc.noNewLine(se).toString().contains("progress=0"));
+		Assertions.assertTrue(mtc.noNewLine(se).toString().contains("progress=0"));
 
 		progress.set(123456789L);
-		Assert.assertTrue(mtc.noNewLine(se).toString().contains("progress=123456789"));
+		Assertions.assertTrue(mtc.noNewLine(se).toString().contains("progress=123456789"));
 	}
 
 	@Test
 	public void testLogLongRunningWithoutProgress() {
 		PepperActiveTasksMonitor mtc = makePepperMetricsTowerControl();
 
-		Assert.assertEquals(0, mtc.getActiveTasksSize());
+		Assertions.assertEquals(0, mtc.getActiveTasksSize());
 
 		AtomicLong progress = new AtomicLong();
 		TaskStartEvent se = new TaskStartEvent(this, Collections.emptyMap(), () -> progress.get(), "test");
 
 		progress.set(-1L);
-		Assert.assertFalse(mtc.noNewLine(se).toString().contains("progress"));
+		Assertions.assertFalse(mtc.noNewLine(se).toString().contains("progress"));
 	}
 
 	// We test mainly coverage
@@ -221,7 +221,7 @@ public class TestPepperMetricsTowerControl {
 	public void testGetLongRunningCheck() throws Exception {
 		PepperActiveTasksMonitor mtc = makePepperMetricsTowerControl();
 
-		Assert.assertEquals(PepperActiveTasksMonitor.DEFAULT_LONGRUNNINGCHECK_SECONDS,
+		Assertions.assertEquals(PepperActiveTasksMonitor.DEFAULT_LONGRUNNINGCHECK_SECONDS,
 				mtc.getLongRunningCheckSeconds());
 
 		// This should call mtc.scheduleLogLongRunningTasks();
@@ -233,12 +233,12 @@ public class TestPepperMetricsTowerControl {
 		// Change the timeout: this should cancel the previous recurrent task
 		mtc.setLongRunningCheckSeconds(123);
 
-		Assert.assertEquals(123, mtc.getLongRunningCheckSeconds());
+		Assertions.assertEquals(123, mtc.getLongRunningCheckSeconds());
 
-		Assert.assertNotSame(currentFuture, mtc.scheduledFuture.get());
+		Assertions.assertNotSame(currentFuture, mtc.scheduledFuture.get());
 
-		Assert.assertFalse(mtc.scheduledFuture.get().isCancelled());
-		Assert.assertTrue(currentFuture.isCancelled());
+		Assertions.assertFalse(mtc.scheduledFuture.get().isCancelled());
+		Assertions.assertTrue(currentFuture.isCancelled());
 	}
 
 	// Start and End events consuming methods have the annotation @AllowConcurrentEvents: we may receive the end before
@@ -256,7 +256,7 @@ public class TestPepperMetricsTowerControl {
 		mtc.onStartEvent(start);
 
 		// We should have no active task as the end event arrives
-		Assert.assertEquals(0, mtc.getActiveTasksSize());
+		Assertions.assertEquals(0, mtc.getActiveTasksSize());
 	}
 
 	@Test
@@ -272,15 +272,15 @@ public class TestPepperMetricsTowerControl {
 		// But the end is never published
 		// It may also represent the race-condition of the end happing during the start registration
 		TaskEndEvent end = TaskEndEvent.buildEndEvent(start);
-		Assert.assertNotNull(end);
+		Assertions.assertNotNull(end);
 
 		// Run a log operation
 		mtc.logLongRunningTasks();
 
 		// Check the log have detected the event is ended
-		Assert.assertEquals(0, mtc.activeTasks.size());
+		Assertions.assertEquals(0, mtc.activeTasks.size());
 
 		// Check we recorded the endEvent by detected from the known startEvent
-		Assert.assertEquals(1, mtc.endEventNotReceivedExplicitely.get());
+		Assertions.assertEquals(1, mtc.endEventNotReceivedExplicitely.get());
 	}
 }

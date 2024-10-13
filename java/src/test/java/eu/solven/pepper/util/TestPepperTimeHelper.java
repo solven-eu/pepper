@@ -24,8 +24,8 @@ package eu.solven.pepper.util;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestPepperTimeHelper {
 
@@ -39,45 +39,45 @@ public class TestPepperTimeHelper {
 		// First call: this is a max
 		String simpleName = getClass().getSimpleName();
 		{
-			Assert.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 0, simpleName, "methodName"));
+			Assertions.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 0, simpleName, "methodName"));
 
-			Assert.assertEquals(1L, nb.get());
-			Assert.assertEquals(0L, max.get());
+			Assertions.assertEquals(1L, nb.get());
+			Assertions.assertEquals(0L, max.get());
 		}
 
 		// Second call: 1 > 0
 		{
-			Assert.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 1, simpleName, "methodName"));
+			Assertions.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 1, simpleName, "methodName"));
 
-			Assert.assertEquals(2L, nb.get());
-			Assert.assertEquals(1L, max.get());
+			Assertions.assertEquals(2L, nb.get());
+			Assertions.assertEquals(1L, max.get());
 		}
 
 		// Third call: 1 == 1
 		{
-			Assert.assertFalse(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 1, simpleName, "methodName"));
+			Assertions.assertFalse(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 1, simpleName, "methodName"));
 
-			Assert.assertEquals(3L, nb.get());
-			Assert.assertEquals(1L, max.get());
+			Assertions.assertEquals(3L, nb.get());
+			Assertions.assertEquals(1L, max.get());
 		}
 
 		// Third call: 0 < 1
 		{
-			Assert.assertFalse(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 0, simpleName, "methodName"));
+			Assertions.assertFalse(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 0, simpleName, "methodName"));
 
-			Assert.assertEquals(4L, nb.get());
-			Assert.assertEquals(1L, max.get());
+			Assertions.assertEquals(4L, nb.get());
+			Assertions.assertEquals(1L, max.get());
 		}
 
 		{
-			Assert.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 2, simpleName, "methodName"));
+			Assertions.assertTrue(PepperTimeHelper.updateOutlierDetectorStatistics(nb, max, 2, simpleName, "methodName"));
 
-			Assert.assertEquals(5L, nb.get());
-			Assert.assertEquals(2L, max.get());
+			Assertions.assertEquals(5L, nb.get());
+			Assertions.assertEquals(2L, max.get());
 		}
 
 		// We should not have logged as not enough occurrences
-		Assert.assertEquals(0L, PepperTimeHelper.NB_LOG_FOR_OUTLIER.get());
+		Assertions.assertEquals(0L, PepperTimeHelper.NB_LOG_FOR_OUTLIER.get());
 	}
 
 	@Test
@@ -90,10 +90,10 @@ public class TestPepperTimeHelper {
 		String simpleName = getClass().getSimpleName();
 
 		// First call: this is a max
-		Assert.assertTrue(PepperTimeHelper
+		Assertions.assertTrue(PepperTimeHelper
 				.updateOutlierDetectorStatistics(nb, max, 317, simpleName, "methodName", "more", "evenMore"));
 
 		// We should have logged once as nb was NB_OCCURENCES_FOR_INFO
-		Assert.assertEquals(1L, PepperTimeHelper.NB_LOG_FOR_OUTLIER.get());
+		Assertions.assertEquals(1L, PepperTimeHelper.NB_LOG_FOR_OUTLIER.get());
 	}
 }

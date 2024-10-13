@@ -22,8 +22,8 @@
  */
 package eu.solven.pepper.json;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -58,8 +58,8 @@ public class TestPepperJsonHelper {
 		SomeBean output = PepperJsonHelper
 				.mergeNonNull(new SomeBean("someA", null), new SomeBean(null, "someB"), objectMapper, SomeBean.class);
 
-		Assert.assertEquals("someA", output.getA());
-		Assert.assertEquals("someB", output.getB());
+		Assertions.assertEquals("someA", output.getA());
+		Assertions.assertEquals("someB", output.getB());
 	}
 
 	@Test
@@ -69,8 +69,8 @@ public class TestPepperJsonHelper {
 				objectMapper,
 				SomeBean.class);
 
-		Assert.assertEquals("someA", output.getA());
-		Assert.assertEquals("otherB", output.getB());
+		Assertions.assertEquals("someA", output.getA());
+		Assertions.assertEquals("otherB", output.getB());
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class TestPepperJsonHelper {
 				objectMapper,
 				SomeBean.class);
 
-		Assert.assertEquals("someA", output.getA());
-		Assert.assertEquals("otherB", output.getB());
+		Assertions.assertEquals("someA", output.getA());
+		Assertions.assertEquals("otherB", output.getB());
 	}
 }

@@ -24,17 +24,17 @@ package eu.solven.pepper.io;
 
 import java.nio.file.Path;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestPepperFileHelperInSpringContext.class)
 public class TestPepperFileHelperInSpringContext {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestPepperFileHelperInSpringContext.class);
@@ -46,36 +46,36 @@ public class TestPepperFileHelperInSpringContext {
 	@Test
 	public void testResolveToPath_FolderInResources() {
 		Path path = PepperFileHelper.resolveToPath(resourceLoader, "TEST_DATA");
-		Assert.assertTrue("Failed on " + path, path.toFile().isDirectory());
+		Assertions.assertTrue(path.toFile().isDirectory(), "Failed on " + path);
 	}
 
 	@Test
 	public void testResolveToPath_FolderInResources_FromProcessRoot() {
 		Path path = PepperFileHelper.resolveToPath(resourceLoader, "src/test/resources/TEST_DATA");
-		Assert.assertTrue("Failed on " + path, path.toFile().isDirectory());
+		Assertions.assertTrue(path.toFile().isDirectory(), "Failed on " + path);
 	}
 
 	@Test
 	public void testResolveToPath_SpringClassPath_folder() {
 		Path path = PepperFileHelper.resolveToPath(resourceLoader, "classpath:TEST_DATA");
-		Assert.assertTrue("Failed on " + path, path.toFile().isDirectory());
+		Assertions.assertTrue(path.toFile().isDirectory(), "Failed on " + path);
 	}
 
 	@Test
 	public void testResolveToPath_SpringClassPath_file() {
 		Path path = PepperFileHelper.resolveToPath(resourceLoader, "classpath:TEST_DATA/empty.csv");
-		Assert.assertTrue("Failed on " + path, path.toFile().isFile());
+		Assertions.assertTrue(path.toFile().isFile(), "Failed on " + path);
 	}
 
 	@Test
 	public void testResolveToPath_SpringClassPath_PrefixSlash_folder() {
 		Path path = PepperFileHelper.resolveToPath(resourceLoader, "classpath:/TEST_DATA");
-		Assert.assertTrue("Failed on " + path, path.toFile().isDirectory());
+		Assertions.assertTrue(path.toFile().isDirectory(), "Failed on " + path);
 	}
 
 	@Test
 	public void testResolveToPath_SpringClassPath_PrefixSlash_file() {
 		Path path = PepperFileHelper.resolveToPath(resourceLoader, "classpath:/TEST_DATA/empty.csv");
-		Assert.assertTrue("Failed on " + path, path.toFile().isFile());
+		Assertions.assertTrue(path.toFile().isFile(), "Failed on " + path);
 	}
 }

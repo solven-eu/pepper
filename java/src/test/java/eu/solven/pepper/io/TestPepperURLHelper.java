@@ -25,39 +25,39 @@ package eu.solven.pepper.io;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestPepperURLHelper {
 	@Test
 	public void testEqualsURL() throws MalformedURLException {
 		URL left = new URL("http://youpi.com");
 		URL right = new URL("http://youpi.com");
-		Assert.assertTrue(PepperURLHelper.equalsUrl(left, right));
+		Assertions.assertTrue(PepperURLHelper.equalsUrl(left, right));
 	}
 
 	@Test
 	public void testToUrl() throws MalformedURLException {
-		Assert.assertEquals("http://youpi.com", PepperURLHelper.toHttpURL("youpi.com").toExternalForm());
+		Assertions.assertEquals("http://youpi.com", PepperURLHelper.toHttpURL("youpi.com").toExternalForm());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testToUrl_Null() throws MalformedURLException {
-		PepperURLHelper.toHttpURL(null);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> PepperURLHelper.toHttpURL(null));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testToUrl_Empty() throws MalformedURLException {
-		PepperURLHelper.toHttpURL("");
+		Assertions.assertThrows(IllegalArgumentException.class, () -> PepperURLHelper.toHttpURL(""));
 	}
 
 	@Test
 	public void testGetHost_lowerCase() throws MalformedURLException {
 		PepperHostDescriptor host = PepperURLHelper.getHost("YOUpi.com").get();
 
-		Assert.assertFalse(host.isIP());
-		Assert.assertTrue(host.isValid());
-		Assert.assertEquals("youpi.com", host.getHost());
+		Assertions.assertFalse(host.isIP());
+		Assertions.assertTrue(host.isValid());
+		Assertions.assertEquals("youpi.com", host.getHost());
 	}
 
 	@Test
@@ -67,48 +67,49 @@ public class TestPepperURLHelper {
 
 		PepperHostDescriptor host = PepperURLHelper.getHost("http://youpi.com#arf").get();
 
-		Assert.assertFalse(host.isIP());
-		Assert.assertTrue(host.isValid());
-		Assert.assertEquals("youpi.com", host.getHost());
+		Assertions.assertFalse(host.isIP());
+		Assertions.assertTrue(host.isValid());
+		Assertions.assertEquals("youpi.com", host.getHost());
 	}
 
 	@Test
 	public void testToUrl_mailto() {
 		URL host = PepperURLHelper.toHttpURL("mailto:adresse@serveur.com");
 
-		Assert.assertEquals("mailto:adresse@serveur.com", host.toExternalForm());
+		Assertions.assertEquals("mailto:adresse@serveur.com", host.toExternalForm());
 	}
 
 	@Test
 	public void testGetHost_mailto() {
-		Assert.assertFalse(PepperURLHelper.getHost("mailto:adresse@serveur.com").isPresent());
+		Assertions.assertFalse(PepperURLHelper.getHost("mailto:adresse@serveur.com").isPresent());
 	}
 
 	@Test
 	public void testExtractDomainNamespace() {
-		Assert.assertEquals("amazon.fr", PepperURLHelper.getHost("www.amazon.fr").get().getHostSpace().get());
+		Assertions.assertEquals("amazon.fr", PepperURLHelper.getHost("www.amazon.fr").get().getHostSpace().get());
 	}
 
 	@Test
 	public void testDomainIsNamespace() {
-		Assert.assertEquals("amazon.fr", PepperURLHelper.getHost("www.amazon.fr").get().getHostSpace().get());
+		Assertions.assertEquals("amazon.fr", PepperURLHelper.getHost("www.amazon.fr").get().getHostSpace().get());
 	}
 
 	@Test
 	public void testExtractDomainNamespaceStartWithDot() {
-		Assert.assertFalse(PepperURLHelper.getHost(".www.amazon.fr").get().getHostSpace().isPresent());
+		Assertions.assertFalse(PepperURLHelper.getHost(".www.amazon.fr").get().getHostSpace().isPresent());
 	}
 
 	@Test
 	public void testRebuildLink_main() throws MalformedURLException {
-		Assert.assertEquals("http://youpi.com/arg", PepperURLHelper.resolve("http://youpi.com/grumph", "arg"));
-		Assert.assertEquals("http://youpi.com/arg", PepperURLHelper.resolve("http://youpi.com/grumph", "/arg"));
+		Assertions.assertEquals("http://youpi.com/arg", PepperURLHelper.resolve("http://youpi.com/grumph", "arg"));
+		Assertions.assertEquals("http://youpi.com/arg", PepperURLHelper.resolve("http://youpi.com/grumph", "/arg"));
 	}
 
 	@Test
 	public void testRebuildLink_folder() throws MalformedURLException {
-		Assert.assertEquals("http://youpi.com/foo/arg", PepperURLHelper.resolve("http://youpi.com/foo/bar", "arg"));
-		Assert.assertEquals("http://youpi.com/arg", PepperURLHelper.resolve("http://youpi.com/foo/bar?glu", "/arg"));
+		Assertions.assertEquals("http://youpi.com/foo/arg", PepperURLHelper.resolve("http://youpi.com/foo/bar", "arg"));
+		Assertions.assertEquals("http://youpi.com/arg",
+				PepperURLHelper.resolve("http://youpi.com/foo/bar?glu", "/arg"));
 	}
 
 }

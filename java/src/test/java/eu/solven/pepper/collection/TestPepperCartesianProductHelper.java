@@ -31,9 +31,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -61,7 +60,7 @@ public class TestPepperCartesianProductHelper {
 
 	@Test
 	public void test_cotr() {
-		Assert.assertNotNull(new CartesianProductHelper());
+		Assertions.assertNotNull(new CartesianProductHelper());
 	}
 
 	@Test
@@ -70,7 +69,7 @@ public class TestPepperCartesianProductHelper {
 		{
 			Collection<? extends Map<?, ?>> input = Arrays.asList();
 			Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
-			Assert.assertTrue(result.isEmpty());
+			Assertions.assertTrue(result.isEmpty());
 		}
 
 		// OneMap
@@ -79,15 +78,15 @@ public class TestPepperCartesianProductHelper {
 			{
 				Collection<? extends Map<?, ?>> input = Arrays.asList(ImmutableMap.of(A, M));
 				Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
-				Assert.assertEquals(1, result.size());
-				Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setM));
+				Assertions.assertEquals(1, result.size());
+				org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setM));
 			}
 			// two entry
 			{
 				Collection<? extends Map<?, ?>> input = Arrays.asList(ImmutableMap.of(A, M, B, N));
 				Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
-				Assert.assertEquals(1, result.size());
-				Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setM, B, setN));
+				Assertions.assertEquals(1, result.size());
+				org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setM, B, setN));
 			}
 		}
 	}
@@ -100,7 +99,7 @@ public class TestPepperCartesianProductHelper {
 			{
 				Collection<? extends Map<?, ?>> input = Arrays.asList(Collections.singletonMap(A, null));
 				Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
-				Assert.assertEquals(0, result.size());
+				Assertions.assertEquals(0, result.size());
 			}
 			// two entry
 			{
@@ -110,7 +109,7 @@ public class TestPepperCartesianProductHelper {
 
 				Collection<? extends Map<?, ?>> input = Arrays.asList(someNullValue);
 				Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
-				Assert.assertEquals(0, result.size());
+				Assertions.assertEquals(0, result.size());
 			}
 		}
 	}
@@ -121,16 +120,16 @@ public class TestPepperCartesianProductHelper {
 		{
 			Collection<? extends Map<?, ?>> input = Arrays.asList(Collections.emptyMap());
 			Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
-			Assert.assertEquals(1, result.size());
-			Assert.assertEquals(Collections.singleton(Collections.emptyMap()), result);
+			Assertions.assertEquals(1, result.size());
+			Assertions.assertEquals(Collections.singleton(Collections.emptyMap()), result);
 		}
 
 		// two empty maps
 		{
 			Collection<? extends Map<?, ?>> input = Arrays.asList(Collections.emptyMap(), Collections.emptyMap());
 			Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
-			Assert.assertEquals(1, result.size());
-			Assert.assertEquals(Collections.singleton(Collections.emptyMap()), result);
+			Assertions.assertEquals(1, result.size());
+			Assertions.assertEquals(Collections.singleton(Collections.emptyMap()), result);
 		}
 
 		// one empty map and one non-empty
@@ -139,8 +138,8 @@ public class TestPepperCartesianProductHelper {
 			Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
 
 			// We keep only the empty pattern, as it is the biggest of both
-			Assert.assertEquals(1, result.size());
-			Assert.assertEquals(ImmutableSet.of(Collections.emptyMap()), result);
+			Assertions.assertEquals(1, result.size());
+			Assertions.assertEquals(ImmutableSet.of(Collections.emptyMap()), result);
 		}
 	}
 
@@ -150,8 +149,8 @@ public class TestPepperCartesianProductHelper {
 		{
 			Collection<? extends Map<?, ?>> input = Arrays.asList(ImmutableMap.of(A, M), ImmutableMap.of(A, N));
 			Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
-			Assert.assertEquals(1, result.size());
-			Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setMN));
+			Assertions.assertEquals(1, result.size());
+			org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setMN));
 		}
 		// three entry
 		{
@@ -159,9 +158,9 @@ public class TestPepperCartesianProductHelper {
 					Arrays.asList(ImmutableMap.of(A, M), ImmutableMap.of(A, N), ImmutableMap.of(B, N));
 			Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
 
-			Assert.assertEquals(2, result.size());
-			Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setMN));
-			Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(B, setN));
+			Assertions.assertEquals(2, result.size());
+			org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setMN));
+			org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(B, setN));
 		}
 		// four entry
 		{
@@ -169,9 +168,9 @@ public class TestPepperCartesianProductHelper {
 					.asList(ImmutableMap.of(A, M), ImmutableMap.of(A, N), ImmutableMap.of(B, M), ImmutableMap.of(B, N));
 			Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
 
-			Assert.assertEquals(2, result.size());
-			Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setMN));
-			Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(B, setMN));
+			Assertions.assertEquals(2, result.size());
+			org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setMN));
+			org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(B, setMN));
 		}
 	}
 
@@ -182,9 +181,9 @@ public class TestPepperCartesianProductHelper {
 				ImmutableMap.of(A, M, B, N),
 				ImmutableMap.of(A, N, B, N));
 		Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
-		Assert.assertEquals(1, result.size());
+		Assertions.assertEquals(1, result.size());
 
-		Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setMN, B, setMN));
+		org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setMN, B, setMN));
 	}
 
 	@Test
@@ -194,9 +193,9 @@ public class TestPepperCartesianProductHelper {
 				ImmutableMap.of(A, N, B, Arrays.asList(M, N)),
 				ImmutableMap.of(A, M, B, N));
 		Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
-		Assert.assertEquals(1, result.size());
+		Assertions.assertEquals(1, result.size());
 
-		Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setMN, B, setMN));
+		org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setMN, B, setMN));
 	}
 
 	@Test
@@ -208,9 +207,9 @@ public class TestPepperCartesianProductHelper {
 				ImmutableMap.of(A, N));
 		Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
 
-		Assert.assertEquals(2, result.size());
-		Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setM, B, setMN));
-		Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setN));
+		Assertions.assertEquals(2, result.size());
+		org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setM, B, setMN));
+		org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setN));
 	}
 
 	@Test
@@ -223,9 +222,9 @@ public class TestPepperCartesianProductHelper {
 				ImmutableMap.of(A, N, B, N));
 		Set<? extends Map<?, ? extends Set<?>>> result = CartesianProductHelper.groupByKeyAndInValues(input);
 
-		Assert.assertEquals(2, result.size());
-		Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setM, B, setMN));
-		Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setN, B, setN));
+		Assertions.assertEquals(2, result.size());
+		org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setM, B, setMN));
+		org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, setN, B, setN));
 	}
 
 	@Test
@@ -237,8 +236,8 @@ public class TestPepperCartesianProductHelper {
 				ImmutableSet.of(ImmutableMap.of(A, M, B, M), ImmutableMap.of(A, N, B, M)));
 		Set<? extends Map<String, ?>> result = CartesianProductHelper.mergeCartesianProducts(input);
 
-		Assert.assertEquals(1, result.size());
-		Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, M, B, M));
+		Assertions.assertEquals(1, result.size());
+		org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, M, B, M));
 	}
 
 	@Test
@@ -249,8 +248,8 @@ public class TestPepperCartesianProductHelper {
 		Set<? extends Map<String, ?>> result = CartesianProductHelper.groupByKeyAndInValues(input);
 
 		// We keep only the A->M constrain
-		Assert.assertEquals(1, result.size());
-		Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, ImmutableSet.of(M)));
+		Assertions.assertEquals(1, result.size());
+		org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(A, ImmutableSet.of(M)));
 	}
 
 	@Test
@@ -264,12 +263,12 @@ public class TestPepperCartesianProductHelper {
 		Set<? extends Map<String, ?>> result = CartesianProductHelper.groupByKeyAndInValues(input);
 
 		// We keep only the A->M constrain
-		Assert.assertEquals(3, result.size());
-		Assertions.assertThat((Set) result)
+		Assertions.assertEquals(3, result.size());
+		org.assertj.core.api.Assertions.assertThat((Set) result)
 				.contains(ImmutableMap.of(A, ImmutableSet.of(1), B, ImmutableSet.of(1, 2, 3, 4, 5)));
-		Assertions.assertThat((Set) result)
+		org.assertj.core.api.Assertions.assertThat((Set) result)
 				.contains((Map) ImmutableMap.of(A, ImmutableSet.of(2, 3), B, ImmutableSet.of(1, 2, 3)));
-		Assertions.assertThat((Set) result)
+		org.assertj.core.api.Assertions.assertThat((Set) result)
 				.contains((Map) ImmutableMap.of(A, ImmutableSet.of(4), B, ImmutableSet.of(1)));
 	}
 
@@ -282,17 +281,17 @@ public class TestPepperCartesianProductHelper {
 		Set<? extends Map<String, ?>> result = CartesianProductHelper.groupByKeyAndInValues(input);
 
 		// We keep only the A->M constrain
-		Assert.assertEquals(2, result.size());
-		Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(B, ImmutableSet.of(2)));
-		Assertions.assertThat((Set) result)
+		Assertions.assertEquals(2, result.size());
+		org.assertj.core.api.Assertions.assertThat((Set) result).contains((Map) ImmutableMap.of(B, ImmutableSet.of(2)));
+		org.assertj.core.api.Assertions.assertThat((Set) result)
 				.contains((Map) ImmutableMap.of(A, ImmutableSet.of(1), B, ImmutableSet.of(3)));
 	}
 
 	@Test
 	public void testSizeEmpty() {
-		Assert.assertEquals(0, CartesianProductHelper.cartesianProductSize(Arrays.asList()));
+		Assertions.assertEquals(0, CartesianProductHelper.cartesianProductSize(Arrays.asList()));
 
-		Assert.assertEquals(0, CartesianProductHelper.cartesianProductSize(Arrays.asList()));
+		Assertions.assertEquals(0, CartesianProductHelper.cartesianProductSize(Arrays.asList()));
 	}
 
 	@Test
@@ -303,10 +302,10 @@ public class TestPepperCartesianProductHelper {
 		long expectedSize = problemSize * problemSize * problemSize;
 
 		// Check we handle above Integer.MAX_VALUE
-		Assert.assertTrue(expectedSize > Integer.MAX_VALUE);
+		Assertions.assertTrue(expectedSize > Integer.MAX_VALUE);
 
 		long hugeSize = CartesianProductHelper.cartesianProductSize(Arrays.asList(asSet, asSet, asSet));
 
-		Assert.assertEquals(expectedSize, hugeSize);
+		Assertions.assertEquals(expectedSize, hugeSize);
 	}
 }

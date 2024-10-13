@@ -27,10 +27,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class TestSetStatic {
 	public static String STRING_STATIC = "-";
@@ -62,7 +61,7 @@ public class TestSetStatic {
 		// Do the modification
 		setSTatic.setStatic(TestSetStatic.class.getName(), "STRING_STATIC", newValue);
 
-		Assert.assertEquals(newValue, STRING_STATIC);
+		Assertions.assertEquals(newValue, STRING_STATIC);
 	}
 
 	@Test
@@ -78,7 +77,7 @@ public class TestSetStatic {
 		// Do the modification
 		setSTatic.setStatic(TestSetStatic.class.getName(), "LOCALDATE_STATIC", newValue);
 
-		Assert.assertEquals(initialDate.minusDays(1), LOCALDATE_STATIC);
+		Assertions.assertEquals(initialDate.minusDays(1), LOCALDATE_STATIC);
 	}
 
 	@Test
@@ -88,8 +87,8 @@ public class TestSetStatic {
 		LocalDate initialDate = LOCALDATE_STATIC;
 
 		String className = TestSetStatic.class.getName();
-		Assert.assertEquals(initialDate, setSTatic.getStatic(className, "LOCALDATE_STATIC"));
-		Assert.assertEquals(initialDate.toString(), setSTatic.getStaticAsString(className, "LOCALDATE_STATIC"));
+		Assertions.assertEquals(initialDate, setSTatic.getStatic(className, "LOCALDATE_STATIC"));
+		Assertions.assertEquals(initialDate.toString(), setSTatic.getStaticAsString(className, "LOCALDATE_STATIC"));
 	}
 
 	@Test
@@ -103,15 +102,15 @@ public class TestSetStatic {
 		setSTatic.setStatic(TestSetStatic.class.getName(), "CTOR_STATIC_FINAL", "123");
 
 		// Check the test is not trivial
-		Assert.assertNotSame(initial, CTOR_STATIC_FINAL);
-		Assert.assertNotEquals(initial.toString(), CTOR_STATIC_FINAL.toString());
+		Assertions.assertNotSame(initial, CTOR_STATIC_FINAL);
+		Assertions.assertNotEquals(initial.toString(), CTOR_STATIC_FINAL.toString());
 
 		// Check the field have been modified
-		Assert.assertEquals("123", CTOR_STATIC_FINAL.toString());
+		Assertions.assertEquals("123", CTOR_STATIC_FINAL.toString());
 	}
 
 	// TODO
-	@Ignore("TODO")
+	@Disabled("TODO")
 	@Test
 	public void testSetStaticEnum() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
 		SetStaticMBean setSTatic = new SetStaticMBean();
@@ -122,12 +121,12 @@ public class TestSetStatic {
 		setSTatic.setStatic(TestSetStatic.class.getName(), "ENUM_STATIC_FINAL", TimeUnit.MINUTES.toString());
 
 		// Check the test is not trivial
-		Assert.assertNotSame(initial, ENUM_STATIC_FINAL);
+		Assertions.assertNotSame(initial, ENUM_STATIC_FINAL);
 		// Check the field have been modified
-		Assert.assertEquals(TimeUnit.MINUTES, ENUM_STATIC_FINAL);
+		Assertions.assertEquals(TimeUnit.MINUTES, ENUM_STATIC_FINAL);
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void testSetStaticPrivateFinalDouble()
 			throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
@@ -141,7 +140,7 @@ public class TestSetStatic {
 		// Do the modification
 		setSTatic.setStatic(TestSetStatic.class.getName(), "DOUBLE_STATIC", newValue);
 
-		Assert.assertEquals(initialDouble + 1D, DOUBLE_STATIC_FINAL, 0.0001D);
+		Assertions.assertEquals(initialDouble + 1D, DOUBLE_STATIC_FINAL, 0.0001D);
 	}
 
 	@Test
@@ -151,16 +150,16 @@ public class TestSetStatic {
 
 		List<String> pathes = setSTatic.getResourcesFor(this.getClass().getName());
 
-		Assert.assertEquals(1, pathes.size());
-		Assertions.assertThat(pathes.get(0)).startsWith("file:/").endsWith(".class");
+		Assertions.assertEquals(1, pathes.size());
+		org.assertj.core.api.Assertions.assertThat(pathes.get(0)).startsWith("file:/").endsWith(".class");
 
 		List<String> pathesWithSlahes = setSTatic.getResourcesFor(this.getClass().getName().replace('.', '/'));
-		Assert.assertEquals(1, pathesWithSlahes.size());
-		Assertions.assertThat(pathesWithSlahes.get(0)).startsWith("file:/").endsWith(".class");
+		Assertions.assertEquals(1, pathesWithSlahes.size());
+		org.assertj.core.api.Assertions.assertThat(pathesWithSlahes.get(0)).startsWith("file:/").endsWith(".class");
 
 		List<String> pathesWithSlahesAndDotClassSuffix =
 				setSTatic.getResourcesFor(this.getClass().getName().replace('.', '/') + ".class");
-		Assert.assertEquals(1, pathesWithSlahesAndDotClassSuffix.size());
-		Assertions.assertThat(pathesWithSlahesAndDotClassSuffix.get(0)).startsWith("file:/").endsWith(".class");
+		Assertions.assertEquals(1, pathesWithSlahesAndDotClassSuffix.size());
+		org.assertj.core.api.Assertions.assertThat(pathesWithSlahesAndDotClassSuffix.get(0)).startsWith("file:/").endsWith(".class");
 	}
 }

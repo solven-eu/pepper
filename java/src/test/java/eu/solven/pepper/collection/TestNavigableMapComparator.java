@@ -25,8 +25,8 @@ package eu.solven.pepper.collection;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestNavigableMapComparator {
 	@Test
@@ -38,30 +38,30 @@ public class TestNavigableMapComparator {
 			aa.put("a", "a");
 		}
 
-		Assert.assertEquals(0, c.compare(aa, aa));
+		Assertions.assertEquals(0, c.compare(aa, aa));
 
 		NavigableMap<String, String> zz = new TreeMap<>();
 		{
 			zz.put("z", "z");
 		}
 
-		Assert.assertTrue(-1 >= c.compare(aa, zz));
-		Assert.assertTrue(1 <= c.compare(zz, aa));
+		Assertions.assertTrue(-1 >= c.compare(aa, zz));
+		Assertions.assertTrue(1 <= c.compare(zz, aa));
 
 		NavigableMap<String, String> az = new TreeMap<>();
 		{
 			az.put("a", "z");
 		}
 
-		Assert.assertTrue(-1 >= c.compare(aa, az));
-		Assert.assertTrue(1 <= c.compare(az, aa));
+		Assertions.assertTrue(-1 >= c.compare(aa, az));
+		Assertions.assertTrue(1 <= c.compare(az, aa));
 
 		NavigableMap<String, String> za = new TreeMap<>();
 		{
 			za.put("z", "a");
 		}
 
-		Assert.assertTrue(-1 >= c.compare(az, za));
-		Assert.assertTrue(1 <= c.compare(za, az));
+		Assertions.assertTrue(-1 >= c.compare(az, za));
+		Assertions.assertTrue(1 <= c.compare(za, az));
 	}
 }

@@ -22,37 +22,37 @@
  */
 package eu.solven.pepper.jvm;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestPepperMathHelper {
 
 	@Test
 	public void test_ctor_coverage() {
-		Assert.assertNotNull(new PepperMathHelper());
+		Assertions.assertNotNull(new PepperMathHelper());
 	}
 
 	@Test
 	public void testNextFloat() {
-		Assert.assertEquals(1F, PepperMathHelper.nextFloat(1F), 0.000_001F);
+		Assertions.assertEquals(1F, PepperMathHelper.nextFloat(1F), 0.000_001F);
 	}
 
 	@Test
 	public void testNextFloat_Nan() {
-		Assert.assertTrue(Float.isNaN(PepperMathHelper.nextFloat(Float.NaN)));
+		Assertions.assertTrue(Float.isNaN(PepperMathHelper.nextFloat(Float.NaN)));
 	}
 
 	@Test
 	public void testNextFloat_Infinite() {
 		float greaterThanInfinity = PepperMathHelper.nextFloat(Float.POSITIVE_INFINITY);
-		Assert.assertTrue(Float.isInfinite(greaterThanInfinity));
-		Assert.assertTrue(greaterThanInfinity > 0);
+		Assertions.assertTrue(Float.isInfinite(greaterThanInfinity));
+		Assertions.assertTrue(greaterThanInfinity > 0);
 	}
 
 	@Test
 	public void testNextFloat_NegativeInfinite() {
 		float greaterThanInfinity = PepperMathHelper.nextFloat(Float.NEGATIVE_INFINITY);
-		Assert.assertTrue(Float.isInfinite(greaterThanInfinity));
-		Assert.assertTrue(greaterThanInfinity < 0);
+		Assertions.assertTrue(Float.isInfinite(greaterThanInfinity));
+		Assertions.assertTrue(greaterThanInfinity < 0);
 	}
 }

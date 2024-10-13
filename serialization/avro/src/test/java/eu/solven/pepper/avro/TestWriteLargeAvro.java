@@ -29,8 +29,8 @@ import java.util.stream.Stream;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -55,9 +55,9 @@ public class TestWriteLargeAvro {
 		stream = stream.parallel().unordered();
 		long nbRows = factory.writeToPath(tmpPath.toUri(), stream);
 
-		Assert.assertEquals(nbRows1, nbRows);
+		Assertions.assertEquals(nbRows1, nbRows);
 
 		// Read back to ensure the data is readable (it may fail if concurrent write have corrupted the flow)
-		Assert.assertEquals(nbRows1, factory.stream(tmpPath.toUri()).count());
+		Assertions.assertEquals(nbRows1, factory.stream(tmpPath.toUri()).count());
 	}
 }

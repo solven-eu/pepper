@@ -37,8 +37,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -56,49 +56,49 @@ public class TestPepperJMXHelper {
 	 */
 	@Test
 	public void testSearchWithTemplate() {
-		Assert.assertEquals(Maps.newHashMap(), PepperJMXHelper.convertToMap(PepperJMXHelper.JMX_DEFAULT_STRING));
-		Assert.assertEquals(Lists.newArrayList(), PepperJMXHelper.convertToList(PepperJMXHelper.JMX_DEFAULT_STRING));
-		Assert.assertEquals(Sets.newHashSet(), PepperJMXHelper.convertToSet(PepperJMXHelper.JMX_DEFAULT_STRING));
+		Assertions.assertEquals(Maps.newHashMap(), PepperJMXHelper.convertToMap(PepperJMXHelper.JMX_DEFAULT_STRING));
+		Assertions.assertEquals(Lists.newArrayList(), PepperJMXHelper.convertToList(PepperJMXHelper.JMX_DEFAULT_STRING));
+		Assertions.assertEquals(Sets.newHashSet(), PepperJMXHelper.convertToSet(PepperJMXHelper.JMX_DEFAULT_STRING));
 
-		Assert.assertEquals(Collections.singletonMap("key", "value"), PepperJMXHelper.convertToMap("key=value"));
-		Assert.assertEquals(Lists.newArrayList("key", "value"), PepperJMXHelper.convertToList("key,value"));
-		Assert.assertEquals(Sets.newHashSet("key", "value"), PepperJMXHelper.convertToSet("key,value"));
+		Assertions.assertEquals(Collections.singletonMap("key", "value"), PepperJMXHelper.convertToMap("key=value"));
+		Assertions.assertEquals(Lists.newArrayList("key", "value"), PepperJMXHelper.convertToList("key,value"));
+		Assertions.assertEquals(Sets.newHashSet("key", "value"), PepperJMXHelper.convertToSet("key,value"));
 
-		Assert.assertEquals(Maps.newHashMap(), PepperJMXHelper.convertToMap(""));
-		Assert.assertEquals(Lists.newArrayList(), PepperJMXHelper.convertToList(""));
-		Assert.assertEquals(Sets.newHashSet(), PepperJMXHelper.convertToSet(""));
+		Assertions.assertEquals(Maps.newHashMap(), PepperJMXHelper.convertToMap(""));
+		Assertions.assertEquals(Lists.newArrayList(), PepperJMXHelper.convertToList(""));
+		Assertions.assertEquals(Sets.newHashSet(), PepperJMXHelper.convertToSet(""));
 	}
 
 	@Test
 	public void testSearchWithNotTrimmed() {
-		Assert.assertEquals(ImmutableMap.of("key", "value", "key2", "value"),
+		Assertions.assertEquals(ImmutableMap.of("key", "value", "key2", "value"),
 				PepperJMXHelper.convertToMap(" key = value , key2 = value "));
-		Assert.assertEquals(Lists.newArrayList("key", "value"), PepperJMXHelper.convertToList(" key , value "));
-		Assert.assertEquals(Sets.newHashSet("key", "value"), PepperJMXHelper.convertToSet(" key , value"));
+		Assertions.assertEquals(Lists.newArrayList("key", "value"), PepperJMXHelper.convertToList(" key , value "));
+		Assertions.assertEquals(Sets.newHashSet("key", "value"), PepperJMXHelper.convertToSet(" key , value"));
 	}
 
 	@Test
 	public void testConvertToJMX() {
-		Assert.assertTrue(PepperJMXHelper.convertToJMXMap(ImmutableMap.of()) instanceof TreeMap<?, ?>);
-		Assert.assertTrue(
+		Assertions.assertTrue(PepperJMXHelper.convertToJMXMap(ImmutableMap.of()) instanceof TreeMap<?, ?>);
+		Assertions.assertTrue(
 				PepperJMXHelper.convertToJMXMapString(ImmutableMap.of(new Date(), 3L)) instanceof LinkedHashMap<?, ?>);
-		Assert.assertTrue(
+		Assertions.assertTrue(
 				PepperJMXHelper.convertToJMXSet(ImmutableSet.of(new Date(), new Date())) instanceof TreeSet<?>);
-		Assert.assertTrue(
+		Assertions.assertTrue(
 				PepperJMXHelper.convertToJMXValueOrderedMap(ImmutableMap.of(new Date(), 3L)) instanceof HashMap<?, ?>);
 	}
 
 	@Test
 	public void testConvertJMXLimit() {
 		// We keep negative as explicitly set to it
-		Assert.assertEquals(-1, PepperJMXHelper.convertToLimit(-1));
+		Assertions.assertEquals(-1, PepperJMXHelper.convertToLimit(-1));
 
 		// Convert the default JMX int to the default limit
-		Assert.assertEquals(PepperJMXHelper.DEFAULT_LIMIT,
+		Assertions.assertEquals(PepperJMXHelper.DEFAULT_LIMIT,
 				PepperJMXHelper.convertToLimit(PepperJMXHelper.JMX_DEFAULT_INT));
 
 		// Keep positive values as they are
-		Assert.assertEquals(1, PepperJMXHelper.convertToLimit(1));
+		Assertions.assertEquals(1, PepperJMXHelper.convertToLimit(1));
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class TestPepperJMXHelper {
 		Map<String, Long> decreasing = PepperJMXHelper.convertToJMXValueOrderedMap(reverse);
 
 		// Check we re-ordered by value
-		Assert.assertEquals(Arrays.asList("B", "A"), Lists.newArrayList(decreasing.keySet()));
+		Assertions.assertEquals(Arrays.asList("B", "A"), Lists.newArrayList(decreasing.keySet()));
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class TestPepperJMXHelper {
 		Map<String, Long> decreasing = PepperJMXHelper.convertToJMXValueOrderedMap(reverse, true);
 
 		// Check we re-ordered by value
-		Assert.assertEquals(Arrays.asList("B", "A"), Lists.newArrayList(decreasing.keySet()));
+		Assertions.assertEquals(Arrays.asList("B", "A"), Lists.newArrayList(decreasing.keySet()));
 	}
 
 	@Test
@@ -128,18 +128,18 @@ public class TestPepperJMXHelper {
 		Map<List<String>, Long> decreasing = PepperJMXHelper.convertToJMXValueOrderedMap(reverse, true);
 
 		// Check we re-ordered by value
-		Assert.assertEquals(Arrays.asList(Arrays.asList("B"), Arrays.asList("A")),
+		Assertions.assertEquals(Arrays.asList(Arrays.asList("B"), Arrays.asList("A")),
 				Lists.newArrayList(decreasing.keySet()));
 
 		// Check the key has been made JMX compatible
-		Assert.assertTrue(decreasing.keySet().iterator().next() instanceof ArrayList);
+		Assertions.assertTrue(decreasing.keySet().iterator().next() instanceof ArrayList);
 	}
 
 	@Test
 	public void testConvertToMapList() {
 		Map<String, List<String>> asMapOfList = PepperJMXHelper.convertToMapList("a=b|c;d=e|f");
 
-		Assert.assertEquals(ImmutableMap.of("a", ImmutableList.of("b", "c"), "d", ImmutableList.of("e", "f")),
+		Assertions.assertEquals(ImmutableMap.of("a", ImmutableList.of("b", "c"), "d", ImmutableList.of("e", "f")),
 				asMapOfList);
 	}
 
@@ -149,16 +149,16 @@ public class TestPepperJMXHelper {
 		List<? extends Map<String, String>> asMapOfList =
 				PepperJMXHelper.convertToJMXListMapString(ImmutableList.of(ImmutableMap.of("key", nowAsObject)));
 
-		Assert.assertEquals(ImmutableList.of(ImmutableMap.of("key", nowAsObject.toString())), asMapOfList);
+		Assertions.assertEquals(ImmutableList.of(ImmutableMap.of("key", nowAsObject.toString())), asMapOfList);
 
 		// JMX compatible classes
-		Assert.assertTrue(asMapOfList instanceof ArrayList);
-		Assert.assertTrue(asMapOfList.get(0) instanceof TreeMap);
+		Assertions.assertTrue(asMapOfList instanceof ArrayList);
+		Assertions.assertTrue(asMapOfList.get(0) instanceof TreeMap);
 	}
 
 	@Test
 	public void testConvertURL_DefaultJMX() throws IOException {
-		Assert.assertNull(PepperJMXHelper.convertToURL("String"));
+		Assertions.assertNull(PepperJMXHelper.convertToURL("String"));
 	}
 
 	@Test
@@ -171,9 +171,9 @@ public class TestPepperJMXHelper {
 		URL asURL = PepperJMXHelper.convertToURL(testPath.toString());
 
 		// Check the URL maps actually to the file
-		Assert.assertNotNull(asURL.openStream());
+		Assertions.assertNotNull(asURL.openStream());
 
-		Assert.assertEquals(testPath.toUri().toURL(), asURL);
+		Assertions.assertEquals(testPath.toUri().toURL(), asURL);
 	}
 
 	@Test
@@ -186,11 +186,11 @@ public class TestPepperJMXHelper {
 		URL asURL = PepperJMXHelper.convertToURL(testPath.toString());
 
 		// Check the URL maps actually to the file
-		Assert.assertNotNull(asURL.openStream());
+		Assertions.assertNotNull(asURL.openStream());
 
 		// https://stackoverflow.com/questions/60160/how-to-escape-text-for-regular-expression-in-java
 		URL expectedUrl = testPath.toUri().toURL();
-		Assert.assertEquals(expectedUrl, asURL);
+		Assertions.assertEquals(expectedUrl, asURL);
 	}
 
 }

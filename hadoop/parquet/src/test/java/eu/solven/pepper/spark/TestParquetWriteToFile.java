@@ -30,9 +30,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.avro.Schema;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -63,7 +63,7 @@ public class TestParquetWriteToFile {
 		Path tmpPath = PepperFileHelper.createTempPath("testWriteParquet_FromJavaStream", ".parquet", true);
 
 		// Ensure the file exist
-		Assert.assertTrue(tmpPath.toFile().createNewFile());
+		Assertions.assertTrue(tmpPath.toFile().createNewFile());
 
 		// This should fails as the file already exist
 		parquetStreamFactory.serialize(tmpPath.toUri(), rows.map(AvroTranscodingHelper.toGenericRecord(avroSchema)));
@@ -82,6 +82,6 @@ public class TestParquetWriteToFile {
 		long nbWritten = parquetStreamFactory.serialize(tmpPath.toUri(),
 				rows.map(AvroTranscodingHelper.toGenericRecord(avroSchema)));
 
-		Assert.assertEquals(10, nbWritten);
+		Assertions.assertEquals(10, nbWritten);
 	}
 }

@@ -31,9 +31,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
@@ -49,7 +48,7 @@ public class TestPepperMapHelper {
 
 		Map<String, Object> newMap = PepperMapHelper.transcodeColumns(ImmutableBiMap.of("key", "newKey"), map);
 
-		Assert.assertEquals(Collections.singletonMap("newKey", null), newMap);
+		Assertions.assertEquals(Collections.singletonMap("newKey", null), newMap);
 	}
 
 	@Test
@@ -65,14 +64,14 @@ public class TestPepperMapHelper {
 		Map<String, Object> merged = new HashMap<>();
 		merged.put("key", null);
 		merged.put("key2", null);
-		Assert.assertEquals(merged, newMap);
+		Assertions.assertEquals(merged, newMap);
 	}
 
 	@Test
 	public void fromLists() {
 		Map<String, String> map = PepperMapHelper.fromLists(Arrays.asList("k1", "k2"), Arrays.asList("v1", "v2"));
 
-		Assert.assertEquals(ImmutableMap.of("k1", "v1", "k2", "v2"), map);
+		Assertions.assertEquals(ImmutableMap.of("k1", "v1", "k2", "v2"), map);
 	}
 
 	@Test
@@ -80,7 +79,7 @@ public class TestPepperMapHelper {
 		Map<String, ?> map = ImmutableMap.of("someKey", "v");
 
 		// Ensure the present keys are logged
-		Assertions.assertThatThrownBy(() -> PepperMapHelper.getRequiredString(map, "requiredKey"))
+		org.assertj.core.api.Assertions.assertThatThrownBy(() -> PepperMapHelper.getRequiredString(map, "requiredKey"))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("someKey");
 	}
@@ -89,28 +88,31 @@ public class TestPepperMapHelper {
 	public void testGetRequiredString_Recursive() {
 		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", "v"));
 
-		Assert.assertEquals("v", PepperMapHelper.getRequiredString(map, "k1", "k2"));
+		Assertions.assertEquals("v", PepperMapHelper.getRequiredString(map, "k1", "k2"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testGetRequiredString_Recursive_NotString() {
 		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", OffsetDateTime.now()));
 
-		PepperMapHelper.getRequiredString(map, "k1", "k2");
+		Assertions.assertThrows(IllegalArgumentException.class,
+				() -> PepperMapHelper.getRequiredString(map, "k1", "k2"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testGetRequiredString_Recursive_NotIntermediateMap() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1");
 
-		PepperMapHelper.getRequiredString(map, "k1", "k2");
+		Assertions.assertThrows(IllegalArgumentException.class,
+				() -> PepperMapHelper.getRequiredString(map, "k1", "k2"));
 	}
 
 	@Test
 	public void testGetRequiredString_Recursive_NotIntermediateMap_Deeper() {
 		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", ImmutableMap.of("k3", "v3")));
 
-		Assertions.assertThatThrownBy(() -> PepperMapHelper.getRequiredString(map, "k1", "k2", "notK3"))
+		org.assertj.core.api.Assertions
+				.assertThatThrownBy(() -> PepperMapHelper.getRequiredString(map, "k1", "k2", "notK3"))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("k3")
 				.hasMessageNotContaining("k1");
@@ -121,7 +123,7 @@ public class TestPepperMapHelper {
 		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", "v"));
 
 		Map<Object, Object> requiredMap = PepperMapHelper.getRequiredMap(map, "k1");
-		Assert.assertEquals(ImmutableMap.of("k2", "v"), requiredMap);
+		Assertions.assertEquals(ImmutableMap.of("k2", "v"), requiredMap);
 	}
 
 	@Test
@@ -129,118 +131,121 @@ public class TestPepperMapHelper {
 		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", "v"));
 
 		Map<String, ?> requiredMap = PepperMapHelper.getRequiredMap(map, "k1");
-		Assert.assertEquals(ImmutableMap.of("k2", "v"), requiredMap);
+		Assertions.assertEquals(ImmutableMap.of("k2", "v"), requiredMap);
 	}
 
 	@Test
 	public void testPresentKeyInMap() {
 		Map<String, ?> map = ImmutableMap.of("requiredKey", "v");
 
-		Assert.assertEquals("v", PepperMapHelper.getRequiredString(map, "requiredKey"));
+		Assertions.assertEquals("v", PepperMapHelper.getRequiredString(map, "requiredKey"));
 	}
 
 	@Test
 	public void testPresentNumberKeyInMap_Int() {
 		Map<String, ?> map = ImmutableMap.of("requiredKey", 123);
 
-		Assert.assertEquals(123, PepperMapHelper.getRequiredNumber(map, "requiredKey"));
+		Assertions.assertEquals(123, PepperMapHelper.getRequiredNumber(map, "requiredKey"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testPresentNumberKeyInMap_String() {
-		PepperMapHelper.getRequiredNumber(ImmutableMap.of("requiredKey", "123"), "requiredKey");
+		Assertions.assertThrows(IllegalArgumentException.class,
+				() -> PepperMapHelper.getRequiredNumber(ImmutableMap.of("requiredKey", "123"), "requiredKey"));
 	}
 
 	// Not a NullPointerException
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testPresentNumberKeyInMap_null() {
-		PepperMapHelper.getRequiredNumber(Collections.singletonMap("requiredKey", null), "requiredKey");
+		Assertions.assertThrows(IllegalArgumentException.class,
+				() -> PepperMapHelper.getRequiredNumber(Collections.singletonMap("requiredKey", null), "requiredKey"));
 	}
 
 	@Test
 	public void testHideKey() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
 
-		Assert.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKeys(map, "k1"));
+		Assertions.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKeys(map, "k1"));
 	}
 
 	@Test
 	public void testHideKey_unknownType() {
 		Map<?, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
 
-		Assert.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKeys(map, "k1"));
+		Assertions.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKeys(map, "k1"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testHideKey_UnknownKey() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
 
-		PepperMapHelper.hideKeys(map, "k3");
+		Assertions.assertThrows(IllegalArgumentException.class, () -> PepperMapHelper.hideKeys(map, "k3"));
 	}
 
 	@Test
 	public void testHideKeys_singleKey() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
 
-		Assert.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKeys(map, "k1"));
+		Assertions.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKeys(map, "k1"));
 	}
 
 	@Test
 	public void testHideKeys_multipleKeys_hideAll() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2");
 
-		Assert.assertEquals(ImmutableMap.of(), PepperMapHelper.hideKeys(map, "k1", "k2"));
+		Assertions.assertEquals(ImmutableMap.of(), PepperMapHelper.hideKeys(map, "k1", "k2"));
 	}
 
 	@Test
 	public void testHideKeys_multipleKeys_hideSome() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1", "k2", "v2", "k3", "v3");
 
-		Assert.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKeys(map, "k1", "k3"));
+		Assertions.assertEquals(ImmutableMap.of("k2", "v2"), PepperMapHelper.hideKeys(map, "k1", "k3"));
 	}
 
 	@Test
 	public void testGetOptionalString_Ok() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1");
 
-		Assert.assertEquals("v1", PepperMapHelper.getOptionalString(map, "k1").get());
+		Assertions.assertEquals("v1", PepperMapHelper.getOptionalString(map, "k1").get());
 	}
 
 	@Test
 	public void testGetOptionalString_Deep() {
 		Map<?, ?> map = ImmutableMap.of(123, ImmutableMap.of("k1", "v1"));
 
-		Assert.assertEquals("v1", PepperMapHelper.getOptionalString(map, 123, "k1").get());
+		Assertions.assertEquals("v1", PepperMapHelper.getOptionalString(map, 123, "k1").get());
 	}
 
 	@Test
 	public void testGetOptionalString_Missing() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1");
 
-		Assert.assertFalse(PepperMapHelper.getOptionalString(map, "k2").isPresent());
+		Assertions.assertFalse(PepperMapHelper.getOptionalString(map, "k2").isPresent());
 	}
 
 	@Test
 	public void testGetOptionalString_Null() {
 		Map<String, ?> map = Collections.singletonMap("k1", null);
 
-		Assert.assertTrue(map.containsKey("k1"));
-		Assert.assertFalse(PepperMapHelper.getOptionalString(map, "k1").isPresent());
+		Assertions.assertTrue(map.containsKey("k1"));
+		Assertions.assertFalse(PepperMapHelper.getOptionalString(map, "k1").isPresent());
 	}
 
 	@Test
 	public void testGetOptionalString_Empty() {
 		Map<String, ?> map = Collections.singletonMap("k1", "");
 
-		Assert.assertTrue(map.containsKey("k1"));
-		Assert.assertFalse(PepperMapHelper.getOptionalString(map, "k1").isPresent());
+		Assertions.assertTrue(map.containsKey("k1"));
+		Assertions.assertFalse(PepperMapHelper.getOptionalString(map, "k1").isPresent());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testGetOptionalString_WrongType() {
 		Map<String, ?> map = Collections.singletonMap("k1", 123L);
 
-		PepperMapHelper.getOptionalString(map, "k1").isPresent();
+		Assertions.assertThrows(IllegalArgumentException.class,
+				() -> PepperMapHelper.getOptionalString(map, "k1").isPresent());
 	}
 
 	@Test
@@ -250,7 +255,7 @@ public class TestPepperMapHelper {
 
 		PepperMapHelper.transferValue("k1", source, sink);
 
-		Assert.assertEquals(ImmutableMap.of("k1", "v1"), sink);
+		Assertions.assertEquals(ImmutableMap.of("k1", "v1"), sink);
 	}
 
 	@Test
@@ -261,7 +266,7 @@ public class TestPepperMapHelper {
 
 		PepperMapHelper.transferValue("k1", source, sink);
 
-		Assert.assertEquals(ImmutableMap.of("k1", "v1"), sink);
+		Assertions.assertEquals(ImmutableMap.of("k1", "v1"), sink);
 	}
 
 	@Test
@@ -271,7 +276,7 @@ public class TestPepperMapHelper {
 
 		PepperMapHelper.transferValue("k?", source, sink);
 
-		Assert.assertEquals(ImmutableMap.of(), sink);
+		Assertions.assertEquals(ImmutableMap.of(), sink);
 	}
 
 	@Test
@@ -279,7 +284,7 @@ public class TestPepperMapHelper {
 		// Check keys can be of any-type
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key");
 
-		Assert.assertEquals(ImmutableMap.of(123, ImmutableMap.of("key", "value")), map);
+		Assertions.assertEquals(ImmutableMap.of(123, ImmutableMap.of("key", "value")), map);
 	}
 
 	@Test
@@ -287,16 +292,17 @@ public class TestPepperMapHelper {
 		// Check keys can be of any-type
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
-		Assert.assertEquals(ImmutableMap.of(123, ImmutableMap.of("key", ImmutableMap.of(now, "value"))), map);
+		Assertions.assertEquals(ImmutableMap.of(123, ImmutableMap.of("key", ImmutableMap.of(now, "value"))), map);
 	}
 
 	@Test
 	public void testGetOptionalAs() {
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
-		Assert.assertEquals(Optional.of("value"), PepperMapHelper.getOptionalAs(map, 123, "key", now));
-		Assert.assertEquals(Optional.of(ImmutableMap.of(now, "value")), PepperMapHelper.getOptionalAs(map, 123, "key"));
-		Assert.assertEquals(Optional.of(ImmutableMap.of("key", ImmutableMap.of(now, "value"))),
+		Assertions.assertEquals(Optional.of("value"), PepperMapHelper.getOptionalAs(map, 123, "key", now));
+		Assertions.assertEquals(Optional.of(ImmutableMap.of(now, "value")),
+				PepperMapHelper.getOptionalAs(map, 123, "key"));
+		Assertions.assertEquals(Optional.of(ImmutableMap.of("key", ImmutableMap.of(now, "value"))),
 				PepperMapHelper.getOptionalAs(map, 123));
 	}
 
@@ -304,9 +310,9 @@ public class TestPepperMapHelper {
 	public void testGetRequiredAs() {
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
-		Assert.assertEquals("value", PepperMapHelper.getRequiredAs(map, 123, "key", now));
-		Assert.assertEquals(ImmutableMap.of(now, "value"), PepperMapHelper.getRequiredAs(map, 123, "key"));
-		Assert.assertEquals(ImmutableMap.of("key", ImmutableMap.of(now, "value")),
+		Assertions.assertEquals("value", PepperMapHelper.getRequiredAs(map, 123, "key", now));
+		Assertions.assertEquals(ImmutableMap.of(now, "value"), PepperMapHelper.getRequiredAs(map, 123, "key"));
+		Assertions.assertEquals(ImmutableMap.of("key", ImmutableMap.of(now, "value")),
 				PepperMapHelper.getRequiredAs(map, 123));
 	}
 
@@ -314,22 +320,22 @@ public class TestPepperMapHelper {
 	public void testGetOptionalAs_missing() {
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
-		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key2")).isEmpty();
-		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 124)).isEmpty();
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key2")).isEmpty();
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 124)).isEmpty();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testGetRequiredAs_missing_depth2() {
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
-		PepperMapHelper.getRequiredAs(map, 123, "key2");
+		Assertions.assertThrows(IllegalArgumentException.class, () -> PepperMapHelper.getRequiredAs(map, 123, "key2"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testGetRequiredAs_missing_depth1() {
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
-		PepperMapHelper.getRequiredAs(map, 124);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> PepperMapHelper.getRequiredAs(map, 124));
 	}
 
 	@Test
@@ -337,18 +343,26 @@ public class TestPepperMapHelper {
 		// Check keys can be of any-type
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(Boolean.TRUE, 123, "key", now);
 
-		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now)).isPresent().contains(Boolean.TRUE);
-		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(Boolean.TRUE);
-		Assertions.assertThat(PepperMapHelper.getRequiredBoolean(map, 123, "key", now)).isEqualTo(Boolean.TRUE);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now))
+				.isPresent()
+				.contains(Boolean.TRUE);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now))
+				.isEqualTo(Boolean.TRUE);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getRequiredBoolean(map, 123, "key", now))
+				.isEqualTo(Boolean.TRUE);
 	}
 
 	@Test
 	public void testGetRequiredBoolean_false() {
 		// Check keys can be of any-type
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(Boolean.FALSE, 123, "key", now);
-		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now)).isPresent().contains(Boolean.FALSE);
-		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(Boolean.FALSE);
-		Assertions.assertThat(PepperMapHelper.getRequiredBoolean(map, 123, "key", now)).isEqualTo(Boolean.FALSE);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now))
+				.isPresent()
+				.contains(Boolean.FALSE);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now))
+				.isEqualTo(Boolean.FALSE);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getRequiredBoolean(map, 123, "key", now))
+				.isEqualTo(Boolean.FALSE);
 	}
 
 	@Test
@@ -356,18 +370,26 @@ public class TestPepperMapHelper {
 		// Check keys can be of any-type
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(456, 123, "key", now);
 
-		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now)).isPresent().contains(456);
-		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(456);
-		Assertions.assertThat(PepperMapHelper.getRequiredNumber(map, 123, "key", now)).isEqualTo(456);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now))
+				.isPresent()
+				.contains(456);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now))
+				.isEqualTo(456);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getRequiredNumber(map, 123, "key", now))
+				.isEqualTo(456);
 	}
 
 	@Test
 	public void testGetRequiredNumber_float() {
 		// Check keys can be of any-type
 		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(123.456F, 123, "key", now);
-		Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now)).isPresent().contains(123.456F);
-		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now)).isEqualTo(123.456F);
-		Assertions.assertThat(PepperMapHelper.getRequiredNumber(map, 123, "key", now)).isEqualTo(123.456F);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getOptionalAs(map, 123, "key", now))
+				.isPresent()
+				.contains(123.456F);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(map, 123, "key", now))
+				.isEqualTo(123.456F);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getRequiredNumber(map, 123, "key", now))
+				.isEqualTo(123.456F);
 	}
 
 	@Test
@@ -377,11 +399,13 @@ public class TestPepperMapHelper {
 		root.put("k", Arrays.asList("someString", PepperMapHelper.imbricatedMap(123.456F, 123, "key", now)));
 
 		// Check keys can be of any-type
-		Assertions.assertThat(PepperMapHelper.getOptionalAs(root, "k", 1, 123, "key", now))
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getOptionalAs(root, "k", 1, 123, "key", now))
 				.isPresent()
 				.contains(123.456F);
-		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(root, "k", 1, 123, "key", now)).isEqualTo(123.456F);
-		Assertions.assertThat(PepperMapHelper.getRequiredNumber(root, "k", 1, 123, "key", now)).isEqualTo(123.456F);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(root, "k", 1, 123, "key", now))
+				.isEqualTo(123.456F);
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getRequiredNumber(root, "k", 1, 123, "key", now))
+				.isEqualTo(123.456F);
 	}
 
 	@Test
@@ -391,13 +415,15 @@ public class TestPepperMapHelper {
 		root.put("k", Arrays.asList("someString", PepperMapHelper.imbricatedMap("deepString", 123, "key", now)));
 
 		// Check keys can be of any-type
-		Assertions.assertThat(PepperMapHelper.getOptionalAs(root, "k", 1, 123, "key", now))
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getOptionalAs(root, "k", 1, 123, "key", now))
 				.isPresent()
 				.contains("deepString");
-		Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(root, "k", 1, 123, "key", now))
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.<Object>getRequiredAs(root, "k", 1, 123, "key", now))
 				.isEqualTo("deepString");
-		Assertions.assertThat(PepperMapHelper.getRequiredString(root, "k", 1, 123, "key", now)).isEqualTo("deepString");
-		Assertions.assertThat(PepperMapHelper.getOptionalString(root, "k", 1, 123, "key", now).get())
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getRequiredString(root, "k", 1, 123, "key", now))
+				.isEqualTo("deepString");
+		org.assertj.core.api.Assertions
+				.assertThat(PepperMapHelper.getOptionalString(root, "k", 1, 123, "key", now).get())
 				.isEqualTo("deepString");
 	}
 
@@ -408,7 +434,7 @@ public class TestPepperMapHelper {
 		root.put("k", Arrays.asList("someString", PepperMapHelper.imbricatedMap("deepString", 123, "key", now)));
 
 		// Check keys can be of any-type
-		Assertions.assertThat(PepperMapHelper.getOptionalAs(root, "k", 3)).isEmpty();
+		org.assertj.core.api.Assertions.assertThat(PepperMapHelper.getOptionalAs(root, "k", 3)).isEmpty();
 	}
 
 }

@@ -32,8 +32,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -48,11 +48,11 @@ public class TestPepperStreamHelper {
 				IntStream.range(0, 12_345).mapToObj(Integer::valueOf),
 				c -> spot.add(Lists.newArrayList(c)));
 
-		Assert.assertEquals(12_345, nbDone);
+		Assertions.assertEquals(12_345, nbDone);
 
 		Set<Integer> consumedSizes = spot.stream().map(Collection::size).collect(Collectors.toSet());
 
-		Assert.assertEquals(ImmutableSet.of(12_345), consumedSizes);
+		Assertions.assertEquals(ImmutableSet.of(12_345), consumedSizes);
 	}
 
 	@Test
@@ -63,12 +63,12 @@ public class TestPepperStreamHelper {
 				c -> spot.add(Lists.newArrayList(c)),
 				100);
 
-		Assert.assertEquals(12_345, nbDone);
+		Assertions.assertEquals(12_345, nbDone);
 
 		Set<Integer> consumedSizes = spot.stream().map(Collection::size).collect(Collectors.toSet());
 
 		// We have blocks with size 100, and a left-over
-		Assert.assertEquals(ImmutableSet.of(100, 45), consumedSizes);
+		Assertions.assertEquals(ImmutableSet.of(100, 45), consumedSizes);
 	}
 
 	@Test
@@ -80,12 +80,12 @@ public class TestPepperStreamHelper {
 						c -> spot.add(Lists.newArrayList(c)),
 						100);
 
-		Assert.assertEquals(12_345, nbDone);
+		Assertions.assertEquals(12_345, nbDone);
 
 		Set<Integer> consumedSizes = spot.stream().map(Collection::size).collect(Collectors.toSet());
 
 		// We have blocks with size 100, and a left-over
-		Assert.assertEquals(ImmutableSet.of(100, 45), consumedSizes);
+		Assertions.assertEquals(ImmutableSet.of(100, 45), consumedSizes);
 	}
 
 	@Test
@@ -107,15 +107,15 @@ public class TestPepperStreamHelper {
 		}
 
 		// Check that we have false by default
-		Assert.assertFalse(checked[0]);
+		Assertions.assertFalse(checked[0]);
 
 		long nbDone = PepperStreamHelper.consumeByPartition(
 				IntStream.range(0, problemSize).parallel().mapToObj(Integer::valueOf),
 				c -> c.forEach(i -> checked[i] = true),
 				100);
 
-		Assert.assertEquals(problemSize, nbDone);
+		Assertions.assertEquals(problemSize, nbDone);
 
-		Assert.assertEquals(-1, Booleans.indexOf(checked, false));
+		Assertions.assertEquals(-1, Booleans.indexOf(checked, false));
 	}
 }

@@ -25,8 +25,8 @@ package eu.solven.pepper.lambda;
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import eu.solven.pepper.io.PepperSerializationHelper;
 import eu.solven.pepper.lamda.NoOpRunnable;
@@ -37,9 +37,9 @@ public class TestNoOpRunnable {
 		NoOpRunnable noOpRunnable = new NoOpRunnable();
 		noOpRunnable.run();
 
-		Assert.assertTrue(noOpRunnable instanceof Serializable);
+		Assertions.assertTrue(noOpRunnable instanceof Serializable);
 
-		Assert.assertEquals("rO0ABXNyACNldS5zb2x2ZW4ucGVwcGVyLmxhbWRhLk5vT3BSdW5uYWJsZcr+YFatlIE4AgAAeHA=",
+		Assertions.assertEquals("rO0ABXNyACNldS5zb2x2ZW4ucGVwcGVyLmxhbWRhLk5vT3BSdW5uYWJsZcr+YFatlIE4AgAAeHA=",
 				PepperSerializationHelper.toString(noOpRunnable));
 	}
 }

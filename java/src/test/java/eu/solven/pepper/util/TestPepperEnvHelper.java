@@ -22,13 +22,13 @@
  */
 package eu.solven.pepper.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestPepperEnvHelper {
 
 	@Test
 	public void testDetectUnitTest() {
-		Assert.assertTrue(PepperEnvHelper.inUnitTest());
+		Assertions.assertTrue(PepperEnvHelper.inUnitTest());
 	}
 }

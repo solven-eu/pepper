@@ -25,9 +25,9 @@ package eu.solven.pepper.agent;
 import java.lang.instrument.Instrumentation;
 import java.util.logging.Logger;
 
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.base.Optional;
 
@@ -43,15 +43,15 @@ public class TestInstrumentAgent {
 
 	@Test
 	public void test_ctor() {
-		Assert.assertNotNull(new InstrumentationAgent());
+		Assertions.assertNotNull(new InstrumentationAgent());
 	}
 
 	@Test
 	public void testGetInstrument() {
-		Assume.assumeFalse("TODO JDK9", TestInstrumentAgent.IS_JDK_9);
+		Assumptions.assumeFalse(TestInstrumentAgent.IS_JDK_9, "TODO JDK9");
 
 		Optional<Instrumentation> instrument = InstrumentationAgent.getInstrumentation();
 
-		Assert.assertTrue(instrument.isPresent());
+		Assertions.assertTrue(instrument.isPresent());
 	}
 }

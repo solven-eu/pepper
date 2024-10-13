@@ -22,10 +22,9 @@
  */
 package eu.solven.pepper.metrics;
 
-import org.assertj.core.api.Assertions;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.common.collect.ImmutableMap;
@@ -33,7 +32,7 @@ import com.google.common.eventbus.EventBus;
 
 public class TestTaskStartEvent {
 
-	@After
+	@AfterEach
 	public void resetDoRememberStack() {
 		TaskStartEvent.setDoRememberStack(false);
 	}
@@ -44,8 +43,8 @@ public class TestTaskStartEvent {
 
 		TaskStartEvent startEvent = new TaskStartEvent("detailName", "source", "names");
 
-		Assert.assertTrue(startEvent.toString().contains("TaskStartEvent.<init>("));
-		Assert.assertFalse(startEvent.toStringNoStack().contains("TaskStartEvent.<init>("));
+		Assertions.assertTrue(startEvent.toString().contains("TaskStartEvent.<init>("));
+		Assertions.assertFalse(startEvent.toStringNoStack().contains("TaskStartEvent.<init>("));
 	}
 
 	@Test
@@ -54,7 +53,7 @@ public class TestTaskStartEvent {
 
 		TaskStartEvent startEvent = new TaskStartEvent("detailName", "source", "names");
 
-		Assert.assertFalse(startEvent.toString().contains("TaskStartEvent.<init>("));
+		Assertions.assertFalse(startEvent.toString().contains("TaskStartEvent.<init>("));
 	}
 
 	@Test
@@ -66,9 +65,9 @@ public class TestTaskStartEvent {
 				() -> -1L,
 				"Test");
 
-		Assertions.assertThat(startEvent.toString()).contains("Benoit");
+		org.assertj.core.api.Assertions.assertThat(startEvent.toString()).contains("Benoit");
 
-		Assert.assertEquals(
+		Assertions.assertEquals(
 				"Started in 'main': TaskStartEvent{names=[Test], source=sourceObject} startDetails={UserName=Benoit}",
 				startEvent.toString());
 	}
@@ -81,7 +80,7 @@ public class TestTaskStartEvent {
 
 		startEvent.setEndDetails(ImmutableMap.of("endKey", "endValue"));
 
-		Assert.assertEquals(
+		Assertions.assertEquals(
 				"Started in 'main': TaskStartEvent{names=[Test], source=sourceObject} endDetails={endKey=endValue}",
 				startEvent.toString());
 	}
@@ -101,6 +100,6 @@ public class TestTaskStartEvent {
 		Mockito.verify(eventBus).post(end1);
 
 		// Ensure closing several time the same event leads to a single end event
-		Assert.assertSame(end1, end2);
+		Assertions.assertSame(end1, end2);
 	}
 }

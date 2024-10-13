@@ -44,8 +44,8 @@ import org.apache.avro.Schema.Type;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.IndexedRecord;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,10 +68,10 @@ public class TestAvroStreamHelper {
 
 		Map<String, ?> map = AvroTranscodingHelper.toJavaMap(record);
 
-		Assert.assertEquals(ImmutableMap.of("k1", "v0", "k2", "v1", "k3", "v2"), map);
+		Assertions.assertEquals(ImmutableMap.of("k1", "v0", "k2", "v1", "k3", "v2"), map);
 
 		// Ensure we maintained the original ordering
-		Assert.assertEquals(Arrays.asList("k1", "k2", "k3"), new ArrayList<>(map.keySet()));
+		Assertions.assertEquals(Arrays.asList("k1", "k2", "k3"), new ArrayList<>(map.keySet()));
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class TestAvroStreamHelper {
 		IndexedRecord record = new GenericData.Record(schema);
 		record.put(0, "v1");
 		record.put(1, "v2");
-		Assert.assertEquals(record, transcoded);
+		Assertions.assertEquals(record, transcoded);
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class TestAvroStreamHelper {
 		IndexedRecord record = new GenericData.Record(schema);
 		record.put(0, "v1");
 		record.put(1, "v2");
-		Assert.assertEquals(record, transcoded);
+		Assertions.assertEquals(record, transcoded);
 	}
 
 	@Test
@@ -109,11 +109,11 @@ public class TestAvroStreamHelper {
 		GenericRecord firstRecord = mapper.apply(ImmutableMap.of("k1", "v1", "k2", "v2"));
 		GenericRecord secondRecord = mapper.apply(ImmutableMap.of("k2", "v2'"));
 
-		Assert.assertEquals("v1", firstRecord.get("k1"));
-		Assert.assertEquals("v2", firstRecord.get("k2"));
+		Assertions.assertEquals("v1", firstRecord.get("k1"));
+		Assertions.assertEquals("v2", firstRecord.get("k2"));
 
-		Assert.assertEquals(null, secondRecord.get("k1"));
-		Assert.assertEquals("v2'", secondRecord.get("k2"));
+		Assertions.assertEquals(null, secondRecord.get("k1"));
+		Assertions.assertEquals("v2'", secondRecord.get("k2"));
 	}
 
 	@Test
@@ -124,21 +124,21 @@ public class TestAvroStreamHelper {
 
 		GenericRecord firstRecord = mapper.apply(ImmutableMap.of("k1", new float[] { 2F }));
 
-		Assert.assertTrue(firstRecord.get("k1") instanceof ByteBuffer);
+		Assertions.assertTrue(firstRecord.get("k1") instanceof ByteBuffer);
 
 		// No type information: keep the raw byte[]
 		Map<String, ?> backToMapNoType = AvroTranscodingHelper.toJavaMap(firstRecord);
-		Assert.assertTrue(backToMapNoType.get("k1") instanceof ByteBuffer);
+		Assertions.assertTrue(backToMapNoType.get("k1") instanceof ByteBuffer);
 
 		// Exact byte[] info (float[])
 		Map<String, ?> backToMapWithMap =
 				AvroTranscodingHelper.toJavaMap(firstRecord, Collections.singletonMap("k1", new float[0]));
-		Assert.assertArrayEquals(new float[] { 2F }, (float[]) backToMapWithMap.get("k1"), 0.01F);
+		Assertions.assertArrayEquals(new float[] { 2F }, (float[]) backToMapWithMap.get("k1"), 0.01F);
 
 		// Inexact byte[] info (double[]): we deserialize to float[], but should we transcode to double[]?
 		Map<String, ?> backToMapWithDoubleMap =
 				AvroTranscodingHelper.toJavaMap(firstRecord, Collections.singletonMap("k1", new double[0]));
-		Assert.assertArrayEquals(new float[] { 2F }, (float[]) backToMapWithDoubleMap.get("k1"), 0.01F);
+		Assertions.assertArrayEquals(new float[] { 2F }, (float[]) backToMapWithDoubleMap.get("k1"), 0.01F);
 	}
 
 	@Test
@@ -148,10 +148,10 @@ public class TestAvroStreamHelper {
 		Function<Map<String, ?>, GenericRecord> mapper = AvroTranscodingHelper.toGenericRecord(schema);
 
 		GenericRecord firstRecord = mapper.apply(Collections.singletonMap("k1", null));
-		Assert.assertNull(firstRecord.get("k1"));
+		Assertions.assertNull(firstRecord.get("k1"));
 
 		Map<String, ?> backToMapNoType = AvroTranscodingHelper.toJavaMap(firstRecord);
-		Assert.assertNull(backToMapNoType.get("k1"));
+		Assertions.assertNull(backToMapNoType.get("k1"));
 	}
 
 	@Test
@@ -169,8 +169,8 @@ public class TestAvroStreamHelper {
 				.map(AvroTranscodingHelper.toJavaMap())
 				.collect(Collectors.toList());
 
-		Assert.assertEquals(1, backToList.size());
-		Assert.assertEquals(singleMap, backToList.get(0));
+		Assertions.assertEquals(1, backToList.size());
+		Assertions.assertEquals(singleMap, backToList.get(0));
 	}
 
 	@Test
@@ -189,8 +189,8 @@ public class TestAvroStreamHelper {
 				.map(AvroTranscodingHelper.toJavaMap())
 				.collect(Collectors.toList());
 
-		Assert.assertEquals(1, backToList.size());
-		Assert.assertTrue(backToList.get(0).get("k1") instanceof ByteBuffer);
+		Assertions.assertEquals(1, backToList.size());
+		Assertions.assertTrue(backToList.get(0).get("k1") instanceof ByteBuffer);
 	}
 
 	@Test
@@ -209,8 +209,8 @@ public class TestAvroStreamHelper {
 				.map(AvroTranscodingHelper.toJavaMap(singleMap))
 				.collect(Collectors.toList());
 
-		Assert.assertEquals(1, backToList.size());
-		Assert.assertEquals(singleMap, backToList.get(0));
+		Assertions.assertEquals(1, backToList.size());
+		Assertions.assertEquals(singleMap, backToList.get(0));
 	}
 
 	// We write as Serializable Object, we read as String
@@ -231,9 +231,9 @@ public class TestAvroStreamHelper {
 				.map(AvroTranscodingHelper.toJavaMap(ImmutableMap.of("k1", "someString")))
 				.collect(Collectors.toList());
 
-		Assert.assertEquals(1, backToList.size());
+		Assertions.assertEquals(1, backToList.size());
 		Map<String, ?> singleOutput = backToList.get(0);
-		Assert.assertEquals(singleMap.get("k1").toString(), singleOutput.get("k1"));
+		Assertions.assertEquals(singleMap.get("k1").toString(), singleOutput.get("k1"));
 	}
 
 	// We write as String, we read as Object
@@ -254,9 +254,9 @@ public class TestAvroStreamHelper {
 				.map(AvroTranscodingHelper.toJavaMap(ImmutableMap.of("k1", now)))
 				.collect(Collectors.toList());
 
-		Assert.assertEquals(1, backToList.size());
+		Assertions.assertEquals(1, backToList.size());
 		Map<String, ?> singleOutput = backToList.get(0);
-		Assert.assertEquals(now, singleOutput.get("k1"));
+		Assertions.assertEquals(now, singleOutput.get("k1"));
 	}
 
 	@Test
@@ -288,16 +288,16 @@ public class TestAvroStreamHelper {
 			List<GenericRecord> backToMap =
 					AvroStreamHelper.toGenericRecord(new ByteArrayInputStream(bytes)).collect(Collectors.toList());
 
-			Assert.assertEquals(1, backToMap.size());
+			Assertions.assertEquals(1, backToMap.size());
 			GenericRecord single = backToMap.get(0);
 
 			Object toJdk = AvroTranscodingHelper.toJdk(single.get(0), () -> null);
 			if (type == Type.NULL) {
-				Assert.assertNull(toJdk);
+				Assertions.assertNull(toJdk);
 			} else {
-				Assert.assertNotNull(String.valueOf(someValue), toJdk);
+				Assertions.assertNotNull(String.valueOf(someValue), toJdk);
 			}
-			// Assert.assertEquals(someValue, AvroTranscodingHelper.toJdk(single.get(0), () -> null));
+			// Assertions.assertEquals(someValue, AvroTranscodingHelper.toJdk(single.get(0), () -> null));
 		}
 	}
 
@@ -336,11 +336,11 @@ public class TestAvroStreamHelper {
 			List<GenericRecord> backToMap =
 					AvroStreamHelper.toGenericRecord(new ByteArrayInputStream(bytes)).collect(Collectors.toList());
 
-			Assert.assertEquals(1, backToMap.size());
+			Assertions.assertEquals(1, backToMap.size());
 			GenericRecord single = backToMap.get(0);
 
-			Assert.assertNotNull(AvroTranscodingHelper.toJdk(single.get(0), () -> null));
-			// Assert.assertEquals(someValue, AvroTranscodingHelper.toJdk(single.get(0), () -> null));
+			Assertions.assertNotNull(AvroTranscodingHelper.toJdk(single.get(0), () -> null));
+			// Assertions.assertEquals(someValue, AvroTranscodingHelper.toJdk(single.get(0), () -> null));
 		}
 	}
 }

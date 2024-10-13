@@ -36,9 +36,8 @@ import javax.management.InstanceNotFoundException;
 import javax.management.JMException;
 import javax.management.MalformedObjectNameException;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +89,7 @@ public class TestGCInspector implements IPepperMemoryConstants {
 					throw new OutOfMemoryError("Early quit: we stressed enough the GC");
 				}
 			}
-			Assert.fail("We expect an OOM");
+			Assertions.fail("We expect an OOM");
 		} catch (OutOfMemoryError e) {
 			LOGGER.info("We got the expected OOM");
 			// We expect an OutOfMemorry as it is the best way to monitor GC
@@ -98,14 +97,14 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		}
 
 		// Tough to stress enough the GC to get a ThreadDump
-		// Assert.assertNotNull(gcInspector.getLatestThreadDump());
+		// Assertions.assertNotNull(gcInspector.getLatestThreadDump());
 
 		gcInspector.destroy();
 	}
 
 	@Test
 	public void testDetectUnitTest() {
-		Assert.assertTrue(GCInspector.inUnitTest());
+		Assertions.assertTrue(GCInspector.inUnitTest());
 	}
 
 	@Test
@@ -113,12 +112,12 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		GCInspector gcInspector = new GCInspector(Mockito.mock(IThreadDumper.class));
 
 		Map<String, String> allocated = gcInspector.getThreadNameToAllocatedHeapNiceString();
-		Assert.assertTrue(allocated.containsKey(Thread.currentThread().getName()));
+		Assertions.assertTrue(allocated.containsKey(Thread.currentThread().getName()));
 
 		gcInspector.markNowAsAllocatedHeapReference();
 
 		Map<String, String> allocatedAfterMark = gcInspector.getThreadNameToAllocatedHeapNiceString();
-		Assert.assertTrue(allocatedAfterMark.containsKey(Thread.currentThread().getName()));
+		Assertions.assertTrue(allocatedAfterMark.containsKey(Thread.currentThread().getName()));
 	}
 
 	@Test
@@ -126,12 +125,12 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		GCInspector gcInspector = new GCInspector(Mockito.mock(IThreadDumper.class));
 
 		Map<String, String> allocated = gcInspector.getThreadGroupsToAllocatedHeapNiceString();
-		Assert.assertTrue(allocated.containsKey(Thread.currentThread().getName()));
+		Assertions.assertTrue(allocated.containsKey(Thread.currentThread().getName()));
 
 		gcInspector.markNowAsAllocatedHeapReference();
 
 		Map<String, String> allocatedAfterMark = gcInspector.getThreadGroupsToAllocatedHeapNiceString();
-		Assert.assertTrue(allocatedAfterMark.containsKey(Thread.currentThread().getName()));
+		Assertions.assertTrue(allocatedAfterMark.containsKey(Thread.currentThread().getName()));
 	}
 
 	@Test
@@ -146,7 +145,7 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		detailedMap.put("GroupThread-2-234", 7L);
 
 		Map<String, Long> grouped = gcInspector.groupThreadNames(detailedMap).asMap();
-		Assert.assertEquals(ImmutableMap.of("SingleThread", 1L, "GroupThread-1-X", 3L, "GroupThread-2-X", 12L),
+		Assertions.assertEquals(ImmutableMap.of("SingleThread", 1L, "GroupThread-1-X", 3L, "GroupThread-2-X", 12L),
 				grouped);
 	}
 
@@ -162,10 +161,10 @@ public class TestGCInspector implements IPepperMemoryConstants {
 
 		if (VirtualMachineWithoutToolsJar.IS_VIRTUAL_MACHINE_ELIGIBLE) {
 			// Check we have many rows
-			Assertions.assertThat(asList).hasSizeGreaterThan(5);
+			org.assertj.core.api.Assertions.assertThat(asList).hasSizeGreaterThan(5);
 		} else {
 			LOGGER.warn("heap.histo with java9+ requires '-Djdk.attach.allowAttachSelf=true'");
-			Assertions.assertThat(asList).hasSize(1).contains("Heap Histogram is not available");
+			org.assertj.core.api.Assertions.assertThat(asList).hasSize(1).contains("Heap Histogram is not available");
 		}
 	}
 
@@ -178,12 +177,12 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		String outputMsg = gcInspector.saveHeapDump(heapFile);
 
 		if (VirtualMachineWithoutToolsJar.IS_VIRTUAL_MACHINE_ELIGIBLE) {
-			Assertions.assertThat(outputMsg).startsWith("Heap dump file created");
+			org.assertj.core.api.Assertions.assertThat(outputMsg).startsWith("Heap dump file created");
 
 			// Check we have written data
-			Assert.assertTrue(heapFile.toFile().length() > 0);
+			Assertions.assertTrue(heapFile.toFile().length() > 0);
 		} else {
-			Assertions.assertThat(outputMsg).startsWith("Heap Dump is not available");
+			org.assertj.core.api.Assertions.assertThat(outputMsg).startsWith("Heap Dump is not available");
 		}
 	}
 
@@ -215,23 +214,23 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		usedHeap.set(10);
 
 		gcInspector.logIfMemoryOverCap();
-		Assert.assertEquals(0, nbBackToNormal.get());
+		Assertions.assertEquals(0, nbBackToNormal.get());
 
 		// 95%
 		usedHeap.set(95);
 
 		gcInspector.logIfMemoryOverCap();
-		Assert.assertEquals(0, nbBackToNormal.get());
+		Assertions.assertEquals(0, nbBackToNormal.get());
 
 		// 15%
 		usedHeap.set(15);
 
 		gcInspector.logIfMemoryOverCap();
-		Assert.assertEquals(1, nbBackToNormal.get());
+		Assertions.assertEquals(1, nbBackToNormal.get());
 
 		// Log again: still OK
 		gcInspector.logIfMemoryOverCap();
-		Assert.assertEquals(1, nbBackToNormal.get());
+		Assertions.assertEquals(1, nbBackToNormal.get());
 	}
 
 	@Test
@@ -240,15 +239,15 @@ public class TestGCInspector implements IPepperMemoryConstants {
 
 		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			LOGGER.error("HeapHistogram in JDK9: {}", firstRows);
-			Assert.assertEquals(1, firstRows.split(System.lineSeparator()).length);
+			Assertions.assertEquals(1, firstRows.split(System.lineSeparator()).length);
 		} else {
 
 			// We have skipped the initial empty row
 			// +1 as we added the last rows
-			Assert.assertEquals(5 + 1, firstRows.split(System.lineSeparator()).length);
+			Assertions.assertEquals(5 + 1, firstRows.split(System.lineSeparator()).length);
 
 			// The last row looks like: Total 1819064 141338008
-			Assert.assertTrue(firstRows.split(System.lineSeparator())[5].startsWith("Total "));
+			Assertions.assertTrue(firstRows.split(System.lineSeparator())[5].startsWith("Total "));
 		}
 	}
 
@@ -267,15 +266,16 @@ public class TestGCInspector implements IPepperMemoryConstants {
 	@Test
 	public void testMemoryPerThread() {
 		long memory = new GCInspector().getMemoryPerThread(Arrays.asList("-Xss512k"));
-		Assert.assertEquals(524288L, memory);
+		Assertions.assertEquals(524288L, memory);
 	}
 
 	@Test
 	public void testGetOptionalArgument() {
-		Assertions.assertThat(GCInspector.getOptionalArgument(Arrays.asList("-Xss512k"), "-Xss"))
+		org.assertj.core.api.Assertions.assertThat(GCInspector.getOptionalArgument(Arrays.asList("-Xss512k"), "-Xss"))
 				.isPresent()
 				.hasValue("512k");
-		Assertions.assertThat(GCInspector.getOptionalArgument(Arrays.asList("-Xss512k"), "-Xss512k"))
+		org.assertj.core.api.Assertions
+				.assertThat(GCInspector.getOptionalArgument(Arrays.asList("-Xss512k"), "-Xss512k"))
 				.isPresent()
 				.hasValue("");
 	}
@@ -288,7 +288,7 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		StringBuilder sb = new StringBuilder();
 		gcInspector.appendDetailsAboutMove(sb, 123, 456);
 
-		Assertions.assertThat(sb.toString())
+		org.assertj.core.api.Assertions.assertThat(sb.toString())
 				.matches("=456B after allocating \\d{1,4}\\wB through all threads including \\d{1,4}\\wB from .+");
 	}
 
@@ -301,7 +301,7 @@ public class TestGCInspector implements IPepperMemoryConstants {
 		// Negative to represent a GC operation
 		gcInspector.appendDetailsAboutMove(sb, -123, 456);
 
-		Assertions.assertThat(sb.toString())
+		org.assertj.core.api.Assertions.assertThat(sb.toString())
 				.matches(
 						"=456B-123B garbage collected after allocating \\d{1,4}\\wB through all threads including \\d{1,4}\\wB from .+");
 	}

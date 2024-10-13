@@ -22,8 +22,8 @@
  */
 package eu.solven.pepper.memory;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public class TestPepperMemoryHelper {
 
 	@Test
 	public void testCtor() {
-		Assert.assertNotNull(new PepperMemoryHelper());
+		Assertions.assertNotNull(new PepperMemoryHelper());
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class TestPepperMemoryHelper {
 			// whole integer range:
 			// MIN_VALUE -> MAX_VALUE
 			LOGGER.trace("Testing bit-packing for {}", i);
-			Assert.assertEquals(i,
+			Assertions.assertEquals(i,
 					PepperMemoryHelper.positivePack(PepperMemoryHelper.positiveUnpack1(i),
 							PepperMemoryHelper.positiveUnpack2(i)));
 		}
@@ -54,55 +54,55 @@ public class TestPepperMemoryHelper {
 
 	@Test
 	public void testParseMemory() {
-		Assert.assertEquals(123, PepperMemoryHelper.memoryAsLong("123"));
-		Assert.assertEquals(123 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("123k"));
-		Assert.assertEquals(123 * IPepperMemoryConstants.MB, PepperMemoryHelper.memoryAsLong("123M"));
-		Assert.assertEquals(123 * IPepperMemoryConstants.GB, PepperMemoryHelper.memoryAsLong("123g"));
+		Assertions.assertEquals(123, PepperMemoryHelper.memoryAsLong("123"));
+		Assertions.assertEquals(123 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("123k"));
+		Assertions.assertEquals(123 * IPepperMemoryConstants.MB, PepperMemoryHelper.memoryAsLong("123M"));
+		Assertions.assertEquals(123 * IPepperMemoryConstants.GB, PepperMemoryHelper.memoryAsLong("123g"));
 	}
 
 	@Test
 	public void testParseMemory_EndsKB() {
-		Assert.assertEquals(123 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("123kB"));
+		Assertions.assertEquals(123 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("123kB"));
 	}
 
 	// We observe this in Windows10/FR
 	@Test
 	public void testParseMemory_EndsKo_WeirdEncoding() {
-		Assert.assertEquals(68_204 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("68�204 Ko"));
+		Assertions.assertEquals(68_204 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("68�204 Ko"));
 	}
 
 	@Test
 	public void testParseMemory_Edge_B() {
-		Assert.assertEquals(0, PepperMemoryHelper.memoryAsLong("B"));
+		Assertions.assertEquals(0, PepperMemoryHelper.memoryAsLong("B"));
 	}
 
 	// Happens on vmmap|pmap. See ApexProcessHelper.getProcessResidentMemory(long)
 	@Test
 	public void testParseMemory_withDot() {
-		Assert.assertEquals((long) (1.2 * IPepperMemoryConstants.GB), PepperMemoryHelper.memoryAsLong("1.2G"));
+		Assertions.assertEquals((long) (1.2 * IPepperMemoryConstants.GB), PepperMemoryHelper.memoryAsLong("1.2G"));
 	}
 
 	// happens on tasklist.exe in Windows
 	@Test
 	public void testParseMemory_windows() {
-		Assert.assertEquals(107_940 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("107,940 K"));
+		Assertions.assertEquals(107_940 * IPepperMemoryConstants.KB, PepperMemoryHelper.memoryAsLong("107,940 K"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testParseMemoryFailsOnUnknownEndChars() {
-		PepperMemoryHelper.memoryAsLong("123A");
+		Assertions.assertThrows(IllegalArgumentException.class, () -> PepperMemoryHelper.memoryAsLong("123A"));
 	}
 
-	@Test(expected = NumberFormatException.class)
+	@Test
 	public void testParseMemoryFailsOnNotDigitsFirst() {
-		PepperMemoryHelper.memoryAsLong("12a3m");
+		Assertions.assertThrows(NumberFormatException.class, () -> PepperMemoryHelper.memoryAsLong("12a3m"));
 	}
 
 	@Test
 	public void testMemoryToString() {
-		Assert.assertEquals("123B", PepperMemoryHelper.memoryAsString(123));
-		Assert.assertEquals("1K206B", PepperMemoryHelper.memoryAsString(1230));
-		Assert.assertEquals("1M177K", PepperMemoryHelper.memoryAsString(1_230_000));
-		Assert.assertEquals("1G149M", PepperMemoryHelper.memoryAsString(1_230_000_000));
+		Assertions.assertEquals("123B", PepperMemoryHelper.memoryAsString(123));
+		Assertions.assertEquals("1K206B", PepperMemoryHelper.memoryAsString(1230));
+		Assertions.assertEquals("1M177K", PepperMemoryHelper.memoryAsString(1_230_000));
+		Assertions.assertEquals("1G149M", PepperMemoryHelper.memoryAsString(1_230_000_000));
 	}
 }

@@ -26,11 +26,10 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -40,33 +39,33 @@ import eu.solven.pepper.memory.PepperFootprintHelper;
 
 public class TestPepperMemoryMeter {
 
-	@BeforeClass
+	@BeforeAll
 	public static void assumeAgentLoaded() {
-		Assume.assumeTrue("We failed retrieving an Instrumentation",
-				InstrumentationAgent.getInstrumentation().isPresent());
+		Assumptions.assumeTrue(InstrumentationAgent.getInstrumentation().isPresent(),
+				"We failed retrieving an Instrumentation");
 	}
 
 	@Test
 	public void testStringWeight() {
 		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			// Lower in JDK9: good!
-			Assert.assertEquals(48, PepperFootprintHelper.deepSize("Youpi"));
+			Assertions.assertEquals(48, PepperFootprintHelper.deepSize("Youpi"));
 		} else {
-			Assert.assertEquals(56, PepperFootprintHelper.deepSize("Youpi"));
+			Assertions.assertEquals(56, PepperFootprintHelper.deepSize("Youpi"));
 		}
 
 		if (false) {
 			// Adding a single char add 2 bytes. As the JVM packes by block of 8 bytes, it may not be enough to grow the
 			// estimated size
-			Assert.assertTrue(PepperFootprintHelper.deepSize("Youpi") < PepperFootprintHelper.deepSize("Youpi+"));
+			Assertions.assertTrue(PepperFootprintHelper.deepSize("Youpi") < PepperFootprintHelper.deepSize("Youpi+"));
 		}
 		// Adding 4 chars leads to adding 8 bytes: the actual JVM size is increased
-		Assert.assertTrue(PepperFootprintHelper.deepSize("Youpi") < PepperFootprintHelper.deepSize("Youpi1234"));
+		Assertions.assertTrue(PepperFootprintHelper.deepSize("Youpi") < PepperFootprintHelper.deepSize("Youpi1234"));
 	}
 
 	@Test
 	public void testImmutableMapWeight() {
-		Assertions.assertThat(PepperFootprintHelper.deepSize(ImmutableMap.of("key", "Value"))).isBetween(100L, 250L);
+		org.assertj.core.api.Assertions.assertThat(PepperFootprintHelper.deepSize(ImmutableMap.of("key", "Value"))).isBetween(100L, 250L);
 	}
 
 	@Test
@@ -78,9 +77,9 @@ public class TestPepperMemoryMeter {
 		long deepSize = PepperFootprintHelper.deepSize(recursiveMap);
 		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
 			// Lower in JDK9: good!
-			Assert.assertEquals(208, deepSize);
+			Assertions.assertEquals(208, deepSize);
 		} else {
-			Assert.assertEquals(216, deepSize);
+			Assertions.assertEquals(216, deepSize);
 		}
 
 		// Change the Map so it does not reference itself: the object graph should have the same size
@@ -88,7 +87,7 @@ public class TestPepperMemoryMeter {
 		withoutRecursivity.put("myself", null);
 
 		long notdeepSize = PepperFootprintHelper.deepSize(withoutRecursivity);
-		Assert.assertEquals(notdeepSize, deepSize);
+		Assertions.assertEquals(notdeepSize, deepSize);
 	}
 
 	@Test
@@ -96,7 +95,7 @@ public class TestPepperMemoryMeter {
 		Object[] array = new Object[2];
 
 		long sizeEmpty = PepperFootprintHelper.deepSize(array);
-		Assert.assertEquals(24, sizeEmpty);
+		Assertions.assertEquals(24, sizeEmpty);
 
 		array[0] = LocalDate.now();
 		array[1] = LocalDate.now();
@@ -107,8 +106,8 @@ public class TestPepperMemoryMeter {
 		// With JodaTime, the reported memory was bigger. It seems strange
 		// Assertions.assertThat(sizeFull).isBetween(900L, 9200L);
 
-		Assertions.assertThat(sizeFull).isEqualTo(72L);
+		org.assertj.core.api.Assertions.assertThat(sizeFull).isEqualTo(72L);
 
-		Assert.assertTrue(sizeFull > sizeEmpty);
+		Assertions.assertTrue(sizeFull > sizeEmpty);
 	}
 }

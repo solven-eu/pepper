@@ -52,7 +52,7 @@
 
 		<dependency>
 			<groupId>io.github.solven-eu.pepper</groupId>
-			<artifactId>pepper-unittest</artifactId>
+			<artifactId>unittest</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

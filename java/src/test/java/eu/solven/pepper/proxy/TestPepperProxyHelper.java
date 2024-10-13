@@ -22,17 +22,17 @@
  */
 package eu.solven.pepper.proxy;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
 
 public class TestPepperProxyHelper {
 	final MockEnvironment env = new MockEnvironment();
 
-	@Before
-	@After
+	@BeforeEach
+	@AfterEach
 	public void clearEnvironment() {
 		System.clearProperty("http.proxyHost");
 		System.clearProperty("http.proxyPort");
@@ -49,12 +49,12 @@ public class TestPepperProxyHelper {
 
 		PepperProxyHelper.setupProxyFromEnvironment(env, false);
 
-		Assert.assertEquals("localhost", System.getProperty("http.proxyHost"));
-		Assert.assertEquals("3147", System.getProperty("http.proxyPort"));
-		Assert.assertEquals(null, System.getProperty("https.proxyHost"));
-		Assert.assertEquals(null, System.getProperty("https.proxyPort"));
-		Assert.assertEquals(null, System.getProperty("http.nonProxyHosts"));
-		Assert.assertEquals("true", System.getProperty("java.net.useSystemProxies"));
+		Assertions.assertEquals("localhost", System.getProperty("http.proxyHost"));
+		Assertions.assertEquals("3147", System.getProperty("http.proxyPort"));
+		Assertions.assertEquals(null, System.getProperty("https.proxyHost"));
+		Assertions.assertEquals(null, System.getProperty("https.proxyPort"));
+		Assertions.assertEquals(null, System.getProperty("http.nonProxyHosts"));
+		Assertions.assertEquals("true", System.getProperty("java.net.useSystemProxies"));
 	}
 
 	@Test
@@ -64,13 +64,13 @@ public class TestPepperProxyHelper {
 
 		PepperProxyHelper.setupProxyFromEnvironment(env, false);
 
-		Assert.assertEquals("someProxyHost", env.getProperty("http.proxyHost"));
-		Assert.assertEquals(null, System.getProperty("http.proxyHost"));
-		Assert.assertEquals(null, System.getProperty("http.proxyPort"));
-		Assert.assertEquals(null, System.getProperty("https.proxyHost"));
-		Assert.assertEquals(null, System.getProperty("https.proxyPort"));
-		Assert.assertEquals(null, System.getProperty("http.nonProxyHosts"));
-		Assert.assertEquals("true", System.getProperty("java.net.useSystemProxies"));
+		Assertions.assertEquals("someProxyHost", env.getProperty("http.proxyHost"));
+		Assertions.assertEquals(null, System.getProperty("http.proxyHost"));
+		Assertions.assertEquals(null, System.getProperty("http.proxyPort"));
+		Assertions.assertEquals(null, System.getProperty("https.proxyHost"));
+		Assertions.assertEquals(null, System.getProperty("https.proxyPort"));
+		Assertions.assertEquals(null, System.getProperty("http.nonProxyHosts"));
+		Assertions.assertEquals("true", System.getProperty("java.net.useSystemProxies"));
 	}
 
 	@Test
@@ -79,12 +79,12 @@ public class TestPepperProxyHelper {
 
 		PepperProxyHelper.setupProxyFromEnvironment(env, false);
 
-		Assert.assertEquals(null, System.getProperty("http.proxyHost"));
-		Assert.assertEquals(null, System.getProperty("http.proxyPort"));
-		Assert.assertEquals("someproxy", System.getProperty("https.proxyHost"));
-		Assert.assertEquals("1234", System.getProperty("https.proxyPort"));
-		Assert.assertEquals(null, System.getProperty("http.nonProxyHosts"));
-		Assert.assertEquals("true", System.getProperty("java.net.useSystemProxies"));
+		Assertions.assertEquals(null, System.getProperty("http.proxyHost"));
+		Assertions.assertEquals(null, System.getProperty("http.proxyPort"));
+		Assertions.assertEquals("someproxy", System.getProperty("https.proxyHost"));
+		Assertions.assertEquals("1234", System.getProperty("https.proxyPort"));
+		Assertions.assertEquals(null, System.getProperty("http.nonProxyHosts"));
+		Assertions.assertEquals("true", System.getProperty("java.net.useSystemProxies"));
 	}
 
 	@Test
@@ -94,14 +94,14 @@ public class TestPepperProxyHelper {
 
 		PepperProxyHelper.setupProxyFromEnvironment(env, false);
 
-		Assert.assertEquals(null, System.getProperty("http.proxyHost"));
-		Assert.assertEquals(null, System.getProperty("http.proxyPort"));
+		Assertions.assertEquals(null, System.getProperty("http.proxyHost"));
+		Assertions.assertEquals(null, System.getProperty("http.proxyPort"));
 
-		Assert.assertEquals("someProxyHost", env.getProperty("https.proxyHost"));
-		Assert.assertEquals(null, System.getProperty("https.proxyHost"));
-		Assert.assertEquals(null, System.getProperty("https.proxyPort"));
-		Assert.assertEquals(null, System.getProperty("http.nonProxyHosts"));
-		Assert.assertEquals("true", System.getProperty("java.net.useSystemProxies"));
+		Assertions.assertEquals("someProxyHost", env.getProperty("https.proxyHost"));
+		Assertions.assertEquals(null, System.getProperty("https.proxyHost"));
+		Assertions.assertEquals(null, System.getProperty("https.proxyPort"));
+		Assertions.assertEquals(null, System.getProperty("http.nonProxyHosts"));
+		Assertions.assertEquals("true", System.getProperty("java.net.useSystemProxies"));
 	}
 
 	@Test
@@ -110,11 +110,11 @@ public class TestPepperProxyHelper {
 
 		PepperProxyHelper.setupProxyFromEnvironment(env, false);
 
-		Assert.assertEquals(null, System.getProperty("http.proxyHost"));
-		Assert.assertEquals(null, System.getProperty("http.proxyPort"));
-		Assert.assertEquals(null, System.getProperty("https.proxyHost"));
-		Assert.assertEquals(null, System.getProperty("https.proxyPort"));
-		Assert.assertEquals("a|b", System.getProperty("http.nonProxyHosts"));
-		Assert.assertEquals("true", System.getProperty("java.net.useSystemProxies"));
+		Assertions.assertEquals(null, System.getProperty("http.proxyHost"));
+		Assertions.assertEquals(null, System.getProperty("http.proxyPort"));
+		Assertions.assertEquals(null, System.getProperty("https.proxyHost"));
+		Assertions.assertEquals(null, System.getProperty("https.proxyPort"));
+		Assertions.assertEquals("a|b", System.getProperty("http.nonProxyHosts"));
+		Assertions.assertEquals("true", System.getProperty("java.net.useSystemProxies"));
 	}
 }

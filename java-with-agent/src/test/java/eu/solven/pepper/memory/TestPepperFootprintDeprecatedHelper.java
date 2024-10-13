@@ -26,9 +26,8 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,19 +38,19 @@ public class TestPepperFootprintDeprecatedHelper {
 
 	@Test
 	public void testIntArrayWeight() {
-		Assert.assertEquals(56, PepperFootprintDeprecatedHelper.getObjectArrayMemory(new int[9]));
+		Assertions.assertEquals(56, PepperFootprintDeprecatedHelper.getObjectArrayMemory(new int[9]));
 	}
 
 	@SuppressWarnings("deprecation")
 	@Test
 	public void testDouble() {
-		Assert.assertEquals(24, PepperFootprintDeprecatedHelper.getDoubleMemory());
+		Assertions.assertEquals(24, PepperFootprintDeprecatedHelper.getDoubleMemory());
 	}
 
 	@Test
 	public void testStringMemory() {
 		long memory = PepperFootprintDeprecatedHelper.getStringMemory("Youpi");
-		Assert.assertEquals(48, memory);
+		Assertions.assertEquals(48, memory);
 	}
 
 	@Test
@@ -62,7 +61,7 @@ public class TestPepperFootprintDeprecatedHelper {
 		Mockito.when(existingRef.length()).thenReturn(Integer.MAX_VALUE);
 
 		long memory = PepperFootprintDeprecatedHelper.getStringMemory(existingRef);
-		Assertions.assertThat(memory).isGreaterThan(Integer.MAX_VALUE + 1L);
+		org.assertj.core.api.Assertions.assertThat(memory).isGreaterThan(Integer.MAX_VALUE + 1L);
 	}
 
 	@Test
@@ -71,6 +70,6 @@ public class TestPepperFootprintDeprecatedHelper {
 		map.put("k", LocalDate.now());
 
 		long memory = PepperFootprintDeprecatedHelper.deepSize(map);
-		Assertions.assertThat(memory).isEqualTo(248L);
+		org.assertj.core.api.Assertions.assertThat(memory).isEqualTo(248L);
 	}
 }

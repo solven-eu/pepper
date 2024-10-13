@@ -28,31 +28,29 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.base.Charsets;
 
 public class TestVirtualMachineWithoutToolsJar {
 	@Test
 	public void testFindVirtualMachineClass() throws ClassNotFoundException, MalformedURLException {
-		Assert.assertEquals("class com.sun.tools.attach.VirtualMachine",
+		Assertions.assertEquals("class com.sun.tools.attach.VirtualMachine",
 				VirtualMachineWithoutToolsJar.findVirtualMachineClass().get().toString());
 	}
 
 	@Test
 	public void testIsJRockit() {
-		Assert.assertFalse(VirtualMachineWithoutToolsJar.isJRockit());
+		Assertions.assertFalse(VirtualMachineWithoutToolsJar.isJRockit());
 	}
 
 	@Test
 	public void testHeapHisto() throws Exception {
-		Assume.assumeFalse("TODO JDK9", TestInstrumentAgent.IS_JDK_9);
-		Assume.assumeFalse("TODO JDK11", TestInstrumentAgent.IS_JDK_11);
-		Assume.assumeFalse("TODO JDK12", TestInstrumentAgent.IS_JDK_12);
-		// Assume.assumeFalse("TODO JDK17", TestInstrumentAgent.IS_JDK_17);
-		// Assume.assumeFalse("TODO JDK21", TestInstrumentAgent.IS_JDK_21);
+		Assumptions.assumeFalse(TestInstrumentAgent.IS_JDK_9, "TODO JDK9");
+		Assumptions.assumeFalse(TestInstrumentAgent.IS_JDK_11, "TODO JDK11");
+		Assumptions.assumeFalse(TestInstrumentAgent.IS_JDK_12, "TODO JDK12");
 
 		InputStream is = VirtualMachineWithoutToolsJar.heapHisto().get();
 
@@ -60,13 +58,13 @@ public class TestVirtualMachineWithoutToolsJar {
 		String asString = new BufferedReader(new InputStreamReader(is, Charsets.UTF_8)).lines()
 				.parallel()
 				.collect(Collectors.joining("\n"));
-		Assert.assertNotNull(asString);
+		Assertions.assertNotNull(asString);
 	}
 
 	@Test
 	public void testJvmDetach() throws Exception {
 		Object jvm = VirtualMachineWithoutToolsJar.getJvmVirtualMachine();
-		Assert.assertNotNull(jvm);
+		Assertions.assertNotNull(jvm);
 		VirtualMachineWithoutToolsJar.detach();
 	}
 
@@ -77,7 +75,7 @@ public class TestVirtualMachineWithoutToolsJar {
 
 	@Test
 	public void testSameVMClass() throws NoSuchFieldException, IllegalAccessException {
-		Assert.assertSame(VirtualMachineWithoutToolsJar.findVirtualMachineClass().get(),
+		Assertions.assertSame(VirtualMachineWithoutToolsJar.findVirtualMachineClass().get(),
 				VirtualMachineWithoutToolsJar.findVirtualMachineClass().get());
 	}
 
@@ -88,9 +86,9 @@ public class TestVirtualMachineWithoutToolsJar {
 
 	@Test
 	public void testIsJmapSupported() {
-		Assume.assumeFalse("TODO JDK12", TestInstrumentAgent.IS_JDK_12);
+		Assumptions.assumeFalse(TestInstrumentAgent.IS_JDK_12, "TODO JDK12");
 
-		Assert.assertTrue("Java Vendor: " + System.getProperty("java.vendor"),
-				VirtualMachineWithoutToolsJar.isJmapSupported());
+		Assertions.assertTrue(VirtualMachineWithoutToolsJar.isJmapSupported(),
+				"Java Vendor: " + System.getProperty("java.vendor"));
 	}
 }

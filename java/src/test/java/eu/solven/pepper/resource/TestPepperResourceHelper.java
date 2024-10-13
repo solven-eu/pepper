@@ -25,8 +25,7 @@ package eu.solven.pepper.resource;
 import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 
 public class TestPepperResourceHelper {
@@ -45,13 +44,15 @@ public class TestPepperResourceHelper {
 	@Test
 	public void testLoadAsList_forceClassLoader() throws IOException {
 		Resource resource = PepperResourceHelper.findResourceForceClassLoader(CLASS_LOADER, "/unittest/list.json");
-		Assert.assertEquals("list.json", resource.getFilename());
+		org.junit.jupiter.api.Assertions.assertEquals("list.json", resource.getFilename());
 		Assertions.assertThat(resource.getURI().toASCIIString()).endsWith("/unittest/list.json");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testLoadAsList_forceClassLoader_doesNotExist() {
-		PepperResourceHelper.findResourceForceClassLoader(CLASS_LOADER, "/unittest/doesnotexist.json");
+		Assertions.assertThatThrownBy(
+				() -> PepperResourceHelper.findResourceForceClassLoader(CLASS_LOADER, "/unittest/doesnotexist.json"))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test

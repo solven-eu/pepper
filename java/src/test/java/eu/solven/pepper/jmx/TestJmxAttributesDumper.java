@@ -34,8 +34,8 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +53,13 @@ public class TestJmxAttributesDumper {
 		Map<ObjectName, Map<String, Object>> output =
 				dumper.dump(ManagementFactory.getPlatformMBeanServer(), null, null);
 
-		Assert.assertFalse(output.isEmpty());
+		Assertions.assertFalse(output.isEmpty());
 
 		// Check some key supposed to be present on any JVM
 		Map<String, Object> threadMBean = output.get(new ObjectName("java.lang:type=Threading"));
-		Assert.assertNotNull(threadMBean);
+		Assertions.assertNotNull(threadMBean);
 
-		Assert.assertNotNull("", threadMBean.get("ThreadCount"));
+		Assertions.assertNotNull(threadMBean.get("ThreadCount"));
 	}
 
 	@Test
@@ -76,10 +76,10 @@ public class TestJmxAttributesDumper {
 		PepperBasicConnectionDTO details =
 				JmxAttributesDumper.prepareConnection(Arrays.asList("host", "123", "user", "pw"));
 
-		Assert.assertEquals("host", details.host);
-		Assert.assertEquals(123, details.port);
-		Assert.assertEquals("user", details.userName);
-		Assert.assertEquals("pw", details.password);
+		Assertions.assertEquals("host", details.host);
+		Assertions.assertEquals(123, details.port);
+		Assertions.assertEquals("user", details.userName);
+		Assertions.assertEquals("pw", details.password);
 	}
 
 	@Test

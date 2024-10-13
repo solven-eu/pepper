@@ -25,8 +25,8 @@ package eu.solven.pepper.eventbus;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.eventbus.EventBus;
 
@@ -34,7 +34,7 @@ public class TestPepperEventBusHelper {
 
 	@Test
 	public void test_ctor_coverage() {
-		Assert.assertNotNull(new PepperEventBusHelper());
+		Assertions.assertNotNull(new PepperEventBusHelper());
 	}
 
 	@Test
@@ -43,13 +43,13 @@ public class TestPepperEventBusHelper {
 
 		Optional<Consumer<Object>> asConsumer = PepperEventBusHelper.asConsumer(eventBus);
 
-		Assert.assertTrue(asConsumer.isPresent());
+		Assertions.assertTrue(asConsumer.isPresent());
 	}
 
 	@Test
 	public void testAsConsumer_null() {
 		Optional<Consumer<Object>> asConsumer = PepperEventBusHelper.asConsumer(null);
 
-		Assert.assertFalse(asConsumer.isPresent());
+		Assertions.assertFalse(asConsumer.isPresent());
 	}
 }

@@ -22,8 +22,8 @@
  */
 package eu.solven.pepper.io;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestGZipStringBuilder {
 	@Test
@@ -33,10 +33,10 @@ public class TestGZipStringBuilder {
 		sb.append("Azaz");
 		sb.append(new StringBuilder("Zeze"));
 
-		Assert.assertEquals("AzazZeze", sb.toString());
+		Assertions.assertEquals("AzazZeze", sb.toString());
 
 		sb.clear();
-		Assert.assertEquals("", sb.toString());
+		Assertions.assertEquals("", sb.toString());
 	}
 
 	@Test
@@ -45,7 +45,7 @@ public class TestGZipStringBuilder {
 
 		sb.append("Azaz", 1, 3);
 
-		Assert.assertEquals("za", sb.toString());
+		Assertions.assertEquals("za", sb.toString());
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class TestGZipStringBuilder {
 
 		sb.append(new StringBuilder("Azaz"), 1, 3);
 
-		Assert.assertEquals("za", sb.toString());
+		Assertions.assertEquals("za", sb.toString());
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class TestGZipStringBuilder {
 
 		sb.append(null);
 
-		Assert.assertEquals("null", sb.toString());
+		Assertions.assertEquals("null", sb.toString());
 	}
 
 	@Test
@@ -72,6 +72,6 @@ public class TestGZipStringBuilder {
 
 		sb.append("Azaz");
 
-		Assert.assertTrue(sb.copyInflatedByteArray().length > 0);
+		Assertions.assertTrue(sb.copyInflatedByteArray().length > 0);
 	}
 }

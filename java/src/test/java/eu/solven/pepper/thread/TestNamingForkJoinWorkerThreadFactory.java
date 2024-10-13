@@ -25,7 +25,7 @@ package eu.solven.pepper.thread;
 import java.util.concurrent.ForkJoinPool;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestNamingForkJoinWorkerThreadFactory {
 	@Test

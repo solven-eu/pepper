@@ -30,8 +30,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -63,7 +63,7 @@ public class TestPepperExecutorsHelper {
 	}
 
 	// We fail adding many tasks with a listener on a bounded queue, even with timeout policy
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void testBoundedQueueManytasks() {
 		// Small thread, small queue and wait policy(abort policy would reject right away as we submit many tasks)
 		ListeningExecutorService es = PepperExecutorsHelper.newShrinkableFixedThreadPool(2,
@@ -71,21 +71,23 @@ public class TestPepperExecutorsHelper {
 				2,
 				PepperExecutorsHelper.makeRejectedExecutionHandler(1, TimeUnit.SECONDS));
 
-		for (int i = 0; i < 1000; i++) {
-			ListenableFuture<Object> future = es.submit(() -> {
-				Thread.sleep(1);
-				return new Object();
-			});
-
-			future.addListener(() -> {
-				try {
+		Assertions.assertThrows(RuntimeException.class, () -> {
+			for (int i = 0; i < 1000; i++) {
+				ListenableFuture<Object> future = es.submit(() -> {
 					Thread.sleep(1);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}, es);
-		}
+					return new Object();
+				});
+
+				future.addListener(() -> {
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+						throw new IllegalStateException(e);
+					}
+				}, es);
+			}
+		});
 
 		MoreExecutors.shutdownAndAwaitTermination(es, 1, TimeUnit.MINUTES);
 	}
@@ -185,21 +187,21 @@ public class TestPepperExecutorsHelper {
 			// ApexExecutorsHelper.DEFAULT_SPLIT_TASK_SIZE
 			Iterator<? extends Runnable> runnables = PepperExecutorsHelper.partitions(iterable, param -> {
 				// Not in stream: all have been materialized very soon
-				Assert.assertEquals(maxSize, materialized.size());
+				Assertions.assertEquals(maxSize, materialized.size());
 			});
 
 			// Preparing Runnable in a Collection DO materialize the whole
 			// initial iterator
 			List<Runnable> runnablesAsCollection = Lists.newArrayList(runnables);
-			Assert.assertEquals(maxSize, materialized.size());
+			Assertions.assertEquals(maxSize, materialized.size());
 
 			// Of course, executing is far too late
 			List<? extends ListenableFuture<?>> futures = PepperExecutorsHelper.invokeAllRunnable(runnablesAsCollection,
 					MoreExecutors.newDirectExecutorService(),
 					1,
 					TimeUnit.MINUTES);
-			Assert.assertEquals(maxSize, materialized.size());
-			Assert.assertEquals(maxSize / PepperExecutorsHelper.DEFAULT_PARTITION_TASK_SIZE, futures.size());
+			Assertions.assertEquals(maxSize, materialized.size());
+			Assertions.assertEquals(maxSize / PepperExecutorsHelper.DEFAULT_PARTITION_TASK_SIZE, futures.size());
 		}
 	}
 

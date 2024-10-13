@@ -25,7 +25,7 @@ package eu.solven.pepper.pgsql;
 import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestPepperPgsqlSlowQueryListener {
 	final PepperPgsqlSlowQueryListener listener = new PepperPgsqlSlowQueryListener();

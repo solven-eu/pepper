@@ -26,8 +26,8 @@ import java.time.LocalDate;
 import java.util.Arrays;
 
 import org.apache.avro.Schema;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -39,7 +39,7 @@ public class TestAvroProposeSchema implements IPepperSchemaConstants {
 		Schema schema = AvroSchemaHelper.proposeSchemaForValue(object);
 		Object exampleValue = AvroSchemaHelper.exampleValue(schema);
 
-		Assert.assertEquals(object.getClass(), exampleValue.getClass());
+		Assertions.assertEquals(object.getClass(), exampleValue.getClass());
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class TestAvroProposeSchema implements IPepperSchemaConstants {
 		Schema schema = AvroSchemaHelper.proposeSchemaForValue(null);
 		Object exampleValue = AvroSchemaHelper.exampleValue(schema);
 
-		Assert.assertNull(exampleValue);
+		Assertions.assertNull(exampleValue);
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class TestAvroProposeSchema implements IPepperSchemaConstants {
 		Schema schema = AvroSchemaHelper.proposeSchemaForValue(ImmutableMap.of("someWeirdKey", "someWeirdValue"));
 		Object exampleValue = AvroSchemaHelper.exampleValue(schema);
 
-		Assert.assertEquals(ImmutableMap.of("key", "someString"), exampleValue);
+		Assertions.assertEquals(ImmutableMap.of("key", "someString"), exampleValue);
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class TestAvroProposeSchema implements IPepperSchemaConstants {
 		Object exampleValue = AvroSchemaHelper.exampleValue(Schema.createRecord(Arrays
 				.asList(new Schema.Field("someWeirdKey", Schema.create(Schema.Type.STRING), null, "someWeirdValue"))));
 
-		Assert.assertEquals(ImmutableMap.of("someWeirdKey", "someString"), exampleValue);
+		Assertions.assertEquals(ImmutableMap.of("someWeirdKey", "someString"), exampleValue);
 	}
 
 	@Test
@@ -72,14 +72,14 @@ public class TestAvroProposeSchema implements IPepperSchemaConstants {
 		Object exampleValue = AvroSchemaHelper
 				.exampleValue(Schema.createUnion(Schema.create(Schema.Type.NULL), Schema.create(Schema.Type.STRING)));
 
-		Assert.assertEquals("someString", exampleValue);
+		Assertions.assertEquals("someString", exampleValue);
 	}
 
 	@Test
 	public void testProposeValue_Array() {
 		Object exampleValue = AvroSchemaHelper.exampleValue(Schema.createArray(Schema.create(Schema.Type.FLOAT)));
 
-		Assert.assertEquals(Arrays.asList(1.2F), exampleValue);
+		Assertions.assertEquals(Arrays.asList(1.2F), exampleValue);
 	}
 
 	@Test
@@ -90,9 +90,9 @@ public class TestAvroProposeSchema implements IPepperSchemaConstants {
 
 			if (object instanceof float[]) {
 				// Given a schema with type BYTES, we did not have enough information to guess a float[]
-				Assert.assertEquals(LocalDate.class, exampleValue.getClass());
+				Assertions.assertEquals(LocalDate.class, exampleValue.getClass());
 			} else {
-				Assert.assertEquals(object.getClass(), exampleValue.getClass());
+				Assertions.assertEquals(object.getClass(), exampleValue.getClass());
 			}
 		});
 

@@ -30,8 +30,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestPepperFileHelper {
 	@Test
@@ -39,12 +39,12 @@ public class TestPepperFileHelper {
 		Path tmpFile = PepperFileHelper.createTempPath("apex.test", ".csv", true);
 
 		// Check the path does not exist
-		Assert.assertFalse(tmpFile.toFile().exists());
+		Assertions.assertFalse(tmpFile.toFile().exists());
 	}
 
 	@Test
 	public void testNoNewLine() {
-		Assert.assertEquals("A B C D", PepperFileHelper.cleanWhitespaces("A\tB  C\rD"));
+		Assertions.assertEquals("A B C D", PepperFileHelper.cleanWhitespaces("A\tB  C\rD"));
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class TestPepperFileHelper {
 		Path tmpPath = PepperFileHelper.createTempPath("apex", "testExpandJarToDisk", true);
 		PepperFileHelper.expandJarToDisk(jarPath, tmpPath);
 
-		Assert.assertTrue(new File(tmpPath.toFile(), pathToResourceInJar).exists());
+		Assertions.assertTrue(new File(tmpPath.toFile(), pathToResourceInJar).exists());
 	}
 
 	@Test
@@ -73,8 +73,8 @@ public class TestPepperFileHelper {
 		File backToFile2 = new File(asURI.getPath());
 		File backToFile3 = new File(asURL.toURI().getPath());
 
-		Assert.assertEquals(file, backToFile.toPath());
-		Assert.assertEquals(file, backToFile2.toPath());
-		Assert.assertEquals(file, backToFile3.toPath());
+		Assertions.assertEquals(file, backToFile.toPath());
+		Assertions.assertEquals(file, backToFile2.toPath());
+		Assertions.assertEquals(file, backToFile3.toPath());
 	}
 }

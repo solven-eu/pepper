@@ -26,8 +26,8 @@ import javax.management.MBeanException;
 import javax.management.ReflectionException;
 import javax.management.modelmbean.ModelMBean;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public class TestLoggingMethodCallAnnotationMBeanExporter {
 			LOGGER.trace("Expected", e);
 		}
 
-		Assert.assertEquals(1, exporter.getNbErrors());
+		Assertions.assertEquals(1, exporter.getNbErrors());
 	}
 
 	@Test
@@ -68,6 +68,6 @@ public class TestLoggingMethodCallAnnotationMBeanExporter {
 			LOGGER.trace("Expected", e);
 		}
 
-		Assert.assertEquals(1, exporter.getNbErrors());
+		Assertions.assertEquals(1, exporter.getNbErrors());
 	}
 }

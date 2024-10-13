@@ -27,8 +27,8 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.hadoop.conf.Configuration;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.util.ReflectionUtils;
 
 import eu.solven.pepper.avro.AvroTranscodingHelper;
@@ -46,18 +46,18 @@ public class TestPepperParquetToStream {
 		Properties p = (Properties) ReflectionUtils.getField(field, config);
 
 		// Check the properties is already initialized with default configuration
-		Assert.assertNotNull(p);
+		Assertions.assertNotNull(p);
 	}
 
 	@Test
 	public void testEmptyListNoTarget() {
-		Assert.assertFalse(AvroTranscodingHelper.toPrimitiveArray(null, Arrays.asList()).isPresent());
+		Assertions.assertFalse(AvroTranscodingHelper.toPrimitiveArray(null, Arrays.asList()).isPresent());
 	}
 
 	@Test
 	public void testListDoubleToFloat() {
 		float listElement = 1F;
-		Assert.assertArrayEquals(new double[] { 1D },
+		Assertions.assertArrayEquals(new double[] { 1D },
 				(double[]) AvroTranscodingHelper.toPrimitiveArray(new double[0], Arrays.asList(listElement)).get(),
 				0.001D);
 	}
@@ -65,7 +65,7 @@ public class TestPepperParquetToStream {
 	@Test
 	public void testListFloatToDouble() {
 		Double listElement = 1D;
-		Assert.assertArrayEquals(new float[] { 1F },
+		Assertions.assertArrayEquals(new float[] { 1F },
 				(float[]) AvroTranscodingHelper.toPrimitiveArray(new float[0], Arrays.asList(listElement)).get(),
 				0.001F);
 	}

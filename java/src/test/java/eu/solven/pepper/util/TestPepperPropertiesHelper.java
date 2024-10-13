@@ -25,7 +25,7 @@ package eu.solven.pepper.util;
 import java.util.Date;
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestPepperPropertiesHelper {
 

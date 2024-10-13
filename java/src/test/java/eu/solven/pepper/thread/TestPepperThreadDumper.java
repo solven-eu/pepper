@@ -27,22 +27,21 @@ import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestPepperThreadDumper {
 	protected final PepperThreadDumper td = new PepperThreadDumper(ManagementFactory.getThreadMXBean());
 
 	@Test
 	public void testGetThreadDumpWithMonitor() {
-		Assert.assertTrue(td.getThreadDumpAsString(true)
+		Assertions.assertTrue(td.getThreadDumpAsString(true)
 				.contains(this.getClass().getName() + ".testGetThreadDumpWithMonitor(TestPepperThreadDumper.java:"));
 	}
 
 	@Test
 	public void testGetThreadDumpWithoutMonitor() {
-		Assert.assertTrue(td.getThreadDumpAsString(false)
+		Assertions.assertTrue(td.getThreadDumpAsString(false)
 				.contains(this.getClass().getName() + ".testGetThreadDumpWithoutMonitor(TestPepperThreadDumper.java:"));
 	}
 
@@ -60,9 +59,9 @@ public class TestPepperThreadDumper {
 			td.appendThreadFooter(writer, ti);
 
 			if (td.hasFooter(ti)) {
-				Assertions.assertThat(writer.toString()).isNotEmpty();
+				org.assertj.core.api.Assertions.assertThat(writer.toString()).isNotEmpty();
 			} else {
-				Assertions.assertThat(writer.toString()).withFailMessage(td.getThreadDumpAsString(true)).isEmpty();
+				org.assertj.core.api.Assertions.assertThat(writer.toString()).withFailMessage(td.getThreadDumpAsString(true)).isEmpty();
 			}
 		}
 

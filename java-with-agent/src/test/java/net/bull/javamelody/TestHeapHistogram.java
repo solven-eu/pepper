@@ -22,8 +22,8 @@
  */
 package net.bull.javamelody;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import eu.solven.pepper.agent.VirtualMachineWithoutToolsJar;
 import eu.solven.pepper.memory.histogram.HeapHistogram;
@@ -35,9 +35,9 @@ public class TestHeapHistogram {
 		IHeapHistogram heapHisto = HeapHistogram.createHeapHistogram();
 
 		if (VirtualMachineWithoutToolsJar.IS_JDK_9_OR_LATER) {
-			Assert.assertNull(heapHisto);
+			Assertions.assertNull(heapHisto);
 		} else {
-			Assert.assertTrue(heapHisto.getTotalHeapBytes() > 0);
+			Assertions.assertTrue(heapHisto.getTotalHeapBytes() > 0);
 		}
 	}
 }

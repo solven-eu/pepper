@@ -32,10 +32,9 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.ByteBuffer;
 
-import org.assertj.core.api.Assertions;
 import org.awaitility.Awaitility;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
@@ -55,8 +54,8 @@ public class TestTransmitInputStreamInObjectInput {
 		byte[] bytesFrance = PepperSerializationHelper.toBytes(ImmutableMap.of("k1", "v1"));
 		byte[] bytesUs = PepperSerializationHelper.toBytes(ImmutableMap.of("k2", "v2"));
 
-		Assert.assertTrue(bytesFrance.length < PepperObjectInputHelper.DEFAULT_CHUNK_SIZE);
-		Assert.assertTrue(bytesUs.length < PepperObjectInputHelper.DEFAULT_CHUNK_SIZE);
+		Assertions.assertTrue(bytesFrance.length < PepperObjectInputHelper.DEFAULT_CHUNK_SIZE);
+		Assertions.assertTrue(bytesUs.length < PepperObjectInputHelper.DEFAULT_CHUNK_SIZE);
 
 		ObjectInputHandlingInputStream objectInput;
 		try (ObjectOutputStream oos = new ObjectOutputStream(pos)) {
@@ -69,8 +68,8 @@ public class TestTransmitInputStreamInObjectInput {
 			objectInput = new ObjectInputHandlingInputStream(new ObjectInputStream(pis));
 			Object nextToRead = objectInput.readObject();
 
-			Assert.assertNotNull(nextToRead);
-			Assert.assertTrue(nextToRead instanceof InputStream);
+			Assertions.assertNotNull(nextToRead);
+			Assertions.assertTrue(nextToRead instanceof InputStream);
 			InputStream readIS = (InputStream) nextToRead;
 
 			// The pipe could be open or close, depending on the speed on reading it. It would be certainly open ONLY if
@@ -80,7 +79,7 @@ public class TestTransmitInputStreamInObjectInput {
 
 			// Ensure we are retrieving the whole chunk
 			byte[] transmitted = ByteStreams.toByteArray(readIS);
-			Assert.assertArrayEquals(bytesFrance, transmitted);
+			Assertions.assertArrayEquals(bytesFrance, transmitted);
 
 			// We write a second block, but read it after closing ObjectOutputStream: the inputStream should remain
 			// open
@@ -94,15 +93,15 @@ public class TestTransmitInputStreamInObjectInput {
 		{
 			Object nextToRead = objectInput.readObject();
 
-			Assert.assertNotNull(nextToRead);
-			Assert.assertTrue(nextToRead instanceof InputStream);
+			Assertions.assertNotNull(nextToRead);
+			Assertions.assertTrue(nextToRead instanceof InputStream);
 			InputStream readIS = (InputStream) nextToRead;
 
 			byte[] transmitted = ByteStreams.toByteArray(readIS);
-			Assert.assertArrayEquals(bytesUs, transmitted);
+			Assertions.assertArrayEquals(bytesUs, transmitted);
 
 			// Check there is no more bytes
-			Assert.assertEquals(-1, readIS.read());
+			Assertions.assertEquals(-1, readIS.read());
 		}
 
 	}
@@ -120,8 +119,8 @@ public class TestTransmitInputStreamInObjectInput {
 
 		// We force very small chunks: very slow but good edge-case to test
 		int chunkSize = 1;
-		Assert.assertTrue(bytesFrance.length > chunkSize);
-		Assert.assertTrue(bytesUs.length > chunkSize);
+		Assertions.assertTrue(bytesFrance.length > chunkSize);
+		Assertions.assertTrue(bytesUs.length > chunkSize);
 
 		ObjectInputHandlingInputStream objectInput;
 		try (ObjectOutputStream oos = new ObjectOutputStream(pos)) {
@@ -140,16 +139,16 @@ public class TestTransmitInputStreamInObjectInput {
 			};
 			Object nextToRead = objectInput.readObject();
 
-			Assert.assertNotNull(nextToRead);
-			Assert.assertTrue(nextToRead instanceof InputStream);
+			Assertions.assertNotNull(nextToRead);
+			Assertions.assertTrue(nextToRead instanceof InputStream);
 			InputStream readIS = (InputStream) nextToRead;
 
 			// We ensured publishing multiple chunks: the stream remains open as we have just transmitted the first one
-			Assert.assertTrue(objectInput.pipedOutputStreamIsOpen.get());
+			Assertions.assertTrue(objectInput.pipedOutputStreamIsOpen.get());
 
 			// Ensure we are retrieving the whole chunk
 			byte[] transmitted = ByteStreams.toByteArray(readIS);
-			Assert.assertArrayEquals(bytesFrance, transmitted);
+			Assertions.assertArrayEquals(bytesFrance, transmitted);
 
 			// We write a second block, but read it after closing ObjectOutputStream: the inputStream should remain
 			// open
@@ -163,15 +162,15 @@ public class TestTransmitInputStreamInObjectInput {
 		{
 			Object nextToRead = objectInput.readObject();
 
-			Assert.assertNotNull(nextToRead);
-			Assert.assertTrue(nextToRead instanceof InputStream);
+			Assertions.assertNotNull(nextToRead);
+			Assertions.assertTrue(nextToRead instanceof InputStream);
 			InputStream readIS = (InputStream) nextToRead;
 
 			byte[] transmitted = ByteStreams.toByteArray(readIS);
-			Assert.assertArrayEquals(bytesUs, transmitted);
+			Assertions.assertArrayEquals(bytesUs, transmitted);
 
 			// Check there is no more bytes
-			Assert.assertEquals(-1, readIS.read());
+			Assertions.assertEquals(-1, readIS.read());
 		}
 
 	}
@@ -185,8 +184,8 @@ public class TestTransmitInputStreamInObjectInput {
 		byte[] bytesFrance = PepperSerializationHelper.toBytes(ImmutableMap.of("k1", "v1"));
 		byte[] bytesUs = PepperSerializationHelper.toBytes(ImmutableMap.of("k2", "v2"));
 
-		Assert.assertTrue(bytesFrance.length < PepperObjectInputHelper.DEFAULT_CHUNK_SIZE);
-		Assert.assertTrue(bytesUs.length < PepperObjectInputHelper.DEFAULT_CHUNK_SIZE);
+		Assertions.assertTrue(bytesFrance.length < PepperObjectInputHelper.DEFAULT_CHUNK_SIZE);
+		Assertions.assertTrue(bytesUs.length < PepperObjectInputHelper.DEFAULT_CHUNK_SIZE);
 
 		try (ObjectOutputStream oos = new ObjectOutputStream(pos)) {
 			// Write consecutively 2 inputStreams
@@ -199,33 +198,33 @@ public class TestTransmitInputStreamInObjectInput {
 			{
 				Object nextToRead = objectInput.readObject();
 
-				Assert.assertNotNull(nextToRead);
-				Assert.assertTrue(nextToRead instanceof InputStream);
+				Assertions.assertNotNull(nextToRead);
+				Assertions.assertTrue(nextToRead instanceof InputStream);
 				InputStream readIS = (InputStream) nextToRead;
 
 				// We have not close the ObjectOutputStream: the transmitter should remain open as next item could be
 				// another ByteArrayMarker
-				// Assert.assertTrue(objectInput.pipedOutputStreamIsOpen.get());
+				// Assertions.assertTrue(objectInput.pipedOutputStreamIsOpen.get());
 				Awaitility.await().untilFalse(objectInput.pipedOutputStreamIsOpen);
 
 				// Ensure we are retrieving the whole chunk
 				byte[] transmitted = ByteStreams.toByteArray(readIS);
-				Assert.assertArrayEquals(bytesFrance, transmitted);
+				Assertions.assertArrayEquals(bytesFrance, transmitted);
 			}
 
 			// Check reading after ObjectOutputStream is closed
 			{
 				Object nextToRead = objectInput.readObject();
 
-				Assert.assertNotNull(nextToRead);
-				Assert.assertTrue(nextToRead instanceof InputStream);
+				Assertions.assertNotNull(nextToRead);
+				Assertions.assertTrue(nextToRead instanceof InputStream);
 				InputStream readIS = (InputStream) nextToRead;
 
 				byte[] transmitted = ByteStreams.toByteArray(readIS);
-				Assert.assertArrayEquals(bytesUs, transmitted);
+				Assertions.assertArrayEquals(bytesUs, transmitted);
 
 				// Check there is no more bytes
-				Assert.assertEquals(-1, readIS.read());
+				Assertions.assertEquals(-1, readIS.read());
 			}
 		}
 	}
@@ -254,14 +253,14 @@ public class TestTransmitInputStreamInObjectInput {
 				};
 		Object nextToRead = objectInput.readObject();
 
-		Assert.assertNotNull(nextToRead);
-		Assert.assertTrue(nextToRead instanceof InputStream);
+		Assertions.assertNotNull(nextToRead);
+		Assertions.assertTrue(nextToRead instanceof InputStream);
 		InputStream readIS = (InputStream) nextToRead;
 
 		// Here, we have written only the first chunk in the IS
 		{
 			// Check we have read some byte BEFORE having done reading the pis
-			Assert.assertTrue(objectInput.pipedOutputStreamIsOpen.get());
+			Assertions.assertTrue(objectInput.pipedOutputStreamIsOpen.get());
 
 			// ERROR BLOCK: we corrupt the data, including data not submitted yet to Pipe
 			ByteBuffer.wrap(bytesToTransmit).put(new byte[bytesToTransmit.length]);
@@ -270,17 +269,17 @@ public class TestTransmitInputStreamInObjectInput {
 		// Ensure we are retrieving the whole chunk
 		byte[] transmitted = ByteStreams.toByteArray(readIS);
 		// transit is ongoing, and may be finished if very-fast
-		Assertions.assertThat(transmitted.length).isLessThanOrEqualTo(bytesFrance.length);
+		org.assertj.core.api.Assertions.assertThat(transmitted.length).isLessThanOrEqualTo(bytesFrance.length);
 		Awaitility.await().untilFalse(objectInput.pipedOutputStreamIsOpen);
 
 		Exception exceptionToRethrow = objectInput.ouch.get();
-		Assert.assertNotNull(exceptionToRethrow);
+		Assertions.assertNotNull(exceptionToRethrow);
 
 		try {
 			objectInput.readObject();
-			Assert.fail("Should have thrown");
+			Assertions.fail("Should have thrown");
 		} catch (Exception e) {
-			Assert.assertSame(exceptionToRethrow, e.getCause());
+			Assertions.assertSame(exceptionToRethrow, e.getCause());
 		}
 	}
 
@@ -296,11 +295,11 @@ public class TestTransmitInputStreamInObjectInput {
 		}
 
 		// By default not shutdown
-		Assert.assertFalse(objectInput.inputStreamFiller.get().isShutdown());
+		Assertions.assertFalse(objectInput.inputStreamFiller.get().isShutdown());
 
 		// Closing the OOS has shutdown the ES
 		objectInput.close();
-		Assert.assertTrue(objectInput.inputStreamFiller.get().isShutdown());
+		Assertions.assertTrue(objectInput.inputStreamFiller.get().isShutdown());
 	}
 
 	@Test
@@ -317,10 +316,10 @@ public class TestTransmitInputStreamInObjectInput {
 		}
 
 		// By default not shutdown
-		Assert.assertFalse(objectInput.inputStreamFiller.get().isShutdown());
+		Assertions.assertFalse(objectInput.inputStreamFiller.get().isShutdown());
 
 		// Closing the OOS has NOT shutdown the ES
 		objectInput.close();
-		Assert.assertFalse(objectInput.inputStreamFiller.get().isShutdown());
+		Assertions.assertFalse(objectInput.inputStreamFiller.get().isShutdown());
 	}
 }

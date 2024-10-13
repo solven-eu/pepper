@@ -22,8 +22,8 @@
  */
 package eu.solven.pepper.collection;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestArrayWithHashcodeEquals {
 	@Test
@@ -32,13 +32,13 @@ public class TestArrayWithHashcodeEquals {
 		ArrayWithHashcodeEquals second = new ArrayWithHashcodeEquals(new Object[] { new String("a"), "b" });
 
 		// NotSame
-		Assert.assertNotSame(first, second);
-		Assert.assertNotSame(first.array, second.array);
-		Assert.assertNotSame(first.array[0], second.array[0]);
+		Assertions.assertNotSame(first, second);
+		Assertions.assertNotSame(first.array, second.array);
+		Assertions.assertNotSame(first.array[0], second.array[0]);
 
 		// But equals
-		Assert.assertEquals(first.hashCode(), second.hashCode());
-		Assert.assertEquals(first, second);
+		Assertions.assertEquals(first.hashCode(), second.hashCode());
+		Assertions.assertEquals(first, second);
 	}
 
 }

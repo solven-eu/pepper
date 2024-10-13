@@ -32,8 +32,8 @@ import java.io.ObjectOutputStream;
 import java.io.UncheckedIOException;
 import java.util.stream.IntStream;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
@@ -63,7 +63,7 @@ public class ITTransmitInputStreamInObjectInput {
 					.wrapToHandleInputStream(new ObjectInputStream(new ByteArrayInputStream(byteArray)))) {
 				InputStream is = (InputStream) ois.readObject();
 
-				Assert.assertEquals(serializable, PepperSerializationHelper.fromBytes(ByteStreams.toByteArray(is)));
+				Assertions.assertEquals(serializable, PepperSerializationHelper.fromBytes(ByteStreams.toByteArray(is)));
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			} catch (ClassNotFoundException e) {

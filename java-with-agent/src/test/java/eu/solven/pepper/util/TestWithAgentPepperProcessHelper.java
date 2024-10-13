@@ -24,8 +24,8 @@ package eu.solven.pepper.util;
 
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import eu.solven.pepper.agent.PepperAgentHelper;
 
@@ -41,6 +41,6 @@ public class TestWithAgentPepperProcessHelper {
 	public void testMemoryOnCurrentSystem() throws IOException {
 		long currentProcessPID = Long.parseLong(PepperAgentHelper.getPIDForAgent());
 		long nbBytes = PepperProcessHelper.getProcessResidentMemory(currentProcessPID).getAsLong();
-		Assert.assertTrue(nbBytes > 0);
+		Assertions.assertTrue(nbBytes > 0);
 	}
 }

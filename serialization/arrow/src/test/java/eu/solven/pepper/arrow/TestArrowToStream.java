@@ -32,9 +32,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -52,13 +52,13 @@ public class TestArrowToStream {
 				ArrowStreamHelper.guessSchema(ImmutableMap.of("key", 0)),
 				IntStream.range(0, 10).mapToObj(i -> ImmutableMap.of("key", i)));
 
-		Assert.assertEquals(10, nbRows);
+		Assertions.assertEquals(10, nbRows);
 
 		ArrowBytesToStream toSteam = new ArrowBytesToStream();
-		Assert.assertEquals(10, toSteam.stream(tmpPath.toFile()).count());
+		Assertions.assertEquals(10, toSteam.stream(tmpPath.toFile()).count());
 
 		// Check firstRow
-		Assert.assertEquals(0, toSteam.stream(tmpPath.toFile()).findFirst().get().get("key"));
+		Assertions.assertEquals(0, toSteam.stream(tmpPath.toFile()).findFirst().get().get("key"));
 	}
 
 	private void testTranscodedValue(Object value) throws IOException {
@@ -69,18 +69,18 @@ public class TestArrowToStream {
 				ArrowStreamHelper.guessSchema(ImmutableMap.of("key", value)),
 				IntStream.range(0, 10).mapToObj(i -> ImmutableMap.of("key", value)));
 
-		Assert.assertEquals(10, nbRows);
+		Assertions.assertEquals(10, nbRows);
 
 		ArrowBytesToStream toSteam = new ArrowBytesToStream();
 
 		List<Map<String, ?>> backToMap =
 				toSteam.stream(new ByteArrayInputStream(baos.toByteArray())).collect(Collectors.toList());
 
-		Assert.assertEquals(10, backToMap.size());
+		Assertions.assertEquals(10, backToMap.size());
 
 		// Check firstRow
-		Assert.assertEquals(value, backToMap.get(0).get("key"));
-		Assert.assertEquals(value, backToMap.get(9).get("key"));
+		Assertions.assertEquals(value, backToMap.get(0).get("key"));
+		Assertions.assertEquals(value, backToMap.get(9).get("key"));
 	}
 
 	// When writing to a File, Arrow add a magic header

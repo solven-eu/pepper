@@ -31,10 +31,10 @@ import java.util.stream.Stream;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.util.Shell;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,9 +82,9 @@ public class TestGenerateParquetFile {
 		long nbRows = factory.serialize(tmpPath.toUri(), stream);
 		LOGGER.debug("7 rows have been written in {}", tmpPath);
 
-		Assert.assertEquals(nbRows1, nbRows);
+		Assertions.assertEquals(nbRows1, nbRows);
 
 		// Read back to ensure the data is readable (it may fail if concurrent write have corrupted the flow)
-		Assert.assertEquals(nbRows1, factory.stream(tmpPath.toUri()).count());
+		Assertions.assertEquals(nbRows1, factory.stream(tmpPath.toUri()).count());
 	}
 }

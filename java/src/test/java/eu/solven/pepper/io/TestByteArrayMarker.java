@@ -24,8 +24,8 @@ package eu.solven.pepper.io;
 
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestByteArrayMarker {
 	@Test
@@ -33,6 +33,6 @@ public class TestByteArrayMarker {
 		ByteArrayMarker marker = new ByteArrayMarker(123, false);
 
 		String asString = PepperSerializationHelper.toString(marker);
-		Assert.assertEquals(123L, ((ByteArrayMarker) PepperSerializationHelper.fromString(asString)).getNbBytes());
+		Assertions.assertEquals(123L, ((ByteArrayMarker) PepperSerializationHelper.fromString(asString)).getNbBytes());
 	}
 }

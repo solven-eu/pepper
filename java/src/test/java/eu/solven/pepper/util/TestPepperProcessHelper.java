@@ -28,8 +28,8 @@ import java.util.OptionalLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import eu.solven.pepper.memory.IPepperMemoryConstants;
 
@@ -53,7 +53,7 @@ public class TestPepperProcessHelper {
 		long nbBytes = PepperProcessHelper
 				.extractMemory(PepperProcessHelper.OS_MARKER_MAC, new ByteArrayInputStream(macMemoryOutput.getBytes()))
 				.getAsLong();
-		Assert.assertEquals((long) (538.2D * IPepperMemoryConstants.MB), nbBytes);
+		Assertions.assertEquals((long) (538.2D * IPepperMemoryConstants.MB), nbBytes);
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class TestPepperProcessHelper {
 		long nbBytes = PepperProcessHelper
 				.extractMemory(PepperProcessHelper.OS_MARKER_MAC, new ByteArrayInputStream(macMemoryOutput.getBytes()))
 				.getAsLong();
-		Assert.assertEquals((long) (113.3D * IPepperMemoryConstants.MB), nbBytes);
+		Assertions.assertEquals((long) (113.3D * IPepperMemoryConstants.MB), nbBytes);
 	}
 
 	// Without -X on pmap, we receive only the 'whole' memory, whatever it means
@@ -77,7 +77,7 @@ public class TestPepperProcessHelper {
 						.extractMemory(PepperProcessHelper.OS_MARKER_LINUX,
 								new ByteArrayInputStream(macMemoryOutput.getBytes()))
 						.getAsLong();
-		Assert.assertEquals(65_512 * IPepperMemoryConstants.KB, nbBytes);
+		Assertions.assertEquals(65_512 * IPepperMemoryConstants.KB, nbBytes);
 	}
 
 	@Test
@@ -91,7 +91,7 @@ public class TestPepperProcessHelper {
 						.extractMemory(PepperProcessHelper.OS_MARKER_LINUX,
 								new ByteArrayInputStream(macMemoryOutput.getBytes()))
 						.getAsLong();
-		Assert.assertEquals(390_544 * IPepperMemoryConstants.KB, nbBytes);
+		Assertions.assertEquals(390_544 * IPepperMemoryConstants.KB, nbBytes);
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class TestPepperProcessHelper {
 						.extractMemory(PepperProcessHelper.OS_MARKER_WINDOWS,
 								new ByteArrayInputStream(windowsMemoryOutput.getBytes()))
 						.getAsLong();
-		Assert.assertEquals(107_940 * IPepperMemoryConstants.KB, nbBytes);
+		Assertions.assertEquals(107_940 * IPepperMemoryConstants.KB, nbBytes);
 	}
 
 	// French has no comma as thousands separator
@@ -124,7 +124,7 @@ public class TestPepperProcessHelper {
 						.extractMemory(PepperProcessHelper.OS_MARKER_WINDOWS,
 								new ByteArrayInputStream(windowsMemoryOutput.getBytes()))
 						.getAsLong();
-		Assert.assertEquals(78_332 * IPepperMemoryConstants.KB, nbBytes);
+		Assertions.assertEquals(78_332 * IPepperMemoryConstants.KB, nbBytes);
 	}
 
 	@Test
@@ -133,6 +133,6 @@ public class TestPepperProcessHelper {
 
 		OptionalLong nbBytes = PepperProcessHelper.extractMemory(PepperProcessHelper.OS_MARKER_WINDOWS,
 				new ByteArrayInputStream(macMemoryOutput.getBytes()));
-		Assert.assertFalse(nbBytes.isPresent());
+		Assertions.assertFalse(nbBytes.isPresent());
 	}
 }

@@ -25,34 +25,34 @@ package eu.solven.pepper.collection;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestImmutableArrayList {
 	@Test
 	public void testSubSet() {
 		List<?> subset = new ImmutableArrayList<>(new Object[] { 13, 27 }, new int[1]);
 
-		Assert.assertEquals(1, subset.size());
-		Assert.assertEquals(13, subset.get(0));
-		Assert.assertEquals(Arrays.asList(13).hashCode(), subset.hashCode());
+		Assertions.assertEquals(1, subset.size());
+		Assertions.assertEquals(13, subset.get(0));
+		Assertions.assertEquals(Arrays.asList(13).hashCode(), subset.hashCode());
 
 		// Check both equals
-		Assert.assertEquals(Arrays.asList(13), subset);
-		Assert.assertEquals(subset, Arrays.asList(13));
+		Assertions.assertEquals(Arrays.asList(13), subset);
+		Assertions.assertEquals(subset, Arrays.asList(13));
 	}
 
 	@Test
 	public void testPlain() {
 		List<?> subset = new ImmutableArrayList<>(new Object[] { 13, 27 });
 
-		Assert.assertEquals(2, subset.size());
-		Assert.assertEquals(13, subset.get(0));
-		Assert.assertEquals(27, subset.get(1));
-		Assert.assertEquals(Arrays.asList(13, 27).hashCode(), subset.hashCode());
+		Assertions.assertEquals(2, subset.size());
+		Assertions.assertEquals(13, subset.get(0));
+		Assertions.assertEquals(27, subset.get(1));
+		Assertions.assertEquals(Arrays.asList(13, 27).hashCode(), subset.hashCode());
 
 		// Check both equals
-		Assert.assertEquals(Arrays.asList(13, 27), subset);
-		Assert.assertEquals(subset, Arrays.asList(13, 27));
+		Assertions.assertEquals(Arrays.asList(13, 27), subset);
+		Assertions.assertEquals(subset, Arrays.asList(13, 27));
 	}
 }

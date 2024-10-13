@@ -28,8 +28,8 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,10 +53,10 @@ public class TestPepperCSVLoadingHelper {
 
 		if (SystemUtils.IS_OS_WINDOWS) {
 			// Accept Absolute path
-			Assert.assertTrue(pathMatcher.matches(Paths.get("C:", "root", fileInFolder)));
+			Assertions.assertTrue(pathMatcher.matches(Paths.get("C:", "root", fileInFolder)));
 
 			// Reject .csv.bak
-			Assert.assertFalse(pathMatcher.matches(Paths.get("C:", "root", fileInFolder + ".bak")));
+			Assertions.assertFalse(pathMatcher.matches(Paths.get("C:", "root", fileInFolder + ".bak")));
 		} else {
 			LOGGER.error("TODO Check this test under Linux");
 		}
@@ -75,10 +75,10 @@ public class TestPepperCSVLoadingHelper {
 		}
 
 		// Automatic handling of absolute pathes
-		Assert.assertTrue(PepperFileHelper.makePathMatcher(fileMatcher, true).matches(path));
+		Assertions.assertTrue(PepperFileHelper.makePathMatcher(fileMatcher, true).matches(path));
 
 		// Path-matcher does not handle absolute pathes
-		Assert.assertFalse(PepperFileHelper.makePathMatcher(fileMatcher, false).matches(path));
+		Assertions.assertFalse(PepperFileHelper.makePathMatcher(fileMatcher, false).matches(path));
 	}
 
 	@Test
@@ -93,8 +93,8 @@ public class TestPepperCSVLoadingHelper {
 			path = Paths.get("/root", pathChain);
 		}
 
-		Assert.assertTrue(PepperFileHelper.makePathMatcher(fileMatcher, false).matches(path));
-		Assert.assertTrue(PepperFileHelper.makePathMatcher(fileMatcher, true).matches(path));
+		Assertions.assertTrue(PepperFileHelper.makePathMatcher(fileMatcher, false).matches(path));
+		Assertions.assertTrue(PepperFileHelper.makePathMatcher(fileMatcher, true).matches(path));
 	}
 
 	@Test
@@ -110,8 +110,8 @@ public class TestPepperCSVLoadingHelper {
 			path = Paths.get("/root", pathChain);
 		}
 
-		Assert.assertTrue(PepperFileHelper.makePathMatcher(fileMatcher, false).matches(path));
-		Assert.assertTrue(PepperFileHelper.makePathMatcher(fileMatcher, true).matches(path));
+		Assertions.assertTrue(PepperFileHelper.makePathMatcher(fileMatcher, false).matches(path));
+		Assertions.assertTrue(PepperFileHelper.makePathMatcher(fileMatcher, true).matches(path));
 	}
 
 	@Test
@@ -121,7 +121,7 @@ public class TestPepperCSVLoadingHelper {
 
 		PathMatcher pathMatcher = PepperFileHelper.makePathMatcher(fileMatcher, false);
 
-		Assert.assertTrue(pathMatcher.matches(path));
+		Assertions.assertTrue(pathMatcher.matches(path));
 	}
 
 }

@@ -26,15 +26,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.io.Files;
 
 public class TestPepperGzipHelper {
 	@Test
 	public void test_ctor() {
-		Assert.assertNotNull(new PepperGzipHelper());
+		Assertions.assertNotNull(new PepperGzipHelper());
 	}
 
 	@Test
@@ -44,20 +44,20 @@ public class TestPepperGzipHelper {
 		byte[] compressed = PepperGzipHelper.deflate(string);
 		byte[] notCompressed = string.getBytes(StandardCharsets.UTF_8);
 
-		Assert.assertTrue(PepperGzipHelper.isGZIPStream(compressed));
-		Assert.assertFalse(PepperGzipHelper.isGZIPStream(notCompressed));
+		Assertions.assertTrue(PepperGzipHelper.isGZIPStream(compressed));
+		Assertions.assertFalse(PepperGzipHelper.isGZIPStream(notCompressed));
 
-		Assert.assertEquals(string, PepperGzipHelper.inflate(compressed));
+		Assertions.assertEquals(string, PepperGzipHelper.inflate(compressed));
 
 		// optCompressed handles both compressed and not-compressed data
-		Assert.assertEquals(string, PepperGzipHelper.toStringOptCompressed(compressed));
-		Assert.assertEquals(string, PepperGzipHelper.toStringOptCompressed(notCompressed));
+		Assertions.assertEquals(string, PepperGzipHelper.toStringOptCompressed(compressed));
+		Assertions.assertEquals(string, PepperGzipHelper.toStringOptCompressed(notCompressed));
 	}
 
 	@Test
 	public void testIsGzipButTooSmall() throws IOException {
-		Assert.assertFalse(PepperGzipHelper.isGZIPStream(new byte[0]));
-		Assert.assertFalse(PepperGzipHelper.isGZIPStream(new byte[1]));
+		Assertions.assertFalse(PepperGzipHelper.isGZIPStream(new byte[0]));
+		Assertions.assertFalse(PepperGzipHelper.isGZIPStream(new byte[1]));
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class TestPepperGzipHelper {
 		Path targetZip = PepperFileHelper.createTempPath("TestPepperGzipHelper", ".zip", true);
 		PepperGzipHelper.packToZip(folder.toFile(), targetZip.toFile());
 
-		Assert.assertTrue(targetZip.toFile().length() > 0);
+		Assertions.assertTrue(targetZip.toFile().length() > 0);
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class TestPepperGzipHelper {
 		Path targetGzip = PepperFileHelper.createTempPath("TestPepperGzipHelper", ".gz", true);
 		PepperGzipHelper.packToGzip(fileToGzip.toFile(), targetGzip.toFile());
 
-		Assert.assertTrue(targetGzip.toFile().length() > 0);
+		Assertions.assertTrue(targetGzip.toFile().length() > 0);
 	}
 
 }

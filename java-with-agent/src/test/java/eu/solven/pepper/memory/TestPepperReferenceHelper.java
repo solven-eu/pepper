@@ -28,10 +28,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +42,7 @@ public class TestPepperReferenceHelper {
 
 	PepperReferenceInternalizer pepperReferenceInternalizer = new PepperReferenceInternalizer();
 
-	@Before
+	@BeforeEach
 	public void clear() {
 		PepperReferenceHelper.clear();
 	}
@@ -61,12 +60,12 @@ public class TestPepperReferenceHelper {
 		FinalField right = new FinalField(new String("Youpi"));
 
 		// Not same ref
-		Assert.assertNotSame(left.oneString, right.oneString);
+		Assertions.assertNotSame(left.oneString, right.oneString);
 
 		PepperReferenceHelper.internalizeFields(left);
 		PepperReferenceHelper.internalizeFields(right);
 
-		Assert.assertSame(left.oneString, right.oneString);
+		Assertions.assertSame(left.oneString, right.oneString);
 	}
 
 	@Test
@@ -75,12 +74,12 @@ public class TestPepperReferenceHelper {
 		NotFinalField right = new NotFinalField(new String("Youpi"));
 
 		// Not same ref
-		Assert.assertNotSame(left.oneString, right.oneString);
+		Assertions.assertNotSame(left.oneString, right.oneString);
 
 		PepperReferenceHelper.internalizeFields(left);
 		PepperReferenceHelper.internalizeFields(right);
 
-		Assert.assertSame(left.oneString, right.oneString);
+		Assertions.assertSame(left.oneString, right.oneString);
 	}
 
 	@Test
@@ -92,7 +91,7 @@ public class TestPepperReferenceHelper {
 		}
 
 		// We need to ensure a high cardinality Field does not lead to a huge dictionary
-		Assert.assertEquals(775,
+		Assertions.assertEquals(775,
 				PepperReferenceHelper.DICTIONARY_FIELDS.get(NotFinalField.class.getDeclaredFields()[0]).size());
 	}
 
@@ -105,7 +104,7 @@ public class TestPepperReferenceHelper {
 		}
 
 		// We need to ensure a very-high cardinality Field leads to a removed dictionary
-		Assert.assertNull(PepperReferenceHelper.DICTIONARY_FIELDS.get(NotFinalField.class.getDeclaredFields()[0]));
+		Assertions.assertNull(PepperReferenceHelper.DICTIONARY_FIELDS.get(NotFinalField.class.getDeclaredFields()[0]));
 	}
 
 	@Test
@@ -114,23 +113,23 @@ public class TestPepperReferenceHelper {
 		DerivedClass right = new DerivedClass(new String("Youpi"));
 
 		// Not same ref
-		Assert.assertNotSame(left.oneString, right.oneString);
+		Assertions.assertNotSame(left.oneString, right.oneString);
 
 		PepperReferenceHelper.internalizeFields(left);
 		PepperReferenceHelper.internalizeFields(right);
 
-		Assert.assertSame(left.oneString, right.oneString);
+		Assertions.assertSame(left.oneString, right.oneString);
 	}
 
 	@Test
 	public void testDictionarizeArray() {
 		Object[] array = new Object[] { "Youpi", 123L, "_Youpi".substring(1) };
 
-		Assert.assertNotSame(array[0], array[2]);
+		Assertions.assertNotSame(array[0], array[2]);
 
 		PepperReferenceHelper.internalizeArray(array);
 
-		Assert.assertSame(array[0], array[2]);
+		Assertions.assertSame(array[0], array[2]);
 	}
 
 	@Test
@@ -142,7 +141,7 @@ public class TestPepperReferenceHelper {
 		}
 
 		// We need to ensure a very-high cardinality Class does not lead to a huge dictionary
-		Assert.assertEquals(575, PepperReferenceHelper.DICTIONARY_ARRAY.get(String.class).size());
+		Assertions.assertEquals(575, PepperReferenceHelper.DICTIONARY_ARRAY.get(String.class).size());
 	}
 
 	static class NotFinalField {
@@ -185,7 +184,7 @@ public class TestPepperReferenceHelper {
 		LOGGER.info("Size Before: {}, Size after: {}",
 				PepperLogHelper.humanBytes(sizeBefore),
 				PepperLogHelper.humanBytes(sizeAfter));
-		Assert.assertTrue(sizeBefore > sizeAfter * 2.5D);
+		Assertions.assertTrue(sizeBefore > sizeAfter * 2.5D);
 	}
 
 	@Test
@@ -205,6 +204,6 @@ public class TestPepperReferenceHelper {
 				PepperLogHelper.humanBytes(sizeAfter));
 
 		// Nearly divided by 2
-		Assertions.assertThat(sizeAfter).isLessThanOrEqualTo((long) (sizeBefore / 1.8D));
+		org.assertj.core.api.Assertions.assertThat(sizeAfter).isLessThanOrEqualTo((long) (sizeBefore / 1.8D));
 	}
 }

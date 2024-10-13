@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
 
@@ -44,7 +44,7 @@ public class TestJavaBytesToStream {
 				streamConverter.stream(new ByteArrayInputStream(PepperSerializationHelper.toBytes(original)));
 
 		List<Object> streamedAsList = stream.collect(Collectors.toList());
-		Assert.assertEquals(original, streamedAsList);
-		Assert.assertNotSame(original, streamedAsList);
+		Assertions.assertEquals(original, streamedAsList);
+		Assertions.assertNotSame(original, streamedAsList);
 	}
 }

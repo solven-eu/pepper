@@ -32,8 +32,8 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
@@ -47,42 +47,42 @@ public class TestPepperSerializationHelper {
 	public void testConvertEmptyToMap() {
 		String asString = "";
 
-		Assert.assertEquals(Collections.emptyMap(), PepperSerializationHelper.convertToMap(asString));
+		Assertions.assertEquals(Collections.emptyMap(), PepperSerializationHelper.convertToMap(asString));
 	}
 
 	@Test
 	public void testConvertToMap() {
 		String asString = "a=b,c=d";
 
-		Assert.assertEquals(ImmutableMap.of("a", "b", "c", "d"), PepperSerializationHelper.convertToMap(asString));
+		Assertions.assertEquals(ImmutableMap.of("a", "b", "c", "d"), PepperSerializationHelper.convertToMap(asString));
 	}
 
 	@Test
 	public void testConvertToMapInvalidSeparator() {
 		String asString = "a=b;c=d";
 
-		Assert.assertEquals(ImmutableMap.of("a", "b", "c", "d"), PepperSerializationHelper.convertToMap(asString));
+		Assertions.assertEquals(ImmutableMap.of("a", "b", "c", "d"), PepperSerializationHelper.convertToMap(asString));
 	}
 
 	@Test
 	public void testConvertList() {
-		Assert.assertEquals(Arrays.asList("EUR", "USD"), PepperSerializationHelper.convertToList("EUR,USD"));
-		Assert.assertEquals(Arrays.asList("EUR", "USD"), PepperSerializationHelper.convertToList("EUR|USD"));
+		Assertions.assertEquals(Arrays.asList("EUR", "USD"), PepperSerializationHelper.convertToList("EUR,USD"));
+		Assertions.assertEquals(Arrays.asList("EUR", "USD"), PepperSerializationHelper.convertToList("EUR|USD"));
 
-		Assert.assertEquals(Sets.newHashSet("EUR", "USD"), PepperSerializationHelper.convertToSet("EUR,USD"));
-		Assert.assertEquals(Sets.newHashSet("EUR", "USD"), PepperSerializationHelper.convertToSet("EUR|USD"));
+		Assertions.assertEquals(Sets.newHashSet("EUR", "USD"), PepperSerializationHelper.convertToSet("EUR,USD"));
+		Assertions.assertEquals(Sets.newHashSet("EUR", "USD"), PepperSerializationHelper.convertToSet("EUR|USD"));
 	}
 
 	@Test
 	public void testConvertMapIterableToMap() {
-		Assert.assertEquals("a=b|c",
+		Assertions.assertEquals("a=b|c",
 				PepperSerializationHelper.convertToString(ImmutableMap.of("a", Arrays.asList("b", "c"))));
 	}
 
 	@Test
 	public void testConvertMapOfObject() {
 		ImmutableMap<String, LocalDate> objectMap = ImmutableMap.of("key", LocalDate.now());
-		Assert.assertEquals(objectMap,
+		Assertions.assertEquals(objectMap,
 				PepperSerializationHelper.convertToMap(PepperSerializationHelper.convertToString(objectMap)));
 	}
 
@@ -114,7 +114,7 @@ public class TestPepperSerializationHelper {
 
 		PepperSerializationHelper.rawAppendLineInCSVFile(sw, Arrays.asList("In\"Middle", null, "\"Wrapped\""), true, 5);
 
-		Assert.assertEquals("\"In\"\"M\";;\"Wrapp\"", sw.toString());
+		Assertions.assertEquals("\"In\"\"M\";;\"Wrapp\"", sw.toString());
 	}
 
 	@Test
@@ -124,26 +124,26 @@ public class TestPepperSerializationHelper {
 		PepperSerializationHelper
 				.rawAppendLineInCSVFile(sw, Arrays.asList("In\"Middle", null, "\"Wrapped\""), true, Integer.MAX_VALUE);
 
-		Assert.assertEquals("\"In\"\"Middle\";;\"Wrapped\"", sw.toString());
+		Assertions.assertEquals("\"In\"\"Middle\";;\"Wrapped\"", sw.toString());
 	}
 
 	@Test
 	public void testMD5_utf8_md5() throws NoSuchAlgorithmException {
 		String md5 = PepperSerializationHelper.toMD5("Youpi", Charsets.UTF_8, MessageDigest.getInstance("MD5"));
-		Assert.assertEquals("c2dd8be8874b1200530e72bcb5d416da", md5);
+		Assertions.assertEquals("c2dd8be8874b1200530e72bcb5d416da", md5);
 	}
 
 	// This test depends on the platform (e.g. default charset)
 	@Test
 	public void testMD5_default() throws NoSuchAlgorithmException {
 		String output = PepperSerializationHelper.toMD5("Youpi");
-		Assert.assertTrue(output.length() > 0);
+		Assertions.assertTrue(output.length() > 0);
 	}
 
 	@Test
 	public void testSha512() throws NoSuchAlgorithmException {
 		String sha512 = PepperSerializationHelper.toSha512("Youpi", "someSalt");
-		Assert.assertEquals(
+		Assertions.assertEquals(
 				"a2972849746c35f2dc82dc1cedb9e78318508b93b6b007f37f779838f62ca196612c8c6fb8f18b83d9cf144ce4b373d84781b69a9301097d9b53ab7516ed553d",
 				sha512);
 	}
@@ -151,19 +151,19 @@ public class TestPepperSerializationHelper {
 	@Test
 	public void testSha512_Random() throws NoSuchAlgorithmException {
 		String output = PepperSerializationHelper.generateSha512();
-		Assert.assertTrue(output.length() > 0);
+		Assertions.assertTrue(output.length() > 0);
 	}
 
 	@Test
 	public void testSafeToObject_LocalDate() {
 		Object object = LocalDate.now();
-		Assert.assertEquals(object, PepperSerializationHelper.safeToObject(LocalDate.class, object.toString()).get());
+		Assertions.assertEquals(object, PepperSerializationHelper.safeToObject(LocalDate.class, object.toString()).get());
 	}
 
 	@Test
 	public void testSafeToObject_Float() {
 		Object object = 3F;
-		Assert.assertEquals(object, PepperSerializationHelper.safeToObject(Float.class, object.toString()).get());
+		Assertions.assertEquals(object, PepperSerializationHelper.safeToObject(Float.class, object.toString()).get());
 	}
 
 }

@@ -27,8 +27,8 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestCachedPathMatcher {
@@ -43,14 +43,14 @@ public class TestCachedPathMatcher {
 		Mockito.when(decorated.matches(path)).thenReturn(true, false);
 
 		// First try: we get true
-		Assert.assertTrue(cachedMatcher.matches(path));
+		Assertions.assertTrue(cachedMatcher.matches(path));
 
 		// Second try: we get cached true
-		Assert.assertTrue(cachedMatcher.matches(path));
+		Assertions.assertTrue(cachedMatcher.matches(path));
 
 		// Ensure underlying is actually false
-		Assert.assertFalse(decorated.matches(path));
-		Assert.assertTrue(cachedMatcher.matches(path));
+		Assertions.assertFalse(decorated.matches(path));
+		Assertions.assertTrue(cachedMatcher.matches(path));
 	}
 
 	@Test
@@ -59,8 +59,8 @@ public class TestCachedPathMatcher {
 		PathMatcher cachedPathMatcher = CachedPathMatcher.fromRegex("Prefix.*");
 
 		// Demonstrate we provide a useful toString while jdk class misses a useful .toString
-		Assert.assertFalse(rawMatcher.toString().contains("Prefix"));
-		Assert.assertEquals("regex:Prefix.*", cachedPathMatcher.toString());
+		Assertions.assertFalse(rawMatcher.toString().contains("Prefix"));
+		Assertions.assertEquals("regex:Prefix.*", cachedPathMatcher.toString());
 	}
 
 	@Test
@@ -69,8 +69,8 @@ public class TestCachedPathMatcher {
 		PathMatcher cachedPathMatcher = CachedPathMatcher.fromRegex("Prefix.*");
 
 		// Demonstrate we provide a useful toString while jdk class misses a useful .toString
-		Assert.assertFalse(rawMatcher.toString().contains("Prefix"));
-		Assert.assertEquals("regex:Prefix.*", cachedPathMatcher.toString());
+		Assertions.assertFalse(rawMatcher.toString().contains("Prefix"));
+		Assertions.assertEquals("regex:Prefix.*", cachedPathMatcher.toString());
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class TestCachedPathMatcher {
 		Path pathOk = Paths.get("/youpi", "PrefixOui");
 		Path pathArg = Paths.get("/youpi", "NotPrefixOui");
 
-		Assert.assertTrue(cachedPathMatcher.matches(pathOk));
-		Assert.assertFalse(cachedPathMatcher.matches(pathArg));
+		Assertions.assertTrue(cachedPathMatcher.matches(pathOk));
+		Assertions.assertFalse(cachedPathMatcher.matches(pathArg));
 	}
 }

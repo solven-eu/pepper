@@ -32,8 +32,7 @@ import java.util.Map;
 import java.util.NavigableMap;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -170,7 +169,7 @@ public class TestMapPath {
 
 		Map<String, ?> backToRecursive = MapPath.recurse(flatten);
 
-		Assert.assertEquals(inputRecursive, backToRecursive);
+		org.junit.jupiter.api.Assertions.assertEquals(inputRecursive, backToRecursive);
 	}
 
 	// https://github.com/solven-eu/mitrust-datasharing/pull/11869
@@ -183,7 +182,7 @@ public class TestMapPath {
 
 		Map<String, ?> backToRecursive = MapPath.recurse(flatten);
 
-		Assert.assertEquals(inputRecursive, backToRecursive);
+		org.junit.jupiter.api.Assertions.assertEquals(inputRecursive, backToRecursive);
 	}
 
 	@Test
@@ -194,7 +193,7 @@ public class TestMapPath {
 		Assertions.assertThat(flatten).containsEntry("$['k.1']['k.2']", "someValue").hasSize(1);
 
 		Map<String, ?> backToRecursive = MapPath.recurse(flatten);
-		Assert.assertEquals(inputRecursive, backToRecursive);
+		org.junit.jupiter.api.Assertions.assertEquals(inputRecursive, backToRecursive);
 	}
 
 	@Test
@@ -205,7 +204,7 @@ public class TestMapPath {
 			Assertions.assertThat(flatten).containsEntry("$['.1']['.2']", "someValue").hasSize(1);
 
 			Map<String, ?> backToRecursive = MapPath.recurse(flatten);
-			Assert.assertEquals(input, backToRecursive);
+			org.junit.jupiter.api.Assertions.assertEquals(input, backToRecursive);
 		}
 
 		{
@@ -214,7 +213,7 @@ public class TestMapPath {
 			Assertions.assertThat(flatten).containsEntry("$['1.']['2.']", "someValue").hasSize(1);
 
 			Map<String, ?> backToRecursive = MapPath.recurse(flatten);
-			Assert.assertEquals(input, backToRecursive);
+			org.junit.jupiter.api.Assertions.assertEquals(input, backToRecursive);
 		}
 	}
 
@@ -355,7 +354,7 @@ public class TestMapPath {
 
 		Map<String, ?> backToRecursive = MapPath.recurse(flatten);
 
-		Assert.assertEquals(inputRecursive, backToRecursive);
+		org.junit.jupiter.api.Assertions.assertEquals(inputRecursive, backToRecursive);
 	}
 
 	@Test

@@ -39,9 +39,9 @@ import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.GenericRecordBuilder;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -75,8 +75,8 @@ public class TestPepperParquetHelper {
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(asMap);
 
 		// We use an union to allow the field to hold null
-		// Assert.assertEquals("array", schema.getField("doubleList").schema().getType().getName());
-		Assert.assertEquals("union", schema.getField("doubleList").schema().getType().getName());
+		// Assertions.assertEquals("array", schema.getField("doubleList").schema().getType().getName());
+		Assertions.assertEquals("union", schema.getField("doubleList").schema().getType().getName());
 	}
 
 	@Test
@@ -86,8 +86,8 @@ public class TestPepperParquetHelper {
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(asMap);
 
 		// We use an union to allow the field to hold null
-		// Assert.assertEquals("array", schema.getField("doubleList").schema().getType().getName());
-		Assert.assertEquals("union", schema.getField("k").schema().getType().getName());
+		// Assertions.assertEquals("array", schema.getField("doubleList").schema().getType().getName());
+		Assertions.assertEquals("union", schema.getField("k").schema().getType().getName());
 
 		{
 			Path path = PepperFileHelper.createTempPath("apex", "parquet", true);
@@ -96,7 +96,7 @@ public class TestPepperParquetHelper {
 
 			Map<String, ?> asMapAgain =
 					factory.stream(path.toUri()).map(AvroTranscodingHelper.toJavaMap(asMap)).findAny().get();
-			Assert.assertArrayEquals(doubles, (double[]) asMapAgain.get("k"), 0.0001D);
+			Assertions.assertArrayEquals(doubles, (double[]) asMapAgain.get("k"), 0.0001D);
 		}
 	}
 
@@ -107,8 +107,8 @@ public class TestPepperParquetHelper {
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(asMap);
 
 		// We use an union to allow the field to hold null
-		// Assert.assertEquals("array", schema.getField("doubleList").schema().getType().getName());
-		Assert.assertEquals("union", schema.getField("k").schema().getType().getName());
+		// Assertions.assertEquals("array", schema.getField("doubleList").schema().getType().getName());
+		Assertions.assertEquals("union", schema.getField("k").schema().getType().getName());
 
 		{
 			Path path = PepperFileHelper.createTempPath("apex", "parquet", true);
@@ -116,7 +116,7 @@ public class TestPepperParquetHelper {
 					Stream.of(ImmutableMap.of("k", doubles)).map(AvroTranscodingHelper.toGenericRecord(schema)));
 
 			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path.toUri(), asMap).findAny().get();
-			Assert.assertArrayEquals(doubles, (float[]) asMapAgain.get("k"), 0.0001F);
+			Assertions.assertArrayEquals(doubles, (float[]) asMapAgain.get("k"), 0.0001F);
 		}
 	}
 
@@ -133,7 +133,7 @@ public class TestPepperParquetHelper {
 		Schema schema = AvroSchemaHelper.proposeSimpleSchema(asMap);
 		GenericData.Record record = new GenericRecordBuilder(schema).set("LongField", null).build();
 
-		Assert.assertNull(record.get(0));
+		Assertions.assertNull(record.get(0));
 	}
 
 	@Test
@@ -145,7 +145,7 @@ public class TestPepperParquetHelper {
 		LocalDate date = LocalDate.now();
 		{
 			GenericData.Record record = new GenericRecordBuilder(schema).set("DateField", date).build();
-			Assert.assertEquals(date, record.get(0));
+			Assertions.assertEquals(date, record.get(0));
 		}
 
 		{
@@ -158,7 +158,7 @@ public class TestPepperParquetHelper {
 					Stream.of(ImmutableMap.of("DateField", date)).map(AvroTranscodingHelper.toGenericRecord(schema)));
 
 			Map<String, ?> asMapAgain = ParquetStreamFactory.readParquetAsStream(path.toUri(), asMap).findAny().get();
-			Assert.assertEquals(date, asMapAgain.get("DateField"));
+			Assertions.assertEquals(date, asMapAgain.get("DateField"));
 		}
 	}
 
@@ -199,7 +199,7 @@ public class TestPepperParquetHelper {
 			Map<String, ?> asMap =
 					AvroTranscodingHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", new float[0]));
 
-			Assert.assertTrue(asMap.get("arrayField") instanceof float[]);
+			Assertions.assertTrue(asMap.get("arrayField") instanceof float[]);
 		}
 
 		// Read as double[]
@@ -207,7 +207,7 @@ public class TestPepperParquetHelper {
 			Map<String, ?> asMap =
 					AvroTranscodingHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", new double[0]));
 
-			Assert.assertTrue(asMap.get("arrayField") instanceof double[]);
+			Assertions.assertTrue(asMap.get("arrayField") instanceof double[]);
 		}
 
 		// Read as List<Float>
@@ -215,7 +215,7 @@ public class TestPepperParquetHelper {
 			Map<String, ?> asMap =
 					AvroTranscodingHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", Arrays.asList(1F)));
 
-			Assert.assertTrue(asMap.get("arrayField") instanceof List);
+			Assertions.assertTrue(asMap.get("arrayField") instanceof List);
 		}
 
 		// Read as List<Double>
@@ -223,7 +223,7 @@ public class TestPepperParquetHelper {
 			Map<String, ?> asMap =
 					AvroTranscodingHelper.toJavaMap(topRecord, ImmutableMap.of("arrayField", Arrays.asList(1D)));
 
-			Assert.assertTrue(asMap.get("arrayField") instanceof List);
+			Assertions.assertTrue(asMap.get("arrayField") instanceof List);
 		}
 	}
 
@@ -242,7 +242,7 @@ public class TestPepperParquetHelper {
 
 		Map<String, ?> asMap = AvroTranscodingHelper.toJavaMap(element1);
 
-		Assert.assertTrue(asMap.get("name") instanceof Float);
+		Assertions.assertTrue(asMap.get("name") instanceof Float);
 	}
 
 	@Test

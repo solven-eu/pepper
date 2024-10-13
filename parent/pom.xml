@@ -583,8 +583,8 @@
 				<formatter.skip>true</formatter.skip>
 				<impsort.skip>true</impsort.skip>
 				<cleanthat.skip>true</cleanthat.skip>
-                <skip.npm.style>true</skip.npm.style>
-                <spotless.skip>true</spotless.skip>
+				<skip.npm.style>true</skip.npm.style>
+				<spotless.skip>true</spotless.skip>
 
 				<!-- Dependency will be checked with style -->
 				<enforcer.skip>true</enforcer.skip>
@@ -606,7 +606,7 @@
 				<impsort.skip>true</impsort.skip>
 				<cleanthat.skip>true</cleanthat.skip>
 				<skip.npm.style>true</skip.npm.style>
-                <spotless.skip>true</spotless.skip>
+				<spotless.skip>true</spotless.skip>
 
 				<!-- Dependency will be checked with style -->
 				<enforcer.skip>true</enforcer.skip>

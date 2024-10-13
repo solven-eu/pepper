@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.avro.Schema;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -71,21 +71,21 @@ public class TestParquetBytesToStream {
 
 		List<Map<String, ?>> asMapList = asMapStream.collect(Collectors.toList());
 
-		Assert.assertEquals(asMapList.size(), list.size());
+		Assertions.assertEquals(asMapList.size(), list.size());
 
 		for (int i = 0; i < list.size(); i++) {
 			Map<String, Object> originalItem = list.get(i);
 			Map<String, ?> rereadItem = asMapList.get(i);
-			Assert.assertEquals(rereadItem.keySet(), originalItem.keySet());
+			Assertions.assertEquals(rereadItem.keySet(), originalItem.keySet());
 
 			for (String key : originalItem.keySet()) {
 				Object originalValue = originalItem.get(key);
 				Object rereadValue = rereadItem.get(key);
 
 				if (rereadValue instanceof double[]) {
-					Assert.assertArrayEquals(key, (double[]) originalValue, (double[]) rereadValue, 0.001D);
+					Assertions.assertArrayEquals(key, (double[]) originalValue, (double[]) rereadValue, 0.001D);
 				} else {
-					Assert.assertEquals(key, originalValue, rereadValue);
+					Assertions.assertEquals(key, originalValue, rereadValue);
 				}
 			}
 		}

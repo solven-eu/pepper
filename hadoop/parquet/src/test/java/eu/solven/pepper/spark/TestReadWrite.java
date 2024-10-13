@@ -40,8 +40,8 @@ import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.avro.AvroParquetWriter;
 import org.apache.parquet.hadoop.ParquetWriter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import eu.solven.pepper.avro.AvroTranscodingHelper;
 import eu.solven.pepper.hadoop.PepperHadoopHelper;
@@ -109,20 +109,20 @@ public class TestReadWrite {
 
 		Map<String, ?> nextRecord = asMapIterator.next();
 
-		Assert.assertNotNull(nextRecord);
+		Assertions.assertNotNull(nextRecord);
 
-		Assert.assertEquals(123, nextRecord.get("dealId"));
+		Assertions.assertEquals(123, nextRecord.get("dealId"));
 
-		Assert.assertArrayEquals(new double[] { 1D, 2D, 3D }, (double[]) nextRecord.get("scenarioValues"), 0.001D);
+		Assertions.assertArrayEquals(new double[] { 1D, 2D, 3D }, (double[]) nextRecord.get("scenarioValues"), 0.001D);
 
-		Assert.assertEquals(doubles[0], (Double) nextRecord.get("scenario1"), 0.001);
-		Assert.assertEquals(doubles[1], (Double) nextRecord.get("scenario2"), 0.001);
-		Assert.assertEquals(doubles[2], (Double) nextRecord.get("scenario3"), 0.001);
+		Assertions.assertEquals(doubles[0], (Double) nextRecord.get("scenario1"), 0.001);
+		Assertions.assertEquals(doubles[1], (Double) nextRecord.get("scenario2"), 0.001);
+		Assertions.assertEquals(doubles[2], (Double) nextRecord.get("scenario3"), 0.001);
 
 		double[] doubleAsBytes = (double[]) nextRecord.get("scenarioValuesAsBytes");
-		Assert.assertEquals(doubles[0], doubleAsBytes[0], 0.001);
-		Assert.assertEquals(doubles[1], doubleAsBytes[1], 0.001);
-		Assert.assertEquals(doubles[2], doubleAsBytes[2], 0.001);
+		Assertions.assertEquals(doubles[0], doubleAsBytes[0], 0.001);
+		Assertions.assertEquals(doubles[1], doubleAsBytes[1], 0.001);
+		Assertions.assertEquals(doubles[2], doubleAsBytes[2], 0.001);
 	}
 
 }

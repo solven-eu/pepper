@@ -31,7 +31,7 @@ import org.assertj.core.api.Assertions;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestAOverDatasource {
