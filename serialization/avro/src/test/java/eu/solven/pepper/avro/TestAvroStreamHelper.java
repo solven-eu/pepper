@@ -295,7 +295,7 @@ public class TestAvroStreamHelper {
 			if (type == Type.NULL) {
 				Assertions.assertNull(toJdk);
 			} else {
-				Assertions.assertNotNull(String.valueOf(someValue), toJdk);
+				Assertions.assertNotNull(toJdk, String.valueOf(someValue));
 			}
 			// Assertions.assertEquals(someValue, AvroTranscodingHelper.toJdk(single.get(0), () -> null));
 		}

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -113,7 +113,7 @@ public class TestArrowToStream {
 		testTranscodedValue(value);
 	}
 
-	@Ignore("TODO")
+	@Disabled("TODO")
 	@Test
 	public void testToByteArray_String() throws IOException {
 		Object value = "123L";

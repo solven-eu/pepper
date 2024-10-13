@@ -8,7 +8,7 @@
 		<version>5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pepper-hadoop-parent</artifactId>
+	<artifactId>hadoop-parent</artifactId>
 	<packaging>pom</packaging>
 
 	<modules>

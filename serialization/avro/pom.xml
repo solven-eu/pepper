@@ -4,11 +4,11 @@
 
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
-		<artifactId>pepper-serialization</artifactId>
+		<artifactId>serialization</artifactId>
 		<version>5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pepper-avro</artifactId>
+	<artifactId>avro</artifactId>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -46,6 +46,12 @@
 		<dependency>
 			<groupId>org.apache.avro</groupId>
 			<artifactId>avro</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.github.solven-eu.pepper</groupId>
+			<artifactId>unittest</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>

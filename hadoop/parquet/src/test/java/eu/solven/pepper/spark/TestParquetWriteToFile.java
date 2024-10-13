@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 
 import org.apache.avro.Schema;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -51,9 +51,9 @@ import eu.solven.pepper.parquet.ParquetStreamFactory;
 public class TestParquetWriteToFile {
 	ParquetStreamFactory parquetStreamFactory = new ParquetStreamFactory();
 
-	@Test(expected = UncheckedIOException.class)
+	@Test
 	public void testWriteParquet_FileExist() throws IOException {
-		Assume.assumeTrue(PepperHadoopHelper.isHadoopReady());
+		Assumptions.assumeTrue(PepperHadoopHelper.isHadoopReady());
 
 		Stream<Map<String, Object>> rows = IntStream.range(0, 10)
 				.mapToObj(i -> ImmutableMap.of("longField", (long) i, "stringField", "string_" + i));
@@ -66,12 +66,15 @@ public class TestParquetWriteToFile {
 		Assertions.assertTrue(tmpPath.toFile().createNewFile());
 
 		// This should fails as the file already exist
-		parquetStreamFactory.serialize(tmpPath.toUri(), rows.map(AvroTranscodingHelper.toGenericRecord(avroSchema)));
+		Assertions.assertThrows(UncheckedIOException.class, () -> {
+			parquetStreamFactory.serialize(tmpPath.toUri(),
+					rows.map(AvroTranscodingHelper.toGenericRecord(avroSchema)));
+		});
 	}
 
 	@Test
 	public void testWriteParquet_FromJavaStream() throws IOException {
-		Assume.assumeTrue(PepperHadoopHelper.isHadoopReady());
+		Assumptions.assumeTrue(PepperHadoopHelper.isHadoopReady());
 
 		Stream<Map<String, Object>> rows = IntStream.range(0, 10)
 				.mapToObj(i -> ImmutableMap.of("longField", (long) i, "stringField", "string_" + i));

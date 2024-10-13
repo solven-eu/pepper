@@ -32,8 +32,8 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.util.Shell;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Assume;
-import org.junit.Before;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +47,9 @@ import eu.solven.pepper.io.PepperFileHelper;
 public class TestGenerateParquetFile {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestGenerateParquetFile.class);
 
-	@Before
+	@BeforeEach
 	public void testHadoopIsAvailable() {
-		Assume.assumeTrue(Shell.hasWinutilsPath());
+		Assumptions.assumeTrue(Shell.hasWinutilsPath());
 	}
 
 	@Test

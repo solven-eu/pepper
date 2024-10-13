@@ -8,7 +8,7 @@
 		<version>5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pepper-jmh</artifactId>
+	<artifactId>jmh</artifactId>
 
 	<properties>
 		<!-- JMH produces code invalid according to PMD -->

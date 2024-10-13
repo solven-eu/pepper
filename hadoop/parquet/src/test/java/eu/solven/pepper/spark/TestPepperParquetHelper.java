@@ -38,9 +38,8 @@ import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.GenericRecordBuilder;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Assertions;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -52,7 +51,7 @@ import eu.solven.pepper.io.PepperFileHelper;
 import eu.solven.pepper.parquet.ParquetStreamFactory;
 
 public class TestPepperParquetHelper {
-	@BeforeClass
+	@BeforeAll
 	public static void checkHadoop() {
 		PepperHadoopHelper.isHadoopReady();
 		PepperSparkTestHelper.assumeHadoopEnv();
@@ -124,7 +123,7 @@ public class TestPepperParquetHelper {
 	public void testWriteFloatArray() {
 		Object floatArray = AvroTranscodingHelper.toAvro(null, new float[] { 1F });
 
-		Assertions.assertThat(floatArray).isInstanceOf(ByteBuffer.class);
+		org.assertj.core.api.Assertions.assertThat(floatArray).isInstanceOf(ByteBuffer.class);
 	}
 
 	@Test
@@ -166,11 +165,11 @@ public class TestPepperParquetHelper {
 
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testSchemaForNotSerializable() throws IOException {
 		Map<String, ?> asMap = ImmutableMap.of("NotSerializableField", new NotSerializable());
 
-		AvroSchemaHelper.proposeSimpleSchema(asMap);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> AvroSchemaHelper.proposeSimpleSchema(asMap));
 	}
 
 	@Test
@@ -260,10 +259,10 @@ public class TestPepperParquetHelper {
 
 		Map<String, ?> asMap = AvroTranscodingHelper.toJavaMap(element1);
 
-		Assertions.assertThat(asMap.get("name")).isNull();
+		org.assertj.core.api.Assertions.assertThat(asMap.get("name")).isNull();
 	}
 
-	@Test(expected = AvroRuntimeException.class)
+	@Test
 	public void testToJavaMap_SchemaFloat_ValueNull_notNullable() throws IOException {
 		Schema elementSchema = Schema.createRecord("arrayElement",
 				"doc",
@@ -271,6 +270,7 @@ public class TestPepperParquetHelper {
 				false,
 				Arrays.asList(new Field("name", Schema.create(Schema.Type.FLOAT), "doc", (Object) null)));
 
-		new GenericRecordBuilder(elementSchema).set("name", null).build();
+		Assertions.assertThrows(AvroRuntimeException.class,
+				() -> new GenericRecordBuilder(elementSchema).set("name", null).build());
 	}
 }

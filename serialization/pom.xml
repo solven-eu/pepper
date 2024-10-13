@@ -8,7 +8,7 @@
 		<version>5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pepper-serialization</artifactId>
+	<artifactId>serialization</artifactId>
 	<packaging>pom</packaging>
 
 	<modules>

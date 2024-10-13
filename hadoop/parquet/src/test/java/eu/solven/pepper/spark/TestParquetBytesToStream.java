@@ -83,9 +83,9 @@ public class TestParquetBytesToStream {
 				Object rereadValue = rereadItem.get(key);
 
 				if (rereadValue instanceof double[]) {
-					Assertions.assertArrayEquals(key, (double[]) originalValue, (double[]) rereadValue, 0.001D);
+					Assertions.assertArrayEquals((double[]) originalValue, (double[]) rereadValue, 0.001D, key);
 				} else {
-					Assertions.assertEquals(key, originalValue, rereadValue);
+					Assertions.assertEquals(originalValue, rereadValue, key);
 				}
 			}
 		}

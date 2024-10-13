@@ -31,8 +31,8 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.util.Shell;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Assume;
-import org.junit.Before;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -43,9 +43,9 @@ import eu.solven.pepper.io.PepperFileHelper;
 
 public class TestWriteLargeParquet {
 
-	@Before
+	@BeforeEach
 	public void testHadoopIsAvailable() {
-		Assume.assumeTrue(Shell.hasWinutilsPath());
+		Assumptions.assumeTrue(Shell.hasWinutilsPath());
 	}
 
 	@Test

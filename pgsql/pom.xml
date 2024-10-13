@@ -8,7 +8,7 @@
 		<version>5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pepper-pgsql</artifactId>
+	<artifactId>pgsql</artifactId>
 	<packaging>jar</packaging>
 
 	<properties>

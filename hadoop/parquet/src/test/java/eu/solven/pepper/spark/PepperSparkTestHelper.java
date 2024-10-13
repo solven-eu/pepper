@@ -25,7 +25,7 @@ package eu.solven.pepper.spark;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
 
 /**
  * Help writing tests for Spark procedure
@@ -42,9 +42,9 @@ public class PepperSparkTestHelper {
 		try {
 			File winutilsFile = org.apache.hadoop.util.Shell.getWinUtilsFile();
 			// If null, then we are missing Haddop env
-			Assume.assumeTrue("We seem to be lacking 'hadoop.home.dir' in env property", winutilsFile.isFile());
+			Assumptions.assumeTrue(winutilsFile.isFile(), "We seem to be lacking 'hadoop.home.dir' in env property");
 		} catch (FileNotFoundException e) {
-			Assume.assumeFalse("We seem to be lacking 'hadoop.home.dir' in env property", true);
+			Assumptions.assumeFalse(true, "We seem to be lacking 'hadoop.home.dir' in env property");
 		}
 
 	}
