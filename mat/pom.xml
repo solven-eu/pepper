@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>me.lemire.integercompression</groupId>
 			<artifactId>JavaFastPFOR</artifactId>
-			<version>0.1.12</version>
+			<version>0.2.1</version>
 		</dependency>
 
 		<dependency>
