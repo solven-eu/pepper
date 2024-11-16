@@ -53,7 +53,7 @@ import org.apache.arrow.vector.ipc.ArrowWriter;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
 
-import eu.solven.pepper.stream.PepperStreamHelper;
+import eu.solven.pepper.core.PepperStreamHelper;
 
 /**
  * Default implementation for {@link IArrowStreamFactory}

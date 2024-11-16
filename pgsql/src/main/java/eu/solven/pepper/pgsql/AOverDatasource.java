@@ -44,8 +44,8 @@ import org.jooq.tools.jdbc.JDBCUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.solven.pepper.logging.PepperLogHelper;
-import eu.solven.pepper.time.PepperDateHelper;
+import eu.solven.pepper.core.PepperDateHelper;
+import eu.solven.pepper.core.PepperLogHelper;
 
 /**
  * Helps building classes depending over a {@link DataSource}.

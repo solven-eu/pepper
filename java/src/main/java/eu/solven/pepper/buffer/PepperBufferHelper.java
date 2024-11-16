@@ -42,7 +42,7 @@ import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.primitives.Ints;
 
-import eu.solven.pepper.logging.PepperLogHelper;
+import eu.solven.pepper.core.PepperLogHelper;
 import eu.solven.pepper.memory.IPepperMemoryConstants;
 
 /**

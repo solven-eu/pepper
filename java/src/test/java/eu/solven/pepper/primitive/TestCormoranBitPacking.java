@@ -59,8 +59,8 @@ public class TestCormoranBitPacking {
 	public void testOrderedPacking_IsOrdered() {
 		// Long.MAX_VALUE -> It is positive so right should be positive
 		// '>> 1' is equivalent to '/2' -> it is low enough even left is positive
-		int left = CormoranBitPacking.unpackOrderedLeft(Long.MAX_VALUE >> 1);
-		int right = CormoranBitPacking.unpackOrderedRight(Long.MAX_VALUE >> 1);
+		int left = PepperBitPacking.unpackOrderedLeft(Long.MAX_VALUE >> 1);
+		int right = PepperBitPacking.unpackOrderedRight(Long.MAX_VALUE >> 1);
 
 		Assertions.assertTrue(left > 0);
 		Assertions.assertTrue(right > 0);
@@ -68,8 +68,8 @@ public class TestCormoranBitPacking {
 
 	@Test
 	public void testOrderedPacking_FirstIntOverflow() {
-		int left = CormoranBitPacking.unpackOrderedLeft(Integer.MAX_VALUE + 1L);
-		int right = CormoranBitPacking.unpackOrderedRight(Integer.MAX_VALUE + 1L);
+		int left = PepperBitPacking.unpackOrderedLeft(Integer.MAX_VALUE + 1L);
+		int right = PepperBitPacking.unpackOrderedRight(Integer.MAX_VALUE + 1L);
 
 		Assertions.assertEquals(1, left);
 		Assertions.assertEquals(0, right);
@@ -78,17 +78,17 @@ public class TestCormoranBitPacking {
 	private void checkStandard(int left, int right) {
 		check(left,
 				right,
-				CormoranBitPacking::packInts,
-				CormoranBitPacking::unpackLeft,
-				CormoranBitPacking::unpackRight);
+				PepperBitPacking::packInts,
+				PepperBitPacking::unpackLeft,
+				PepperBitPacking::unpackRight);
 	}
 
 	private void checkOrdered(int left, int right) {
 		check(left,
 				right,
-				CormoranBitPacking::packOrderedInts,
-				CormoranBitPacking::unpackOrderedLeft,
-				CormoranBitPacking::unpackOrderedRight);
+				PepperBitPacking::packOrderedInts,
+				PepperBitPacking::unpackOrderedLeft,
+				PepperBitPacking::unpackOrderedRight);
 	}
 
 	interface Packing {

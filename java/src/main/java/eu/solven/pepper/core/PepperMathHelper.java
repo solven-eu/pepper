@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2023 Benoit Lacelle - SOLVEN
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,28 +20,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.solven.pepper.util;
+package eu.solven.pepper.core;
 
-import java.io.IOException;
+/**
+ * Helpers related to math and numbers
+ *
+ * @author Benoit Lacelle
+ *
+ */
+public class PepperMathHelper {
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import eu.solven.pepper.agent.PepperAgentHelper;
-import eu.solven.pepper.system.PepperProcessHelper;
-
-// see TestPepperProcessHelper
-public class TestWithAgentPepperProcessHelper {
+	protected PepperMathHelper() {
+		// hidden
+	}
 
 	/**
-	 * Enable to check the behavior on any system
+	 * This method is useful to understand the precision available through floats. It may be used to analyze a flow of
+	 * doubles to check if float-precision would be sufficient
 	 *
-	 * @throws IOException
+	 * @param input
+	 *            any Float
+	 * @return the smallest float strictly bigger the the input
 	 */
-	@Test
-	public void testMemoryOnCurrentSystem() throws IOException {
-		long currentProcessPID = Long.parseLong(PepperAgentHelper.getPIDForAgent());
-		long nbBytes = PepperProcessHelper.getProcessResidentMemory(currentProcessPID).getAsLong();
-		Assertions.assertTrue(nbBytes > 0);
+	public static float nextFloat(float input) {
+		if (Float.isInfinite(input)) {
+			// Infinite + finite value remains infinite
+			return input;
+		} else {
+			// https://stackoverflow.com/questions/3658174/how-to-alter-a-float-by-its-smallest-increment-in-java
+			return Float.intBitsToFloat(Float.floatToIntBits(input) + 1);
+		}
 	}
 }

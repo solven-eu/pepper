@@ -76,13 +76,13 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AtomicLongMap;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import eu.solven.pepper.core.PepperLogHelper;
 import eu.solven.pepper.jmx.PepperJMXHelper;
-import eu.solven.pepper.logging.PepperLogHelper;
 import eu.solven.pepper.memory.PepperMemoryHelper;
+import eu.solven.pepper.system.PepperEnvHelper;
+import eu.solven.pepper.system.PepperTimeHelper;
 import eu.solven.pepper.thread.IThreadDumper;
 import eu.solven.pepper.thread.PepperThreadDumper;
-import eu.solven.pepper.util.PepperEnvHelper;
-import eu.solven.pepper.util.PepperTimeHelper;
 
 /**
  *

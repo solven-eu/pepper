@@ -42,7 +42,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 
-import eu.solven.pepper.logging.PepperLogHelper;
+import eu.solven.pepper.core.PepperLogHelper;
 
 /**
  * Enable converting a standard/recursive {@link Map} or {@link List} into a {@link Map} in a flatten format. By

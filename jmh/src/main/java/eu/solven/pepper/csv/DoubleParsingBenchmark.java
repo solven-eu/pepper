@@ -31,7 +31,7 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import eu.solven.pepper.primitive.PepperParserHelper;
+import ch.randelshofer.fastdoubleparser.JavaDoubleParser;
 import javolution.text.TypeFormat;
 
 /**
@@ -63,7 +63,7 @@ public class DoubleParsingBenchmark {
 	public static class SharedCounters {
 		StringToDouble jdk = s -> Double.parseDouble(s.toString());
 		StringToDouble javolution = s -> TypeFormat.parseDouble(s);
-		StringToDouble apex = PepperParserHelper::parseDouble;
+		StringToDouble apex = JavaDoubleParser::parseDouble;
 	}
 
 	@Benchmark

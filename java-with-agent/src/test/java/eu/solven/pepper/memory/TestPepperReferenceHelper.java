@@ -34,8 +34,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.solven.pepper.core.PepperLogHelper;
 import eu.solven.pepper.io.PepperURLHelper;
-import eu.solven.pepper.logging.PepperLogHelper;
 
 public class TestPepperReferenceHelper {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestPepperReferenceHelper.class);

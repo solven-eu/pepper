@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import eu.solven.pepper.io.PepperSerializationHelper;
-import eu.solven.pepper.lamda.NoOpRunnable;
+import eu.solven.pepper.lambda.NoOpRunnable;
 
 public class TestNoOpRunnable {
 	@Test

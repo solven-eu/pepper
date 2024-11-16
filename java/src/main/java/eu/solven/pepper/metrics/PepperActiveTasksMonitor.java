@@ -55,12 +55,12 @@ import com.google.common.cache.RemovalNotification;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
+import eu.solven.pepper.core.PepperLogHelper;
 import eu.solven.pepper.io.PepperFileHelper;
-import eu.solven.pepper.logging.PepperLogHelper;
 import eu.solven.pepper.memory.IPepperMemoryConstants;
+import eu.solven.pepper.system.PepperTimeHelper;
 import eu.solven.pepper.thread.IThreadDumper;
 import eu.solven.pepper.thread.PepperExecutorsHelper;
-import eu.solven.pepper.util.PepperTimeHelper;
 
 /**
  * This class centralized events which should end being available in the JConsole, to provide details about number of

@@ -30,7 +30,7 @@ import org.jooq.tools.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.solven.pepper.logging.PepperLogHelper;
+import eu.solven.pepper.core.PepperLogHelper;
 
 /**
  * Helps logging slow PGSQL queries

@@ -61,8 +61,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 
+import eu.solven.pepper.core.PepperLogHelper;
 import eu.solven.pepper.jmx.SetStaticMBean;
-import eu.solven.pepper.logging.PepperLogHelper;
 
 /**
  * Various utility method related to Serialization, as conversion from/to String to/from Collections and Map
@@ -119,27 +119,6 @@ public class PepperSerializationHelper {
 			return "";
 		} else {
 			return input.toString();
-		}
-	};
-
-	private static final Function<Object, CharSequence> OBJECT_TO_QUOTED_STRING = input -> {
-		if (input == null) {
-			// An empty String is a nice reflect of null
-			return "";
-		} else {
-			String asString = input.toString();
-
-			if (input instanceof CharSequence && ((CharSequence) input).length() >= 2
-					&& ((CharSequence) input).charAt(0) == '"'
-					&& ((CharSequence) input).charAt(((CharSequence) input).length() - 1) == '"') {
-				// Already quoted
-				return asString;
-			} else {
-				String replaceDoubleQuotes = asString.replace("\"", "\"\"");
-
-				// Wrap between quotes
-				return "\"" + replaceDoubleQuotes + "\"";
-			}
 		}
 	};
 

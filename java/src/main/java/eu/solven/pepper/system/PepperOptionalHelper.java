@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2023 Benoit Lacelle - SOLVEN
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,28 +20,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.solven.pepper.util;
+package eu.solven.pepper.system;
 
-import java.io.IOException;
+import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import com.google.common.annotations.Beta;
+import com.google.common.base.Strings;
 
-import eu.solven.pepper.agent.PepperAgentHelper;
-import eu.solven.pepper.system.PepperProcessHelper;
+/**
+ * Various helpers for {@link Optional}
+ *
+ * @author Benoit Lacelle
+ *
+ */
+public class PepperOptionalHelper {
 
-// see TestPepperProcessHelper
-public class TestWithAgentPepperProcessHelper {
+	protected PepperOptionalHelper() {
+		// hidden
+	}
 
 	/**
-	 * Enable to check the behavior on any system
 	 *
-	 * @throws IOException
+	 * @param string
+	 * @return an Optional empty if the string is null or empty
 	 */
-	@Test
-	public void testMemoryOnCurrentSystem() throws IOException {
-		long currentProcessPID = Long.parseLong(PepperAgentHelper.getPIDForAgent());
-		long nbBytes = PepperProcessHelper.getProcessResidentMemory(currentProcessPID).getAsLong();
-		Assertions.assertTrue(nbBytes > 0);
+	public static Optional<String> fromNotEmpty(String string) {
+		if (Strings.isNullOrEmpty(string)) {
+			return Optional.empty();
+		} else {
+			return Optional.of(string);
+		}
+	}
+
+	/**
+	 *
+	 * @param string
+	 * @return an Optional empty if the string is null or empty
+	 */
+	@Beta
+	public static Optional<String> fromNotBlank(String string) {
+		// TODO: Very slow implementation
+		if (Strings.isNullOrEmpty(string) || Strings.isNullOrEmpty(string.trim())) {
+			return Optional.empty();
+		} else {
+			return Optional.of(string);
+		}
 	}
 }

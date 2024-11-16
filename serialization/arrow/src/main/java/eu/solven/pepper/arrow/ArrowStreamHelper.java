@@ -32,7 +32,7 @@ import org.apache.arrow.vector.types.pojo.Schema;
 
 import com.google.common.collect.ImmutableList;
 
-import eu.solven.pepper.logging.PepperLogHelper;
+import eu.solven.pepper.core.PepperLogHelper;
 
 /**
  * Helps generating a schema for Avro format given a Map with example types as values

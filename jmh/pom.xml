@@ -1,59 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>io.github.solven-eu.pepper</groupId>
-		<artifactId>aggregator-pepper</artifactId>
-		<version>5.0-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>io.github.solven-eu.pepper</groupId>
+        <artifactId>aggregator-pepper</artifactId>
+        <version>5.0-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>jmh</artifactId>
+    <artifactId>jmh</artifactId>
 
-	<properties>
-		<!-- JMH produces code invalid according to PMD -->
-		<pmd.skip>true</pmd.skip>
-		<!-- JMH produces a lot of redundancy -->
-		<cpd.skip>true</cpd.skip>
+    <properties>
+        <!-- JMH produces code invalid according to PMD -->
+        <pmd.skip>true</pmd.skip>
+        <!-- JMH produces a lot of redundancy -->
+        <cpd.skip>true</cpd.skip>
 
-		<jmh.version>1.37</jmh.version>
+        <jmh.version>1.37</jmh.version>
 
-		<!--https://stackoverflow.com/questions/49215416/maven-shade-plugin-cannot-find-resource-in-class-org-apache-maven-plugins-sh -->
-		<start-class>org.openjdk.jmh.Main</start-class>
-	</properties>
+        <!--https://stackoverflow.com/questions/49215416/maven-shade-plugin-cannot-find-resource-in-class-org-apache-maven-plugins-sh -->
+        <start-class>org.openjdk.jmh.Main</start-class>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-core</artifactId>
-			<version>${jmh.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-generator-annprocess</artifactId>
-			<version>${jmh.version}</version>
-			<scope>provided</scope>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>${jmh.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>${jmh.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>io.github.solven-eu.pepper</groupId>
-			<artifactId>pepper</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>io.github.solven-eu.pepper</groupId>
+            <artifactId>pepper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.javolution</groupId>
-			<artifactId>javolution-core-java</artifactId>
-			<version>6.0.0</version>
-		</dependency>
-	</dependencies>
+        <!-- https://mvnrepository.com/artifact/ch.randelshofer/fastdoubleparser -->
+        <dependency>
+            <groupId>ch.randelshofer</groupId>
+            <artifactId>fastdoubleparser</artifactId>
+            <version>1.0.1</version>
+        </dependency>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+        <dependency>
+            <groupId>org.javolution</groupId>
+            <artifactId>javolution-core-java</artifactId>
+            <version>6.0.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

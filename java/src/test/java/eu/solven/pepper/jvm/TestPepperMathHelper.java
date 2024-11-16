@@ -25,12 +25,9 @@ package eu.solven.pepper.jvm;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestPepperMathHelper {
+import eu.solven.pepper.core.PepperMathHelper;
 
-	@Test
-	public void test_ctor_coverage() {
-		Assertions.assertNotNull(new PepperMathHelper());
-	}
+public class TestPepperMathHelper {
 
 	@Test
 	public void testNextFloat() {

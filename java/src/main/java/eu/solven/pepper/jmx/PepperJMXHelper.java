@@ -48,8 +48,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import eu.solven.pepper.core.PepperStreamHelper;
 import eu.solven.pepper.io.PepperSerializationHelper;
-import eu.solven.pepper.stream.PepperStreamHelper;
 
 /**
  * Various utility methods specific to JMX

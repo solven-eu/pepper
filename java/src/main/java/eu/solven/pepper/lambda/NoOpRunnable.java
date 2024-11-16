@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2023 Benoit Lacelle - SOLVEN
+ * Copyright (c) 2014 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,28 +20,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.solven.pepper.util;
+package eu.solven.pepper.lambda;
 
-import java.io.IOException;
+import java.io.Serializable;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import eu.solven.pepper.agent.PepperAgentHelper;
-import eu.solven.pepper.system.PepperProcessHelper;
+/**
+ * This is used to transmit a dummy object over the wire, typically to maintain an open connection
+ *
+ * @author Benoit Lacelle
+ *
+ */
+public class NoOpRunnable implements Runnable, Serializable {
+	private static final long serialVersionUID = -3819509508567957192L;
 
-// see TestPepperProcessHelper
-public class TestWithAgentPepperProcessHelper {
+	protected static final Logger LOGGER = LoggerFactory.getLogger(NoOpRunnable.class);
 
-	/**
-	 * Enable to check the behavior on any system
-	 *
-	 * @throws IOException
-	 */
-	@Test
-	public void testMemoryOnCurrentSystem() throws IOException {
-		long currentProcessPID = Long.parseLong(PepperAgentHelper.getPIDForAgent());
-		long nbBytes = PepperProcessHelper.getProcessResidentMemory(currentProcessPID).getAsLong();
-		Assertions.assertTrue(nbBytes > 0);
+	@Override
+	public void run() {
+		LOGGER.trace("Doing nothing");
 	}
 }
