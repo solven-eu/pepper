@@ -51,7 +51,7 @@
 		<cleanthat.version>2.22</cleanthat.version>
 
 		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
-		<spotbugs.version>4.7.3.4</spotbugs.version>
+		<spotbugs.version>4.8.6.6</spotbugs.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-pmd-plugin -->
 		<maven-pmd-plugin.version>3.25.0</maven-pmd-plugin.version>
