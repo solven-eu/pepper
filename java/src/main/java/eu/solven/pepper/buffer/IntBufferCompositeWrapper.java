@@ -24,6 +24,8 @@ package eu.solven.pepper.buffer;
 
 import java.nio.IntBuffer;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Wraps at most 2 {@link IntBuffer}
  *
@@ -35,6 +37,7 @@ public class IntBufferCompositeWrapper implements IIntBufferWrapper {
 	private final IntBuffer asIntBuffer;
 	private final IntBuffer second;
 
+	@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
 	public IntBufferCompositeWrapper(IntBuffer... buffers) {
 		if (buffers.length == 0 || buffers.length > 2) {
 			throw new UnsupportedOperationException("TODO");

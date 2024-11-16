@@ -27,8 +27,6 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
-import eu.solven.pepper.system.PepperPropertiesHelper;
-
 public class TestPepperPropertiesHelper {
 
 	@Test

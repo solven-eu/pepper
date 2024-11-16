@@ -36,8 +36,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 
-import eu.solven.pepper.core.PepperLogHelper;
-
 public class TestPepperLogHelper {
 
 	@Test

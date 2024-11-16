@@ -96,7 +96,7 @@
 
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
-		<errorprone.version>2.33.0</errorprone.version>
+		<errorprone.version>2.35.1</errorprone.version>
 
 		<awaitility.version>4.0.3</awaitility.version>
 		<equals.verifier.version>3.17.1</equals.verifier.version>
@@ -111,8 +111,10 @@
 		<!-- Used to define the Xmx of JVM popped by surefire -->
 		<xmx>128M</xmx>
 		<!-- http://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html -->
-		<!-- We choose to fork to prevent AP License to complain -->
-		<forkCount>1C</forkCount>
+		<!--forkCount>1C</forkCount-->
+
+		<!-- Typically customized by arrow module -->
+		<surefire.add-opens.argLine />
 
 		<!-- TODO Exclude a few Sonar rules -->
 		<!-- https://docs.sonarqube.org/display/SONAR/Analysis+Parameters#AnalysisParameters-Exclusions/Inclusions -->
@@ -215,7 +217,7 @@
 						<!-- -XX:-HeapDumpOnOutOfMemoryError because TestGCInspector will force an OOM -->
 						<!-- -Djava.util.logging.config.file so that tests fallback on logback -->
 						<!-- -Dio.netty.tryReflectionSetAccessible=true for Netty in Arrow (https://github.com/apache/arrow/pull/4522) -->
-						<argLine><![CDATA[-ea -Xmx${xmx} -XX:+StartAttachListener -XX:-HeapDumpOnOutOfMemoryError -Djava.util.logging.config.file=logging.properties -Dio.netty.tryReflectionSetAccessible=true ${argLine}]]></argLine>
+						<argLine><![CDATA[-ea -Xmx${xmx} -XX:+StartAttachListener -XX:-HeapDumpOnOutOfMemoryError -Djava.util.logging.config.file=logging.properties -Dio.netty.tryReflectionSetAccessible=true ${surefire.add-opens.argLine} ${argLine}]]></argLine>
 
 						<!-- Alternative safer configuration for 1JVM per test -->
 						<!-- <forkCount>1</forkCount> -->
@@ -404,7 +406,7 @@
 				<configuration>
 					<!-- https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8212233 -->
 					<source>8</source>
-					<defaultAuthor>Benoit Lacelle</defaultAuthor>
+					<defaultAuthor>Benoit Chatain Lacelle</defaultAuthor>
 					<failOnError>false</failOnError>
 				</configuration>
 			</plugin>

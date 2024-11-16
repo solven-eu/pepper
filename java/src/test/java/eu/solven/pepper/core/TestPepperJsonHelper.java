@@ -29,8 +29,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import eu.solven.pepper.core.PepperJsonHelper;
-
 public class TestPepperJsonHelper {
 
 	final ObjectMapper objectMapper = new ObjectMapper();

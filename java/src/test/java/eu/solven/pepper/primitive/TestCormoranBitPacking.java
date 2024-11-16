@@ -76,11 +76,7 @@ public class TestCormoranBitPacking {
 	}
 
 	private void checkStandard(int left, int right) {
-		check(left,
-				right,
-				PepperBitPacking::packInts,
-				PepperBitPacking::unpackLeft,
-				PepperBitPacking::unpackRight);
+		check(left, right, PepperBitPacking::packInts, PepperBitPacking::unpackLeft, PepperBitPacking::unpackRight);
 	}
 
 	private void checkOrdered(int left, int right) {

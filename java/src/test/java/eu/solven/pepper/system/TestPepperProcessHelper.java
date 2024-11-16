@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import eu.solven.pepper.memory.IPepperMemoryConstants;
-import eu.solven.pepper.system.PepperProcessHelper;
 
 public class TestPepperProcessHelper {
 	@Test

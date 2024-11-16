@@ -28,8 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
 
-import eu.solven.pepper.system.PepperProxyHelper;
-
 public class TestPepperProxyHelper {
 	final MockEnvironment env = new MockEnvironment();
 

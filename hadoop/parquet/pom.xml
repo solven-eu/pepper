@@ -15,7 +15,7 @@
 		<jacoco.branch.ratio>0.07</jacoco.branch.ratio>
 		<jacoco.instruction.ratio>0.10</jacoco.instruction.ratio>
 
-		<parquet.version>1.14.3</parquet.version>
+		<parquet.version>1.14.4</parquet.version>
 	</properties>
 
 	<dependencies>
@@ -114,12 +114,12 @@
 			<artifactId>spring-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
-        <dependency>
-            <groupId>io.github.solven-eu.pepper</groupId>
-            <artifactId>unittest</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
+
+		<dependency>
+			<groupId>io.github.solven-eu.pepper</groupId>
+			<artifactId>unittest</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

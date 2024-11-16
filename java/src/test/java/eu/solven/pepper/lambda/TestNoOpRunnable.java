@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import eu.solven.pepper.io.PepperSerializationHelper;
-import eu.solven.pepper.lambda.NoOpRunnable;
 
 public class TestNoOpRunnable {
 	@Test
@@ -39,7 +38,7 @@ public class TestNoOpRunnable {
 
 		Assertions.assertTrue(noOpRunnable instanceof Serializable);
 
-		Assertions.assertEquals("rO0ABXNyACNldS5zb2x2ZW4ucGVwcGVyLmxhbWRhLk5vT3BSdW5uYWJsZcr+YFatlIE4AgAAeHA=",
+		Assertions.assertEquals("rO0ABXNyACRldS5zb2x2ZW4ucGVwcGVyLmxhbWJkYS5Ob09wUnVubmFibGXK/mBWrZSBOAIAAHhw",
 				PepperSerializationHelper.toString(noOpRunnable));
 	}
 }

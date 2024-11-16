@@ -47,7 +47,7 @@
 			<groupId>org.apache.avro</groupId>
 			<artifactId>avro</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.github.solven-eu.pepper</groupId>
 			<artifactId>unittest</artifactId>

@@ -25,8 +25,6 @@ package eu.solven.pepper.system;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import eu.solven.pepper.system.PepperEnvHelper;
-
 public class TestPepperEnvHelper {
 
 	@Test

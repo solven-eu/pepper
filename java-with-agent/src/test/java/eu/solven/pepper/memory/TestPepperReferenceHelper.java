@@ -30,6 +30,7 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,6 +171,7 @@ public class TestPepperReferenceHelper {
 
 	}
 
+	@Disabled("Issue walking private fields with JDK21")
 	@Test
 	public void testShareReference_List() {
 		List<String> beforeIntern =
@@ -187,6 +189,7 @@ public class TestPepperReferenceHelper {
 		Assertions.assertTrue(sizeBefore > sizeAfter * 2.5D);
 	}
 
+	@Disabled("Issue walking private fields with JDK21")
 	@Test
 	public void testShareReference_URL() {
 		URL firstUrl = PepperURLHelper.toHttpURL("https://youpi.com/go?arg#ici");

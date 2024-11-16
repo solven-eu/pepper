@@ -39,8 +39,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Booleans;
 
-import eu.solven.pepper.core.PepperStreamHelper;
-
 public class TestPepperStreamHelper {
 	@Test
 	public void testPartitionConsume_nolimit() {

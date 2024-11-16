@@ -28,8 +28,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 
-import eu.solven.pepper.spring.PepperResourceHelper;
-
 public class TestPepperResourceHelper {
 	private static final ClassLoader CLASS_LOADER = Thread.class.getClassLoader();
 

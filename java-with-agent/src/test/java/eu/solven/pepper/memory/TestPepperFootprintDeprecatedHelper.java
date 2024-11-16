@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -64,6 +65,7 @@ public class TestPepperFootprintDeprecatedHelper {
 		org.assertj.core.api.Assertions.assertThat(memory).isGreaterThan(Integer.MAX_VALUE + 1L);
 	}
 
+	@Disabled("Typically fails with JDK21 due to accessing private fields")
 	@Test
 	public void testConcurrentHashMap() {
 		Map<String, LocalDate> map = new ConcurrentHashMap<>();

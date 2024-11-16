@@ -25,6 +25,7 @@ package org.ehcache.sizeof;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -295,7 +296,7 @@ public final class PepperObjectGraphWalker {
 				if (!Modifier.isStatic(field.getModifiers()) && !field.getType().isPrimitive()) {
 					try {
 						field.setAccessible(true);
-					} catch (SecurityException e) {
+					} catch (SecurityException | InaccessibleObjectException e) {
 						LOGGER.error("Security settings prevent Ehcache from accessing the subgraph beneath '{}'"
 								+ " - cache sizes may be underestimated as a result", field, e);
 						continue;

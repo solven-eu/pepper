@@ -23,6 +23,7 @@
 package eu.solven.pepper.memory;
 
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
@@ -164,7 +165,7 @@ public class PepperFootprintDeprecatedHelper implements IPepperMemoryConstants {
 	 *            the object to analyse
 	 */
 	// see https://github.com/jbellis/jamm
-	//
+	@SuppressWarnings("PMD.CognitiveComplexity")
 	public static void deepSize(Instrumentation instrumentation,
 			IntPredicate identities,
 			LongAdder totalSize,
@@ -187,22 +188,30 @@ public class PepperFootprintDeprecatedHelper implements IPepperMemoryConstants {
 					Arrays.stream((Object[]) object)
 							.forEach(element -> deepSize(instrumentation, identities, totalSize, element));
 				} else {
-					ReflectionUtils.doWithFields(object.getClass(),
-							field -> deepSize(instrumentation, identities, totalSize, field.get(object)),
-							field -> {
-								if (Modifier.isStatic(field.getModifiers())) {
-									// Do not add static fields in memory graph
-									return false;
-								} else if (field.getType().isPrimitive()) {
-									// Primitive fields has already been captured by Instrumentation.getObjectSize
-									return false;
-								} else {
-									// Ensure the field is accessible as we are going to read it
-									ReflectionUtils.makeAccessible(field);
+					try {
+						ReflectionUtils.doWithFields(object.getClass(),
+								field -> deepSize(instrumentation, identities, totalSize, field.get(object)),
+								field -> {
+									if (Modifier.isStatic(field.getModifiers())) {
+										// Do not add static fields in memory graph
+										return false;
+									} else if (field.getType().isPrimitive()) {
+										// Primitive fields has already been captured by Instrumentation.getObjectSize
+										return false;
+									} else {
+										// Ensure the field is accessible as we are going to read it
+										try {
+											ReflectionUtils.makeAccessible(field);
+										} catch (InaccessibleObjectException e) {
+											LOGGER.trace("Issue making {} accessible", field, e);
+										}
 
-									return true;
-								}
-							});
+										return true;
+									}
+								});
+					} catch (IllegalStateException e) {
+						LOGGER.trace("Issue reading {}", object.getClass(), e);
+					}
 				}
 			}
 		}

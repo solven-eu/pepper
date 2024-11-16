@@ -6,7 +6,7 @@
 		<!-- Import dependency management from Spring Boot -->
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.4</version>
+		<version>3.3.5</version>
 		<!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
 		<relativePath />
 	</parent>
@@ -20,8 +20,8 @@
 	<developers>
 		<developer>
 			<id>blacelle</id>
-			<name>Benoit Lacelle</name>
-			<email>benoit.lacelle at solven.eu</email>
+			<name>Benoit Chatain Lacelle</name>
+			<email>benoit at solven.eu</email>
 			<roles>
 				<role>Project lead</role>
 			</roles>
@@ -47,11 +47,11 @@
 		<scm.connection>scm:git:ssh://github.com/solven-eu/pepper.git</scm.connection>
 		<scm.url>https://github.com/solven-eu/pepper</scm.url>
 
-		<spotless.version>2.43.0</spotless.version>
+		<spotless.version>2.44.0.BETA4</spotless.version>
 		<cleanthat.version>2.22</cleanthat.version>
 
 		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
-		<spotbugs.version>4.7.3.4</spotbugs.version>
+		<spotbugs.version>4.8.6.6</spotbugs.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-pmd-plugin -->
 		<maven-pmd-plugin.version>3.25.0</maven-pmd-plugin.version>
@@ -61,7 +61,7 @@
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
 		<maven-checkstyle-plugin.version>3.2.2</maven-checkstyle-plugin.version>
 		<!-- https://mvnrepository.com/artifact/com.puppycrawl.tools/checkstyle -->
-		<checkstyle.version>10.18.2</checkstyle.version>
+		<checkstyle.version>10.20.1</checkstyle.version>
 
 		<!-- By default (i.e. in local environments), check for code formatting AFTER trying automatic fixes. -->
 		<!-- We suppose the developper would see the fixed and include them in his commit. -->

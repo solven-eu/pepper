@@ -1,3 +1,25 @@
+/**
+ * The MIT License
+ * Copyright (c) 2024 Benoit Lacelle - SOLVEN
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package eu.solven.pepper.mappath;
 
 import java.util.ArrayList;
@@ -17,6 +39,10 @@ import org.slf4j.LoggerFactory;
  */
 public class MapPathPut {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MapPath.class);
+
+	protected MapPathPut() {
+		// hidden
+	}
 
 	public static void mergedPutAll(Map<?, ?> whereToWrite, Map<?, ?> whereToRead) {
 		whereToRead.forEach((k, v) -> putEntry(whereToWrite, v, k));
@@ -46,7 +72,7 @@ public class MapPathPut {
 		rawPutEntry(false, whereToWrite, value, keys);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "PMD.CognitiveComplexity" })
 	static void rawPutEntry(boolean forceMapAsIs, Object whereToWrite, Object value, List<?> keys) {
 		if (!forceMapAsIs && value instanceof Map<?, ?>) {
 			((Map<?, ?>) value).forEach((k, v) -> {
@@ -80,8 +106,7 @@ public class MapPathPut {
 				// This intermediate key is new. Is it a list or a Map ?
 				rawCurrentValue = instantiateNewValueForPath(keys, i);
 				rawPutEntry(true, whereToWrite, rawCurrentValue, keys.subList(0, i + 1));
-			} else if (rawCurrentValue != null && !(rawCurrentValue instanceof Map<?, ?>)
-					&& !(rawCurrentValue instanceof List<?>)) {
+			} else if (!(rawCurrentValue instanceof Map<?, ?>) && !(rawCurrentValue instanceof List<?>)) {
 				var suffix = " i=" + i + " in key-chain: " + keys;
 				if (currentMapOrList instanceof Map<?, ?>) {
 					throw new IllegalStateException("Can not replace a not-Map value (" + rawCurrentValue.getClass()

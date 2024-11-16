@@ -60,24 +60,21 @@ public class TestPepperMapHelper {
 	public void testGetRequiredString_Recursive_NotString() {
 		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", OffsetDateTime.now()));
 
-		Assertions.assertThrows(IllegalArgumentException.class,
-				() -> MapPathGet.getRequiredString(map, "k1", "k2"));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> MapPathGet.getRequiredString(map, "k1", "k2"));
 	}
 
 	@Test
 	public void testGetRequiredString_Recursive_NotIntermediateMap() {
 		Map<String, ?> map = ImmutableMap.of("k1", "v1");
 
-		Assertions.assertThrows(IllegalArgumentException.class,
-				() -> MapPathGet.getRequiredString(map, "k1", "k2"));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> MapPathGet.getRequiredString(map, "k1", "k2"));
 	}
 
 	@Test
 	public void testGetRequiredString_Recursive_NotIntermediateMap_Deeper() {
 		Map<String, ?> map = ImmutableMap.of("k1", ImmutableMap.of("k2", ImmutableMap.of("k3", "v3")));
 
-		org.assertj.core.api.Assertions
-				.assertThatThrownBy(() -> MapPathGet.getRequiredString(map, "k1", "k2", "notK3"))
+		org.assertj.core.api.Assertions.assertThatThrownBy(() -> MapPathGet.getRequiredString(map, "k1", "k2", "notK3"))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("k3")
 				.hasMessageNotContaining("k1");
@@ -192,8 +189,7 @@ public class TestPepperMapHelper {
 		Map<Integer, ?> map = MapPathGet.imbricatedMap("value", 123, "key", now);
 
 		Assertions.assertEquals(Optional.of("value"), MapPathGet.getOptionalAs(map, 123, "key", now));
-		Assertions.assertEquals(Optional.of(ImmutableMap.of(now, "value")),
-				MapPathGet.getOptionalAs(map, 123, "key"));
+		Assertions.assertEquals(Optional.of(ImmutableMap.of(now, "value")), MapPathGet.getOptionalAs(map, 123, "key"));
 		Assertions.assertEquals(Optional.of(ImmutableMap.of("key", ImmutableMap.of(now, "value"))),
 				MapPathGet.getOptionalAs(map, 123));
 	}
@@ -267,8 +263,7 @@ public class TestPepperMapHelper {
 				.contains(456);
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.<Object>getRequiredAs(map, 123, "key", now))
 				.isEqualTo(456);
-		org.assertj.core.api.Assertions.assertThat(MapPathGet.getRequiredNumber(map, 123, "key", now))
-				.isEqualTo(456);
+		org.assertj.core.api.Assertions.assertThat(MapPathGet.getRequiredNumber(map, 123, "key", now)).isEqualTo(456);
 	}
 
 	@Test
@@ -294,8 +289,7 @@ public class TestPepperMapHelper {
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalAs(root, "k", 1, 123, "key", now))
 				.isPresent()
 				.contains(123.456F);
-		org.assertj.core.api.Assertions
-				.assertThat(MapPathGet.<Object>getRequiredAs(root, "k", 1, 123, "key", now))
+		org.assertj.core.api.Assertions.assertThat(MapPathGet.<Object>getRequiredAs(root, "k", 1, 123, "key", now))
 				.isEqualTo(123.456F);
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getRequiredNumber(root, "k", 1, 123, "key", now))
 				.isEqualTo(123.456F);
@@ -311,13 +305,11 @@ public class TestPepperMapHelper {
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalAs(root, "k", 1, 123, "key", now))
 				.isPresent()
 				.contains("deepString");
-		org.assertj.core.api.Assertions
-				.assertThat(MapPathGet.<Object>getRequiredAs(root, "k", 1, 123, "key", now))
+		org.assertj.core.api.Assertions.assertThat(MapPathGet.<Object>getRequiredAs(root, "k", 1, 123, "key", now))
 				.isEqualTo("deepString");
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getRequiredString(root, "k", 1, 123, "key", now))
 				.isEqualTo("deepString");
-		org.assertj.core.api.Assertions
-				.assertThat(MapPathGet.getOptionalString(root, "k", 1, 123, "key", now).get())
+		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalString(root, "k", 1, 123, "key", now).get())
 				.isEqualTo("deepString");
 	}
 

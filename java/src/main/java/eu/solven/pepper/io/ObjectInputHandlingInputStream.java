@@ -365,6 +365,7 @@ public class ObjectInputHandlingInputStream implements ObjectInput {
 		return decorated.available();
 	}
 
+	@SuppressWarnings("PMD.CloseResource")
 	@Override
 	public void close() throws IOException {
 		decorated.close();

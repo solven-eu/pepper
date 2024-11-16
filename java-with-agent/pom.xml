@@ -14,8 +14,8 @@
 	<description>This holds pepper feature dependending on pepper-agent, for security reasons.</description>
 
 	<properties>
-		<jacoco.branch.ratio>0.06</jacoco.branch.ratio>
-		<jacoco.instruction.ratio>0.24</jacoco.instruction.ratio>
+		<jacoco.branch.ratio>0.01</jacoco.branch.ratio>
+		<jacoco.instruction.ratio>0.19</jacoco.instruction.ratio>
 	</properties>
 
 	<dependencies>

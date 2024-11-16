@@ -112,7 +112,7 @@ public class MapPathGet {
 		return getOptionalAs(mapOrList, asList(firstKey, moreKeys));
 	}
 
-	static List<Object> asList(Object firstKey, Object[] moreKeys) {
+	static List<Object> asList(Object firstKey, Object... moreKeys) {
 		List<Object> asList = new ArrayList<>(1 + moreKeys.length);
 
 		asList.add(firstKey);

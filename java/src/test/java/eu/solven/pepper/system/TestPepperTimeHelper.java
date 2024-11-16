@@ -27,8 +27,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import eu.solven.pepper.system.PepperTimeHelper;
-
 public class TestPepperTimeHelper {
 
 	@Test

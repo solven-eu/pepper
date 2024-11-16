@@ -18,7 +18,24 @@
 
 		<!-- TODO -->
 		<cpd.skip>true</cpd.skip>
+
+		<!-- List of add-opens arg line arguments for this module's tests -->
+		<!--https://github.com/apache/arrow/blob/main/java/memory/memory-core/pom.xml#L35 -->
+		<!-- https://arrow.apache.org/docs/java/install.html#id3 -->
+		<surefire.add-opens.argLine>--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED</surefire.add-opens.argLine>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.arrow</groupId>
+				<artifactId>arrow-bom</artifactId>
+				<version>${arrow.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -33,22 +50,21 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<!-- https://arrow.apache.org/docs/java/install.html -->
+
 		<dependency>
 			<groupId>org.apache.arrow</groupId>
 			<artifactId>arrow-memory-core</artifactId>
-			<version>${arrow.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.arrow</groupId>
 			<artifactId>arrow-vector</artifactId>
-			<version>${arrow.version}</version>
 		</dependency>
 
 		<dependency>
-			<!-- One may prefer arrow-memory-netty -->
+			<!-- One may prefer arrow-memory-unsafe -->
 			<groupId>org.apache.arrow</groupId>
-			<artifactId>arrow-memory-unsafe</artifactId>
-			<version>${arrow.version}</version>
+			<artifactId>arrow-memory-netty</artifactId>
 			<optional>true</optional>
 		</dependency>
 	</dependencies>
