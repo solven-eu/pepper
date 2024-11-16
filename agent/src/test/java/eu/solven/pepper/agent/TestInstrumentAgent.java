@@ -23,14 +23,12 @@
 package eu.solven.pepper.agent;
 
 import java.lang.instrument.Instrumentation;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 public class TestInstrumentAgent {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestInstrumentAgent.class);
@@ -43,15 +41,8 @@ public class TestInstrumentAgent {
 	public static final boolean IS_JDK_21 = "21".equals(System.getProperty("java.specification.version"));
 
 	@Test
-	public void test_ctor() {
-		Assertions.assertNotNull(new InstrumentationAgent());
-	}
-
-	@Test
 	public void testGetInstrument() {
-		Assumptions.assumeFalse(TestInstrumentAgent.IS_JDK_9, "TODO JDK9");
-
-		Optional<Instrumentation> instrument = InstrumentationAgent.getInstrumentation();
+		Optional<Instrumentation> instrument = PepperAgentLoader.getInstrumentation();
 
 		Assertions.assertTrue(instrument.isPresent());
 	}

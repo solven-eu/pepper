@@ -55,8 +55,8 @@ import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
 
 import eu.solven.pepper.avro.AvroSchemaHelper;
+import eu.solven.pepper.core.PepperLogHelper;
 import eu.solven.pepper.io.PepperFileHelper;
-import eu.solven.pepper.logging.PepperLogHelper;
 import eu.solven.pepper.memory.IPepperMemoryConstants;
 import eu.solven.pepper.spark.TestReadWrite;
 

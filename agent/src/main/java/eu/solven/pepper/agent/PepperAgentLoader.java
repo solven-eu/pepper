@@ -23,40 +23,46 @@
 package eu.solven.pepper.agent;
 
 import java.lang.instrument.Instrumentation;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-
 import net.bytebuddy.agent.ByteBuddyAgent;
-import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider;
 import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider.Accessor;
 
 /**
- * The entry point for the instrumentation agent.
- *
- * Either the premain method is called by adding the JVM arg -javaagent. Or one could call the
- * {@link InstrumentationAgent#getInstrumentation()} method. Anyway, tools.jar will have to be present at Runtime
+ * Rely on ByteBuddy to get an {@link Instrumentation}.
  *
  * @author Benoit Lacelle
  *
  */
-@SuppressWarnings("PMD.AvoidSynchronizedAtMethodLevel")
-public class InstrumentationAgent {
+// https://github.com/ehcache/sizeof/issues/52
+public class PepperAgentLoader {
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(InstrumentationAgent.class);
-
-	protected static final AtomicBoolean BYTE_BUDDY_IS_INSTALLED = new AtomicBoolean();
+	protected static final Logger LOGGER = LoggerFactory.getLogger(PepperAgentLoader.class);
 
 	// Ensure we do a single attemps, else we may receive issue like:
 	// java.lang.UnsatisfiedLinkError: Native Library ...\jre\bin\attach.dll already loaded in another classloader
+	private static final AtomicBoolean HAS_TRIED_LOADING_AGENT = new AtomicBoolean();
+
 	protected static final AtomicReference<Accessor> DEFAULT_ATTEMPT = new AtomicReference<>();
 
-	protected InstrumentationAgent() {
+	protected PepperAgentLoader() {
 		// hidden
+	}
+
+	public static boolean loadAgent() {
+
+		try {
+			ByteBuddyAgent.install();
+			return true;
+		} catch (IllegalStateException e) {
+			LOGGER.warn("ByteBuddyAgent is not installed", e);
+			return false;
+		}
 	}
 
 	/**
@@ -66,38 +72,26 @@ public class InstrumentationAgent {
 	 *
 	 * @return an {@link Instrumentation} instance as instantiated by the JVM itself.
 	 */
-	// Rely on Guava Optional to enable compatibility with JDK6
-	public static synchronized Optional<Instrumentation> getInstrumentation() {
+	public static Optional<Instrumentation> getInstrumentation() {
+		if (HAS_TRIED_LOADING_AGENT.compareAndSet(false, true)) {
+			LOGGER.info("Initializing Agent to provide a reference to {}", Instrumentation.class.getName());
+
+			// Load the agent as first try
+			loadAgent();
+		}
+
 		try {
-			if (BYTE_BUDDY_IS_INSTALLED.get()) {
-				return Optional.of(ByteBuddyAgent.getInstrumentation());
-			} else {
-				BYTE_BUDDY_IS_INSTALLED.set(true);
-
-				final Accessor singleAttempt = safeGetDefaultAttempt();
-				if (singleAttempt.isAvailable()) {
-					return Optional.of(ByteBuddyAgent.install(new AttachmentProvider() {
-
-						@Override
-						public Accessor attempt() {
-							return singleAttempt;
-						}
-
-					}));
-				} else {
-					return Optional.absent();
-				}
-			}
-		} catch (Throwable e) {
-			LOGGER.warn("Issue while getting instrumentation", e);
-			return Optional.absent();
+			return Optional.of(ByteBuddyAgent.getInstrumentation());
+		} catch (IllegalStateException e) {
+			LOGGER.warn("ByteBuddyAgent is not installed", e);
+			return Optional.empty();
 		}
 	}
 
 	/**
-	 * Also referred by {cormoran.pepper.agent.VirtualMachineWithoutToolsJar#findVirtualMachineClass()}
+	 * Also referred by {VirtualMachineWithoutToolsJar#findVirtualMachineClass}
 	 */
-	static synchronized Accessor safeGetDefaultAttempt() {
+	static Accessor safeGetDefaultAttempt() {
 		if (DEFAULT_ATTEMPT.get() == null) {
 			final Accessor singleAttempt = ByteBuddyAgent.AttachmentProvider.DEFAULT.attempt();
 			DEFAULT_ATTEMPT.compareAndSet(null, singleAttempt);

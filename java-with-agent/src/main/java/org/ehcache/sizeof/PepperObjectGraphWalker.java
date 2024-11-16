@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014-2024 Benoit Lacelle - SOLVEN
+ * Copyright (c) 2024 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,44 +22,45 @@
  */
 package org.ehcache.sizeof;
 
+import static java.util.Collections.newSetFromMap;
+
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Set;
 
 import org.ehcache.sizeof.filters.SizeOfFilter;
 import org.ehcache.sizeof.util.WeakIdentityConcurrentMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.AtomicLongMap;
-
 /**
  * This will walk an object graph and let you execute some "function" along the way
  *
  * @author Alex Snaps
  */
-// https://raw.githubusercontent.com/ehcache/sizeof/master/src/main/java/org/ehcache/sizeof/ObjectGraphWalker.java
-// 113b412 on 5 Oct
-// FlyweightType is package-friendly
-@SuppressWarnings("PMD.GodClass")
+// https://github.com/ehcache/sizeof/blob/master/src/main/java/org/ehcache/sizeof/ObjectGraphWalker.java
+// HACK Set public
+@SuppressWarnings({ "PMD.GodClass",
+		"PMD.AvoidThrowingNullPointerException",
+		"PMD.CognitiveComplexity",
+		"PMD.NPathComplexity",
+		"PMD.InsufficientStringBufferDeclaration",
+		"PMD.AppendCharacterWithChar",
+		"PMD.NullAssignment",
+		"PMD.AvoidAccessibilityAlteration",
+		"PMD.BooleanGetMethodName",
+		"PMD.UseLocaleWithCaseConversions" })
 public final class PepperObjectGraphWalker {
 
-	private static final int MISS_COUNT = 1000;
-	private static final Logger LOGGER = LoggerFactory.getLogger(PepperObjectGraphWalker.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PepperObjectGraphWalker.class);
 	private static final String VERBOSE_DEBUG_LOGGING = "org.ehcache.sizeof.verboseDebugLogging";
-
 	private static final boolean USE_VERBOSE_DEBUG_LOGGING;
 
 	private final WeakIdentityConcurrentMap<Class<?>, SoftReference<Collection<Field>>> fieldCache =
@@ -69,60 +70,92 @@ public final class PepperObjectGraphWalker {
 	private final boolean bypassFlyweight;
 	private final SizeOfFilter sizeOfFilter;
 
-	private static final ConcurrentMap<Field, Map<Object, Object>> FIELD_TO_REFERENCES = new ConcurrentHashMap<>();
-	private static final AtomicLongMap<Field> FIELD_TO_CACHE_HIT = AtomicLongMap.create();
-	private static final AtomicLongMap<Field> FIELD_TO_CACHE_MISS = AtomicLongMap.create();
-	private static final ConcurrentMap<Class<?>, Map<Object, Object>> ARRAY_COMPONENT_TO_REFERENCES =
-			new ConcurrentHashMap<>();
-	private static final AtomicLongMap<Class<?>> ARRAY_COMPONENT_TO_CACHE_HIT = AtomicLongMap.create();
-	private static final AtomicLongMap<Class<?>> ARRAY_COMPONENT_TO_CACHE_MISS = AtomicLongMap.create();
+	private final Visitor visitor;
 
 	static {
-		USE_VERBOSE_DEBUG_LOGGING = isVerboseSizeOfDebugLogging();
+		USE_VERBOSE_DEBUG_LOGGING = getVerboseSizeOfDebugLogging();
 	}
 
 	/**
 	 * Constructor
 	 *
+	 * @param visitor
+	 *            the visitor to use
 	 * @param filter
 	 *            the filtering
 	 * @param bypassFlyweight
 	 *            the filtering
+	 * @see Visitor
 	 * @see SizeOfFilter
 	 */
-	public PepperObjectGraphWalker(SizeOfFilter filter, final boolean bypassFlyweight) {
-		if (filter == null) {
-			throw new IllegalArgumentException("SizeOfFilter can't be null");
+	// HACK Set public
+	public PepperObjectGraphWalker(Visitor visitor, SizeOfFilter filter, final boolean bypassFlyweight) {
+		if (visitor == null) {
+			throw new NullPointerException("Visitor can't be null");
 		}
+		if (filter == null) {
+			throw new NullPointerException("SizeOfFilter can't be null");
+		}
+		this.visitor = visitor;
 		this.sizeOfFilter = filter;
 		this.bypassFlyweight = bypassFlyweight;
 	}
 
-	private static boolean isVerboseSizeOfDebugLogging() {
-		return "true".equalsIgnoreCase(System.getProperty(VERBOSE_DEBUG_LOGGING, "false"));
+	private static boolean getVerboseSizeOfDebugLogging() {
+
+		String verboseString = System.getProperty(VERBOSE_DEBUG_LOGGING, "false").toLowerCase();
+
+		return "true".equals(verboseString);
 	}
 
 	/**
-	 * Walk the graph
+	 * The visitor to execute the function on each node of the graph This is only to be used for the sizing of an object
+	 * graph in memory!
+	 */
+	// HACK Public
+	public interface Visitor {
+		/**
+		 * The visit method executed on each node
+		 *
+		 * @param object
+		 *            the reference at that node
+		 * @return a long for you to do things with...
+		 */
+		long visit(Object object);
+	}
+
+	/**
+	 * Walk the graph and call into the "visitor"
 	 *
 	 * @param root
 	 *            the roots of the objects (a shared graph will only be visited once)
+	 * @return the sum of all Visitor#visit returned values
 	 */
-	@SuppressWarnings({ "PMD.NPathComplexity",
-			"PMD.ExcessiveMethodLength",
-			"PMD.CognitiveComplexity",
-			"PMD.CompareObjectsWithEquals",
-			"PMD.MagicNumber" })
-	public void walk(Object... root) {
+	// HACK Public
+	public long walk(Object... root) {
+		return walk(null, root);
+	}
+
+	/**
+	 * Walk the graph and call into the "visitor"
+	 *
+	 * @param visitorListener
+	 *            A decorator for the Visitor
+	 * @param root
+	 *            the roots of the objects (a shared graph will only be visited once)
+	 * @return the sum of all Visitor#visit returned values
+	 */
+	// HACK Public
+	public long walk(VisitorListener visitorListener, Object... root) {
 		final StringBuilder traversalDebugMessage;
-		if (USE_VERBOSE_DEBUG_LOGGING && LOGGER.isDebugEnabled()) {
-			traversalDebugMessage = new StringBuilder(32);
+		if (USE_VERBOSE_DEBUG_LOGGING && LOG.isDebugEnabled()) {
+			traversalDebugMessage = new StringBuilder();
 		} else {
 			traversalDebugMessage = null;
 		}
-
+		long result = 0;
 		Deque<Object> toVisit = new ArrayDeque<>();
-		Map<Object, Object> visited = new IdentityHashMap<>();
+		Set<Object> visited = newSetFromMap(new IdentityHashMap<>());
 
 		if (root != null) {
 			if (traversalDebugMessage != null) {
@@ -132,103 +165,66 @@ public final class PepperObjectGraphWalker {
 				nullSafeAdd(toVisit, object);
 				if (traversalDebugMessage != null && object != null) {
 					traversalDebugMessage.append(object.getClass().getName())
-							.append('@')
+							.append("@")
 							.append(System.identityHashCode(object))
 							.append(", ");
 				}
 			}
 			if (traversalDebugMessage != null) {
-				traversalDebugMessage.deleteCharAt(traversalDebugMessage.length() - 2).append('\n');
+				traversalDebugMessage.deleteCharAt(traversalDebugMessage.length() - 2).append("\n");
 			}
 		}
 
 		while (!toVisit.isEmpty()) {
+
 			Object ref = toVisit.pop();
 
-			if (visited.containsKey(ref)) {
-				// This object has already been processed
-				continue;
-			}
-
-			Class<?> refClass = ref.getClass();
-			int idHashCode = System.identityHashCode(ref);
-			if (!byPassIfFlyweight(ref) && shouldWalkClass(refClass)) {
-				if (refClass.isArray() && !refClass.getComponentType().isPrimitive()) {
-					for (int i = 0; i < Array.getLength(ref); i++) {
-						Object referred = Array.get(ref, i);
-						if (nullSafeAdd(toVisit, referred)) {
-							Class<?> component = refClass.getComponentType();
-
-							Map<Object, Object> internalized = ARRAY_COMPONENT_TO_REFERENCES.computeIfAbsent(component,
-									f -> new ConcurrentHashMap<>());
-
-							if (internalized == Collections.EMPTY_MAP) {
-								// Field rejected for internalization
-								LOGGER.trace("Rejected");
-							} else {
-								Object validInternalized = internalized.putIfAbsent(referred, referred);
-								if (validInternalized != null) {
-									// There is already an equal Object in the internalization cache
-									Array.set(ref, i, validInternalized);
-									ARRAY_COMPONENT_TO_CACHE_HIT.incrementAndGet(component);
-								} else {
-									long miss = ARRAY_COMPONENT_TO_CACHE_MISS.incrementAndGet(component);
-									if (miss > MISS_COUNT) {
-										// TODO: Check if we should stop considering this field
-										LOGGER.trace("Consider me");
-									}
-								}
+			if (visited.add(ref)) {
+				Class<?> refClass = ref.getClass();
+				if (!byPassIfFlyweight(ref) && shouldWalkClass(refClass)) {
+					if (refClass.isArray() && !refClass.getComponentType().isPrimitive()) {
+						for (int i = 0; i < Array.getLength(ref); i++) {
+							nullSafeAdd(toVisit, Array.get(ref, i));
+						}
+					} else {
+						for (Field field : getFilteredFields(refClass)) {
+							try {
+								nullSafeAdd(toVisit, field.get(ref));
+							} catch (IllegalAccessException ex) {
+								throw new RuntimeException(ex);
 							}
 						}
 					}
-				} else {
-					for (Field field : getFilteredFields(refClass)) {
-						try {
-							Object referred = field.get(ref);
-							if (nullSafeAdd(toVisit, referred)) {
-								Map<Object, Object> internalized =
-										FIELD_TO_REFERENCES.computeIfAbsent(field, f -> new ConcurrentHashMap<>());
 
-								if (internalized == Collections.EMPTY_MAP) {
-									// Field rejected for internalization
-									LOGGER.trace("Rejected");
-								} else {
-									Object validInternalized = internalized.putIfAbsent(referred, referred);
-									if (validInternalized != null) {
-										// There is already an equal Object in the internalization cache
-										field.set(ref, validInternalized);
-										FIELD_TO_CACHE_HIT.incrementAndGet(field);
-									} else {
-										long miss = FIELD_TO_CACHE_MISS.incrementAndGet(field);
-										if (miss > MISS_COUNT) {
-											// TODO: Check if we should stop considering this field
-											LOGGER.trace("Consider me");
-										}
-									}
-								}
-							}
-						} catch (IllegalAccessException ex) {
-							throw new RuntimeException(ex);
-						}
+					final long visitSize = visitor.visit(ref);
+					if (visitorListener != null) {
+						visitorListener.visited(ref, visitSize);
 					}
+					if (traversalDebugMessage != null) {
+						traversalDebugMessage.append("  ")
+								.append(visitSize)
+								.append("b\t\t")
+								.append(ref.getClass().getName())
+								.append("@")
+								.append(System.identityHashCode(ref))
+								.append("\n");
+					}
+					result += visitSize;
+				} else if (traversalDebugMessage != null) {
+					traversalDebugMessage.append("  ignored\t")
+							.append(ref.getClass().getName())
+							.append("@")
+							.append(System.identityHashCode(ref))
+							.append("\n");
 				}
-
-				if (traversalDebugMessage != null) {
-					traversalDebugMessage.append(ref.getClass().getName()).append('@').append(idHashCode).append('\n');
-				}
-			} else if (traversalDebugMessage != null) {
-				traversalDebugMessage.append("  ignored\t")
-						.append(ref.getClass().getName())
-						.append('@')
-						.append(idHashCode)
-						.append('\n');
 			}
-			visited.put(ref, null);
 		}
 
 		if (traversalDebugMessage != null) {
-			LOGGER.debug(traversalDebugMessage.toString());
+			traversalDebugMessage.append("Total size: ").append(result).append(" bytes\n");
+			LOG.debug(traversalDebugMessage.toString());
 		}
+		return result;
 	}
 
 	/**
@@ -240,16 +236,21 @@ public final class PepperObjectGraphWalker {
 	 */
 	private Collection<Field> getFilteredFields(Class<?> refClass) {
 		SoftReference<Collection<Field>> ref = fieldCache.get(refClass);
-		Collection<Field> fieldList = Optional.ofNullable(ref).map(SoftReference::get).orElse(null);
+		Collection<Field> fieldList;
+		if (ref != null) {
+			fieldList = ref.get();
+		} else {
+			fieldList = null;
+		}
 		if (fieldList != null) {
 			return fieldList;
 		} else {
 			Collection<Field> result;
 			result = sizeOfFilter.filterFields(refClass, getAllFields(refClass));
-			if (USE_VERBOSE_DEBUG_LOGGING && LOGGER.isDebugEnabled()) {
+			if (USE_VERBOSE_DEBUG_LOGGING && LOG.isDebugEnabled()) {
 				for (Field field : result) {
 					if (Modifier.isTransient(field.getModifiers())) {
-						LOGGER.debug("SizeOf engine walking transient field '{}' of class {}",
+						LOG.debug("SizeOf engine walking transient field '{}' of class {}",
 								field.getName(),
 								refClass.getName());
 					}
@@ -269,15 +270,9 @@ public final class PepperObjectGraphWalker {
 		return cached;
 	}
 
-	private static boolean nullSafeAdd(final Deque<Object> toVisit, final Object o) {
+	private static void nullSafeAdd(final Deque<Object> toVisit, final Object o) {
 		if (o != null) {
 			toVisit.push(o);
-
-			// TODO: Should we check if the ref have already been processed? It would prevent the Deque from growing but
-			// would require more IdentityHashMap.get
-			return true;
-		} else {
-			return false;
 		}
 	}
 
@@ -288,7 +283,6 @@ public final class PepperObjectGraphWalker {
 	 *            the type
 	 * @return all fields for that type
 	 */
-	@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 	private static Collection<Field> getAllFields(Class<?> refClass) {
 		Collection<Field> fields = new ArrayList<>();
 		for (Class<?> klazz = refClass; klazz != null; klazz = klazz.getSuperclass()) {
@@ -296,8 +290,12 @@ public final class PepperObjectGraphWalker {
 				if (!Modifier.isStatic(field.getModifiers()) && !field.getType().isPrimitive()) {
 					try {
 						field.setAccessible(true);
-					} catch (SecurityException | InaccessibleObjectException e) {
-						LOGGER.error("Security settings prevent Ehcache from accessing the subgraph beneath '{}'"
+					} catch (SecurityException e) {
+						LOG.error("Security settings prevent Ehcache from accessing the subgraph beneath '{}'"
+								+ " - cache sizes may be underestimated as a result", field, e);
+						continue;
+					} catch (RuntimeException e) {
+						LOG.warn("The JVM is preventing Ehcache from accessing the subgraph beneath '{}'"
 								+ " - cache sizes may be underestimated as a result", field, e);
 						continue;
 					}

@@ -30,17 +30,14 @@ import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.annotations.Beta;
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
 
 import net.bytebuddy.agent.ByteBuddyAgent.AttachmentProvider.Accessor;
 
@@ -67,7 +64,7 @@ public class VirtualMachineWithoutToolsJar {
 	private static final String LIVE_OBJECTS_OPTION = "-live";
 	private static final String ALL_OBJECTS_OPTION = "-all";
 
-	private static final Set<Class<?>> REPORTED_ERRORS_FOR_VM = Sets.newConcurrentHashSet();
+	private static final Map<Class<?>, String> REPORTED_ERRORS_FOR_VM = new ConcurrentHashMap<>();
 
 	// Switched to true if incompatible JVM, or attach failed
 	private static final AtomicBoolean WILL_NOT_WORK = new AtomicBoolean(false);
@@ -146,7 +143,7 @@ public class VirtualMachineWithoutToolsJar {
 		try {
 			return getUnsafeJvmVirtualMachine();
 		} catch (Throwable e) {
-			if (REPORTED_ERRORS_FOR_VM.add(e.getClass())) {
+			if (null == REPORTED_ERRORS_FOR_VM.put(e.getClass(), e.getMessage())) {
 				// First encounter of this error
 				LOGGER.warn("Issue while loading VirtualMachine. java.vendor={} java.spec={}",
 						getJavaVendor(),
@@ -159,11 +156,11 @@ public class VirtualMachineWithoutToolsJar {
 						getJavaSpecification(),
 						e);
 			}
-			return Optional.absent();
+			return Optional.empty();
 		}
 	}
 
-	@Beta
+	// @Beta
 	public static synchronized List<?> getJvmVirtualMachines() {
 		final Optional<? extends Class<?>> virtualMachineClass = findVirtualMachineClass();
 
@@ -194,7 +191,7 @@ public class VirtualMachineWithoutToolsJar {
 	public static synchronized Optional<Object> getUnsafeJvmVirtualMachine() throws ClassNotFoundException,
 			MalformedURLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		if (WILL_NOT_WORK.get()) {
-			return Optional.absent();
+			return Optional.empty();
 		}
 		// else if (!IS_VIRTUAL_MACHINE_ELIGIBLE) {
 		// // We do not even try loading the VirtualMachine if it is not eligible (jdk9+ and lack of explicit property)
@@ -205,7 +202,7 @@ public class VirtualMachineWithoutToolsJar {
 		// isAllowAttachSelf());
 		// WILL_NOT_WORK.set(true);
 		//
-		// return Optional.absent();
+		// return Optional.empty();
 		// }
 
 		// https://github.com/openjdk-mirror/jdk7u-jdk/blob/master/src/share/classes/sun/tools/attach/HotSpotVirtualMachine.java
@@ -236,7 +233,7 @@ public class VirtualMachineWithoutToolsJar {
 				}
 			}
 		}
-		return Optional.fromNullable(JVM_VIRTUAL_MACHINE.get());
+		return Optional.ofNullable(JVM_VIRTUAL_MACHINE.get());
 	}
 
 	/**
@@ -247,18 +244,18 @@ public class VirtualMachineWithoutToolsJar {
 	public static synchronized Optional<? extends Class<?>> findVirtualMachineClass() {
 		if (JVM_VIRTUAL_MACHINE_CLASS.get() == null) {
 			try {
-				Accessor attempt = InstrumentationAgent.safeGetDefaultAttempt();
+				Accessor attempt = PepperAgentLoader.safeGetDefaultAttempt();
 				if (attempt.isAvailable()) {
 					JVM_VIRTUAL_MACHINE_CLASS.set(attempt.getVirtualMachineType());
 				}
 			} catch (Throwable e) {
 				// We log in trace to prevent showing this alarming stack too often
 				LOGGER.trace("Issue while getting VirtualMachine class", e);
-				return Optional.absent();
+				return Optional.empty();
 			}
 		}
 
-		return Optional.fromNullable(JVM_VIRTUAL_MACHINE_CLASS.get());
+		return Optional.ofNullable(JVM_VIRTUAL_MACHINE_CLASS.get());
 	}
 
 	/**
@@ -309,21 +306,16 @@ public class VirtualMachineWithoutToolsJar {
 			throw new IllegalArgumentException("Can not write heap-dump as file already exists: " + absoluteFile);
 		}
 
-		Optional<InputStream> asInputStream = getJvmVirtualMachine().transform(new Function<>() {
-
-			@Override
-			public InputStream apply(Object vm) {
-				if (!allObjectsElseLive) {
-					LOGGER.warn(".heapDump with allObjectsElseLive=false will trigger a full-GC");
-				}
-				String option = getAllOrLiveOption(allObjectsElseLive);
-				try {
-					return invokeForInputStream(vm, "dumpHeap", absoluteFile.getPath(), option);
-				} catch (Throwable e) {
-					throw new RuntimeException("Issue on invoking 'dumpHeap " + option + "'", e);
-				}
+		Optional<InputStream> asInputStream = getJvmVirtualMachine().map(vm -> {
+			if (!allObjectsElseLive) {
+				LOGGER.warn(".heapDump with allObjectsElseLive=false will trigger a full-GC");
 			}
-
+			String option = getAllOrLiveOption(allObjectsElseLive);
+			try {
+				return invokeForInputStream(vm, "dumpHeap", absoluteFile.getPath(), option);
+			} catch (Throwable e) {
+				throw new RuntimeException("Issue on invoking 'dumpHeap " + option + "'", e);
+			}
 		});
 
 		return asInputStream;

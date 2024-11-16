@@ -33,6 +33,8 @@ import org.ehcache.sizeof.impl.PassThroughFilter;
 import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableSet;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * This class enables 'internalization' of objects referenced by given roots. Typically, given a List of 2 equals but
  * not same Strings, this class enables replacing of the 2 references by the other. It then enables a lower heap (as the
@@ -60,13 +62,16 @@ public class PepperReferenceInternalizer implements IReferenceInternalizer {
 		this(fieldFilter, bypassFlyweight, KNOWN_FINAL_IMMUTABLE_WITH_HASHCODE_EQUALS);
 	}
 
+	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
 	public PepperReferenceInternalizer(SizeOfFilter fieldFilter,
 			boolean bypassFlyweight,
 			Set<Class<?>> classesToInternalize) {
 		TypeFilter filter = new TypeFilter();
 		classesToInternalize.forEach(c -> filter.addClass(c, false));
 
-		this.walker = new PepperObjectGraphWalker(new CombinationSizeOfFilter(filter, fieldFilter), bypassFlyweight);
+		PepperObjectGraphWalker.Visitor visitor = o -> 0L;
+		this.walker =
+				new PepperObjectGraphWalker(visitor, new CombinationSizeOfFilter(filter, fieldFilter), bypassFlyweight);
 	}
 
 	@Override

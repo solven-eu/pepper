@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-import eu.solven.pepper.agent.InstrumentationAgent;
+import eu.solven.pepper.agent.PepperAgentLoader;
 import eu.solven.pepper.agent.VirtualMachineWithoutToolsJar;
 import eu.solven.pepper.memory.PepperFootprintHelper;
 
@@ -41,7 +41,7 @@ public class TestPepperMemoryMeter {
 
 	@BeforeAll
 	public static void assumeAgentLoaded() {
-		Assumptions.assumeTrue(InstrumentationAgent.getInstrumentation().isPresent(),
+		Assumptions.assumeTrue(PepperAgentLoader.getInstrumentation().isPresent(),
 				"We failed retrieving an Instrumentation");
 	}
 

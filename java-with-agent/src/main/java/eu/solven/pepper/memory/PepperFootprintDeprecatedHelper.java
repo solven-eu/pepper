@@ -27,6 +27,7 @@ import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.IntPredicate;
 
@@ -35,11 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
-import com.google.common.base.Optional;
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
 
-import eu.solven.pepper.agent.InstrumentationAgent;
+import eu.solven.pepper.agent.PepperAgentLoader;
 
 /**
  * This class analyses heap-consumption based on {@link Instrumentation}
@@ -114,7 +114,7 @@ public class PepperFootprintDeprecatedHelper implements IPepperMemoryConstants {
 		if (object == null) {
 			return 0L;
 		} else {
-			Optional<Instrumentation> instrumentation = InstrumentationAgent.getInstrumentation();
+			Optional<Instrumentation> instrumentation = PepperAgentLoader.getInstrumentation();
 
 			if (instrumentation.isPresent()) {
 				LongAdder totalSize = new LongAdder();

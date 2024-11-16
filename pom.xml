@@ -49,7 +49,7 @@
 	<scm>
 		<!-- Only developerConnection was not set in parent pom as its own parent was not a SNAPSHOT -->
 		<developerConnection>${scm.developerConnection}</developerConnection>
-		<tag>HEAD</tag>
+		<tag>pepper-5.0</tag>
 	</scm>
 
 	<!-- Format source code -->

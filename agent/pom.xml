@@ -16,24 +16,9 @@
 		<!-- There is barely no code, leading most branches to be rare edge cases, which are tough to be unit-tested -->
 		<jacoco.instruction.ratio>0.36</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.25</jacoco.branch.ratio>
-
-		<sizeof.version>0.4.4</sizeof.version>
 	</properties>
 
 	<dependencies>
-
-		<dependency>
-			<!-- Enables Optional and keeping JDK6 -->
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/net.sf.ehcache/ehcache -->
-		<dependency>
-			<groupId>org.ehcache</groupId>
-			<artifactId>sizeof</artifactId>
-			<version>${sizeof.version}</version>
-		</dependency>
 
 		<dependency>
 			<groupId>net.bytebuddy</groupId>

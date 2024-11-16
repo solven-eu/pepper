@@ -32,7 +32,7 @@
 		<!-- SCM is in properties as we can't configure it directly in profile -->
 		<!-- Do not add developperConnection as parent is not a SNAPSHOT -->
 		<connection>${scm.connection}</connection>
-		<tag>HEAD</tag>
+		<tag>pepper-5.0</tag>
 		<url>${scm.url}</url>
 	</scm>
 

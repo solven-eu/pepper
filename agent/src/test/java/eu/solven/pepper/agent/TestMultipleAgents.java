@@ -22,11 +22,11 @@
  */
 package eu.solven.pepper.agent;
 
+import java.util.Optional;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
-
-import com.google.common.base.Optional;
 
 // We used to have issues related to class-loading leading to issues with Library loading
 public class TestMultipleAgents {
@@ -35,14 +35,14 @@ public class TestMultipleAgents {
 		Assumptions.assumeTrue(VirtualMachineWithoutToolsJar.isAllowAttachSelf());
 
 		VirtualMachineWithoutToolsJar.getJvmVirtualMachine().get();
-		InstrumentationAgent.getInstrumentation().get();
+		PepperAgentLoader.getInstrumentation().get();
 	}
 
 	@Test
 	public void testAgentThenVM() {
 		Assumptions.assumeTrue(VirtualMachineWithoutToolsJar.isAllowAttachSelf());
 
-		InstrumentationAgent.getInstrumentation().get().getClass().getClassLoader();
+		PepperAgentLoader.getInstrumentation().get().getClass().getClassLoader();
 
 		Optional<Object> optVm = VirtualMachineWithoutToolsJar.getJvmVirtualMachine();
 		Assertions.assertThat(optVm.isPresent()).isEqualTo(VirtualMachineWithoutToolsJar.isAllowAttachSelf());

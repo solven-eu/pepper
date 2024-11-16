@@ -8,7 +8,7 @@
 		<version>5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pepper-with-agent</artifactId>
+	<artifactId>with-agent</artifactId>
 	<packaging>jar</packaging>
 
 	<description>This holds pepper feature dependending on pepper-agent, for security reasons.</description>
@@ -16,6 +16,8 @@
 	<properties>
 		<jacoco.branch.ratio>0.01</jacoco.branch.ratio>
 		<jacoco.instruction.ratio>0.19</jacoco.instruction.ratio>
+
+		<sizeof.version>0.4.4</sizeof.version>
 	</properties>
 
 	<dependencies>
@@ -29,6 +31,18 @@
 			<groupId>io.github.solven-eu.pepper</groupId>
 			<artifactId>agent</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.ehcache</groupId>
+			<artifactId>sizeof</artifactId>
+			<version>${sizeof.version}</version>
+		</dependency>
+
+		<dependency>
+			<!-- BloomFilter -->
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
 		</dependency>
 
 		<dependency>
