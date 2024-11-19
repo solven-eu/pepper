@@ -94,6 +94,10 @@ See [map-path](./map-path)
 Change groupId from `<groupId>com.github.cormoran-io.pepper</groupId>` to `<groupId>io.github.solven-eu.pepper</groupId>`
 Change imported package from `import cormoran.pepper.X` to `import eu.solven.pepper.X`
 
+# Upgrade from 4.X to 5.X
+
+Pepper requires a JDK17 from 5.0
+
 # Deprecated
 
 ## MAT

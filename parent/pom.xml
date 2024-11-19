@@ -41,7 +41,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMddHHmmssSSS</maven.build.timestamp.format>
 
-		<compiler.targetVersion>1.8</compiler.targetVersion>
+		<!-- https://stackoverflow.com/questions/49398894/unable-to-compile-simple-java-10-java-11-project-with-maven -->
+		<java.version>17</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
 
 		<scm.developerConnection>scm:git:ssh://git@github.com/solven-eu/pepper.git</scm.developerConnection>
 		<scm.connection>scm:git:ssh://github.com/solven-eu/pepper.git</scm.connection>
@@ -308,6 +311,8 @@
 									<excludedMutator>LambdaReturnsSingleStatement</excludedMutator>
 									<!-- Too much instable -->
 									<excludedMutator>UseDiamondOperator</excludedMutator>
+                                    <!-- PMD recommends not using `var` -->
+                                    <excludedMutator>LocalVariableTypeInference</excludedMutator>
 								</excludedMutators>
 							</cleanthat>
 
