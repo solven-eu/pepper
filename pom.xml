@@ -9,7 +9,7 @@
 		<relativePath>parent</relativePath>
 	</parent>
 
-	<artifactId>aggregator-pepper</artifactId>
+	<artifactId>pepper-aggregator</artifactId>
 
 	<packaging>pom</packaging>
 	<inceptionYear>2014</inceptionYear>

@@ -4,11 +4,11 @@
 
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
-		<artifactId>aggregator-pepper</artifactId>
+		<artifactId>pepper-aggregator</artifactId>
 		<version>5.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>serialization</artifactId>
+	<artifactId>pepper-serialization</artifactId>
 	<packaging>pom</packaging>
 
 	<modules>

@@ -4,11 +4,11 @@
 
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
-		<artifactId>serialization</artifactId>
+		<artifactId>pepper-serialization</artifactId>
 		<version>5.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>avro</artifactId>
+	<artifactId>pepper-avro</artifactId>
 	<packaging>jar</packaging>
 
 	<properties>

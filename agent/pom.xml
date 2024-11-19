@@ -8,7 +8,7 @@
 		<version>5.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>agent</artifactId>
+	<artifactId>pepper-agent</artifactId>
 
 	<packaging>jar</packaging>
 
