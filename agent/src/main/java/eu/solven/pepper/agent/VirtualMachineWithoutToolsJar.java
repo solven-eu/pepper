@@ -164,7 +164,7 @@ public class VirtualMachineWithoutToolsJar {
 	public static synchronized List<?> getJvmVirtualMachines() {
 		final Optional<? extends Class<?>> virtualMachineClass = findVirtualMachineClass();
 
-		if (!virtualMachineClass.isPresent()) {
+		if (virtualMachineClass.isEmpty()) {
 			return Collections.emptyList();
 		}
 
