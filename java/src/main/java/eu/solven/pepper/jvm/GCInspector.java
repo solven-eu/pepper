@@ -23,6 +23,7 @@
 package eu.solven.pepper.jvm;
 
 import java.lang.management.BufferPoolMXBean;
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryPoolMXBean;
@@ -55,6 +56,7 @@ import javax.management.ListenerNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
+import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
@@ -184,7 +186,9 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 			// enable with -XX:+UseSerialGC
 			"Copy",
 			// enable with -XX:+UseParNewGC
-			"ParNew");
+			"ParNew",
+			// enable with -XX:+UseG1GC
+			"G1 Concurrent GC");
 
 	public static final Set<String> REPORTED_UNKNOWN_GC_NAMES = Sets.newConcurrentHashSet();
 
@@ -224,6 +228,15 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		// Register this as listener for any GC event
 		for (ObjectName name : MBEAN_SERVER.queryNames(gcName, null)) {
 			MBEAN_SERVER.addNotificationListener(name, this, null, null);
+		}
+
+		// https://stackoverflow.com/questions/2057792/garbage-collection-notification
+		for (GarbageCollectorMXBean gcBean : ManagementFactory.getGarbageCollectorMXBeans()) {
+			if (gcBean instanceof NotificationEmitter emitter) {
+				emitter.addNotificationListener(this, null, null);
+			} else {
+				LOGGER.info("No GC notifications from {}", gcBean);
+			}
 		}
 
 	}
@@ -764,9 +777,9 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		boolean isFullGC = FULL_GC_NAMES.contains(gcName);
 
 		if (!isFullGC && !NOT_FULL_GC_NAMES.contains(gcName) && REPORTED_UNKNOWN_GC_NAMES.add(gcName)) {
-			LOGGER.info("We encountered an Unknown GC name: {}. Please report to {}",
+			LOGGER.info("We encountered an unknown GC name: {}. Please report to {}",
 					gcName,
-					"https://github.com/cormoran-io/pepper/issues");
+					"https://github.com/solven-eu/pepper/issues");
 		}
 
 		return isFullGC;

@@ -8,17 +8,17 @@ formatters:
   steps:
   - id: "cleanthat"
     parameters:
-      source_jdk: "11.0"
+      source_jdk: "17.0"
       mutators:
       - eu.solven.cleanthat.engine.java.refactorer.mutators.composite.SafeAndConsensualMutators
       - UnnecessaryFullyQualifiedName
   - id: "removeUnusedImports"
   - id: "importOrder"
     parameters:
-      file: "repository:/static/src/main/resources/eclipse/eclipse.importorder"
+      file: "repository:/resources/src/main/resources/eclipse/eclipse.importorder"
   - id: "eclipse"
     parameters:
-      file: "repository:/static/src/main/resources/eclipse/eclipse_java_code_formatter.xml"
+      file: "repository:/resources/src/main/resources/eclipse/eclipse_java_code_formatter.xml"
   - id: "licenseHeader"
     parameters:
       file: "repository:/.cleanthat/spotless.license"

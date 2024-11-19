@@ -54,6 +54,11 @@ public class PepperAgentLoader {
 		// hidden
 	}
 
+	/**
+	 * You should have `-XX:+EnableDynamicAgentLoading`
+	 * 
+	 * @return
+	 */
 	public static boolean loadAgent() {
 
 		try {
@@ -68,7 +73,9 @@ public class PepperAgentLoader {
 	/**
 	 * It may not be available for many reasons (tools.jar no in the class path, or "Failed to attach to VM and load the
 	 * agent: class java.lang.UnsatisfiedLinkError: Native Library /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libattach.so
-	 * already loaded in another classloader")
+	 * already loaded in another classloader").
+	 * 
+	 * You should have `-XX:+EnableDynamicAgentLoading`
 	 *
 	 * @return an {@link Instrumentation} instance as instantiated by the JVM itself.
 	 */

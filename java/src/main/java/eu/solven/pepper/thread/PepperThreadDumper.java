@@ -266,7 +266,7 @@ public class PepperThreadDumper implements IThreadDumper {
 		}
 	}
 
-	// qfs-common-worker-76 id=905 state=WAITING
+	// xxx-common-worker-76 id=905 state=WAITING
 	// - waiting on <0x760d8059> (a jsr166e.ForkJoinPool)
 	// - locked <0x760d8059> (a jsr166e.ForkJoinPool)
 	// at sun.misc.Unsafe.park(Native Method)

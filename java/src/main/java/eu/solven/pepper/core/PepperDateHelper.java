@@ -75,8 +75,37 @@ public final class PepperDateHelper {
 		return OffsetDateTime.ofInstant(lastModified.toInstant(), ZoneOffset.UTC);
 	}
 
+	@Deprecated(since = "5.0 The wording is ambiguous regarding the picked time-zone")
 	public static OffsetDateTime now() {
+		return nowTZ();
+	}
+
+	/**
+	 * Useful when one need current time, for current JVM time-zone, but with the ability to adjust the time for another
+	 * clock.
+	 * 
+	 * @return now, with a time-zone
+	 */
+	public static OffsetDateTime nowTZ() {
 		return OffsetDateTime.now(zoneId());
+	}
+
+	/**
+	 * Useful when for need current time, for current JVM time-zone (e.g. like when looking the clock behind yourself).
+	 * 
+	 * @return now, at current time-zone (but as an object without time-zone)
+	 */
+	public static LocalDateTime nowLocal() {
+		return LocalDateTime.now(zoneId());
+	}
+
+	/**
+	 * Useful when one need a LocalDateTime, and `current` time-zone is ambiguous and you want a nice default clock.
+	 * 
+	 * @return now, at UTC (as an object without time-zone)
+	 */
+	public static LocalDateTime nowUTC() {
+		return LocalDateTime.now(ZoneOffset.UTC);
 	}
 
 	public static LocalDate today() {
