@@ -99,7 +99,7 @@
 		<errorprone.version>2.35.1</errorprone.version>
 
 		<awaitility.version>4.0.3</awaitility.version>
-		<equals.verifier.version>3.17.1</equals.verifier.version>
+		<equals.verifier.version>3.17.3</equals.verifier.version>
 		<checker.quals.version>3.48.1</checker.quals.version>
 
 		<!-- newer version than spring-boot-dependencies, for JDK11 -->
