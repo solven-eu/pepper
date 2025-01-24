@@ -96,11 +96,6 @@ public class TestGCInspector implements IPepperMemoryConstants {
 	}
 
 	@Test
-	public void testDetectUnitTest() {
-		Assertions.assertTrue(GCInspector.inUnitTest());
-	}
-
-	@Test
 	public void testGetThreadNameAllocatedHeap() {
 		GCInspector gcInspector = new GCInspector(Mockito.mock(IThreadDumper.class));
 

@@ -26,10 +26,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.IntBuffer;
 import java.nio.MappedByteBuffer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.annotations.Beta;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Wrap a {@link MappedByteBuffer} or an {@link IntBuffer} into {@link AutoCloseable}
@@ -38,9 +37,8 @@ import com.google.common.annotations.Beta;
  *
  */
 @Beta
+@Slf4j
 public class CloseableIntBuffer implements AutoCloseable {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(CloseableIntBuffer.class);
-
 	protected final MappedByteBuffer buffer;
 	protected final IntBuffer heapBuffer;
 
@@ -78,7 +76,7 @@ public class CloseableIntBuffer implements AutoCloseable {
 		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			// JDK9?
-			LOGGER.trace("Ouch", e);
+			log.trace("Ouch", e);
 		}
 	}
 

@@ -31,4 +31,5 @@ public class TestPepperEnvHelper {
 	public void testDetectUnitTest() {
 		Assertions.assertTrue(PepperEnvHelper.inUnitTest());
 	}
+
 }

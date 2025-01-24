@@ -81,7 +81,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import eu.solven.pepper.core.PepperLogHelper;
 import eu.solven.pepper.jmx.PepperJMXHelper;
 import eu.solven.pepper.memory.PepperMemoryHelper;
-import eu.solven.pepper.system.PepperEnvHelper;
 import eu.solven.pepper.system.PepperTimeHelper;
 import eu.solven.pepper.thread.IThreadDumper;
 import eu.solven.pepper.thread.PepperThreadDumper;
@@ -195,7 +194,7 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 	/**
 	 * Print the heap histogram only up to given % of total heap
 	 */
-	private static final int HEAP_HISTO_LIMIT_NB_ROWS = 20;
+	static final int HEAP_HISTO_LIMIT_NB_ROWS = 20;
 
 	public GCInspector(IThreadDumper apexThreadDumper) {
 		this.pepperThreadDumper = apexThreadDumper;
@@ -241,44 +240,12 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 
 	}
 
-	// We prefer to submit a closing status when the bean is disposed, as the JVM may never terminate correctly in case
-	// of OOM, or Dead/LiveLock
-	@Deprecated
-	protected void addShutdownHook() {
-		Runtime.getRuntime()
-				.addShutdownHook(
-						new Thread(this::executeDuringShutdown, this.getClass().getSimpleName() + "-ShutdownHook"));
-	}
-
-	protected void executeDuringShutdown() {
-		// On shutdown, do not print too many information as, very often, it is a clean closing (e.g. unit-tests).
-		// Still, if something is wrong, it is very beneficial to have core information
-
-		if (inUnitTest()) {
-			LOGGER.info("Skip GCInspector closing information as current run is a unit-test");
-		} else {
-			printSmartThreadDump();
-			printHeapHistogram(HEAP_HISTO_LIMIT_NB_ROWS);
-		}
-	}
-
-	/**
-	 * 
-	 * @deprecated Use {@link PepperEnvHelper#inUnitTest()}
-	 */
-	@Deprecated
-	public static boolean inUnitTest() {
-		return PepperEnvHelper.inUnitTest();
-	}
-
 	/**
 	 * Clean the MBean registration. Else, unit-test would register several GCInexpector (one for each Context loaded)
 	 */
 	@Override
 	public void destroy() throws Exception {
 		removeNotificationListener();
-
-		executeDuringShutdown();
 	}
 
 	protected void removeNotificationListener() throws MalformedObjectNameException, ListenerNotFoundException {
@@ -290,7 +257,11 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 				MBEAN_SERVER.removeNotificationListener(name, this);
 			} catch (InstanceNotFoundException | RuntimeException e) {
 				// Log in debug as no big-deal to fail disconnecting beans
-				LOGGER.debug("Failure for " + name, e);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Failure for {}", name, e);
+				} else {
+					LOGGER.info("Failure for {}", name);
+				}
 			}
 		}
 	}
@@ -795,20 +766,10 @@ public class GCInspector implements NotificationListener, InitializingBean, Disp
 		LOGGER.warn("Thread Dump: {}", threadDumpAsString);
 	}
 
-	protected void printSmartThreadDump() {
-		LocalDateTime beforeThreadDump = LocalDateTime.now();
-
-		String threadDumpAsString = pepperThreadDumper.getSmartThreadDumpAsString(false);
-
-		this.latestThreadDump.set(beforeThreadDump);
-
-		LOGGER.info("Thread Dump: {}", threadDumpAsString);
-	}
-
 	// https://github.com/javamelody/javamelody/blob/master/javamelody-core/src/main/java/net/bull/javamelody/internal/model/VirtualMachine.java#L163
 	protected void printHeapHistogram(int nbRows) {
-		String threadDumpAsString = "";
-		LOGGER.debug("HeapHistogram: {}{}", System.lineSeparator(), threadDumpAsString);
+		String threadDumpAsString = "HeapHistogram is Disabled";
+		LOGGER.info("HeapHistogram: {}{}", System.lineSeparator(), threadDumpAsString);
 	}
 
 	/**

@@ -144,13 +144,19 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<!-- dependencies AFTER dependencyManagement -->
 	<dependencies>
 		<!-- Always added, to facilitate logging, as it is used by all modules -->
 		<!-- Do not add logback, as the library user may prefer another logging framework -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
@@ -178,6 +184,11 @@
 								<groupId>com.google.guava</groupId>
 								<artifactId>guava-beta-checker</artifactId>
 								<version>${betachecker.version}</version>
+							</path>
+
+							<path>
+								<groupId>org.projectlombok</groupId>
+								<artifactId>lombok</artifactId>
 							</path>
 						</annotationProcessorPaths>
 
