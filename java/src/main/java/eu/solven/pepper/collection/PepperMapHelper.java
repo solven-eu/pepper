@@ -135,4 +135,28 @@ public class PepperMapHelper {
 			output.put(key, valueToWrite);
 		}
 	}
+
+	/**
+	 * This helps building deeply nested Maps. It is especially useful for unit-tests.
+	 *
+	 * @param value
+	 *            attached to the deepest key
+	 * @param firstKey
+	 *            a first required key
+	 * @param secondKey
+	 *            a second required key
+	 * @param moreKeys
+	 *            more optional keys
+	 * @return a Map looking like: {'k1': {'k2': 'v'}}
+	 */
+	public static <T, U> Map<T, Map<U, ?>> imbricatedMap(Object value, T firstKey, U secondKey, Object... moreKeys) {
+		Object nextValue = value;
+		for (int i = moreKeys.length - 1; i >= 0; i--) {
+			nextValue = Collections.singletonMap(moreKeys[i], nextValue);
+		}
+
+		Map<U, ?> subMap = Collections.singletonMap(secondKey, nextValue);
+
+		return Collections.singletonMap(firstKey, subMap);
+	}
 }

@@ -24,14 +24,11 @@ package eu.solven.pepper.mappath;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Helps reading through a recursive {@link Map}
@@ -77,35 +74,11 @@ public class MapPathGet {
 						+ " as value for key="
 						+ key
 						+ " is: "
-						+ getObjectAndClass(value));
+						+ MapPath.getObjectAndClass(value));
 			}
 		}
 
 		return (T) value;
-	}
-
-	/**
-	 * This helps building deeply nested Maps. It is especially useful for unit-tests.
-	 *
-	 * @param value
-	 *            attached to the deepest key
-	 * @param firstKey
-	 *            a first required key
-	 * @param secondKey
-	 *            a second required key
-	 * @param moreKeys
-	 *            more optional keys
-	 * @return a Map looking like: {'k1': {'k2': 'v'}}
-	 */
-	public static <T, U> Map<T, Map<U, ?>> imbricatedMap(Object value, T firstKey, U secondKey, Object... moreKeys) {
-		Object nextValue = value;
-		for (int i = moreKeys.length - 1; i >= 0; i--) {
-			nextValue = Collections.singletonMap(moreKeys[i], nextValue);
-		}
-
-		Map<U, ?> subMap = Collections.singletonMap(secondKey, nextValue);
-
-		return Collections.singletonMap(firstKey, subMap);
 	}
 
 	public static <T> Optional<T> getOptionalAs(Object mapOrList, Object firstKey, Object... moreKeys) {
@@ -157,7 +130,7 @@ public class MapPathGet {
 				}
 			} else {
 				throw new IllegalArgumentException(
-						"keys=" + keys + " led to not-a-string: " + getObjectAndClass(rawNotNull));
+						"keys=" + keys + " led to not-a-string: " + MapPath.getObjectAndClass(rawNotNull));
 			}
 		} else {
 			return Optional.empty();
@@ -181,8 +154,10 @@ public class MapPathGet {
 			if (rawValue instanceof Map<?, ?>) {
 				return (Map<S, T>) rawValue;
 			} else {
-				throw new IllegalArgumentException(
-						"'" + allKeys + "' is attached to " + getObjectAndClass(rawValue) + " which is not a Map");
+				throw new IllegalArgumentException("'" + allKeys
+						+ "' is attached to "
+						+ MapPath.getObjectAndClass(rawValue)
+						+ " which is not a Map");
 			}
 		});
 	}
@@ -244,7 +219,7 @@ public class MapPathGet {
 					}
 				} else if (currentHolder instanceof List<?>) {
 					throw new IllegalArgumentException(
-							"Value in list at index=" + getObjectAndClass(currentKey) + " is null");
+							"Value in list at index=" + MapPath.getObjectAndClass(currentKey) + " is null");
 				}
 			}
 
@@ -254,7 +229,8 @@ public class MapPathGet {
 			} else if (rawValue instanceof Map<?, ?> || rawValue instanceof List<?>) {
 				currentHolder = rawValue;
 			} else {
-				throw new IllegalArgumentException("Not managed intermediate type: " + getObjectAndClass(rawValue));
+				throw new IllegalArgumentException(
+						"Not managed intermediate type: " + MapPath.getObjectAndClass(rawValue));
 			}
 		}
 
@@ -293,39 +269,6 @@ public class MapPathGet {
 				// Do not throw the value which might be a personal value
 				throw new IllegalArgumentException("Not a boolean (" + rawValue
 						.getClass() + ") for " + allKeys + ". Deepest Map<?,?> keys: " + map.keySet());
-			}
-		});
-	}
-
-	// Duplicated from PepperLogHelper
-	private static Object lazyToString(Supplier<String> toStringMe) {
-		return new Object() {
-			@Override
-			public String toString() {
-				return toStringMe.get();
-			}
-		};
-	}
-
-	// Duplicated from PepperLogHelper
-	@SuppressWarnings("PMD.CompareObjectsWithEquals")
-	private static Object getObjectAndClass(Object o) {
-		return lazyToString(() -> {
-			if (o == null) {
-				return null + "(null)";
-			} else if (o instanceof Map<?, ?>) {
-				Map<?, ?> asMap = (Map<?, ?>) o;
-
-				// see java.util.AbstractMap.toString()
-				return asMap.entrySet().stream().map(e -> {
-					if (e.getValue() == o) {
-						return e.getKey() + "=" + "(this Map)";
-					} else {
-						return e.getKey() + "=" + getObjectAndClass(e.getValue());
-					}
-				}).collect(Collectors.joining(", ", "{", "}"));
-			} else {
-				return o.toString() + "(" + o.getClass().getName() + ")";
 			}
 		});
 	}

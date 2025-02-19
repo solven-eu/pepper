@@ -29,11 +29,11 @@
 			<!-- Optional as some classes in this module are generic to SQL, not PGSQL -->
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.jooq</groupId>
-			<artifactId>jool</artifactId>
-			<version>${jool.version}</version>
-		</dependency>
+		<!--		<dependency>-->
+		<!--			<groupId>org.jooq</groupId>-->
+		<!--			<artifactId>jool</artifactId>-->
+		<!--			<version>${jool.version}</version>-->
+		<!--		</dependency>-->
 		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
@@ -45,6 +45,8 @@
 		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq-codegen</artifactId>
+			<!-- Only used by PepperJooqHelper.generateJooq -->
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -74,7 +76,7 @@
 
 		<dependency>
 			<groupId>io.github.solven-eu.pepper</groupId>
-			<artifactId>unittest</artifactId>
+			<artifactId>pepper-unittest</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

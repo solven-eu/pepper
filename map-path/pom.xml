@@ -19,12 +19,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>io.github.solven-eu.pepper</groupId>
-			<artifactId>pepper</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
 			<!-- https://github.com/json-path/JsonPath -->
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
@@ -45,6 +39,14 @@
 		</dependency>
 
 		<dependency>
+			<!-- PepperMapHelper.getImbricatedMap-->
+			<groupId>io.github.solven-eu.pepper</groupId>
+			<artifactId>pepper</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<scope>test</scope>
@@ -52,7 +54,7 @@
 
 		<dependency>
 			<groupId>io.github.solven-eu.pepper</groupId>
-			<artifactId>unittest</artifactId>
+			<artifactId>pepper-unittest</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

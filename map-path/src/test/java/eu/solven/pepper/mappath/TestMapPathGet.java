@@ -35,7 +35,9 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-public class TestPepperMapHelper {
+import eu.solven.pepper.collection.PepperMapHelper;
+
+public class TestMapPathGet {
 
 	final LocalDate now = LocalDate.now();
 
@@ -169,24 +171,8 @@ public class TestPepperMapHelper {
 	}
 
 	@Test
-	public void testImbricatedMap() {
-		// Check keys can be of any-type
-		Map<Integer, ?> map = MapPathGet.imbricatedMap("value", 123, "key");
-
-		Assertions.assertEquals(ImmutableMap.of(123, ImmutableMap.of("key", "value")), map);
-	}
-
-	@Test
-	public void testImbricatedMap_Deeper_DifferentTypes() {
-		// Check keys can be of any-type
-		Map<Integer, ?> map = MapPathGet.imbricatedMap("value", 123, "key", now);
-
-		Assertions.assertEquals(ImmutableMap.of(123, ImmutableMap.of("key", ImmutableMap.of(now, "value"))), map);
-	}
-
-	@Test
 	public void testGetOptionalAs() {
-		Map<Integer, ?> map = MapPathGet.imbricatedMap("value", 123, "key", now);
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		Assertions.assertEquals(Optional.of("value"), MapPathGet.getOptionalAs(map, 123, "key", now));
 		Assertions.assertEquals(Optional.of(ImmutableMap.of(now, "value")), MapPathGet.getOptionalAs(map, 123, "key"));
@@ -196,7 +182,7 @@ public class TestPepperMapHelper {
 
 	@Test
 	public void testGetRequiredAs() {
-		Map<Integer, ?> map = MapPathGet.imbricatedMap("value", 123, "key", now);
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		Assertions.assertEquals("value", MapPathGet.getRequiredAs(map, 123, "key", now));
 		Assertions.assertEquals(ImmutableMap.of(now, "value"), MapPathGet.getRequiredAs(map, 123, "key"));
@@ -206,7 +192,7 @@ public class TestPepperMapHelper {
 
 	@Test
 	public void testGetOptionalAs_missing() {
-		Map<Integer, ?> map = MapPathGet.imbricatedMap("value", 123, "key", now);
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalAs(map, 123, "key2")).isEmpty();
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalAs(map, 124)).isEmpty();
@@ -214,14 +200,14 @@ public class TestPepperMapHelper {
 
 	@Test
 	public void testGetRequiredAs_missing_depth2() {
-		Map<Integer, ?> map = MapPathGet.imbricatedMap("value", 123, "key", now);
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		Assertions.assertThrows(IllegalArgumentException.class, () -> MapPathGet.getRequiredAs(map, 123, "key2"));
 	}
 
 	@Test
 	public void testGetRequiredAs_missing_depth1() {
-		Map<Integer, ?> map = MapPathGet.imbricatedMap("value", 123, "key", now);
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap("value", 123, "key", now);
 
 		Assertions.assertThrows(IllegalArgumentException.class, () -> MapPathGet.getRequiredAs(map, 124));
 	}
@@ -229,7 +215,7 @@ public class TestPepperMapHelper {
 	@Test
 	public void testGetRequiredBoolean_true() {
 		// Check keys can be of any-type
-		Map<Integer, ?> map = MapPathGet.imbricatedMap(Boolean.TRUE, 123, "key", now);
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(Boolean.TRUE, 123, "key", now);
 
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalAs(map, 123, "key", now))
 				.isPresent()
@@ -243,7 +229,7 @@ public class TestPepperMapHelper {
 	@Test
 	public void testGetRequiredBoolean_false() {
 		// Check keys can be of any-type
-		Map<Integer, ?> map = MapPathGet.imbricatedMap(Boolean.FALSE, 123, "key", now);
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(Boolean.FALSE, 123, "key", now);
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalAs(map, 123, "key", now))
 				.isPresent()
 				.contains(Boolean.FALSE);
@@ -256,7 +242,7 @@ public class TestPepperMapHelper {
 	@Test
 	public void testGetRequiredNumber_int() {
 		// Check keys can be of any-type
-		Map<Integer, ?> map = MapPathGet.imbricatedMap(456, 123, "key", now);
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(456, 123, "key", now);
 
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalAs(map, 123, "key", now))
 				.isPresent()
@@ -269,7 +255,7 @@ public class TestPepperMapHelper {
 	@Test
 	public void testGetRequiredNumber_float() {
 		// Check keys can be of any-type
-		Map<Integer, ?> map = MapPathGet.imbricatedMap(123.456F, 123, "key", now);
+		Map<Integer, ?> map = PepperMapHelper.imbricatedMap(123.456F, 123, "key", now);
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalAs(map, 123, "key", now))
 				.isPresent()
 				.contains(123.456F);
@@ -283,7 +269,7 @@ public class TestPepperMapHelper {
 	public void testGetFromList_number() {
 		Map<String, Object> root = new LinkedHashMap<>();
 
-		root.put("k", Arrays.asList("someString", MapPathGet.imbricatedMap(123.456F, 123, "key", now)));
+		root.put("k", Arrays.asList("someString", PepperMapHelper.imbricatedMap(123.456F, 123, "key", now)));
 
 		// Check keys can be of any-type
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalAs(root, "k", 1, 123, "key", now))
@@ -299,7 +285,7 @@ public class TestPepperMapHelper {
 	public void testGetFromList_string() {
 		Map<String, Object> root = new LinkedHashMap<>();
 
-		root.put("k", Arrays.asList("someString", MapPathGet.imbricatedMap("deepString", 123, "key", now)));
+		root.put("k", Arrays.asList("someString", PepperMapHelper.imbricatedMap("deepString", 123, "key", now)));
 
 		// Check keys can be of any-type
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalAs(root, "k", 1, 123, "key", now))
@@ -317,10 +303,9 @@ public class TestPepperMapHelper {
 	public void testGetFromList_OutOfRange() {
 		Map<String, Object> root = new LinkedHashMap<>();
 
-		root.put("k", Arrays.asList("someString", MapPathGet.imbricatedMap("deepString", 123, "key", now)));
+		root.put("k", Arrays.asList("someString", PepperMapHelper.imbricatedMap("deepString", 123, "key", now)));
 
 		// Check keys can be of any-type
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalAs(root, "k", 3)).isEmpty();
 	}
-
 }

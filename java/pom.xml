@@ -89,7 +89,7 @@
 
 		<dependency>
 			<groupId>io.github.solven-eu.pepper</groupId>
-			<artifactId>unittest</artifactId>
+			<artifactId>pepper-unittest</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -110,7 +110,7 @@
 				<configuration>
 					<excludes>
 						<!-- LoggingMethodCallAnnotationMBeanExporter is a bunch of exception catching. Add * to hold anonymous classes -->
-						<exclude>eu/solven/pepper/server/monitoring/spring/LoggingMethodCallAnnotationMBeanExporter*</exclude>
+						<exclude>eu/solven/pepper/spring/LoggingMethodCallAnnotationMBeanExporter*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

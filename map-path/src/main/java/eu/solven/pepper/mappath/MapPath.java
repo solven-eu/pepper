@@ -31,8 +31,10 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +43,6 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
-
-import eu.solven.pepper.core.PepperLogHelper;
 
 /**
  * Enable converting a standard/recursive {@link Map} or {@link List} into a {@link Map} in a flatten format. By
@@ -122,7 +122,7 @@ public class MapPath {
 			return innerFlatten(true, onValues, (Collection<?>) any);
 		} else {
 			// BEWARE: Should/could we handle Arrays, POJOs, etc?
-			throw new IllegalArgumentException("This is not a legal input: " + PepperLogHelper.getObjectAndClass(any));
+			throw new IllegalArgumentException("This is not a legal input: %s".formatted(getObjectAndClass(any)));
 		}
 
 	}
@@ -326,8 +326,8 @@ public class MapPath {
 		flatten.forEach((k, v) -> {
 			if (v instanceof List<?> || v instanceof Map<?, ?>) {
 				throw new IllegalArgumentException(
-						"A flatten Map should neither have a Map nor Collection value. value="
-								+ PepperLogHelper.getObjectAndClass(v));
+						"A flatten Map should neither have a Map nor Collection value. value=%s"
+								.formatted(getObjectAndClass(v)));
 			}
 
 			if (MARKER_NULL.get() == v) {
@@ -409,4 +409,36 @@ public class MapPath {
 		return path.toString();
 	}
 
+	// Duplicated from PepperLogHelper
+	static Object lazyToString(Supplier<String> toStringMe) {
+		return new Object() {
+			@Override
+			public String toString() {
+				return toStringMe.get();
+			}
+		};
+	}
+
+	// Duplicated from PepperLogHelper
+	@SuppressWarnings("PMD.CompareObjectsWithEquals")
+	static Object getObjectAndClass(Object o) {
+		return lazyToString(() -> {
+			if (o == null) {
+				return null + "(null)";
+			} else if (o instanceof Map<?, ?>) {
+				Map<?, ?> asMap = (Map<?, ?>) o;
+
+				// see java.util.AbstractMap.toString()
+				return asMap.entrySet().stream().map(e -> {
+					if (e.getValue() == o) {
+						return e.getKey() + "=" + "(this Map)";
+					} else {
+						return e.getKey() + "=" + getObjectAndClass(e.getValue());
+					}
+				}).collect(Collectors.joining(", ", "{", "}"));
+			} else {
+				return o.toString() + "(" + o.getClass().getName() + ")";
+			}
+		});
+	}
 }

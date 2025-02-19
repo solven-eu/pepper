@@ -33,7 +33,7 @@
 
 		<dependency>
 			<groupId>io.github.solven-eu.pepper</groupId>
-			<artifactId>unittest</artifactId>
+			<artifactId>pepper-unittest</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

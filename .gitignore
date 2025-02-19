@@ -3,7 +3,7 @@
 *.class
 
 .java-version
- 
+
 # Eclipse
 ######################
 .project
@@ -13,7 +13,7 @@
 #IntelliJ
 *.iml
 .idea
- 
+
 # Maven
 ######################
 target
@@ -33,7 +33,7 @@ pom.xml.next
 war
 gwt-unitCache
 .gwt
- 
+
 # Temporary files
 ######################
 *.swp
