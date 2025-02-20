@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-parent</artifactId>
-		<version>5.1</version>
+		<version>5.2-SNAPSHOT</version>
 		<relativePath>parent</relativePath>
 	</parent>
 
@@ -49,7 +49,7 @@
 	<scm>
 		<!-- Only developerConnection was not set in parent pom as its own parent was not a SNAPSHOT -->
 		<developerConnection>${scm.developerConnection}</developerConnection>
-		<tag>pepper-5.1</tag>
+		<tag>pepper-5.0</tag>
 	</scm>
 
 	<!-- Format source code -->
