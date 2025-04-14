@@ -330,7 +330,7 @@
 					<!-- Usage: mvn com.mycila:license-maven-plugin:format -->
 					<groupId>com.mycila</groupId>
 					<artifactId>license-maven-plugin</artifactId>
-					<version>4.6</version>
+					<version>5.0.0</version>
 					<configuration>
 						<header>com/mycila/maven/plugin/license/templates/MIT.txt</header>
 						<properties>
