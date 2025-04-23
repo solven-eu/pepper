@@ -416,7 +416,7 @@
 	<profiles>
 		<profile>
 			<!-- http://central.sonatype.org/pages/apache-maven.html#deploying-to-ossrh-with-apache-maven-introduction -->
-			<id>Sonatype</id>
+			<id>sonatype</id>
 
 			<!--Requires in settings.xml: <settings> <servers> <server> <id>ossrh</id> <username>your-jira-id</username> <password>your-jira-pwd</password> </server> </servers> 
 				</settings> -->

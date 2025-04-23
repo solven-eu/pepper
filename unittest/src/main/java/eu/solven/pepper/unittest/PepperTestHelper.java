@@ -33,6 +33,8 @@ import org.junit.jupiter.api.Assumptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Helpers for Unit-tests
  *
@@ -40,9 +42,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 @SuppressWarnings("PMD.MoreThanOneLogger")
+@Slf4j
 public class PepperTestHelper {
-	static final Logger LOGGER = LoggerFactory.getLogger(PepperTestHelper.class);
-
 	protected PepperTestHelper() {
 		// hidden
 	}
@@ -72,7 +73,7 @@ public class PepperTestHelper {
 
 			return true;
 		} catch (RuntimeException | IOException e) {
-			LOGGER.trace("Internet is not available", e);
+			log.trace("Internet is not available", e);
 			Assumptions.abort("Internet is not available");
 			return false;
 		}
@@ -86,7 +87,7 @@ public class PepperTestHelper {
 	public static void setLogbackLoggerLevel(Class<?> clazz, String levelToSet) {
 		ILogDisabler logDisabler = disableLogbackLoggerLevel(clazz, levelToSet);
 
-		LOGGER.trace("One will have to restore the log level manually ({})", logDisabler);
+		log.trace("One will have to restore the log level manually ({})", logDisabler);
 	}
 
 	public static ILogDisabler disableLogbackLoggerLevel(Class<?> clazz, String levelToSet) {
@@ -127,13 +128,13 @@ public class PepperTestHelper {
 				throw new RuntimeException(e);
 			}
 		} else {
-			LOGGER.info("This work only with LogBack while it was: {}", loggerClassName);
+			log.info("This work only with LogBack while it was: {}", loggerClassName);
 
 			return new ILogDisabler() {
 
 				@Override
 				public void close() {
-					LOGGER.trace("There is no level to restore");
+					log.trace("There is no level to restore");
 				}
 			};
 		}
@@ -141,24 +142,5 @@ public class PepperTestHelper {
 
 	public static void enableLogToInfo(Class<?> clazz) {
 		setLogbackLoggerLevel(clazz, "INFO");
-	}
-
-	/**
-	 * Enables using a try-with statement in order to deactivate logs for a given section of code.
-	 *
-	 * @param clazz
-	 * @return
-	 */
-	@Deprecated
-	public static AutoCloseable logDisabled(Class<?> clazz) {
-		disableLog(clazz);
-
-		return new AutoCloseable() {
-
-			@Override
-			public void close() {
-				enableLogToInfo(clazz);
-			}
-		};
 	}
 }

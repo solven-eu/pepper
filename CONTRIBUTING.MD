@@ -11,6 +11,10 @@ Do not -T 8 else the prompt for GPG may be lost in the logs
 
 ## In case of error:
 
+    mvn release:rollback
+
+or
+
         mvn reset --hard HEAD~~
         git tag -d pepper-XXX
-        git push --delete origin
+        git push --delete origin pepper-XXX

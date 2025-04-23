@@ -404,7 +404,7 @@
 
 					<!-- http://central.sonatype.org/pages/apache-maven.html -->
 					<!-- Sonatype profile is defined in pepper-metadata -->
-					<releaseProfiles>Sonatype</releaseProfiles>
+					<releaseProfiles>sonatype</releaseProfiles>
 
 					<!-- On each release, push the jars to Maven Central -->
 					<goals>deploy</goals>
