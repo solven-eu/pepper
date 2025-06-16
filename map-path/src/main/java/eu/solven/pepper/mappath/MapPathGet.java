@@ -112,31 +112,6 @@ public class MapPathGet {
 		});
 	}
 
-	public static Optional<String> getOptionalString(Object mapOrList, Object firstKey, Object... moreKeys) {
-		return getOptionalString(mapOrList, asList(firstKey, moreKeys));
-	}
-
-	public static Optional<String> getOptionalString(Object mapOrList, List<?> keys) {
-		Optional<Object> optValue = getOptionalAs(mapOrList, keys);
-
-		if (optValue.isPresent()) {
-			Object rawNotNull = optValue.get();
-			if (rawNotNull instanceof String) {
-				String valueString = rawNotNull.toString();
-				if (valueString.isEmpty()) {
-					return Optional.empty();
-				} else {
-					return Optional.of(valueString);
-				}
-			} else {
-				throw new IllegalArgumentException(
-						"keys=" + keys + " led to not-a-string: " + MapPath.getObjectAndClass(rawNotNull));
-			}
-		} else {
-			return Optional.empty();
-		}
-	}
-
 	public static String checkNonNullString(Object keyName, Object value) {
 		if (value == null) {
 			throw new IllegalArgumentException("'" + keyName + "' is required but null");
@@ -160,6 +135,31 @@ public class MapPathGet {
 						+ " which is not a Map");
 			}
 		});
+	}
+
+	public static Optional<String> getOptionalString(Object mapOrList, Object firstKey, Object... moreKeys) {
+		return getOptionalString(mapOrList, asList(firstKey, moreKeys));
+	}
+
+	public static Optional<String> getOptionalString(Object mapOrList, List<?> keys) {
+		Optional<Object> optValue = getOptionalAs(mapOrList, keys);
+
+		if (optValue.isPresent()) {
+			Object rawNotNull = optValue.get();
+			if (rawNotNull instanceof String) {
+				String valueString = rawNotNull.toString();
+				if (valueString.isEmpty()) {
+					return Optional.empty();
+				} else {
+					return Optional.of(valueString);
+				}
+			} else {
+				throw new IllegalArgumentException(
+						"keys=" + keys + " led to not-a-string: " + MapPath.getObjectAndClass(rawNotNull));
+			}
+		} else {
+			return Optional.empty();
+		}
 	}
 
 	public static String getRequiredString(final Object mapOrList, Object mainKey, Object... subKeys) {
@@ -245,6 +245,26 @@ public class MapPathGet {
 		return keys;
 	}
 
+	public static Optional<Number> getOptionalNumber(Object mapOrList, Object firstKey, Object... moreKeys) {
+		return getOptionalNumber(mapOrList, asList(firstKey, moreKeys));
+	}
+
+	public static Optional<Number> getOptionalNumber(Object mapOrList, List<?> keys) {
+		Optional<Object> optValue = getOptionalAs(mapOrList, keys);
+
+		if (optValue.isPresent()) {
+			Object rawNotNull = optValue.get();
+			if (rawNotNull instanceof Number) {
+				return Optional.of((Number) rawNotNull);
+			} else {
+				throw new IllegalArgumentException(
+						"keys=" + keys + " led to not-a-number: " + MapPath.getObjectAndClass(rawNotNull));
+			}
+		} else {
+			return Optional.empty();
+		}
+	}
+
 	public static Number getRequiredNumber(Map<?, ?> map, Object mainKey, Object... subKeys) {
 		List<Object> allKeys = checkNullMap(map, mainKey, subKeys);
 
@@ -257,6 +277,26 @@ public class MapPathGet {
 						.getClass() + ") for " + allKeys + ". Deepest Map<?,?> keys: " + map.keySet());
 			}
 		});
+	}
+
+	public static Optional<Boolean> getOptionalBoolean(Object mapOrList, Object firstKey, Object... moreKeys) {
+		return getOptionalBoolean(mapOrList, asList(firstKey, moreKeys));
+	}
+
+	public static Optional<Boolean> getOptionalBoolean(Object mapOrList, List<?> keys) {
+		Optional<Object> optValue = getOptionalAs(mapOrList, keys);
+
+		if (optValue.isPresent()) {
+			Object rawNotNull = optValue.get();
+			if (rawNotNull instanceof Boolean) {
+				return Optional.of((Boolean) rawNotNull);
+			} else {
+				throw new IllegalArgumentException(
+						"keys=" + keys + " led to not-a-boolean: " + MapPath.getObjectAndClass(rawNotNull));
+			}
+		} else {
+			return Optional.empty();
+		}
 	}
 
 	public static boolean getRequiredBoolean(Map<?, ?> map, Object mainKey, Object... subKeys) {

@@ -224,6 +224,8 @@ public class TestMapPathGet {
 				.isEqualTo(Boolean.TRUE);
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getRequiredBoolean(map, 123, "key", now))
 				.isEqualTo(Boolean.TRUE);
+		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalBoolean(map, 123, "key", now))
+				.contains(Boolean.TRUE);
 	}
 
 	@Test
@@ -237,6 +239,8 @@ public class TestMapPathGet {
 				.isEqualTo(Boolean.FALSE);
 		org.assertj.core.api.Assertions.assertThat(MapPathGet.getRequiredBoolean(map, 123, "key", now))
 				.isEqualTo(Boolean.FALSE);
+		org.assertj.core.api.Assertions.assertThat(MapPathGet.getOptionalBoolean(map, 123, "key", now))
+				.contains(Boolean.FALSE);
 	}
 
 	@Test
