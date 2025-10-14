@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-aggregator</artifactId>
-		<version>5.2-SNAPSHOT</version>
+		<version>5.2</version>
 	</parent>
-	<!-- `name` is required by Sonatype-->
-	<name>${project.groupId}:${project.artifactId}</name>
 
 	<artifactId>pepper-hadoop-parent</artifactId>
 	<packaging>pom</packaging>
+	<!-- `name` is required by Sonatype-->
+	<name>${project.groupId}:${project.artifactId}</name>
 
 	<modules>
 		<module>parquet</module>

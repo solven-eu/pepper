@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-aggregator</artifactId>
-		<version>5.2-SNAPSHOT</version>
+		<version>5.2</version>
 	</parent>
-	<!-- `name` is required by Sonatype-->
-	<name>${project.groupId}:${project.artifactId}</name>
 
 	<artifactId>pepper-jmh</artifactId>
+	<!-- `name` is required by Sonatype-->
+	<name>${project.groupId}:${project.artifactId}</name>
 
 	<properties>
 		<!-- JMH produces code invalid according to PMD -->

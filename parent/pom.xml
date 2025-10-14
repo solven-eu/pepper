@@ -10,14 +10,14 @@
 		<!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
 		<relativePath />
 	</parent>
-	<!-- `name` is required by Sonatype-->
-	<name>${project.groupId}:${project.artifactId}</name>
 
 	<groupId>io.github.solven-eu.pepper</groupId>
 	<artifactId>pepper-parent</artifactId>
-	<version>5.2-SNAPSHOT</version>
+	<version>5.2</version>
 
 	<packaging>pom</packaging>
+	<!-- `name` is required by Sonatype-->
+	<name>${project.groupId}:${project.artifactId}</name>
 
 	<developers>
 		<developer>
@@ -34,7 +34,7 @@
 		<!-- SCM is in properties as we can't configure it directly in profile -->
 		<!-- Do not add developperConnection as parent is not a SNAPSHOT -->
 		<connection>${scm.connection}</connection>
-		<tag>pepper-5.0</tag>
+		<tag>pepper-5.2</tag>
 		<url>${scm.url}</url>
 	</scm>
 

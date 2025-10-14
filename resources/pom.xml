@@ -4,14 +4,14 @@
 	<parent>
 		<groupId>io.github.solven-eu.pepper</groupId>
 		<artifactId>pepper-parent</artifactId>
-		<version>5.2-SNAPSHOT</version>
+		<version>5.2</version>
 
 		<!-- This has the parent (instead of aggregator) as parent to be used as jar in maven-plugins -->
 		<relativePath>../parent</relativePath>
 	</parent>
-	<!-- `name` is required by Sonatype-->
-	<name>${project.groupId}:${project.artifactId}</name>
 
 	<artifactId>pepper-resources</artifactId>
 	<packaging>jar</packaging>
+	<!-- `name` is required by Sonatype-->
+	<name>${project.groupId}:${project.artifactId}</name>
 </project>
