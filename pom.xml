@@ -89,14 +89,14 @@
 		<!-- https://github.com/google/guava/releases -->
 		<!-- https://github.com/google/guava/wiki/Compatibility -->
 		<!-- Guava for JDK6 drops at 28.1-jre -->
-		<guava.version>33.4.0-jre</guava.version>
+		<guava.version>33.5.0-jre</guava.version>
 
 		<!-- https://mvnrepository.com/artifact/org.jooq/jool -->
 		<jool.version>0.9.15</jool.version>
 
 		<!-- https://github.com/google/guava-beta-checker -->
 		<betachecker.version>1.0</betachecker.version>
-		<errorprone.version>2.36.0</errorprone.version>
+		<errorprone.version>2.42.0</errorprone.version>
 
 		<awaitility.version>4.0.3</awaitility.version>
 		<equals.verifier.version>4.2</equals.verifier.version>
