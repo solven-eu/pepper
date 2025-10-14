@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -39,11 +40,8 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
+@UtilityClass
 public class PepperJacksonTestHelper {
-
-	protected PepperJacksonTestHelper() {
-		// hidden
-	}
 
 	public static ObjectMapper makeObjectMapper() {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -80,5 +78,20 @@ public class PepperJacksonTestHelper {
 		Assertions.assertThat(fromString).as(() -> "notEquals given " + asString).isEqualTo(object);
 
 		return asString;
+	}
+
+	public static <T> String asString(Class<? extends T> clazz, T object) {
+		return asString(makeObjectMapper(), clazz, object);
+	}
+
+	/**
+	 * To be used by classes which are not deserializable.
+	 */
+	public static <T> String asString(ObjectMapper om, Class<? extends T> clazz, T object) {
+		try {
+			return om.writeValueAsString(object);
+		} catch (JsonProcessingException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 }

@@ -45,7 +45,7 @@ public class NamingForkJoinWorkerThreadFactory implements ForkJoinWorkerThreadFa
 	@Override
 	public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
 		final ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
-		worker.setName(threadPrefix + "-" + worker.getPoolIndex());
+		worker.setName(threadPrefix + worker.getPoolIndex());
 		return worker;
 	}
 }
