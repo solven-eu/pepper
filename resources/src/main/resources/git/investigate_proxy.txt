@@ -4,6 +4,8 @@ Add traces about CURL usage by Git:
 #set GIT_CURL_VERBOSE=1
 #set GIT_TRACE_PACKET=2
 
+or a one-liner : `GIT_CURL_VERBOSE=1 git pull --rebase`
+
 # Unix
 #export GIT_CURL_VERBOSE=1
 #export GIT_TRACE_PACKET=2
