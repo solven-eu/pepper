@@ -41,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @UtilityClass
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public class PepperJacksonTestHelper {
 
 	public static ObjectMapper makeObjectMapper() {

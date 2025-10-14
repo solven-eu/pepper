@@ -143,7 +143,12 @@ public class VirtualMachineWithoutToolsJar {
 		try {
 			return getUnsafeJvmVirtualMachine();
 		} catch (Throwable e) {
-			if (null == REPORTED_ERRORS_FOR_VM.put(e.getClass(), e.getMessage())) {
+			String eMessage = e.getMessage();
+			if (eMessage == null) {
+				// happens on NPE
+				eMessage = "null";
+			}
+			if (null == REPORTED_ERRORS_FOR_VM.put(e.getClass(), eMessage)) {
 				// First encounter of this error
 				LOGGER.warn("Issue while loading VirtualMachine. java.vendor={} java.spec={}",
 						getJavaVendor(),
