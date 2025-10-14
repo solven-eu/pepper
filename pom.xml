@@ -371,6 +371,9 @@
 						<localCheckout>true</localCheckout>
 						<!-- True, else tags, and the updaded SNAPSHOT are not pushed -->
 						<pushChanges>true</pushChanges>
+						<!-- http://central.sonatype.org/pages/apache-maven.html -->
+						<!-- Sonatype profile is defined in cleanthat-parent -->
+						<releaseProfiles>Sonatype</releaseProfiles>
 					</configuration>
 				</plugin>
 			</plugins>
