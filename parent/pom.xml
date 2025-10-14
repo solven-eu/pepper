@@ -10,6 +10,8 @@
 		<!-- http://stackoverflow.com/questions/6003831/parent-relativepath-points-at-my-com-mycompanymyproject-instead-of-org-apache -->
 		<relativePath />
 	</parent>
+	<!-- `name` is required by Sonatype-->
+	<name>${project.groupId}:${project.artifactId}</name>
 
 	<groupId>io.github.solven-eu.pepper</groupId>
 	<artifactId>pepper-parent</artifactId>

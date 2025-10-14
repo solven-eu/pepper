@@ -8,6 +8,8 @@
 		<version>5.2-SNAPSHOT</version>
 		<relativePath>parent</relativePath>
 	</parent>
+	<!-- `name` is required by Sonatype-->
+	<name>${project.groupId}:${project.artifactId}</name>
 
 	<artifactId>pepper-aggregator</artifactId>
 

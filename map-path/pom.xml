@@ -7,6 +7,8 @@
 		<artifactId>pepper-aggregator</artifactId>
 		<version>5.2-SNAPSHOT</version>
 	</parent>
+	<!-- `name` is required by Sonatype-->
+	<name>${project.groupId}:${project.artifactId}</name>
 
 	<artifactId>pepper-mappath</artifactId>
 	<packaging>jar</packaging>
