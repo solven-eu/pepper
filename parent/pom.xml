@@ -53,7 +53,7 @@
 		<scm.url>https://github.com/solven-eu/pepper</scm.url>
 
 		<spotless.version>2.44.4</spotless.version>
-		<cleanthat.version>2.22</cleanthat.version>
+		<cleanthat.version>2.24</cleanthat.version>
 
 		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
 		<spotbugs.version>4.8.6.6</spotbugs.version>
