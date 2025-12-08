@@ -53,7 +53,9 @@
 		<scm.url>https://github.com/solven-eu/pepper</scm.url>
 
 		<spotless.version>2.46.1</spotless.version>
-		<cleanthat.version>2.22</cleanthat.version>
+		<cleanthat.version>2.24</cleanthat.version>
+		<spotless.version>2.44.4</spotless.version>
+		<cleanthat.version>2.24</cleanthat.version>
 
 		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
 		<spotbugs.version>4.8.6.6</spotbugs.version>
@@ -454,7 +456,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>3.11.2</version>
+						<version>3.12.0</version>
 						<configuration>
 							<!-- http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html -->
 							<doclint>none</doclint>
@@ -474,7 +476,7 @@
 					<plugin>
 						<groupId>org.sonatype.central</groupId>
 						<artifactId>central-publishing-maven-plugin</artifactId>
-						<version>0.8.0</version>
+						<version>0.9.0</version>
 						<extensions>true</extensions>
 						<configuration>
 							<publishingServerId>central</publishingServerId>

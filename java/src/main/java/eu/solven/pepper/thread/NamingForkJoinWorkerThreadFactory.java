@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2014 Benoit Lacelle - SOLVEN
+ * Copyright (c) 2014-2025 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package eu.solven.pepper.thread;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory;
 import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Enable naming of ForkJoinPool threads
@@ -38,6 +39,9 @@ public class NamingForkJoinWorkerThreadFactory implements ForkJoinWorkerThreadFa
 
 	protected final String threadPrefix;
 
+	// For some reason `worker.getPoolIndex()` always returns `0`
+	protected final AtomicLong nextThreadIndex = new AtomicLong();
+
 	public NamingForkJoinWorkerThreadFactory(String threadPrefix) {
 		this.threadPrefix = threadPrefix;
 	}
@@ -45,7 +49,7 @@ public class NamingForkJoinWorkerThreadFactory implements ForkJoinWorkerThreadFa
 	@Override
 	public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
 		final ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
-		worker.setName(threadPrefix + worker.getPoolIndex());
+		worker.setName(threadPrefix + nextThreadIndex.getAndIncrement());
 		return worker;
 	}
 }

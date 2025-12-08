@@ -102,7 +102,7 @@
 
 		<awaitility.version>4.0.3</awaitility.version>
 		<equals.verifier.version>4.2</equals.verifier.version>
-		<checker.quals.version>3.49.3</checker.quals.version>
+		<checker.quals.version>3.52.1</checker.quals.version>
 
 		<!-- newer version than spring-boot-dependencies, for JDK11 -->
 		<mockito.version>4.11.0</mockito.version>
