@@ -56,6 +56,17 @@ import com.jayway.jsonpath.Option;
 public class MapPath {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MapPath.class);
 
+	/**
+	 * Used to detect if a path fragment is simple or needs to be quoted
+	 */
+	private static final Pattern KEY_FRAGMENT_PATTERN = Pattern.compile("[^a-zA-Z0-9_-]");
+
+	/**
+	 * Used to split a key path like `a0.b_c.c-d` into `a0|b_c|c-d`
+	 */
+	private static final String SPLIT_KEY_EXPR = "(?<easy>\\.[^\\.\\[]*)|(?<hard>\\['?[^'\\]]*'?\\])";
+	private static final Pattern SPLIT_KEY_PATTERN = Pattern.compile(SPLIT_KEY_EXPR);
+
 	// This will be used to represent a null-reference as Value.
 	// In recursiveFromFlatten, it will used for comparison by reference
 	// It means the whole class is targetting same-JVM use.
@@ -102,8 +113,7 @@ public class MapPath {
 
 		String kAsString = String.valueOf(k);
 
-		Pattern regex = Pattern.compile("[^a-zA-Z0-9_-]");
-		Matcher matcher = regex.matcher(kAsString);
+		Matcher matcher = KEY_FRAGMENT_PATTERN.matcher(kAsString);
 		if (matcher.find()) {
 			// This is a complex name
 
@@ -353,8 +363,7 @@ public class MapPath {
 			throw new IllegalArgumentException("We expect only rootKey. key=" + flatKey);
 		}
 
-		String splitExpression = "(?<easy>\\.[^\\.\\[]*)|(?<hard>\\['?[^'\\]]*'?\\])";
-		Matcher compiled = Pattern.compile(splitExpression).matcher(flatKey);
+		Matcher compiled = SPLIT_KEY_PATTERN.matcher(flatKey);
 
 		List<Object> paths = new ArrayList<>();
 
