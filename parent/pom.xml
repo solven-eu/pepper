@@ -52,6 +52,8 @@
 		<scm.connection>scm:git:ssh://github.com/solven-eu/pepper.git</scm.connection>
 		<scm.url>https://github.com/solven-eu/pepper</scm.url>
 
+		<spotless.version>2.46.1</spotless.version>
+		<cleanthat.version>2.24</cleanthat.version>
 		<spotless.version>2.44.4</spotless.version>
 		<cleanthat.version>2.24</cleanthat.version>
 
