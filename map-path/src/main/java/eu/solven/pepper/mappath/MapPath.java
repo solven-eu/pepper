@@ -24,6 +24,7 @@ package eu.solven.pepper.mappath;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -236,7 +239,8 @@ public class MapPath {
 	private static void setJsonPath(DocumentContext context, String path, Object value) {
 		String parentPath;
 		String key;
-		int propertyIndex;
+		// Integer.MIN_VALUE in case of Map
+		int arrayIndex;
 		// parse the path ending
 		boolean endsWithBracket = path.endsWith("]");
 
@@ -255,12 +259,12 @@ public class MapPath {
 				// Remove the escape character '\'
 				key = key.replaceAll("\\\\(?<escaped>.)", "$1");
 
-				propertyIndex = Integer.MIN_VALUE;
+				arrayIndex = Integer.MIN_VALUE;
 			} else {
 				// A path like `$.k[7]`
 				key = path.substring(pos + 1, path.length() - 1);
 				try {
-					propertyIndex = Integer.parseInt(key);
+					arrayIndex = Integer.parseInt(key);
 				} catch (NumberFormatException e) {
 					String msg = "Unsupported value \"" + key
 							+ "\" for index, only non-negative integers are expected; path: \""
@@ -278,19 +282,19 @@ public class MapPath {
 			}
 			parentPath = path.substring(0, pos);
 			key = path.substring(pos + 1);
-			propertyIndex = Integer.MIN_VALUE;
+			arrayIndex = Integer.MIN_VALUE;
 		}
-		ensureParentExists(context, parentPath, propertyIndex);
+		ensureParentExists(context, parentPath, arrayIndex);
 
 		// set the value
-		if (propertyIndex == Integer.MIN_VALUE) {
+		if (arrayIndex == Integer.MIN_VALUE) {
 			context.put(parentPath, key, value);
 		} else {
 			List<Object> parent = context.read(parentPath);
-			if (propertyIndex < parent.size()) {
+			if (arrayIndex < parent.size()) {
 				context.set(path, value);
 			} else {
-				for (int i = parent.size(); i < propertyIndex; i++) {
+				for (int i = parent.size(); i < arrayIndex; i++) {
 					parent.add(null);
 				}
 				parent.add(value);
@@ -333,7 +337,10 @@ public class MapPath {
 
 		DocumentContext emptyJson = JsonPath.using(conf).parse("{}");
 
-		flatten.forEach((k, v) -> {
+		flatten.entrySet().stream().sorted(Comparator.comparing(e -> e.getKey(), MapPath::orderFlatKey)).forEach(e -> {
+			String k = e.getKey();
+			Object v = e.getValue();
+
 			if (v instanceof List<?> || v instanceof Map<?, ?>) {
 				throw new IllegalArgumentException(
 						"A flatten Map should neither have a Map nor Collection value. value=%s"
@@ -347,6 +354,30 @@ public class MapPath {
 		});
 
 		return emptyJson.json();
+	}
+
+	// This is useful to process flatten keys in an optimal order
+	// We consider an optimal order an order which prevents as many exception as possible when ensuring parentPath
+	// existence. Hence, the goal here is to consider first a key mapping to an array position with the highest possible
+	// position
+	private static int orderFlatKey(String left, String right) {
+		if (left.equals(right)) {
+			return 0;
+		}
+		String commonPrefix = Strings.commonPrefix(left, right);
+
+		int quoteIndex = CharMatcher.inRange('0', '9').negate().lastIndexIn(commonPrefix);
+		if (quoteIndex < 0) {
+			return left.compareTo(right);
+		} else if (commonPrefix.charAt(quoteIndex) != '\'') {
+			// These 2 pathes are not differing just by an array index
+			return left.compareTo(right);
+		}
+
+		String leftAfterCommon = left.substring(commonPrefix.length());
+		String rightAfterCommon = right.substring(commonPrefix.length());
+
+		return 0;
 	}
 
 	public static List<Object> split(String flatKey) {
