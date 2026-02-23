@@ -37,7 +37,7 @@ import tools.jackson.databind.SerializationFeature;
  */
 @Slf4j
 @UtilityClass
-@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
+@SuppressWarnings({ "checkstyle:HideUtilityClassConstructor", "CPD-START" })
 public class PepperJackson3TestHelper {
 
 	public static ObjectMapper makeObjectMapper() {

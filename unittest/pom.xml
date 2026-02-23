@@ -58,7 +58,7 @@
 			<!-- Some project may not need Jackson-->
 			<optional>true</optional>
 		</dependency>
-		
+
 		<dependency>
 			<!-- PeppertestHelper.verifyJackson-->
 			<groupId>tools.jackson.core</groupId>
