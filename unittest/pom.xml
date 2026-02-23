@@ -58,6 +58,16 @@
 			<!-- Some project may not need Jackson-->
 			<optional>true</optional>
 		</dependency>
+		
+		<dependency>
+			<!-- PeppertestHelper.verifyJackson-->
+			<groupId>tools.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>3.0.3</version>
+
+			<!-- Some project may not need Jackson-->
+			<optional>true</optional>
+		</dependency>
 
 		<dependency>
 			<groupId>org.mockito</groupId>
