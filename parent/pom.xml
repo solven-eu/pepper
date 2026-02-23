@@ -13,7 +13,7 @@
 
 	<groupId>io.github.solven-eu.pepper</groupId>
 	<artifactId>pepper-parent</artifactId>
-	<version>5.4</version>
+	<version>5.5-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 	<!-- `name` is required by Sonatype-->
@@ -34,7 +34,7 @@
 		<!-- SCM is in properties as we can't configure it directly in profile -->
 		<!-- Do not add developperConnection as parent is not a SNAPSHOT -->
 		<connection>${scm.connection}</connection>
-		<tag>pepper-5.4</tag>
+		<tag>pepper-5.0</tag>
 		<url>${scm.url}</url>
 	</scm>
 
