@@ -161,7 +161,7 @@ public class PepperLogHelper {
 					} else {
 						return e.getKey() + "=" + getObjectAndClass(e.getValue());
 					}
-				}).collect(Collectors.joining(", ", "{", "}"));
+				}).collect(Collectors.joining(", ", "{", "}")) + "(" + o.getClass().getName() + ")";
 			} else {
 				return o.toString() + "(" + o.getClass().getName() + ")";
 			}

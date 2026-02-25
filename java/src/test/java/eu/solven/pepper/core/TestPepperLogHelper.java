@@ -267,26 +267,28 @@ public class TestPepperLogHelper {
 
 	@Test
 	public void testObjectAndClass() {
-		Assertions.assertEquals("{k=v(java.lang.String), k2=2(java.lang.Long)}",
+		Assertions.assertEquals(
+				"{k=v(java.lang.String), k2=2(java.lang.Long)}(com.google.common.collect.RegularImmutableMap)",
 				PepperLogHelper.getObjectAndClass(ImmutableMap.of("k", "v", "k2", 2L)).toString());
 	}
 
 	@Test
 	public void testObjectAndClass_recursive() {
 		Map<Object, Object> map = new LinkedHashMap<>();
-		Assertions.assertEquals("{}", PepperLogHelper.getObjectAndClass(map).toString());
+		Assertions.assertEquals("{}(java.util.LinkedHashMap)", PepperLogHelper.getObjectAndClass(map).toString());
 
 		// Add itself as value
 		map.put("k", map);
 
 		// Legimitate use-case as handle by AsbtractMap.toString()
 		Assertions.assertEquals("{k=(this Map)}", map.toString());
-		Assertions.assertEquals("{k=(this Map)}", PepperLogHelper.getObjectAndClass(map).toString());
+		Assertions.assertEquals("{k=(this Map)}(java.util.LinkedHashMap)",
+				PepperLogHelper.getObjectAndClass(map).toString());
 
 		// Add another value
 		map.put("k2", "v2");
 
-		Assertions.assertEquals("{k=(this Map), k2=v2(java.lang.String)}",
+		Assertions.assertEquals("{k=(this Map), k2=v2(java.lang.String)}(java.util.LinkedHashMap)",
 				PepperLogHelper.getObjectAndClass(map).toString());
 	}
 
