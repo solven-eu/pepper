@@ -278,14 +278,12 @@ public class PepperStreamHelper {
 		return Collectors.toMap(keyMapper, valueMapper, throwingMerger(), mapSupplier);
 	}
 
-
 	/**
 	 *
 	 * http://stackoverflow.com/questions/31004899/java-8-collectors-tomap-sortedmap
 	 *
 	 * @param keyMapper
 	 * @param valueMapper
-	 * @param mapSupplier
 	 * @return
 	 */
 	public static <T, K, U> Collector<T, ?, Map<K, U>> toLinkedMap(Function<? super T, ? extends K> keyMapper,
