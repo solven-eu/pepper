@@ -55,7 +55,7 @@
 		<spotless.version>2.46.1</spotless.version>
 		<cleanthat.version>2.24</cleanthat.version>
 		<spotless.version>2.46.1</spotless.version>
-		<cleanthat.version>2.24</cleanthat.version>
+		<cleanthat.version>2.25</cleanthat.version>
 
 		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
 		<spotbugs.version>4.8.6.6</spotbugs.version>
