@@ -18,6 +18,8 @@
 	</modules>
 
 	<properties>
+		<automatic.module.name>eu.solven.pepper.hadoop</automatic.module.name>
+
 		<!-- Most Spark distribution has this quite old Guava: as it easily leads -->
 		<!-- to conflicts, we make sure we compile locally with this library -->
 		<guava.version>14.0.1</guava.version>

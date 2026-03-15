@@ -14,9 +14,10 @@
 	<name>${project.groupId}:${project.artifactId}</name>
 
 	<properties>
+		<automatic.module.name>eu.solven.pepper.mappath</automatic.module.name>
+
 		<jacoco.instruction.ratio>0.63</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.50</jacoco.branch.ratio>
-
 	</properties>
 
 	<dependencies>

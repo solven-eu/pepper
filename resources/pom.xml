@@ -14,4 +14,8 @@
 	<packaging>jar</packaging>
 	<!-- `name` is required by Sonatype-->
 	<name>${project.groupId}:${project.artifactId}</name>
+
+	<properties>
+		<automatic.module.name>eu.solven.pepper.resources</automatic.module.name>
+	</properties>
 </project>

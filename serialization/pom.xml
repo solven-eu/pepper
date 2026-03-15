@@ -20,6 +20,8 @@
 	</modules>
 
 	<properties>
+		<automatic.module.name>eu.solven.pepper.serialization</automatic.module.name>
+
 		<avro.version>1.12.1</avro.version>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-vector -->

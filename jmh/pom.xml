@@ -13,6 +13,8 @@
 	<name>${project.groupId}:${project.artifactId}</name>
 
 	<properties>
+		<automatic.module.name>eu.solven.pepper.jmh</automatic.module.name>
+
 		<!-- JMH produces code invalid according to PMD -->
 		<pmd.skip>true</pmd.skip>
 		<!-- JMH produces a lot of redundancy -->

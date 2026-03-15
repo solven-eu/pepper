@@ -25,6 +25,7 @@ package eu.solven.pepper.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -255,9 +256,10 @@ public class PepperStreamHelper {
 		return Stream.empty();
 	}
 
-	private static <T> BinaryOperator<T> throwingMerger() {
+	public static <T> BinaryOperator<T> throwingMerger() {
 		return (u, v) -> {
-			throw new IllegalStateException(String.format("Duplicate key %s", u));
+			throw new IllegalStateException("Duplicate key over values %s and %s"
+					.formatted(PepperLogHelper.getObjectAndClass(u), PepperLogHelper.getObjectAndClass(v)));
 		};
 	}
 
@@ -274,6 +276,21 @@ public class PepperStreamHelper {
 			Function<? super T, ? extends U> valueMapper,
 			Supplier<M> mapSupplier) {
 		return Collectors.toMap(keyMapper, valueMapper, throwingMerger(), mapSupplier);
+	}
+
+
+	/**
+	 *
+	 * http://stackoverflow.com/questions/31004899/java-8-collectors-tomap-sortedmap
+	 *
+	 * @param keyMapper
+	 * @param valueMapper
+	 * @param mapSupplier
+	 * @return
+	 */
+	public static <T, K, U> Collector<T, ?, Map<K, U>> toLinkedMap(Function<? super T, ? extends K> keyMapper,
+			Function<? super T, ? extends U> valueMapper) {
+		return Collectors.toMap(keyMapper, valueMapper, throwingMerger(), LinkedHashMap::new);
 	}
 
 	/**

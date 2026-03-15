@@ -15,6 +15,8 @@
 	<name>${project.groupId}:${project.artifactId}</name>
 
 	<properties>
+		<automatic.module.name>eu.solven.pepper.agent</automatic.module.name>
+
 		<!-- There is barely no code, leading most branches to be rare edge cases, which are tough to be unit-tested -->
 		<jacoco.instruction.ratio>0.36</jacoco.instruction.ratio>
 		<jacoco.branch.ratio>0.25</jacoco.branch.ratio>
