@@ -65,7 +65,7 @@
 			<!-- PeppertestHelper.verifyJackson-->
 			<groupId>tools.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>3.0.3</version>
+			<version>3.1.2</version>
 
 			<!-- Some project may not need Jackson-->
 			<optional>true</optional>
