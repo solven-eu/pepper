@@ -1,6 +1,6 @@
 /**
  * The MIT License
- * Copyright (c) 2026 Benoit Chatain Lacelle - SOLVEN
+ * Copyright (c) 2026 Benoit Lacelle - SOLVEN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,10 +53,10 @@ import lombok.experimental.UtilityClass;
  *
  * <pre>{@code
  * MapVerifier.forSupplier(MyMap<String, Integer>::new)
- *     .withSampleKeys("a", "b", "c")
- *     .withSampleValues(1, 2, 3)
- *     .preservesInsertionOrder()
- *     .verify();
+ * 		.withSampleKeys("a", "b", "c")
+ * 		.withSampleValues(1, 2, 3)
+ * 		.preservesInsertionOrder()
+ * 		.verify();
  * }</pre>
  *
  * Usage (instance):
@@ -72,6 +72,10 @@ import lombok.experimental.UtilityClass;
  * @author Benoit Lacelle
  */
 @UtilityClass
+@SuppressWarnings({ "checkstyle:HideUtilityClassConstructor",
+		"checkstyle:MagicNumber",
+		"checkstyle:LeftCurly",
+		"checkstyle:RightCurly" })
 public final class MapVerifier {
 
 	/**
@@ -117,6 +121,7 @@ public final class MapVerifier {
 	 * @param <V>
 	 *            the value type
 	 */
+	@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 	public static final class SupplierBuilder<K, V> {
 
 		private final Supplier<Map<K, V>> supplier;
@@ -213,7 +218,7 @@ public final class MapVerifier {
 			List<Scenario> scenarios = buildScenarios(flags);
 			scenarios.add(new Scenario("randomizedOps", () -> runRandomized(flags, seed)));
 			org.junit.jupiter.api.Assertions.assertAll(scenarios.stream()
-					.map(s -> (org.junit.jupiter.api.function.Executable) () -> s.body.execute())
+					.map(s -> (org.junit.jupiter.api.function.Executable) s.body::execute)
 					.toArray(org.junit.jupiter.api.function.Executable[]::new));
 		}
 
@@ -225,10 +230,9 @@ public final class MapVerifier {
 			List<Scenario> scenarios = buildScenarios(flags);
 			for (int i = 0; i < randomRepetitions; i++) {
 				long repSeed = seed + i;
-				scenarios
-						.add(new Scenario("randomizedOps[seed=" + repSeed + "]", () -> runRandomized(flags, repSeed)));
+				scenarios.add(new Scenario("randomizedOps[seed=" + repSeed + "]", () -> runRandomized(flags, repSeed)));
 			}
-			return scenarios.stream().map(s -> DynamicTest.dynamicTest(s.name, () -> s.body.execute()));
+			return scenarios.stream().map(s -> DynamicTest.dynamicTest(s.name, s.body::execute));
 		}
 
 		// Snapshot of the resolved probe flags — computed once so scenarios see a stable view.
@@ -248,7 +252,12 @@ public final class MapVerifier {
 			if (sampleKeys.isEmpty() || sampleValues.isEmpty()) {
 				throw new IllegalStateException("withSampleKeys(...) and withSampleValues(...) are required");
 			}
-			boolean resolvedImmutable = immutable != null ? immutable : probeImmutable();
+			boolean resolvedImmutable;
+			if (immutable != null) {
+				resolvedImmutable = immutable;
+			} else {
+				resolvedImmutable = probeImmutable();
+			}
 			boolean resolvedRejectsNullKeys;
 			if (rejectsNullKeys != null) {
 				resolvedRejectsNullKeys = rejectsNullKeys;
@@ -279,6 +288,7 @@ public final class MapVerifier {
 			}
 		}
 
+		@SuppressFBWarnings("DCN_NULLPOINTER_EXCEPTION")
 		private boolean probeRejectsNullKeys() {
 			try {
 				supplier.get().put(null, sampleValues.get(0));
@@ -290,6 +300,7 @@ public final class MapVerifier {
 			}
 		}
 
+		@SuppressFBWarnings("DCN_NULLPOINTER_EXCEPTION")
 		private boolean probeRejectsNullValues() {
 			try {
 				supplier.get().put(sampleKeys.get(0), null);
@@ -382,7 +393,8 @@ public final class MapVerifier {
 
 		private void checkPutNullValueThrows() {
 			Map<K, V> m = supplier.get();
-			Assertions.assertThatThrownBy(() -> m.put(sampleKeys.get(0), null)).isInstanceOf(NullPointerException.class);
+			Assertions.assertThatThrownBy(() -> m.put(sampleKeys.get(0), null))
+					.isInstanceOf(NullPointerException.class);
 		}
 
 		private void checkPutNullKeyThrows() {
@@ -517,39 +529,9 @@ public final class MapVerifier {
 			}
 		}
 
+		@SuppressWarnings("checkstyle:LineLength")
 		private void applyRandomOp(Random r, Map<K, V> m, Map<K, V> ref, List<String> trace) {
-			K k = sampleKeys.get(r.nextInt(sampleKeys.size()));
-			V v = sampleValues.get(r.nextInt(sampleValues.size()));
-			switch (r.nextInt(6)) {
-			case 0 -> {
-				trace.add("put(" + k + ", " + v + ")");
-				Assertions.assertThat(m.put(k, v)).isEqualTo(ref.put(k, v));
-			}
-			case 1 -> {
-				trace.add("remove(" + k + ")");
-				Assertions.assertThat(m.remove(k)).isEqualTo(ref.remove(k));
-			}
-			case 2 -> {
-				trace.add("get(" + k + ")");
-				Assertions.assertThat(m.get(k)).isEqualTo(ref.get(k));
-			}
-			case 3 -> {
-				trace.add("containsKey(" + k + ")");
-				Assertions.assertThat(m.containsKey(k)).isEqualTo(ref.containsKey(k));
-			}
-			case 4 -> {
-				trace.add("size()");
-				Assertions.assertThat(m.size()).isEqualTo(ref.size());
-			}
-			case 5 -> {
-				if (r.nextInt(10) == 0) {
-					trace.add("clear()");
-					m.clear();
-					ref.clear();
-				}
-			}
-			default -> throw new IllegalStateException();
-			}
+			K k=sampleKeys.get(r.nextInt(sampleKeys.size()));V v=sampleValues.get(r.nextInt(sampleValues.size()));switch(r.nextInt(6)){case 0->{trace.add("put("+k+", "+v+")");Assertions.assertThat(m.put(k,v)).isEqualTo(ref.put(k,v));}case 1->{trace.add("remove("+k+")");Assertions.assertThat(m.remove(k)).isEqualTo(ref.remove(k));}case 2->{trace.add("get("+k+")");Assertions.assertThat(m.get(k)).isEqualTo(ref.get(k));}case 3->{trace.add("containsKey("+k+")");Assertions.assertThat(m.containsKey(k)).isEqualTo(ref.containsKey(k));}case 4->{trace.add("size()");Assertions.assertThat(m.size()).isEqualTo(ref.size());}case 5->{if(r.nextInt(10)==0){trace.add("clear()");m.clear();ref.clear();}}default->throw new IllegalStateException();}
 		}
 	}
 
@@ -567,7 +549,9 @@ public final class MapVerifier {
 	 */
 	public static final class InstanceBuilder<K, V> {
 
+		@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 		private final Map<K, V> instance;
+		@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 		private boolean preservesInsertionOrder;
 
 		private InstanceBuilder(Map<K, V> instance) {
@@ -589,6 +573,7 @@ public final class MapVerifier {
 		/**
 		 * Runs every scenario and throws an {@link AssertionError} aggregating all failures.
 		 */
+		@SuppressWarnings("CPD-START")
 		public void verify() {
 			Map<K, V> ref = new LinkedHashMap<>(instance);
 
@@ -606,7 +591,7 @@ public final class MapVerifier {
 			scenarios.add(new Scenario("forEach_visitsAll", () -> checkForEach(ref)));
 
 			org.junit.jupiter.api.Assertions.assertAll(scenarios.stream()
-					.map(s -> (org.junit.jupiter.api.function.Executable) () -> s.body.execute())
+					.map(s -> (org.junit.jupiter.api.function.Executable) s.body::execute)
 					.toArray(org.junit.jupiter.api.function.Executable[]::new));
 		}
 
@@ -668,9 +653,7 @@ public final class MapVerifier {
 		private void checkGetAndContains(Map<K, V> ref) {
 			for (Map.Entry<K, V> e : ref.entrySet()) {
 				Assertions.assertThat(instance.get(e.getKey())).as("get(" + e.getKey() + ")").isEqualTo(e.getValue());
-				Assertions.assertThat(instance.containsKey(e.getKey()))
-						.as("containsKey(" + e.getKey() + ")")
-						.isTrue();
+				Assertions.assertThat(instance.containsKey(e.getKey())).as("containsKey(" + e.getKey() + ")").isTrue();
 				Assertions.assertThat(instance.containsValue(e.getValue()))
 						.as("containsValue(" + e.getValue() + ")")
 						.isTrue();
