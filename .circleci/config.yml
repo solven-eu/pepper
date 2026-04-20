@@ -5,7 +5,7 @@ jobs:
     working_directory: ~/pepper
 
     docker:
-      - image: cimg/openjdk:23.0
+      - image: cimg/openjdk:25.0.1
 
     steps:
       - checkout
@@ -28,7 +28,7 @@ jobs:
     working_directory: ~/pepper
 
     docker:
-      - image: cimg/openjdk:23.0
+      - image: cimg/openjdk:25.0.1
 
     environment:
       # As it seems mvn is not seeing the default environment variable
