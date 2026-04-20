@@ -531,7 +531,38 @@ public final class MapVerifier {
 
 		@SuppressWarnings("checkstyle:LineLength")
 		private void applyRandomOp(Random r, Map<K, V> m, Map<K, V> ref, List<String> trace) {
-			K k=sampleKeys.get(r.nextInt(sampleKeys.size()));V v=sampleValues.get(r.nextInt(sampleValues.size()));switch(r.nextInt(6)){case 0->{trace.add("put("+k+", "+v+")");Assertions.assertThat(m.put(k,v)).isEqualTo(ref.put(k,v));}case 1->{trace.add("remove("+k+")");Assertions.assertThat(m.remove(k)).isEqualTo(ref.remove(k));}case 2->{trace.add("get("+k+")");Assertions.assertThat(m.get(k)).isEqualTo(ref.get(k));}case 3->{trace.add("containsKey("+k+")");Assertions.assertThat(m.containsKey(k)).isEqualTo(ref.containsKey(k));}case 4->{trace.add("size()");Assertions.assertThat(m.size()).isEqualTo(ref.size());}case 5->{if(r.nextInt(10)==0){trace.add("clear()");m.clear();ref.clear();}}default->throw new IllegalStateException();}
+			K k = sampleKeys.get(r.nextInt(sampleKeys.size()));
+			V v = sampleValues.get(r.nextInt(sampleValues.size()));
+			switch (r.nextInt(6)) {
+			case 0 -> {
+				trace.add("put(" + k + ", " + v + ")");
+				Assertions.assertThat(m.put(k, v)).isEqualTo(ref.put(k, v));
+			}
+			case 1 -> {
+				trace.add("remove(" + k + ")");
+				Assertions.assertThat(m.remove(k)).isEqualTo(ref.remove(k));
+			}
+			case 2 -> {
+				trace.add("get(" + k + ")");
+				Assertions.assertThat(m.get(k)).isEqualTo(ref.get(k));
+			}
+			case 3 -> {
+				trace.add("containsKey(" + k + ")");
+				Assertions.assertThat(m.containsKey(k)).isEqualTo(ref.containsKey(k));
+			}
+			case 4 -> {
+				trace.add("size()");
+				Assertions.assertThat(m.size()).isEqualTo(ref.size());
+			}
+			case 5 -> {
+				if (r.nextInt(10) == 0) {
+					trace.add("clear()");
+					m.clear();
+					ref.clear();
+				}
+			}
+			default -> throw new IllegalStateException();
+			}
 		}
 	}
 
