@@ -65,7 +65,7 @@ public class PepperJackson3TestHelper {
 		String asString = om.writeValueAsString(object);
 		Object fromString = om.readValue(asString, clazz);
 
-		Assertions.assertThat(fromString).as(() -> "notEquals given " + asString).isEqualTo(object);
+		Assertions.assertThat(fromString).as(() -> "notEquals given asString=" + asString).isEqualTo(object);
 
 		return asString;
 	}
